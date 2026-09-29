@@ -1,0 +1,977 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>The Service Encounter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky chapter rail on the left (chip bar on phones) + a single reading column of numbered study units, ending in flashcards and a scored self-test. */
+:root{
+  --bg:#F2F4F8; --surface:#FFFFFF; --sunk:#E9EDF4; --ink:#15203A; --muted:#566079; --line:#D6DCE7;
+  --accent:#2B57C9; --accent-ink:#FFFFFF; --accent-soft:#E2E9FA;
+  --gold:#B57A00; --gold-soft:#FAF0D4;
+  --good:#1B7F53; --good-soft:#DDF3E8; --bad:#B73A33; --bad-soft:#F9E1DF;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0E1420; --surface:#161F31; --sunk:#1C2740; --ink:#E5E9F2; --muted:#9BA6BC; --line:#2A3551;
+  --accent:#7E9EF3; --accent-ink:#0E1420; --accent-soft:#1F2C50;
+  --gold:#E6B54B; --gold-soft:#3A2E10;
+  --good:#4FC48C; --good-soft:#12342A; --bad:#F07C72; --bad-soft:#3C1B19; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0E1420; --surface:#161F31; --sunk:#1C2740; --ink:#E5E9F2; --muted:#9BA6BC; --line:#2A3551;
+  --accent:#7E9EF3; --accent-ink:#0E1420; --accent-soft:#1F2C50;
+  --gold:#E6B54B; --gold-soft:#3A2E10;
+  --good:#4FC48C; --good-soft:#12342A; --bad:#F07C72; --bad-soft:#3C1B19; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6}
+h1,h2,h3,h4{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+h2{font-size:clamp(1.6rem,3.2vw,2.1rem);font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.2rem;font-weight:700;margin-top:.4rem}
+p{margin:0}
+.mono{font-family:var(--f-mono)}
+.eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+/* Top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1180px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px;min-width:0}
+.brand .ch{font-family:var(--f-mono);font-size:.8rem;background:var(--ink);color:var(--bg);padding:2px 8px;border-radius:4px}
+.brand b{font-family:var(--f-display);font-size:1.05rem}
+.meter{margin-left:auto;display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+.meter .bar{width:140px;height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.meter .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .4s}
+
+/* Shell */
+.shell{max-width:1180px;margin:0 auto;padding-inline:16px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:40px}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);align-self:start;padding-block:28px}
+.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.toc a{display:flex;gap:10px;align-items:center;padding:7px 10px;border-radius:8px;color:var(--muted);text-decoration:none;font-size:.92rem;line-height:1.3}
+.toc a .n{font-family:var(--f-mono);font-size:.74rem;width:1.6em;flex:none}
+.toc a .dot{margin-left:auto;width:8px;height:8px;border-radius:50%;border:1.5px solid var(--line);flex:none}
+.toc a.seen .dot{background:var(--accent);border-color:var(--accent)}
+.toc a.here{background:var(--surface);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.toc .lo-note{margin-top:18px;font-size:.8rem;color:var(--muted)}
+main{padding-block:28px 80px;min-width:0}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:0}
+  .top-in{flex-wrap:nowrap}
+  .brand b{font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .toc{position:static;background:var(--bg);padding-block:8px;border-bottom:1px solid var(--line);margin-inline:-16px;padding-inline:16px}
+  .toc ol{flex-direction:row;overflow-x:auto;gap:6px;scrollbar-width:none}
+  .toc a{white-space:nowrap;background:var(--surface);box-shadow:0 0 0 1px var(--line);padding:6px 10px}
+  .toc a .dot{display:none}
+  .toc .lo-note{display:none}
+  .meter .bar{width:80px}
+}
+
+/* Sections */
+section.unit{padding-block:36px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:18px;scroll-margin-top:80px}
+section.unit:first-child{padding-top:8px}
+.unit-head{display:flex;flex-direction:column;gap:8px}
+.lo-tags{display:flex;gap:6px;flex-wrap:wrap}
+.lo{font-family:var(--f-mono);font-size:.72rem;padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:500}
+.lead{font-size:1.08rem;max-width:66ch;color:var(--ink)}
+.prose{max-width:68ch;display:flex;flex-direction:column;gap:12px}
+.prose p{color:var(--ink)}
+.muted{color:var(--muted)}
+.callout{background:var(--gold-soft);border-radius:var(--r);padding:14px 16px;max-width:70ch}
+.callout .eyebrow{color:var(--gold)}
+.fig{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+
+/* Hero */
+.hero{padding-block:8px 34px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px;align-items:center}
+.hero h1{font-size:clamp(2.2rem,5.5vw,3.6rem);font-weight:800;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .sub{margin-top:14px;font-size:1.08rem;max-width:56ch;color:var(--muted)}
+.hero .cta{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:8px;padding:10px 16px;font-weight:600;background:var(--accent);color:var(--accent-ink);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn.ghost{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.journey{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.journey ol{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column}
+.journey li{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-top:1px dashed var(--line);font-size:.92rem}
+.journey li:first-child{border-top:0}
+.journey .pip{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);justify-self:center}
+.journey .md{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+@media (max-width:760px){.hero{grid-template-columns:minmax(0,1fr)}}
+
+.objectives{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.objectives li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:flex;gap:12px;font-size:.94rem}
+.objectives .num{font-family:var(--f-mono);color:var(--accent);font-weight:500;flex:none}
+.objectives{padding:0;margin:0}
+@media (max-width:640px){.objectives{grid-template-columns:minmax(0,1fr)}}
+
+/* Generic panels */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.grid3,.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.grid2,.grid3,.grid4{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card h4{font-size:1rem}
+.card p{font-size:.93rem}
+.card .tag{font-family:var(--f-mono);font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+/* Tabs / segmented */
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;font-size:.9rem;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* Tech modes */
+.modes{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:18px;align-items:start}
+.mode-list{display:flex;flex-direction:column;gap:6px}
+.mode-list button{display:flex;gap:12px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px}
+.mode-list button .L{font-family:var(--f-display);font-weight:800;font-size:1.3rem;width:28px;color:var(--accent)}
+.mode-list button small{display:block;color:var(--muted);font-size:.78rem}
+.mode-list button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.mode-view{display:flex;flex-direction:column;gap:12px}
+.mode-view svg{width:100%;max-width:420px;height:auto}
+.mode-view .ex{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:.8rem;padding:3px 9px;border-radius:99px;background:var(--sunk);color:var(--ink)}
+@media (max-width:700px){.modes{grid-template-columns:minmax(0,1fr)}}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-weight:500;font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--sunk)}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+.ctrl th.hl, .ctrl td.hl{background:var(--accent-soft)}
+
+/* Activity */
+.activity{background:var(--surface);border:1.5px dashed var(--accent);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.activity-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.activity-head .eyebrow{color:var(--accent)}
+.activity-head .score{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.items{display:flex;flex-direction:column;gap:10px}
+.item{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+.item .q{font-size:.95rem}
+.item .opts{display:flex;flex-wrap:wrap;gap:6px}
+.item .opts button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 10px;font-size:.84rem}
+.item .opts button:hover:not(:disabled){border-color:var(--accent)}
+.item .opts button.right{background:var(--good-soft);border-color:var(--good);color:var(--good);font-weight:600}
+.item .opts button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.item .fb{font-size:.86rem;color:var(--muted)}
+.item.done-ok{border-color:var(--good)}
+.item.done-bad{border-color:var(--bad)}
+
+/* Triad */
+.triad{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:center}
+.triad svg{width:100%;max-width:440px;height:auto;justify-self:center}
+.triad .node{cursor:pointer}
+.triad .node rect{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.triad .node.on rect{stroke:var(--accent);stroke-width:2.5;fill:var(--accent-soft)}
+.triad .node text{fill:var(--ink);font-family:var(--f-display);font-weight:700;font-size:15px}
+.triad .edge line{stroke:var(--muted);stroke-width:2}
+.triad .edge.on line{stroke:var(--accent);stroke-width:3.5}
+.triad .edge text{fill:var(--muted);font-family:var(--f-mono);font-size:12px}
+.triad .edge.on text{fill:var(--accent);font-weight:500}
+.triad .edge{cursor:pointer}
+.triad .hit{stroke:transparent;stroke-width:22}
+@media (max-width:760px){.triad{grid-template-columns:minmax(0,1fr)}}
+
+/* Chain */
+.chain{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.chain button{flex:1 1 120px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;text-align:left;font-size:.86rem;line-height:1.3;position:relative;min-width:0}
+.chain button .s{font-family:var(--f-mono);font-size:.7rem;color:var(--muted);display:block;margin-bottom:4px}
+.chain button.zone-in{border-top:4px solid var(--gold)}
+.chain button.zone-out{border-top:4px solid var(--accent)}
+.chain button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chain button[aria-pressed="true"] .s{color:var(--bg)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:4px;vertical-align:middle;margin-right:6px}
+
+/* Flashcards */
+.fc-wrap{display:flex;flex-direction:column;gap:12px;align-items:center}
+.fc{width:min(100%,560px);aspect-ratio:16/9;max-width:100%;perspective:1200px;border:0;background:none;padding:0}
+.fc-in{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.fc.flip .fc-in{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:22px;text-align:center;border:1px solid var(--line)}
+.fc-front{background:var(--surface)}
+.fc-front b{font-family:var(--f-display);font-size:clamp(1.4rem,4vw,2rem)}
+.fc-back{background:var(--ink);color:var(--bg);transform:rotateY(180deg);font-size:1rem}
+.fc-face small{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;opacity:.7;position:absolute;top:14px;left:16px}
+.fc-ctrl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+.fc-ctrl .count{font-family:var(--f-mono);font-size:.82rem;color:var(--muted);min-width:60px;text-align:center}
+
+/* Quiz */
+.quiz{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.qz-setup{display:flex;flex-direction:column;gap:14px}
+.qz-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.qz-prog{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.qz-prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.qz-q{font-family:var(--f-display);font-size:1.25rem;font-weight:700}
+.qz-opts{display:flex;flex-direction:column;gap:8px}
+.qz-opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.qz-opts button .k{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);flex:none;padding-top:2px}
+.qz-opts button:hover:not(:disabled){border-color:var(--accent)}
+.qz-opts button.right{border-color:var(--good);background:var(--good-soft)}
+.qz-opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.qz-exp{border-radius:10px;padding:12px 14px;font-size:.93rem}
+.qz-exp.ok{background:var(--good-soft)}
+.qz-exp.no{background:var(--bad-soft)}
+.qz-exp b{display:block;margin-bottom:2px}
+.qz-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.res-big{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.res-big .pct{font-family:var(--f-display);font-weight:800;font-size:3.4rem;line-height:1}
+.lo-bars{display:flex;flex-direction:column;gap:8px}
+.lo-row{display:grid;grid-template-columns:minmax(0,1fr) 120px 48px;gap:10px;align-items:center;font-size:.86rem}
+.lo-row .b{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.lo-row .b i{display:block;height:100%}
+.lo-row .v{font-family:var(--f-mono);font-size:.78rem;text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:520px){.lo-row{grid-template-columns:minmax(0,1fr) 70px 42px}}
+.review{display:flex;flex-direction:column;gap:8px}
+.review details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.review summary{cursor:pointer;font-size:.92rem}
+.review .mk{font-family:var(--f-mono);font-weight:600;margin-right:6px}
+.review .mk.ok{color:var(--good)} .review .mk.no{color:var(--bad)}
+.review p{font-size:.88rem;margin-top:6px}
+
+.case{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px}
+@media (max-width:760px){.case{grid-template-columns:minmax(0,1fr)}}
+.case ol, .prose ol, .prose ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.dialog{display:flex;flex-direction:column;gap:8px}
+.line{padding:10px 12px;border-radius:10px;font-size:.92rem;max-width:88%}
+.line.c{background:var(--sunk);align-self:flex-start}
+.line.e{background:var(--accent-soft);align-self:flex-end}
+.line b{font-family:var(--f-mono);font-size:.7rem;display:block;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+footer{padding-block:24px;font-size:.8rem;color:var(--muted)}
+</style>
+</head>
+<body>
+
+
+<header class="top"><div class="top-in">
+  <div class="brand"><span class="ch">CH 4</span><b>The Service Encounter</b></div>
+  <div class="meter" aria-label="Study progress"><span id="meterTxt">0 / 8 units</span><span class="bar"><i id="meterBar"></i></span></div>
+</div></header>
+
+<div class="shell">
+<nav class="toc" aria-label="Chapter sections">
+  <ol id="tocList">
+    <li><a href="#overview"><span class="n">00</span>Overview</a></li>
+    <li><a href="#technology"><span class="n">01</span>Technology &amp; self-service<span class="dot"></span></a></li>
+    <li><a href="#triad"><span class="n">02</span>Encounter triad<span class="dot"></span></a></li>
+    <li><a href="#organization"><span class="n">03</span>Service organization<span class="dot"></span></a></li>
+    <li><a href="#personnel"><span class="n">04</span>Contact personnel<span class="dot"></span></a></li>
+    <li><a href="#customer"><span class="n">05</span>The customer<span class="dot"></span></a></li>
+    <li><a href="#profitchain"><span class="n">06</span>Orientation &amp; profit chain<span class="dot"></span></a></li>
+    <li><a href="#cases"><span class="n">07</span>Apply it: cases<span class="dot"></span></a></li>
+    <li><a href="#terms"><span class="n">08</span>Key terms<span class="dot"></span></a></li>
+    <li><a href="#selftest"><span class="n">✓</span>Self-test</a></li>
+  </ol>
+  <p class="lo-note">Based on Bordoloi, Fitzsimmons &amp; Fitzsimmons, <i>Service Management</i> (McGraw Hill, 2022), Chapter 4.</p>
+</nav>
+
+<main>
+<!-- OVERVIEW -->
+<section class="unit" id="overview" style="border-bottom:0;padding-top:0">
+  <div class="hero">
+    <div>
+      <p class="eyebrow">Service Management · Chapter 4</p>
+      <h1>Every contact is a <em>moment of truth</em>.</h1>
+      <p class="sub">A service is judged in brief encounters between a customer and a provider. This module walks through who controls those encounters, how firms prepare their people and customers for them, and why getting them right leads to profit.</p>
+      <div class="cta"><a class="btn" href="#technology">Start studying</a><a class="btn ghost" href="#selftest">Jump to self-test</a></div>
+    </div>
+    <div class="journey" aria-label="An airline trip as a chain of moments of truth">
+      <p class="eyebrow">One trip, six moments of truth</p>
+      <ol>
+        <li><span class="pip"></span>Buy ticket online<span class="md">website</span></li>
+        <li><span class="pip"></span>Check bags at airport<span class="md">agent / kiosk</span></li>
+        <li><span class="pip"></span>Security screening<span class="md">officer</span></li>
+        <li><span class="pip"></span>In-flight service<span class="md">crew</span></li>
+        <li><span class="pip"></span>Baggage claim<span class="md">system</span></li>
+        <li><span class="pip"></span>Frequent-flyer credit<span class="md">loyalty program</span></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="prose">
+    <h3>Why it matters: Jan Carlzon and SAS</h3>
+    <p>When Jan Carlzon led Scandinavian Airlines System (SAS), he reorganized the company around these encounters. He turned the organization chart upside down: frontline staff who deal with customers went to the top, and everyone else's job became serving them. SAS was split into profit centers down to the route level, and managers close to customers were given authority to decide on their own.</p>
+  </div>
+
+  <h3>Learning objectives</h3>
+  <ul class="objectives">
+    <li><span class="num">LO1</span>Describe the five roles of technology in the service encounter.</li>
+    <li><span class="num">LO2</span>Use the service encounter triad to describe a firm's delivery process.</li>
+    <li><span class="num">LO3</span>Differentiate four organizational control systems for employee empowerment.</li>
+    <li><span class="num">LO4</span>Prepare abstract questions and situational vignettes to screen service recruits.</li>
+    <li><span class="num">LO5</span>Classify customers into four groups by attitudes and expectations.</li>
+    <li><span class="num">LO6</span>Explain how an ethical climate leads to job satisfaction and service quality.</li>
+    <li><span class="num">LO7</span>Discuss the role of scripts in customer coproduction.</li>
+    <li><span class="num">LO8</span>Explain how the service profit chain leads to revenue growth and profitability.</li>
+  </ul>
+</section>
+
+<!-- 1 TECHNOLOGY -->
+<section class="unit" id="technology" data-unit>
+  <div class="unit-head">
+    <p class="eyebrow">Unit 01</p>
+    <h2>Technology in the service encounter</h2>
+    <div class="lo-tags"><span class="lo">LO1</span></div>
+  </div>
+  <p class="lead">Technology can play five different roles in an encounter, from none at all to replacing the human provider entirely. Select a mode to see how customer, provider and technology relate.</p>
+
+  <div class="modes">
+    <div class="mode-list" id="modeList" role="group" aria-label="Technology modes"></div>
+    <div class="panel mode-view" id="modeView" aria-live="polite"></div>
+  </div>
+  <p class="fig">Adapted from Figure 4.1, Role of Technology in the Service Encounter</p>
+
+  <div class="activity" data-activity="modes">
+    <div class="activity-head"><p class="eyebrow">Practice · Which mode is it?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+
+  <h3>The emergence of self-service</h3>
+  <div class="grid2">
+    <div class="card"><span class="tag">Provider motive</span><h4>Remove labor from non-value-adding tasks</h4><p>A query costs about <b>$7</b> through a call center and about <b>$0.10</b> online.</p></div>
+    <div class="card"><span class="tag">Customer motive</span><h4>Customization, accuracy, convenience, speed</h4><p>Customers often come to prefer self-service once they learn it, e.g. ordering a personalized latte by phone and skipping the queue (NFC payment).</p></div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Industry</th><th>Human contact</th><th>Machine assisted</th><th>Internet facilitated</th></tr></thead>
+    <tbody>
+      <tr><td>Banking</td><td>Teller</td><td>ATM</td><td>Online banking</td></tr>
+      <tr><td>Grocery</td><td>Checkout clerk</td><td>Self-checkout station</td><td>Online order / pickup</td></tr>
+      <tr><td>Airlines</td><td>Ticket agent</td><td>Check-in kiosk</td><td>Print boarding pass</td></tr>
+      <tr><td>Restaurants</td><td>Wait person</td><td>Vending machine</td><td>Online order / delivery</td></tr>
+      <tr><td>Education</td><td>Teacher</td><td>Computer tutorial</td><td>Distance learning</td></tr>
+    </tbody>
+  </table></div>
+  <p class="fig">Selected rows from Table 4.1, Evolution of Self-Service</p>
+  <div class="callout"><p class="eyebrow">Implication for society</p><p>Low-wage, non-value-added service jobs tend to disappear. Service job growth shifts toward highly skilled (health care), intellectual (professional) and creative (entertainment) work. High-touch services such as dentistry or firefighting stay largely immune, though some tasks (home blood-pressure monitoring) can still move to the customer.</p></div>
+</section>
+
+<!-- 2 TRIAD -->
+<section class="unit" id="triad" data-unit>
+  <div class="unit-head">
+    <p class="eyebrow">Unit 02</p>
+    <h2>The service encounter triad</h2>
+    <div class="lo-tags"><span class="lo">LO2</span></div>
+  </div>
+  <p class="lead">Every encounter involves three parties, and each wants some control over it. Trouble starts when one party dominates. Tap a corner or a side of the triangle.</p>
+  <div class="triad">
+    <svg viewBox="-20 0 480 350" role="img" aria-label="Service encounter triad">
+      <g class="edge" data-k="e1" tabindex="0" role="button" aria-label="Efficiency versus autonomy">
+        <line x1="220" y1="70" x2="80" y2="300"/><line class="hit" x1="220" y1="70" x2="80" y2="300"/>
+        <text x="96" y="180" text-anchor="middle" transform="rotate(-58 118 185)">Efficiency vs. autonomy</text></g>
+      <g class="edge" data-k="e2" tabindex="0" role="button" aria-label="Efficiency versus satisfaction">
+        <line x1="220" y1="70" x2="360" y2="300"/><line class="hit" x1="220" y1="70" x2="360" y2="300"/>
+        <text x="336" y="180" text-anchor="middle" transform="rotate(58 322 185)">Efficiency vs. satisfaction</text></g>
+      <g class="edge" data-k="e3" tabindex="0" role="button" aria-label="Perceived control">
+        <line x1="80" y1="300" x2="360" y2="300"/><line class="hit" x1="80" y1="300" x2="360" y2="300"/>
+        <text x="220" y="292" text-anchor="middle">Perceived control</text></g>
+      <g class="node" data-k="org" tabindex="0" role="button" aria-label="Service organization"><rect x="120" y="24" width="200" height="46" rx="10"/><text x="220" y="53" text-anchor="middle">Service organization</text></g>
+      <g class="node" data-k="per" tabindex="0" role="button" aria-label="Contact personnel"><rect x="-10" y="280" width="170" height="46" rx="10"/><text x="75" y="309" text-anchor="middle">Contact personnel</text></g>
+      <g class="node" data-k="cus" tabindex="0" role="button" aria-label="Customer"><rect x="290" y="280" width="140" height="46" rx="10"/><text x="360" y="309" text-anchor="middle">Customer</text></g>
+    </svg>
+    <div class="panel" id="triadView" aria-live="polite"></div>
+  </div>
+  <p class="fig">Adapted from Figure 4.2, The Service Encounter Triad</p>
+
+  <h3>When one party dominates</h3>
+  <div class="seg" id="domSeg" role="group" aria-label="Dominated encounters"></div>
+  <div class="panel" id="domView" aria-live="polite"></div>
+
+  <div class="card" style="max-width:none">
+    <span class="tag">Online variant</span>
+    <h4>When a website replaces contact personnel: E-S-QUAL</h4>
+    <p>A 22-item survey that measures website service quality on four dimensions:</p>
+    <div class="grid4" style="margin-top:6px">
+      <div><b>Efficiency</b><p class="muted">easy to navigate</p></div>
+      <div><b>System availability</b><p class="muted">site does not crash</p></div>
+      <div><b>Fulfillment</b><p class="muted">orders arrive quickly</p></div>
+      <div><b>Privacy</b><p class="muted">card data protected</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 ORGANIZATION -->
+<section class="unit" id="organization" data-unit>
+  <div class="unit-head">
+    <p class="eyebrow">Unit 03</p>
+    <h2>The service organization</h2>
+    <div class="lo-tags"><span class="lo">LO3</span></div>
+  </div>
+  <p class="lead">The organization sets the stage for every encounter through its culture, how far it empowers staff, the control systems it uses, and the customer information it provides.</p>
+
+  <div class="grid3">
+    <div class="card"><span class="tag">Culture</span><h4>Shared beliefs guide decisions</h4><p>Founders set norms and values. Disney calls staff "cast members" who work "onstage" or "backstage". FedEx tells stories of drivers going to extremes to keep the overnight promise.</p></div>
+    <div class="card"><span class="tag">Empowerment ≠ delegation</span><h4>Trust, not permission</h4><p>Empowerment trusts employees' own capacity to judge and act. Delegation is permission to act on someone's behalf, and it can be withdrawn.</p></div>
+    <div class="card"><span class="tag">Inverted-T structure</span><h4>Fewer supervisors, better-informed front line</h4><p>Frontline staff get training, motivation and timely information. Middle managers become facilitators. Examples: Taco Bell, ServiceMaster, Marriott.</p></div>
+  </div>
+
+  <div class="prose">
+    <p><b>Four commitments of the empowerment model:</b></p>
+    <ol>
+      <li>Invest in people as much as, or more than, in machines.</li>
+      <li>Use technology to support contact personnel, not to monitor or replace them.</li>
+      <li>Treat recruiting and training of contact personnel as critical to success.</li>
+      <li>Link pay to performance at all levels.</li>
+    </ol>
+  </div>
+
+  <h3>Four control systems for empowerment</h3>
+  <div class="seg" id="ctrlSeg" role="group" aria-label="Highlight a control system"></div>
+  <div class="tbl-wrap"><table class="ctrl" id="ctrlTable">
+    <thead><tr><th>Control system</th><th data-c="0">Belief</th><th data-c="1">Boundary</th><th data-c="2">Diagnostic</th><th data-c="3">Interactive</th></tr></thead>
+    <tbody>
+      <tr><td>Objective</td><td data-c="0">Contribute</td><td data-c="1">Compliance</td><td data-c="2">Achieve</td><td data-c="3">Create</td></tr>
+      <tr><td>Employee challenge</td><td data-c="0">Uncertainty about purpose</td><td data-c="1">Pressure or temptation</td><td data-c="2">Lack of focus</td><td data-c="3">Lack of opportunity or risk-averse</td></tr>
+      <tr><td>Management challenge</td><td data-c="0">Communicate core values and mission</td><td data-c="1">Specify and enforce rules</td><td data-c="2">Build and support clear targets</td><td data-c="3">Open organizational dialogue to encourage learning</td></tr>
+      <tr><td>Key issues</td><td data-c="0">Identify core values</td><td data-c="1">Risks to be avoided</td><td data-c="2">Critical performance variables</td><td data-c="3">Strategic uncertainties</td></tr>
+      <tr><td>Textbook example</td><td data-c="0">A well-articulated culture</td><td data-c="1">"Don't commit the firm to more than $1,000"</td><td data-c="2">"90 percent on-time performance"</td><td data-c="3">Consulting and other knowledge industries</td></tr>
+    </tbody>
+  </table></div>
+  <p class="fig">Based on Table 4.2, Organizational Control Systems for Employee Empowerment</p>
+
+  <div class="activity" data-activity="control">
+    <div class="activity-head"><p class="eyebrow">Practice · Name the control system</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+
+  <div class="card">
+    <span class="tag">Customer relationship management (CRM)</span>
+    <h4>Information that lets the front line act</h4>
+    <p>Software and methods to find, win, keep and win back customers while lowering marketing and service costs. CRM helps marketing target the best customers, builds individualized relationships, gives employees the customer knowledge they need, and improves sales management (including monitoring social media for solutions).</p>
+  </div>
+</section>
+
+<!-- 4 PERSONNEL -->
+<section class="unit" id="personnel" data-unit>
+  <div class="unit-head">
+    <p class="eyebrow">Unit 04</p>
+    <h2>Contact personnel</h2>
+    <div class="lo-tags"><span class="lo">LO4</span><span class="lo">LO6</span></div>
+  </div>
+  <p class="lead">Good contact staff are flexible, tolerate ambiguity, read situational cues and show <b>empathy</b>. Empathy matters more than age, education, sales knowledge, sales training or intelligence.</p>
+
+  <h3>Selection: three interview techniques</h3>
+  <p class="muted" style="max-width:68ch">No reliable test measures service orientation, so firms rely on interviews.</p>
+  <div class="grid3">
+    <div class="card"><span class="tag">Abstract questioning</span><h4>Open-ended, about past experience</h4><p><i>"What type of customer was most difficult for you, and why? How did you handle them?"</i></p><p><b>Reveals:</b> attention to detail, whether the applicant gathers information, interpersonal style, willingness to adapt.</p><p><b>Watch for:</b> "puffery"; reflecting well on the past does not guarantee performing well on the job.</p></div>
+    <div class="card"><span class="tag">Situational vignette</span><h4>A specific scenario: "What would you do?"</h4><p><i>A timid customer returns stale cakes demanding a refund, but your chef clearly didn't make them.</i></p><p><b>Reveals:</b> instincts, common sense, judgment, whether they can think on their feet.</p><p><b>Watch for:</b> good talkers who lack a real desire to serve.</p></div>
+    <div class="card"><span class="tag">Role playing</span><h4>A simulated encounter with "actors"</h4><p>Usually used in the final recruiting phase. The interviewer can change the situation as it unfolds.</p><p><b>Reveals:</b> behavior under stress, in the applicant's own words. The most realistic of the three.</p><p><b>Watch for:</b> hard to compare applicants directly; needs scripting and rehearsal.</p></div>
+  </div>
+
+  <h3>Training for difficult encounters</h3>
+  <p class="prose">About <b>75 percent</b> of reported communication difficulties do not come from a technical breakdown in delivery. They come from customers with unrealistic expectations. Training should cover both kinds of challenge in Table 4.3, using prepared scripts and role play.</p>
+  <div class="grid2">
+    <div class="card"><span class="tag">Problem customers (unrealistic expectations)</span>
+      <ol style="padding-left:1.2em;margin:0;display:flex;flex-direction:column;gap:4px;font-size:.92rem">
+        <li><b>Unreasonable demands</b>: "I want to carry all my luggage on board."</li>
+        <li><b>Abusive or hostile attitude</b>: verbal or physical abuse of staff.</li>
+        <li><b>Inappropriate behavior</b>: e.g. intoxicated passengers.</li>
+        <li><b>Unanticipated demands</b>: "My wife is in labor."</li>
+        <li><b>Demands contrary to policies</b>: "Our party of 10 wants separate checks."</li>
+      </ol></div>
+    <div class="card"><span class="tag">Service failure</span>
+      <ol style="padding-left:1.2em;margin:0;display:flex;flex-direction:column;gap:4px;font-size:.92rem">
+        <li><b>Unavailable service</b>: "I reserved a table by the window."</li>
+        <li><b>Slow performance</b>: "We've waited an hour and no one took our order."</li>
+        <li><b>Unacceptable service</b>: "There's a hair in my soup!"</li>
+      </ol>
+      <p class="muted" style="margin-top:6px">Failures are also a chance to show flexibility in recovery.</p></div>
+  </div>
+  <div class="callout"><p class="eyebrow">Example script</p><p>To "I want to carry all my luggage on board": <i>"I'm very sorry, but federal safety regulations permit only two carry-on pieces that fit under the seat or overhead. May I check your larger pieces all the way to your final destination?"</i></p></div>
+
+  <div class="activity" data-activity="challenges">
+    <div class="activity-head"><p class="eyebrow">Practice · Classify the challenge</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+
+  <h3>Creating an ethical climate</h3>
+  <p class="prose">Staff who work without close supervision may be tempted to act unethically to cover mistakes, raise revenue or satisfy a demanding customer (Table 4.4).</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Misrepresenting the service</th><th>Customer manipulation</th><th>General honesty &amp; integrity</th></tr></thead>
+    <tbody>
+      <tr><td style="font-weight:400">Promising a nonsmoking room when none is available</td><td>Giving away a guaranteed reservation</td><td>Treating customers unfairly or rudely</td></tr>
+      <tr><td style="font-weight:400">Bait-and-switch tactics</td><td>Performing unnecessary services</td><td>Being unresponsive to requests</td></tr>
+      <tr><td style="font-weight:400">Creating a false need for service</td><td>Padding a bill with hidden charges</td><td>Failing to follow stated company policies</td></tr>
+      <tr><td style="font-weight:400">Misrepresenting the provider's credentials</td><td>Hiding damage to customer possessions</td><td>Stealing customer credit card information</td></tr>
+      <tr><td style="font-weight:400">Exaggerating the benefits of a service</td><td>Making it hard to invoke a service guarantee</td><td>Sharing customer information with third parties</td></tr>
+    </tbody>
+  </table></div>
+  <div class="grid2">
+    <div class="card"><span class="tag">Formal controls</span><h4>Set the boundaries</h4><p>Enforcing ethical codes and punishing violations.</p></div>
+    <div class="card"><span class="tag">Informal controls</span><h4>Build self-regulation</h4><p>Discussing ethics, internalizing a code of ethics, and an ethical climate in which employees and work groups monitor themselves.</p></div>
+  </div>
+  <p class="prose muted">Schwepker and Hartline: together, these controls lead to commitment to service quality and higher job satisfaction.</p>
+</section>
+
+<!-- 5 CUSTOMER -->
+<section class="unit" id="customer" data-unit>
+  <div class="unit-head">
+    <p class="eyebrow">Unit 05</p>
+    <h2>The customer</h2>
+    <div class="lo-tags"><span class="lo">LO5</span><span class="lo">LO7</span></div>
+  </div>
+  <p class="lead">For the customer every purchase matters; for the provider it is routine. That gap is why bored staff struggle to match a customer's emotional involvement.</p>
+
+  <h3>Four customer groups</h3>
+  <div class="grid4">
+    <div class="card"><span class="tag">Economizing</span><h4>Maximum value for time, effort, money</h4><p>Demanding and sometimes fickle. Losing them is an early warning of competitive threats.</p></div>
+    <div class="card"><span class="tag">Ethical</span><h4>Supports socially responsible firms</h4><p>Loyal to firms with a community reputation, e.g. Ronald McDonald House.</p></div>
+    <div class="card"><span class="tag">Personalizing</span><h4>Wants recognition and conversation</h4><p>Greeting by first name; customer files can recreate this at scale.</p></div>
+    <div class="card"><span class="tag">Convenience</span><h4>No interest in shopping around</h4><p>Often pays extra for hassle-free service, e.g. Amazon Prime.</p></div>
+  </div>
+
+  <div class="activity" data-activity="customers">
+    <div class="activity-head"><p class="eyebrow">Practice · Which customer is this?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+
+  <h3>Choosing self-service vs. full service</h3>
+  <p class="prose">Customers weigh seven dimensions: time, <b>control of the situation</b>, efficiency, human contact, risk, effort, and dependence on others. Those who chose self-service rated <b>control</b> as the most important. Cost-leadership services can use this by making customers coproducers.</p>
+
+  <h3>Scripts in coproduction</h3>
+  <div class="grid2">
+    <div class="card"><span class="tag">Customer as partial employee</span><p>Customers follow <b>scripts</b> set by social norms or by the service design: carrying a cafeteria tray, serving themselves at a salad bar, busing the table. Scripts let each side predict the other's behavior, which gives both a sense of control. If a customer breaks the script (leaving the table uncleared), an employee must do the task.</p></div>
+    <div class="card"><span class="tag">Learning a new script</span><p>New technology needs a new script. Self-checkout first needs an attendant to coach customers; once they learn it, the attendant may no longer be needed. Scripts are easier to learn when they extend past behavior. Windows succeeded partly because all applications share one interface, so there is only one script to learn.</p></div>
+  </div>
+
+  <h3>Customer behavior after COVID-19</h3>
+  <div class="grid3">
+    <div class="card"><h4>Habits that may last</h4><p>Grocery and meal delivery, ordering by smartphone to skip wait staff, and higher expectations for ventilation and sanitation.</p></div>
+    <div class="card"><h4>Work from home</h4><p>Less demand for downtown offices and nearby eateries.</p></div>
+    <div class="card"><h4>Remote meetings</h4><p>Business travel may never fully recover, which hurts airlines, hotels and convention centers.</p></div>
+  </div>
+</section>
+
+<!-- 6 PROFIT CHAIN -->
+<section class="unit" id="profitchain" data-unit>
+  <div class="unit-head">
+    <p class="eyebrow">Unit 06</p>
+    <h2>Customer service orientation and the service profit chain</h2>
+    <div class="lo-tags"><span class="lo">LO8</span></div>
+  </div>
+  <p class="lead">A study of 23 branch banks found a <b>high correlation</b> between how employees and customers rated service quality. When employees see a strong service orientation, customers report better service.</p>
+
+  <div class="grid2">
+    <div class="card"><span class="tag">Employees reported…</span><ol style="padding-left:1.2em;margin:0;font-size:.92rem">
+      <li>An enthusiastic emphasis on service</li><li>A manager who emphasizes service in daily roles</li><li>Effort to keep all accounts, not only large ones</li><li>Enough well-trained tellers</li><li>Well-maintained equipment and plentiful supplies</li></ol></div>
+    <div class="card"><span class="tag">…and customers then reported</span><ol style="padding-left:1.2em;margin:0;font-size:.92rem">
+      <li>Courteous, competent tellers</li><li>Adequate staffing</li><li>A well-run branch</li><li>Low teller turnover</li><li>Staff with positive attitudes</li></ol></div>
+  </div>
+
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Higher customer satisfaction</th><th>Higher employee satisfaction</th></tr></thead>
+    <tbody>
+      <tr><td style="font-weight:400">More repeat purchases</td><td style="font-weight:400">More familiarity with customer needs and how to meet them</td></tr>
+      <tr><td style="font-weight:400">Stronger tendency to complain about service errors</td><td style="font-weight:400">Greater opportunity to recover from errors</td></tr>
+      <tr><td style="font-weight:400">Lower costs</td><td style="font-weight:400">Higher productivity</td></tr>
+      <tr><td style="font-weight:400">Better results</td><td style="font-weight:400">Improved quality of service</td></tr>
+    </tbody>
+  </table></div>
+  <p class="fig">Table 4.5, Satisfaction Duality. How management treats its internal customers (staff) is reflected in how staff treat external customers.</p>
+
+  <h3>The service profit chain</h3>
+  <p class="muted" style="max-width:68ch">Step through each link. The first links sit inside the firm; the rest play out with customers.</p>
+  <div class="legend"><span><i style="background:var(--gold)"></i>Inside the firm</span><span><i style="background:var(--accent)"></i>With customers</span></div>
+  <div class="chain" id="chain" role="group" aria-label="Service profit chain links"></div>
+  <div class="panel" id="chainView" aria-live="polite"></div>
+  <div class="qz-nav"><button class="btn ghost" id="chainPrev">← Previous link</button><button class="btn" id="chainNext">Next link →</button></div>
+  <p class="fig">Adapted from Figure 4.4, The Service Profit Chain</p>
+
+  <h3>Service benchmark: Miss Manners on complaint handling</h3>
+  <div class="case">
+    <div class="prose">
+      <p>A complaint exchange has two roles: the outraged one and the "calm down, it happens" one. Whoever receives the complaint gets to pick a role, and the complainer is left with the other.</p>
+      <p>If staff take the outraged role (a sincere apology plus a promise to act), the customer tends to shift toward "it's not that important." The apology and the promise are the ingredients; the <b>tone</b> is what makes it work.</p>
+    </div>
+    <div class="dialog" aria-label="Example exchange">
+      <div class="line c"><b>Customer</b>This is an outrage.</div>
+      <div class="line e"><b>Employee</b>It certainly is. I can't apologize enough. Let me see what I can do to make it up to you.</div>
+      <div class="line c"><b>Customer</b>Oh, that's OK. Mistakes happen.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 CASES -->
+<section class="unit" id="cases" data-unit>
+  <div class="unit-head">
+    <p class="eyebrow">Unit 07</p>
+    <h2>Apply it: cases and discussion</h2>
+    <div class="lo-tags"><span class="lo">LO2</span><span class="lo">LO3</span><span class="lo">LO4</span></div>
+  </div>
+  <div class="case">
+    <div class="panel prose">
+      <p class="eyebrow">Case 4.1 · Amy's Ice Cream (Austin, Texas)</p>
+      <p>Ice cream is ice cream, so Amy's competes on service: "ice cream theater" put on by outgoing, creative scoopers. Applicants get a plain white paper bag as the application form. Someone who only writes their name and address on it is probably less entertaining than someone who turns it into a puppet.</p>
+      <p>Pay is low (thin margins, mostly part-time), yet Amy's attracts strong staff because it is freedom-oriented rather than rules-oriented: any hat, your own music, a say in store art, and everyone does every job, including managers.</p>
+      <p><b>Questions</b></p>
+      <ol><li>Describe the service culture at Amy's.</li><li>What personality attributes does Amy's look for?</li><li>Design a selection procedure using abstract questioning, a situational vignette and/or role playing.</li></ol>
+    </div>
+    <div class="panel prose">
+      <p class="eyebrow">Case 4.2 · Enterprise Rent-A-Car</p>
+      <p>Enterprise positions its "greatest idea" as personal service and focuses on the local (replacement and discretionary) rental market, picking customers up and dropping them off.</p>
+      <p>It hires almost only college graduates, favoring "people people" such as athletes and social directors. Promotion comes from within, and pay is tied to branch profit, which is shared openly.</p>
+      <p><b>Link to the chapter:</b> selection, culture and a profit-linked reward system are all links in the service profit chain.</p>
+    </div>
+  </div>
+  <div class="panel prose">
+    <p class="eyebrow">Topics for discussion</p>
+    <ol>
+      <li>How can we design for self-recovery when a self-service failure occurs?</li>
+      <li>What are the organizational and marketing implications of treating the customer as a "partial employee"?</li>
+      <li>How does perceived control differ between one-on-one service and group service?</li>
+      <li>How does a service script relate to service quality?</li>
+      <li>If customer roles are set by cultural norms, how can services be exported?</li>
+    </ol>
+    <p class="muted"><b>Group exercise:</b> in small groups, find a real example of each control system: belief, boundary, diagnostic and interactive.</p>
+  </div>
+</section>
+
+<!-- 8 TERMS -->
+<section class="unit" id="terms" data-unit>
+  <div class="unit-head">
+    <p class="eyebrow">Unit 08</p>
+    <h2>Key terms</h2>
+  </div>
+  <p class="lead">Say the definition out loud before you flip the card.</p>
+  <div class="fc-wrap">
+    <button class="fc" id="fc" aria-label="Flashcard, click to flip"><div class="fc-in">
+      <div class="fc-face fc-front"><small id="fcTag">Term</small><b id="fcTerm"></b><span class="muted" style="margin-top:10px;font-size:.85rem">Click to reveal</span></div>
+      <div class="fc-face fc-back"><small>Definition</small><p id="fcDef"></p></div>
+    </div></button>
+    <div class="fc-ctrl">
+      <button class="btn ghost" id="fcPrev">←</button>
+      <span class="count" id="fcCount"></span>
+      <button class="btn ghost" id="fcNext">→</button>
+      <button class="btn ghost" id="fcShuffle">Shuffle</button>
+    </div>
+  </div>
+</section>
+
+<!-- SELF TEST -->
+<section class="unit" id="selftest" style="border-bottom:0">
+  <div class="unit-head">
+    <p class="eyebrow">Self-test</p>
+    <h2>Check your understanding</h2>
+  </div>
+  <div class="quiz" id="quiz"></div>
+</section>
+
+<footer>Study aid based on Chapter 4, "The Service Encounter," in Bordoloi, Fitzsimmons &amp; Fitzsimmons, <i>Service Management: Operations, Strategy, Information Technology</i> (McGraw Hill, 2022). Read the chapter for the full text, figures and cases.</footer>
+</main>
+</div>
+
+<script>
+(function(){
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+/* ---------- Tech modes ---------- */
+const MODES = [
+  {L:"A", name:"Technology-free", def:"Customer and human provider are physically together; technology plays no direct role. This is traditional high-touch service.", ex:["Hair salon","Chiropractor","Law or consulting advice"], t:"none"},
+  {L:"B", name:"Technology-assisted", def:"Only the provider uses technology, to support face-to-face service.", ex:["Optometrist eye exam","Dental X-ray","Airline agent at a terminal (old style)"], t:"prov"},
+  {L:"C", name:"Technology-facilitated", def:"Customer and provider both have access to the same technology during a face-to-face encounter.", ex:["Financial planner showing a model on the client's computer"], t:"both"},
+  {L:"D", name:"Technology-mediated", def:"Customer and provider are not in the same place. Technology, usually voice, connects them, so the encounter is no longer face-to-face.", ex:["Restaurant reservation by phone","Remote call-center tech help","GM OnStar roadside help"], t:"mediated"},
+  {L:"E", name:"Technology-generated", def:"Technology replaces the human provider entirely; the customer serves themselves. The job is outsourced to the customer, mainly to cut cost.", ex:["Bank ATM","Self-checkout scanner","Airport check-in kiosk","Online reservation","IVR phone menu"], t:"self"}
+];
+function modeSVG(t){
+  const c = (x,y,l)=>`<g><circle cx="${x}" cy="${y}" r="30" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/><text x="${x}" y="${y+5}" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="var(--ink)">${l}</text></g>`;
+  const tech = (x,y)=>`<g><rect x="${x-34}" y="${y-22}" width="68" height="44" rx="6" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="2"/><text x="${x}" y="${y+5}" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--ink)">Tech</text></g>`;
+  const ln = (x1,y1,x2,y2,dash)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--muted)" stroke-width="2" ${dash?'stroke-dasharray="5 5"':''}/>`;
+  const wall = `<line x1="210" y1="20" x2="210" y2="170" stroke="var(--bad)" stroke-width="2" stroke-dasharray="3 6"/><text x="210" y="186" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--bad)">physical separation</text>`;
+  let body="";
+  if(t==="none") body = ln(110,95,310,95)+c(80,95,"Cust")+c(340,95,"Prov")+`<text x="210" y="84" text-anchor="middle" font-size="12" font-family="IBM Plex Mono, monospace" fill="var(--muted)">face to face</text>`;
+  if(t==="prov") body = ln(110,70,310,70)+ln(340,100,340,125)+c(80,70,"Cust")+c(340,70,"Prov")+tech(340,150);
+  if(t==="both") body = ln(110,70,310,70)+ln(95,95,190,140)+ln(325,95,230,140)+c(80,70,"Cust")+c(340,70,"Prov")+tech(210,150);
+  if(t==="mediated") body = wall+ln(110,95,176,95)+ln(244,95,310,95)+c(80,95,"Cust")+c(340,95,"Prov")+tech(210,95);
+  if(t==="self") body = ln(110,95,176,95)+c(80,95,"Cust")+tech(210,95)+`<g opacity=".35">${c(340,95,"Prov")}</g><line x1="315" y1="70" x2="365" y2="120" stroke="var(--bad)" stroke-width="2.5"/>`;
+  return `<svg viewBox="0 0 420 195" role="img" aria-label="Diagram of mode">${body}</svg>`;
+}
+function renderMode(i){
+  const m = MODES[i];
+  $$("#modeList button").forEach((b,j)=>b.setAttribute("aria-pressed", j===i));
+  $("#modeView").innerHTML = `<p class="eyebrow">Mode ${m.L}</p><h3 style="margin:0">${m.name} service encounter</h3>${modeSVG(m.t)}<p>${m.def}</p><div class="ex">${m.ex.map(e=>`<span class="chip">${e}</span>`).join("")}</div>`;
+}
+$("#modeList").innerHTML = MODES.map((m,i)=>`<button data-i="${i}" aria-pressed="false"><span class="L">${m.L}</span><span><b>${m.name}</b><small>${m.t==="none"?"No technology":m.t==="prov"?"Provider uses tech":m.t==="both"?"Both use tech":m.t==="mediated"?"Not co-located":"Customer self-serves"}</small></span></button>`).join("");
+$$("#modeList button").forEach(b=>b.addEventListener("click",()=>renderMode(+b.dataset.i)));
+renderMode(0);
+
+/* ---------- Generic practice activity ---------- */
+const ACT = {
+  modes:{ opts:["A","B","C","D","E"], labels:{A:"A · free",B:"B · assisted",C:"C · facilitated",D:"D · mediated",E:"E · generated"}, items:[
+    ["You get a haircut at a neighborhood barber.","A","No technology plays a direct role in this high-touch service."],
+    ["A dentist takes a full-mouth X-ray of your teeth.","B","Only the provider operates the technology."],
+    ["A financial planner walks you through a retirement model on your own laptop.","C","Both parties use the same technology together."],
+    ["You call a remote help desk to fix your internet connection.","D","You and the provider are apart; the phone connects you."],
+    ["You withdraw cash from an ATM.","E","The machine replaces the teller; you serve yourself."],
+    ["You check in for a flight on the airline's app and get your boarding pass.","E","No human provider is involved."]
+  ]},
+  control:{ opts:["Belief","Boundary","Diagnostic","Interactive"], items:[
+    ["New hires hear stories of staff who went to great lengths to keep the company's promise.","Belief","Stories communicate core values and purpose."],
+    ["Front-desk staff may refund up to Rp 1,500,000 without a manager's approval.","Boundary","It sets a limit on initiative: a risk to avoid."],
+    ["The call center targets 80 percent of calls answered within 20 seconds.","Diagnostic","A measurable target on a critical performance variable."],
+    ["Consulting partners meet weekly to debate emerging client risks and new service ideas.","Interactive","Open dialogue on strategic uncertainties to create new solutions."]
+  ]},
+  challenges:{ opts:["Unreasonable demand","Abusive/hostile","Inappropriate behavior","Unanticipated demand","Contrary to policy","Unavailable service","Slow performance","Unacceptable service"], items:[
+    ["\"Please sit with me the whole flight; I'm afraid of flying.\"","Unreasonable demand","It needs attention the firm cannot reasonably give. Problem customer."],
+    ["A guest demands a smoking room in a hotel where smoking is banned by law.","Contrary to policy","Law or policy makes it impossible. Problem customer."],
+    ["The hotel's room Wi-Fi is down all evening.","Unavailable service","A normally expected service is missing. Service failure."],
+    ["\"My seat doesn't recline.\"","Unacceptable service","The service falls below acceptable standards. Service failure."],
+    ["A passenger faints and needs medical help mid-flight.","Unanticipated demand","Special attention the customer could not plan for. Problem customer."],
+    ["Diners have waited 45 minutes and no one has taken their order.","Slow performance","Unusually slow service. Service failure."]
+  ]},
+  customers:{ opts:["Economizing","Ethical","Personalizing","Convenience"], items:[
+    ["Rina compares three courier apps on every order and switches for a Rp 2,000 saving.","Economizing","Maximizes value for time, effort and money, and switches easily."],
+    ["Budi chooses a café because it pays farmers fairly and runs a community program.","Ethical","Feels a duty to support socially responsible firms."],
+    ["Pak Hadi keeps returning to one barber who remembers his name and asks about his family.","Personalizing","Wants recognition and conversation."],
+    ["Sari pays for a premium grocery subscription so she never has to go to the store.","Convenience","Pays extra to avoid shopping effort."]
+  ]}
+};
+const actState = {};
+function renderActivity(el){
+  const key = el.dataset.activity, cfg = ACT[key];
+  actState[key] = {done:0, right:0, total:cfg.items.length};
+  const itemsEl = $("[data-items]", el);
+  itemsEl.innerHTML = cfg.items.map((it,i)=>`<div class="item" data-i="${i}"><p class="q">${it[0]}</p><div class="opts">${cfg.opts.map(o=>`<button data-o="${o}">${(cfg.labels&&cfg.labels[o])||o}</button>`).join("")}</div><p class="fb" hidden></p></div>`).join("");
+  const upd = ()=>{ const s=actState[key]; $("[data-score]",el).textContent = `${s.right} correct · ${s.done}/${s.total} answered`; if(s.done===s.total) markActivity(el); };
+  upd();
+  $$(".item", itemsEl).forEach(item=>{
+    const it = cfg.items[+item.dataset.i];
+    $$("button", item).forEach(b=>b.addEventListener("click",()=>{
+      const ok = b.dataset.o===it[1];
+      $$("button", item).forEach(x=>{ x.disabled=true; if(x.dataset.o===it[1]) x.classList.add("right"); });
+      if(!ok) b.classList.add("wrong");
+      item.classList.add(ok?"done-ok":"done-bad");
+      const fb = $(".fb", item); fb.hidden=false; fb.innerHTML = (ok?"<b style='color:var(--good)'>Correct.</b> ":"<b style='color:var(--bad)'>Not quite.</b> ")+it[2];
+      actState[key].done++; if(ok) actState[key].right++; upd();
+    }));
+  });
+}
+$$("[data-activity]").forEach(renderActivity);
+function markActivity(el){ const sec = el.closest("section"); if(sec) seen.add(sec.id), refreshProgress(); }
+
+/* ---------- Triad ---------- */
+const TRIAD = {
+  org:["Service organization","Wants efficiency to protect margins (or, for nonprofits, to stay within budget). Controls delivery through rules and procedures that limit staff autonomy and the amount of service offered."],
+  per:["Contact personnel","Want to control the customer's behavior so their own work is manageable and less stressful, but are bound by the organization's rules."],
+  cus:["Customer","Wants to control the encounter to get the most benefit from it. May become dissatisfied when standardization prevents customization."],
+  e1:["Efficiency vs. autonomy","Management imposes rules for efficiency; staff want discretion to serve individual customers."],
+  e2:["Efficiency vs. satisfaction","Rules that keep costs down also limit the service offered, and the lack of customization can leave customers dissatisfied."],
+  e3:["Perceived control","Both staff and customer want to feel in control of the interaction. Scripts help each predict the other."]
+};
+function renderTriad(k){
+  $$(".triad [data-k]").forEach(g=>g.classList.toggle("on", g.dataset.k===k));
+  const t = TRIAD[k];
+  $("#triadView").innerHTML = `<p class="eyebrow">${k.startsWith("e")?"Tension":"Party"}</p><h3 style="margin:0 0 6px">${t[0]}</h3><p>${t[1]}</p><p class="muted" style="margin-top:10px;font-size:.88rem">A good encounter balances the need for control of all three parties.</p>`;
+}
+$$(".triad [data-k]").forEach(g=>{ g.addEventListener("click",()=>renderTriad(g.dataset.k)); g.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();renderTriad(g.dataset.k);} }); });
+renderTriad("org");
+
+const DOM = [
+  ["Organization-dominated","Strict procedures standardize delivery and cut staff discretion. Customers pick from a few standard options.","McDonald's, Jiffy Lube, H&R Block succeed partly by teaching customers what not to expect. In \"bureaucracies\", staff may sympathize but must go by the book, and their job satisfaction falls."],
+  ["Contact personnel–dominated","Autonomous staff limit the scope of the encounter to reduce stress and expect the customer to trust their expertise.","Physician and patient: the patient has little control, and the hospital faces heavy demands from individual physicians with little regard for efficiency."],
+  ["Customer-dominated","At the extremes of standardized and customized service, the customer takes control.","Standardized: self-service at a card-reader gas pump, efficient for someone who wants little service. Customized: a criminal legal defense may use all the firm's resources at great cost to efficiency."]
+];
+$("#domSeg").innerHTML = DOM.map((d,i)=>`<button data-i="${i}" aria-pressed="${i===0}">${d[0]}</button>`).join("");
+function renderDom(i){ $$("#domSeg button").forEach((b,j)=>b.setAttribute("aria-pressed", j===i)); const d=DOM[i]; $("#domView").innerHTML=`<h3 style="margin:0 0 6px">${d[0]} encounter</h3><p>${d[1]}</p><p class="muted" style="margin-top:8px"><b>Example:</b> ${d[2]}</p>`; }
+$$("#domSeg button").forEach(b=>b.addEventListener("click",()=>renderDom(+b.dataset.i)));
+renderDom(0);
+
+/* ---------- Control table highlight ---------- */
+const CTRL = ["Belief","Boundary","Diagnostic","Interactive"];
+$("#ctrlSeg").innerHTML = CTRL.map((c,i)=>`<button data-i="${i}" aria-pressed="false">${c}</button>`).join("");
+$$("#ctrlSeg button").forEach(b=>b.addEventListener("click",()=>{
+  const on = b.getAttribute("aria-pressed")!=="true";
+  $$("#ctrlSeg button").forEach(x=>x.setAttribute("aria-pressed","false"));
+  b.setAttribute("aria-pressed", on);
+  $$("#ctrlTable [data-c]").forEach(td=>td.classList.toggle("hl", on && td.dataset.c===b.dataset.i));
+}));
+
+/* ---------- Profit chain ---------- */
+const CHAIN = [
+  ["in","Internal service quality","Drives employee satisfaction","The work environment: selection and development, rewards and recognition, access to customer information, workplace technology and job design. <b>USAA</b> puts a member's complete file on screen when they give a membership number, and runs a campus with 75 training classrooms."],
+  ["in","Employee satisfaction","Drives retention and productivity","The real cost of turnover is lost productivity and lower customer satisfaction. Losing a valued broker means lost commissions while a replacement rebuilds relationships."],
+  ["in","Employee retention & productivity","Drives service value","<b>Southwest Airlines</b> keeps turnover under 5 percent a year. Flexible, well-trained staff do several jobs and turn a plane around in under 15 minutes, which supports low fares."],
+  ["out","External service value","Drives customer satisfaction","Value = results received compared with the total cost of getting the service. <b>Progressive</b> flies teams to disaster sites and settles claims immediately."],
+  ["out","Customer satisfaction","Drives customer loyalty","<b>Xerox</b> found \"very satisfied\" customers were six times more likely to repurchase than those who were merely \"satisfied\". It called them <i>apostles</i>; very unhappy customers who speak against the firm are <i>terrorists</i>."],
+  ["out","Customer loyalty","Drives revenue growth & profitability","A <b>5 percent</b> increase in loyalty can raise profits by <b>25 to 85 percent</b>. The quality of market share (loyalty) deserves as much attention as its quantity. <b>Banc One</b> tracked loyalty by how many services customers used."],
+  ["out","Revenue growth & profitability","The outcome","Profit and growth come from loyal customers, and ultimately from the investment in employees at the start of the chain."]
+];
+let chainI = 0;
+$("#chain").innerHTML = CHAIN.map((c,i)=>`<button data-i="${i}" class="zone-${c[0]}" aria-pressed="false"><span class="s">${String(i+1).padStart(2,"0")}</span>${c[1]}</button>`).join("");
+function renderChain(i){
+  chainI = i;
+  $$("#chain button").forEach((b,j)=>b.setAttribute("aria-pressed", j===i));
+  const c = CHAIN[i];
+  $("#chainView").innerHTML = `<p class="eyebrow">Link ${i+1} of ${CHAIN.length} · ${c[2]}</p><h3 style="margin:2px 0 8px">${c[1]}</h3><p>${c[3]}</p>`;
+  $("#chainPrev").disabled = i===0; $("#chainNext").disabled = i===CHAIN.length-1;
+}
+$$("#chain button").forEach(b=>b.addEventListener("click",()=>renderChain(+b.dataset.i)));
+$("#chainPrev").addEventListener("click",()=>renderChain(Math.max(0,chainI-1)));
+$("#chainNext").addEventListener("click",()=>renderChain(Math.min(CHAIN.length-1,chainI+1)));
+renderChain(0);
+
+/* ---------- Flashcards ---------- */
+const TERMS = [
+  ["Moment of truth","The often brief interaction between customer and provider when the customer judges the service and forms an opinion of its quality."],
+  ["Service encounter triad","A triangle showing the balance of goals among the service organization, the contact personnel and the customer."],
+  ["Coproduction","Treating the customer as a productive resource in delivery, with roles to play (busing a table) and scripts to follow (using an ATM)."],
+  ["Culture","The shared beliefs and values of an organization that guide employee decisions and behavior."],
+  ["Empowerment","Giving contact personnel the training and information to make decisions for the firm without close supervision."],
+  ["Abstract questioning","An open-ended interview question that screens candidates by revealing their ability to adapt and use interpersonal skills."],
+  ["Situational vignette","A service scenario used in interviews to test whether a candidate can think on their feet and use good judgment."],
+  ["Role playing","An interview technique in which the applicant reacts to a simulated service situation as if it were real."],
+  ["Self-service technology (SST)","Technology that lets customers serve themselves, replacing a human provider (technology-generated encounter)."],
+  ["E-S-QUAL","A 22-item survey of website service quality: efficiency, system availability, fulfillment and privacy."],
+  ["Customer relationship management (CRM)","Methods, software and Internet tools that help a firm manage its relationships with customers in an organized way."],
+  ["Satisfaction duality","Higher customer satisfaction and higher employee satisfaction reinforce each other."],
+  ["Service profit chain","The links from internal service quality to employee satisfaction, retention and productivity, service value, customer satisfaction, loyalty, and finally profitability and growth."]
+];
+let fcOrder = TERMS.map((_,i)=>i), fcI = 0;
+function renderFc(){ const t = TERMS[fcOrder[fcI]]; $("#fc").classList.remove("flip"); $("#fcTerm").textContent=t[0]; $("#fcDef").textContent=t[1]; $("#fcCount").textContent=`${fcI+1} / ${TERMS.length}`; }
+$("#fc").addEventListener("click",()=>{ $("#fc").classList.toggle("flip"); if(fcI===TERMS.length-1){ seen.add("terms"); refreshProgress(); } });
+$("#fcPrev").addEventListener("click",()=>{ fcI=(fcI-1+TERMS.length)%TERMS.length; renderFc(); });
+$("#fcNext").addEventListener("click",()=>{ fcI=(fcI+1)%TERMS.length; renderFc(); });
+$("#fcShuffle").addEventListener("click",()=>{ fcOrder=shuffle(fcOrder); fcI=0; renderFc(); });
+renderFc();
+
+/* ---------- Quiz ---------- */
+const LO_NAMES = {1:"Technology roles",2:"Encounter triad",3:"Control systems & empowerment",4:"Selecting & training staff",5:"Customer groups",6:"Ethical climate",7:"Scripts & coproduction",8:"Orientation & profit chain"};
+const Q = [
+ [1,"An optometrist uses an instrument to examine your eyes; you never touch the equipment. Which mode is this?",["Technology-assisted (B)","Technology-facilitated (C)","Technology-mediated (D)","Technology-generated (E)"],0,"Only the provider has access to the technology during face-to-face service, which is mode B."],
+ [1,"In which mode are the customer and the human provider NOT in the same physical location?",["Technology-free (A)","Technology-assisted (B)","Technology-facilitated (C)","Technology-mediated (D)"],3,"Mode D: technology, usually a phone call, connects parties who are apart. Mode E has no human provider at all."],
+ [1,"According to the chapter, what is the principal driver for providers to adopt self-service?",["Greater customization for customers","Removing labor cost from non-productive activity","Regulatory requirements","Improving employee job satisfaction"],1,"Removing labor from non-value-adding tasks is the provider's main motive; customization and convenience explain customer acceptance."],
+ [1,"The chapter compares the cost of handling one query through a call center with handling it online. The figures are roughly:",["$1 vs. $0.50","$7 vs. $0.10","$20 vs. $5","$3 vs. $1"],1,"About $7 through a call center versus about 10 cents online."],
+ [1,"A financial planner and client look together at a projection on the client's computer. This is:",["Technology-free","Technology-assisted","Technology-facilitated","Technology-generated"],2,"Both parties share access to the same technology: technology-facilitated (C)."],
+ [1,"Which kind of job does the chapter expect self-service growth to eliminate?",["Highly skilled health care work","Creative entertainment work","Low-wage, unskilled, non-value-added service jobs","Professional intellectual work"],2,"Service job growth is expected to shift to skilled, intellectual and creative work."],
+ [2,"The three parties in the service encounter triad are:",["Customer, supplier, regulator","Service organization, contact personnel, customer","Manager, employee, shareholder","Front office, back office, customer"],1,"The triad links the service organization, contact personnel and customer."],
+ [2,"McDonald's, Jiffy Lube and H&R Block are examples of which kind of encounter?",["Customer-dominated","Contact personnel–dominated","Service organization–dominated","Technology-mediated"],2,"Standardized procedures and limited options: the organization dominates, partly by teaching customers what not to expect."],
+ [2,"The physician–patient relationship best illustrates the shortcomings of which kind of encounter?",["Contact personnel–dominated","Organization-dominated","Customer-dominated","Balanced encounter"],0,"The expert provider has high autonomy and the patient has little control."],
+ [2,"Which of these is NOT one of the four E-S-QUAL dimensions?",["Efficiency","Fulfillment","Empathy","Privacy"],2,"E-S-QUAL covers efficiency, system availability, fulfillment and privacy. Empathy is not one of them."],
+ [2,"In the triad, the tension between the organization and the customer is labeled:",["Perceived control","Efficiency vs. autonomy","Efficiency vs. satisfaction","Cost vs. quality"],2,"Rules for efficiency can limit service and customization, which hurts satisfaction."],
+ [3,"A hotel lets staff spend up to $1,000 to resolve a problem without approval. This is a:",["Belief system","Boundary system","Diagnostic system","Interactive system"],1,"A boundary system limits initiative. Its objective is compliance and its key issue is risks to be avoided."],
+ [3,"\"90 percent on-time performance\" is an example of which control system?",["Belief","Boundary","Diagnostic","Interactive"],2,"Diagnostic systems set measurable goals on critical performance variables. Their objective is to achieve."],
+ [3,"Which control system suits knowledge industries such as consulting best?",["Belief","Boundary","Diagnostic","Interactive"],3,"Interactive control, with the objective 'create' and the key issue of strategic uncertainties, fits firms that must deliver creative solutions."],
+ [3,"The employee challenge that a belief system addresses is:",["Pressure or temptation","Lack of focus","Uncertainty about purpose","Risk aversion"],2,"Belief systems communicate core values and mission to resolve uncertainty about purpose."],
+ [3,"How does the chapter distinguish empowerment from delegation?",["They are the same thing","Delegation is permission that can be taken away; empowerment trusts employees' own power to decide","Empowerment only applies to managers","Delegation requires more training than empowerment"],1,"Delegation is acting on another's behalf with permission; empowerment trusts the employee's own capacity to judge and act."],
+ [3,"In the inverted-T organization, middle managers mainly:",["Supervise and monitor staff closely","Become facilitators for frontline staff","Handle all customer complaints personally","Are replaced by self-service technology"],1,"Layers of supervision shrink and middle managers become facilitators."],
+ [4,"Which attribute of contact personnel was found to matter more than age, education, sales training and intelligence?",["Physical appearance","Empathy for customers","Technical knowledge","Years of experience"],1,"Empathy for customers was the most important attribute."],
+ [4,"\"From your past work, what type of customer was most difficult for you, and why?\" is an example of:",["Situational vignette","Role playing","Abstract questioning","Personality testing"],2,"Open-ended questions about past experience are abstract questioning."],
+ [4,"A key limitation of role playing as a selection technique is that:",["It is less realistic than the other methods","It is hard to compare applicants directly","It cannot show behavior under stress","It is used only in the first screening"],1,"Role playing is the most realistic method, but applicants are hard to compare and it needs scripting and rehearsal."],
+ [4,"What is a known risk of the situational vignette interview?",["Applicants cannot think on their feet","Good communicators may not show a genuine desire to serve","It takes too long to design","It reveals nothing about judgment"],1,"Strong communicators can sound good without real empathy, so interviewers must focus on the substance of the answer."],
+ [4,"About what share of reported communication difficulties come from causes other than a technical breakdown in delivery?",["25 percent","50 percent","75 percent","90 percent"],2,"About 75 percent come from customers with unrealistic expectations."],
+ [4,"\"There's a hair in my soup!\" is which type of challenge?",["Unreasonable demand","Unavailable service","Slow performance","Unacceptable service"],3,"The service falls below acceptable standards: a service failure of the 'unacceptable service' type."],
+ [4,"\"Our party of 10 wants separate checks\" at a restaurant that doesn't allow it is:",["Unanticipated demand","Demand contrary to policies","Abusive attitude","Unavailable service"],1,"The request can't be met because of company policy."],
+ [5,"A customer who wants recognition and conversation from the service is:",["Economizing","Ethical","Personalizing","Convenience"],2,"Personalizing customers want interpersonal gratification."],
+ [5,"Losing which type of customer is an early warning of competitive threats?",["Economizing","Ethical","Personalizing","Convenience"],0,"Economizing customers test the firm's competitive strength on value."],
+ [5,"Amazon Prime's success is used to illustrate which customer group?",["Economizing","Ethical","Personalizing","Convenience"],3,"Convenience customers pay extra for hassle-free service."],
+ [5,"Customers who chose self-service rated which dimension as most important?",["Amount of time","Control of the situation","Risk involved","Human contact"],1,"Control of the situation was the most important dimension for self-service choosers."],
+ [6,"Under Schwepker and Hartline's framework, which is a FORMAL control?",["Discussing ethics in team meetings","Internalizing a code of ethics","Enforcing ethical codes and punishing violations","An ethical climate within work groups"],2,"Formal controls enforce codes and punish violations; the others are informal controls."],
+ [6,"\"Padding a bill with hidden charges\" belongs to which category of unethical behavior?",["Misrepresenting the nature of the service","Customer manipulation","General honesty and integrity","Service failure"],1,"Table 4.4 lists padding a bill under customer manipulation."],
+ [6,"According to the chapter, formal and informal ethical controls together lead to:",["Lower wages and higher profits","Commitment to service quality and job satisfaction","More standardized procedures","Less need for training"],1,"They promote ethical behavior, which leads to commitment to service quality and job satisfaction."],
+ [7,"When customers bus their own table at a fast-food restaurant, they are acting as:",["Contact personnel","Partial employees following a script","Economizing customers","Service failures"],1,"In coproduction the customer is a partial employee following a script set by norms or service design."],
+ [7,"Why did Windows gain acceptance so easily, according to the chapter?",["It was the cheapest option","All applications share one interface, so only one script must be learned","It needed no training at all","It replaced human support"],1,"New roles are easier to learn when they are a logical extension of past behavior."],
+ [7,"What is the main benefit of both parties following a known script?",["It eliminates the need for staff","Each can predict the other's behavior, giving both a sense of control","It raises prices","It makes every encounter customized"],1,"Scripts make behavior predictable, which gives both parties perceived control."],
+ [8,"In the service profit chain, what drives employee satisfaction?",["Customer loyalty","Internal service quality","Profitability","External service value"],1,"Internal service quality (workplace design, tools, training, rewards) drives employee satisfaction."],
+ [8,"The chapter states that a 5 percent increase in customer loyalty can increase profits by:",["5 to 10 percent","10 to 20 percent","25 to 85 percent","100 percent or more"],2,"25 to 85 percent, which is why the quality of market share matters."],
+ [8,"Xerox found \"very satisfied\" customers were how many times more likely to repurchase than \"satisfied\" ones?",["Two","Four","Six","Ten"],2,"Six times. Xerox called them apostles."],
+ [8,"The branch bank study found that employees' and customers' perceptions of service quality were:",["Unrelated","Highly correlated","Negatively correlated","Correlated only in large branches"],1,"There was a high positive correlation across the 23 branches."],
+ [8,"In the Miss Manners benchmark, what does the employee receiving a complaint do to defuse it?",["Tells the customer to calm down","Takes the outraged role, apologizing and promising action","Refers the customer to a manager","Offers a refund immediately"],1,"By taking the outraged role, the employee leaves the customer the 'it's not that important' role. Tone makes it work."]
+];
+const quizEl = $("#quiz");
+let run = null;
+function setup(){
+  const best = store.get("ch4_best");
+  quizEl.innerHTML = `<div class="qz-setup">
+    <p>Questions are drawn from all eight learning objectives. You get feedback after each answer and a breakdown by objective at the end.</p>
+    <div><p class="eyebrow" style="margin-bottom:6px">Length</p><div class="seg" id="qzLen">
+      <button data-n="10" aria-pressed="true">Quick · 10 questions</button><button data-n="20" aria-pressed="false">Standard · 20</button><button data-n="${Q.length}" aria-pressed="false">Full · all ${Q.length}</button></div></div>
+    <div><p class="eyebrow" style="margin-bottom:6px">Focus</p><div class="seg" id="qzLo"><button data-lo="0" aria-pressed="true">All objectives</button>${Object.keys(LO_NAMES).map(k=>`<button data-lo="${k}" aria-pressed="false">LO${k}</button>`).join("")}</div></div>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><button class="btn" id="qzStart">Start self-test</button>${best!=null?`<span class="muted mono" style="font-size:.82rem">Your best on this device: ${best}%</span>`:""}</div>
+  </div>`;
+  let n=10, lo=0;
+  $$("#qzLen button").forEach(b=>b.addEventListener("click",()=>{ $$("#qzLen button").forEach(x=>x.setAttribute("aria-pressed",x===b)); n=+b.dataset.n; }));
+  $$("#qzLo button").forEach(b=>b.addEventListener("click",()=>{ $$("#qzLo button").forEach(x=>x.setAttribute("aria-pressed",x===b)); lo=+b.dataset.lo; }));
+  $("#qzStart").addEventListener("click",()=>{
+    let pool = Q.map((q,i)=>i).filter(i=>!lo||Q[i][0]===lo);
+    pool = shuffle(pool).slice(0, Math.min(n,pool.length));
+    run = {qs: pool.map(i=>{ const q=Q[i]; const order=shuffle(q[2].map((_,j)=>j)); return {lo:q[0], text:q[1], opts:order.map(j=>q[2][j]), ans:order.indexOf(q[3]), exp:q[4]}; }), i:0, picks:[]};
+    showQ();
+  });
+}
+function showQ(){
+  const r=run, q=r.qs[r.i], picked=r.picks[r.i];
+  quizEl.innerHTML = `<div class="qz-top"><span class="eyebrow">Question ${r.i+1} of ${r.qs.length} · LO${q.lo} ${LO_NAMES[q.lo]}</span><span class="mono muted" style="font-size:.8rem">${r.picks.filter((p,k)=>p===r.qs[k].ans).length} correct so far</span></div>
+    <div class="qz-prog"><i style="width:${(r.i)/r.qs.length*100}%"></i></div>
+    <p class="qz-q">${q.text}</p>
+    <div class="qz-opts">${q.opts.map((o,j)=>`<button data-j="${j}"><span class="k">${"ABCD"[j]}</span><span>${o}</span></button>`).join("")}</div>
+    <div id="qzExp"></div>
+    <div class="qz-nav"><button class="btn ghost" id="qzQuit">Quit</button><button class="btn" id="qzNext" ${picked==null?"disabled":""}>${r.i===r.qs.length-1?"See results":"Next question"}</button></div>`;
+  const lock = (j)=>{
+    $$(".qz-opts button").forEach(b=>{ b.disabled=true; const k=+b.dataset.j; if(k===q.ans) b.classList.add("right"); else if(k===j) b.classList.add("wrong"); });
+    const ok = j===q.ans;
+    $("#qzExp").innerHTML = `<div class="qz-exp ${ok?"ok":"no"}"><b>${ok?"Correct.":"Not quite. The answer is "+"ABCD"[q.ans]+"."}</b>${q.exp}</div>`;
+    $("#qzNext").disabled=false;
+  };
+  if(picked!=null) lock(picked);
+  $$(".qz-opts button").forEach(b=>b.addEventListener("click",()=>{ const j=+b.dataset.j; r.picks[r.i]=j; lock(j); $("#qzNext").focus(); }));
+  $("#qzNext").addEventListener("click",()=>{ if(r.i<r.qs.length-1){ r.i++; showQ(); } else results(); });
+  $("#qzQuit").addEventListener("click",setup);
+}
+function results(){
+  const r=run; const right=r.qs.filter((q,k)=>r.picks[k]===q.ans).length; const pct=Math.round(right/r.qs.length*100);
+  const best=store.get("ch4_best"); if(best==null||pct>best) store.set("ch4_best",pct);
+  const by={}; r.qs.forEach((q,k)=>{ by[q.lo]=by[q.lo]||{r:0,t:0}; by[q.lo].t++; if(r.picks[k]===q.ans) by[q.lo].r++; });
+  const verdict = pct>=85?"Strong grasp of the chapter.":pct>=65?"Good foundation. Review the objectives below 70%.":"Revisit the units for the weaker objectives, then try again.";
+  const unitFor = {1:"technology",2:"triad",3:"organization",4:"personnel",5:"customer",6:"personnel",7:"customer",8:"profitchain"};
+  quizEl.innerHTML = `<div class="res-big"><span class="pct" style="color:${pct>=65?"var(--good)":"var(--bad)"}">${pct}%</span><span>${right} of ${r.qs.length} correct. ${verdict}</span></div>
+    <div><p class="eyebrow" style="margin-bottom:8px">By learning objective</p><div class="lo-bars">${Object.keys(by).sort().map(k=>{const v=by[k],p=Math.round(v.r/v.t*100);return `<div class="lo-row"><span><b class="mono">LO${k}</b> ${LO_NAMES[k]}${p<70?` · <a href="#${unitFor[k]}" style="color:var(--accent)">review</a>`:""}</span><span class="b"><i style="width:${p}%;background:${p>=70?"var(--good)":"var(--bad)"}"></i></span><span class="v">${v.r}/${v.t}</span></div>`;}).join("")}</div></div>
+    <div><p class="eyebrow" style="margin-bottom:8px">Review your answers</p><div class="review">${r.qs.map((q,k)=>{const ok=r.picks[k]===q.ans;return `<details ${ok?"":"open"}><summary><span class="mk ${ok?"ok":"no"}">${ok?"✓":"✗"}</span>${q.text}</summary><p><b>Your answer:</b> ${q.opts[r.picks[k]]}${ok?"":`<br><b>Correct:</b> ${q.opts[q.ans]}`}</p><p class="muted">${q.exp}</p></details>`;}).join("")}</div></div>
+    <div class="qz-nav"><button class="btn ghost" id="qzNew">Change settings</button><button class="btn" id="qzAgain">Retake with new questions</button></div>`;
+  $("#qzNew").addEventListener("click",setup);
+  $("#qzAgain").addEventListener("click",()=>{ setup(); $("#qzStart").click(); });
+  quizEl.scrollIntoView({block:"start"});
+}
+setup();
+
+/* ---------- Progress & nav ---------- */
+const units = $$("[data-unit]").map(s=>s.id);
+const seen = new Set(store.get("ch4_seen")||[]);
+function refreshProgress(){
+  const n = units.filter(u=>seen.has(u)).length;
+  $("#meterTxt").textContent = `${n} / ${units.length} units`;
+  $("#meterBar").style.width = (n/units.length*100)+"%";
+  $$("#tocList a").forEach(a=>a.classList.toggle("seen", seen.has(a.getAttribute("href").slice(1))));
+  store.set("ch4_seen",[...seen]);
+}
+if("IntersectionObserver" in window){
+  const io = new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ const id=e.target.id; $$("#tocList a").forEach(a=>a.classList.toggle("here", a.getAttribute("href")==="#"+id)); } }); },{rootMargin:"-40% 0px -55% 0px"});
+  $$("section.unit").forEach(s=>io.observe(s));
+  const done = new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ seen.add(e.target.id); refreshProgress(); done.unobserve(e.target);} }); },{threshold:0});
+  $$("[data-unit]").forEach(s=>{ const end=document.createElement("span"); end.id=""; end.style.cssText="display:block;height:1px"; s.appendChild(end); end.dataset.for=s.id; });
+  const endObs = new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ seen.add(e.target.dataset.for); refreshProgress(); endObs.unobserve(e.target);} }); });
+  $$("[data-for]").forEach(el=>endObs.observe(el));
+}
+refreshProgress();
+})();
+</script>
+
+</body>
+</html>
