@@ -352,10 +352,13 @@ button.fbox[aria-pressed="true"]{border-color:var(--accent);background:var(--acc
 .meter{flex:none}
 #meterTxt{white-space:nowrap}
 @media (max-width:520px){#meterTxt{display:none}}
+.home{font-family:var(--f-mono);font-size:.78rem;text-decoration:none;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:3px 8px;white-space:nowrap;flex:none}
+.home:hover{color:var(--ink);border-color:var(--ink)}
 </style>
 </head>
 <body>
 <header class="top"><div class="top-in">
+  <a class="home" href="../" aria-label="All chapters">← Course</a>
   <div class="brand"><span class="ch">CH 5</span><b>Supporting Facility &amp; Process Flows</b></div>
   <div class="meter" aria-label="Study progress"><span id="meterTxt">0 / 7 units</span><span class="bar"><i id="meterBar"></i></span></div>
 </div></header>

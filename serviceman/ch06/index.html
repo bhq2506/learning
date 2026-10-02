@@ -441,10 +441,13 @@ button.fbox[aria-pressed="true"]{border-color:var(--accent);background:var(--acc
 .inline-inputs{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:.9rem}
 .inline-inputs input,.inline-inputs select{font:inherit;font-family:var(--f-mono);font-size:.88rem;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:110px}
 .tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-family:var(--f-mono);font-size:.76rem;padding:6px 9px;border-radius:6px;z-index:50;white-space:nowrap}
+.home{font-family:var(--f-mono);font-size:.78rem;text-decoration:none;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:3px 8px;white-space:nowrap;flex:none}
+.home:hover{color:var(--ink);border-color:var(--ink)}
 </style>
 </head>
 <body>
 <header class="top"><div class="top-in">
+  <a class="home" href="../" aria-label="All chapters">← Course</a>
   <div class="brand"><span class="ch">CH 6</span><b>Service Quality</b></div>
   <div class="meter" aria-label="Study progress"><span id="meterTxt">0 / 9 units</span><span class="bar"><i id="meterBar"></i></span></div>
 </div></header>

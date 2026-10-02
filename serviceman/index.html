@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Service Management · ITS</title>
+<meta name="description" content="Interactive chapter sites, labs and self-tests for the Service Management course at Institut Teknologi Sepuluh Nopember.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: ITS-blue hero band with the course name and a "continue" panel, then the 16-chapter map grouped by the textbook's four parts. Live chapters are full cards; upcoming ones are quiet rows. */
+:root{
+  --its-blue:#013880;      /* ITS primary (Congress Blue) */
+  --its-sky:#0078C1;       /* ITS logo blue */
+  --its-light:#82C1E2;     /* ITS light blue */
+  --its-yellow:#FFF000;    /* ITS logo yellow */
+  --its-gold:#E6BB5F;      /* ITS gold */
+  --bg:#F3F6FA; --surface:#FFFFFF; --sunk:#E7EDF5; --ink:#0D1B33; --muted:#52607A; --line:#D3DCE8;
+  --link:#0B5FA5; --hero-ink:#FFFFFF; --hero-muted:#BFD6EE; --good:#1B7F53; --good-soft:#DDF3E8;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#08142A; --surface:#0F1F3D; --sunk:#16294C; --ink:#E6ECF5; --muted:#9FB0C9; --line:#23385F;
+  --link:#82C1E2; --good:#4FC48C; --good-soft:#12342A; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#08142A; --surface:#0F1F3D; --sunk:#16294C; --ink:#E6ECF5; --muted:#9FB0C9; --line:#23385F;
+  --link:#82C1E2; --good:#4FC48C; --good-soft:#12342A; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6}
+h1,h2,h3{font-family:var(--f-display);line-height:1.12;margin:0;text-wrap:balance}
+p{margin:0}
+a{color:var(--link)}
+:focus-visible{outline:3px solid var(--its-yellow);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:20px}
+.eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.09em;text-transform:uppercase}
+
+/* Hero */
+.hero{background:var(--its-blue);color:var(--hero-ink);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, var(--its-sky) 0, transparent 65%);opacity:.55;pointer-events:none}
+.hero .stripe{height:6px;background:linear-gradient(90deg,var(--its-yellow) 0 22%, var(--its-gold) 22% 30%, var(--its-sky) 30% 100%)}
+.hero-in{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:40px;padding-block:44px 52px;align-items:end}
+.inst{display:flex;align-items:center;gap:12px;font-family:var(--f-mono);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--hero-muted)}
+.inst .mark{width:34px;height:34px;border-radius:8px;background:var(--its-yellow);color:var(--its-blue);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:.95rem;letter-spacing:0}
+.hero h1{font-size:clamp(2.4rem,6vw,4.2rem);font-weight:800;letter-spacing:-.02em;margin-top:18px}
+.hero h1 span{color:var(--its-yellow)}
+.hero .sub{margin-top:14px;font-size:1.08rem;max-width:54ch;color:var(--hero-muted)}
+.hero .book{margin-top:18px;font-size:.88rem;color:var(--hero-muted);max-width:60ch}
+.hero .book b{color:var(--hero-ink);font-weight:600}
+.cont{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.cont .eyebrow{color:var(--its-light)}
+.cont-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;text-decoration:none;color:var(--hero-ink);padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.06)}
+.cont-row:hover{background:rgba(255,255,255,.12)}
+.cont-row .n{font-family:var(--f-display);font-weight:800;font-size:1.3rem;color:var(--its-yellow);width:2ch}
+.cont-row .t{font-weight:600;line-height:1.3}
+.cont-row .t small{display:block;font-weight:400;font-size:.8rem;color:var(--hero-muted)}
+.cont-row .pct{font-family:var(--f-mono);font-size:.8rem;color:var(--hero-muted);text-align:right}
+.bar{height:5px;border-radius:99px;background:rgba(255,255,255,.15);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--its-yellow)}
+.cont .note{font-size:.78rem;color:var(--hero-muted)}
+@media (max-width:820px){.hero-in{grid-template-columns:minmax(0,1fr);gap:28px;padding-block:32px 36px}}
+
+/* How it works */
+.how{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:-26px;position:relative;z-index:2;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.how div{padding:16px 18px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+.how div:first-child{border-left:0}
+.how .k{font-family:var(--f-mono);font-size:.72rem;color:var(--its-sky)}
+.how b{font-family:var(--f-display);font-size:1.02rem}
+.how p{font-size:.86rem;color:var(--muted)}
+@media (max-width:820px){.how{grid-template-columns:repeat(2,minmax(0,1fr))}.how div:nth-child(3){border-left:0}.how div:nth-child(n+3){border-top:1px solid var(--line)}}
+@media (max-width:440px){.how{grid-template-columns:minmax(0,1fr)}.how div{border-left:0;border-top:1px solid var(--line)}.how div:first-child{border-top:0}}
+
+/* Chapter map */
+main{padding-block:44px 64px;display:flex;flex-direction:column;gap:44px}
+.part{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px}
+.part-h{position:sticky;top:16px;align-self:start;display:flex;flex-direction:column;gap:6px}
+.part-h .eyebrow{color:var(--its-sky)}
+.part-h h2{font-size:1.35rem}
+.part-h p{font-size:.86rem;color:var(--muted)}
+@media (max-width:820px){.part{grid-template-columns:minmax(0,1fr);gap:14px}.part-h{position:static}}
+.list{display:flex;flex-direction:column;gap:10px;min-width:0}
+.ch{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:18px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-decoration:none;color:inherit;position:relative;transition:border-color .15s, transform .15s}
+.ch.live{border-left:6px solid var(--its-blue)}
+:root[data-theme="dark"] .ch.live{border-left-color:var(--its-sky)}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .ch.live{border-left-color:var(--its-sky)} }
+.ch.live:hover{border-color:var(--its-sky);transform:translateY(-1px)}
+.ch .num{font-family:var(--f-display);font-weight:800;font-size:2.4rem;line-height:1;color:var(--its-blue)}
+:root[data-theme="dark"] .ch .num{color:var(--its-light)}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .ch .num{color:var(--its-light)} }
+.ch h3{font-size:1.25rem}
+.ch .desc{font-size:.92rem;color:var(--muted);margin-top:4px;max-width:62ch}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.tag{font-family:var(--f-mono);font-size:.72rem;padding:2px 9px;border-radius:99px;background:var(--sunk);color:var(--ink)}
+.tag.lab{background:var(--its-yellow);color:var(--its-blue);font-weight:500}
+.side{display:flex;flex-direction:column;align-items:flex-end;gap:6px;min-width:120px}
+.go{font-weight:600;color:var(--link);white-space:nowrap}
+.prog{font-family:var(--f-mono);font-size:.74rem;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.prog.done{color:var(--good)}
+.mini{width:120px;height:5px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.mini i{display:block;height:100%;background:var(--its-sky)}
+@media (max-width:620px){.ch{grid-template-columns:44px minmax(0,1fr);gap:12px;padding:16px}.ch .num{font-size:1.8rem}.side{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:space-between;min-width:0}}
+.ch.soon{grid-template-columns:64px minmax(0,1fr) auto;background:transparent;border-style:dashed;padding:12px 20px}
+.ch.soon .num{font-size:1.5rem;color:var(--muted)}
+.ch.soon h3{font-size:1rem;font-weight:600;color:var(--muted)}
+.ch.soon .side{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+@media (max-width:620px){.ch.soon{grid-template-columns:44px minmax(0,1fr) auto}.ch.soon .side{grid-column:auto}}
+
+footer{border-top:1px solid var(--line);padding-block:24px 40px;font-size:.84rem;color:var(--muted)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="stripe"></div>
+  <div class="wrap hero-in">
+    <div>
+      <div class="inst"><span class="mark">ITS</span>Institut Teknologi Sepuluh Nopember · Surabaya</div>
+      <h1>Service <span>Management</span></h1>
+      <p class="sub">Interactive chapter sites for the course. Study each chapter, practice with instant feedback, try the hands-on labs, then check yourself with a scored self-test.</p>
+      <p class="book">Textbook: <b>Bordoloi, Fitzsimmons &amp; Fitzsimmons, <i>Service Management: Operations, Strategy, Information Technology</i></b> (McGraw Hill, 2022). These sites support the reading; they don't replace it.</p>
+    </div>
+    <div class="cont" aria-label="Your progress">
+      <p class="eyebrow">Your progress on this device</p>
+      <div id="contList"></div>
+      <p class="note">Progress and best scores are saved only in this browser. Nothing is sent to your lecturer.</p>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="how" aria-label="How each chapter site works">
+    <div><span class="k">01</span><b>Study</b><p>Short units mapped to the chapter's learning objectives.</p></div>
+    <div><span class="k">02</span><b>Practice</b><p>Classify real scenarios and get feedback on every answer.</p></div>
+    <div><span class="k">03</span><b>Labs</b><p>Change the numbers and watch metrics, charts and layouts respond.</p></div>
+    <div><span class="k">04</span><b>Self-test</b><p>Random questions, shuffled options, results by objective.</p></div>
+  </div>
+</div>
+
+<main class="wrap" id="map"></main>
+
+<footer><div class="wrap">
+  <span>Service Management · Institut Teknologi Sepuluh Nopember</span>
+  <span>New chapters are added as the course progresses.</span>
+</div></footer>
+
+<script>
+(function(){
+const PARTS = [
+  {name:"Understanding Services", blurb:"The role of services in the economy and how service firms compete.", chapters:[[1,"The Service Economy"],[2,"Service Strategy"]]},
+  {name:"Designing the Service Enterprise", blurb:"Designing the service, the encounter, the facility and its quality.", chapters:[[3,"New Service Development"],[4,"The Service Encounter"],[5,"Supporting Facility and Process Flows"],[6,"Service Quality"],[7,"Process Improvement"],[8,"Service Facility Location"]]},
+  {name:"Managing Service Operations", blurb:"Supply relationships, globalization, capacity, demand and queues.", chapters:[[9,"Service Supply Relationships"],[10,"Globalization of Services"],[11,"Managing Capacity and Demand"],[12,"Managing Waiting Lines"],[13,"Capacity Planning and Queuing Models"]]},
+  {name:"Quantitative Models", blurb:"Forecasting, inventory and project management for services.", chapters:[[14,"Forecasting Demand for Services"],[15,"Managing Service Inventory"],[16,"Managing Service Projects"]]}
+];
+const LIVE = {
+  4:{href:"ch04/", desc:"Moments of truth, the service encounter triad, empowerment and control systems, selecting and training contact staff, customer types, and the service profit chain.", units:8, qs:39, tags:["8 objectives","4 practice sets","Flashcards"], labs:["Profit chain stepper"], key:"ch4"},
+  5:{href:"ch05/", desc:"Servicescapes, facility design, process flow analysis and metrics, line balancing, and relative-location layout.", units:7, qs:35, tags:["7 objectives","3 practice sets","Flashcards"], labs:["Process metrics lab","Line balancing lab","Layout lab"], key:"ch5"},
+  6:{href:"ch06/", desc:"RATER dimensions, the gap model, SERVQUAL, poka-yoke, house of quality, control charts, service guarantees and recovery.", units:9, qs:46, tags:["8 objectives","6 practice sets","Flashcards"], labs:["SERVQUAL","House of quality","Control charts","Complaint iceberg"], key:"ch6"}
+};
+const get = k => { try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } };
+function prog(c){
+  const L = LIVE[c]; const seen = (get(L.key+"_seen")||[]).length; const best = get(L.key+"_best");
+  return {seen:Math.min(seen,L.units), units:L.units, best};
+}
+const pad = n => String(n).padStart(2,"0");
+
+// chapter map
+document.getElementById("map").innerHTML = PARTS.map((p,i)=>`
+  <section class="part" aria-labelledby="p${i}">
+    <div class="part-h"><span class="eyebrow">Part ${["One","Two","Three","Four"][i]}</span><h2 id="p${i}">${p.name}</h2><p>${p.blurb}</p></div>
+    <div class="list">${p.chapters.map(([n,t])=>{
+      const L = LIVE[n];
+      if(!L) return `<div class="ch soon"><span class="num">${pad(n)}</span><h3>${t}</h3><span class="side">Coming soon</span></div>`;
+      const g = prog(n);
+      const status = g.best!=null ? `Best self-test ${g.best}%` : g.seen ? `${g.seen} of ${g.units} units studied` : "Not started";
+      return `<a class="ch live" href="${L.href}">
+        <span class="num">${pad(n)}</span>
+        <div><h3>${t}</h3><p class="desc">${L.desc}</p>
+          <div class="tags">${L.labs.map(x=>`<span class="tag lab">${x}</span>`).join("")}${L.tags.map(x=>`<span class="tag">${x}</span>`).join("")}<span class="tag">${L.qs}-question self-test</span></div></div>
+        <div class="side"><span class="go">Open chapter →</span><span class="mini" aria-hidden="true"><i style="width:${g.seen/g.units*100}%"></i></span><span class="prog ${g.best!=null&&g.best>=80?"done":""}">${status}</span></div>
+      </a>`;
+    }).join("")}</div>
+  </section>`).join("");
+
+// continue panel
+document.getElementById("contList").innerHTML = Object.keys(LIVE).map(n=>{
+  const L=LIVE[n], g=prog(+n);
+  const t = PARTS.flatMap(p=>p.chapters).find(c=>c[0]===+n)[1];
+  return `<a class="cont-row" href="${L.href}"><span class="n">${n}</span><span class="t">${t}<small>${g.seen} of ${g.units} units${g.best!=null?` · best ${g.best}%`:""}</small><span class="bar"><i style="width:${g.seen/g.units*100}%"></i></span></span><span class="pct">→</span></a>`;
+}).join("");
+})();
+</script>
+</body>
+</html>
