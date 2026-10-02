@@ -1,0 +1,1402 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Service Quality</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky chapter rail on the left (chip bar on phones) + one reading column of study units, each with a hands-on lab, ending in flashcards and a scored self-test. */
+:root{
+  --bg:#F2F4F8; --surface:#FFFFFF; --sunk:#E9EDF4; --ink:#15203A; --muted:#566079; --line:#D6DCE7;
+  --accent:#2B57C9; --accent-ink:#FFFFFF; --accent-soft:#E2E9FA;
+  --gold:#B57A00; --gold-soft:#FAF0D4;
+  --good:#1B7F53; --good-soft:#DDF3E8; --bad:#B73A33; --bad-soft:#F9E1DF;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0E1420; --surface:#161F31; --sunk:#1C2740; --ink:#E5E9F2; --muted:#9BA6BC; --line:#2A3551;
+  --accent:#7E9EF3; --accent-ink:#0E1420; --accent-soft:#1F2C50;
+  --gold:#E6B54B; --gold-soft:#3A2E10;
+  --good:#4FC48C; --good-soft:#12342A; --bad:#F07C72; --bad-soft:#3C1B19; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0E1420; --surface:#161F31; --sunk:#1C2740; --ink:#E5E9F2; --muted:#9BA6BC; --line:#2A3551;
+  --accent:#7E9EF3; --accent-ink:#0E1420; --accent-soft:#1F2C50;
+  --gold:#E6B54B; --gold-soft:#3A2E10;
+  --good:#4FC48C; --good-soft:#12342A; --bad:#F07C72; --bad-soft:#3C1B19; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6}
+h1,h2,h3,h4{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+h2{font-size:clamp(1.6rem,3.2vw,2.1rem);font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.2rem;font-weight:700;margin-top:.4rem}
+p{margin:0}
+.mono{font-family:var(--f-mono)}
+.eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+/* Top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1180px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px;min-width:0}
+.brand .ch{font-family:var(--f-mono);font-size:.8rem;background:var(--ink);color:var(--bg);padding:2px 8px;border-radius:4px}
+.brand b{font-family:var(--f-display);font-size:1.05rem}
+.meter{margin-left:auto;display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+.meter .bar{width:140px;height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.meter .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .4s}
+
+/* Shell */
+.shell{max-width:1180px;margin:0 auto;padding-inline:16px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:40px}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);align-self:start;padding-block:28px}
+.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.toc a{display:flex;gap:10px;align-items:center;padding:7px 10px;border-radius:8px;color:var(--muted);text-decoration:none;font-size:.92rem;line-height:1.3}
+.toc a .n{font-family:var(--f-mono);font-size:.74rem;width:1.6em;flex:none}
+.toc a .dot{margin-left:auto;width:8px;height:8px;border-radius:50%;border:1.5px solid var(--line);flex:none}
+.toc a.seen .dot{background:var(--accent);border-color:var(--accent)}
+.toc a.here{background:var(--surface);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.toc .lo-note{margin-top:18px;font-size:.8rem;color:var(--muted)}
+main{padding-block:28px 80px;min-width:0}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:0}
+  .top-in{flex-wrap:nowrap}
+  .brand b{font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .toc{position:static;background:var(--bg);padding-block:8px;border-bottom:1px solid var(--line);margin-inline:-16px;padding-inline:16px}
+  .toc ol{flex-direction:row;overflow-x:auto;gap:6px;scrollbar-width:none}
+  .toc a{white-space:nowrap;background:var(--surface);box-shadow:0 0 0 1px var(--line);padding:6px 10px}
+  .toc a .dot{display:none}
+  .toc .lo-note{display:none}
+  .meter .bar{width:80px}
+}
+
+/* Sections */
+section.unit{padding-block:36px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:18px;scroll-margin-top:80px}
+section.unit:first-child{padding-top:8px}
+.unit-head{display:flex;flex-direction:column;gap:8px}
+.lo-tags{display:flex;gap:6px;flex-wrap:wrap}
+.lo{font-family:var(--f-mono);font-size:.72rem;padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:500}
+.lead{font-size:1.08rem;max-width:66ch;color:var(--ink)}
+.prose{max-width:68ch;display:flex;flex-direction:column;gap:12px}
+.prose p{color:var(--ink)}
+.muted{color:var(--muted)}
+.callout{background:var(--gold-soft);border-radius:var(--r);padding:14px 16px;max-width:70ch}
+.callout .eyebrow{color:var(--gold)}
+.fig{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+
+/* Hero */
+.hero{padding-block:8px 34px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px;align-items:center}
+.hero h1{font-size:clamp(2.2rem,5.5vw,3.6rem);font-weight:800;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .sub{margin-top:14px;font-size:1.08rem;max-width:56ch;color:var(--muted)}
+.hero .cta{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:8px;padding:10px 16px;font-weight:600;background:var(--accent);color:var(--accent-ink);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn.ghost{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.journey{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.journey ol{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column}
+.journey li{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-top:1px dashed var(--line);font-size:.92rem}
+.journey li:first-child{border-top:0}
+.journey .pip{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);justify-self:center}
+.journey .md{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+@media (max-width:760px){.hero{grid-template-columns:minmax(0,1fr)}}
+
+.objectives{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.objectives li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:flex;gap:12px;font-size:.94rem}
+.objectives .num{font-family:var(--f-mono);color:var(--accent);font-weight:500;flex:none}
+.objectives{padding:0;margin:0}
+@media (max-width:640px){.objectives{grid-template-columns:minmax(0,1fr)}}
+
+/* Generic panels */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.grid3,.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.grid2,.grid3,.grid4{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card h4{font-size:1rem}
+.card p{font-size:.93rem}
+.card .tag{font-family:var(--f-mono);font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+/* Tabs / segmented */
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;font-size:.9rem;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* Tech modes */
+.modes{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:18px;align-items:start}
+.mode-list{display:flex;flex-direction:column;gap:6px}
+.mode-list button{display:flex;gap:12px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px}
+.mode-list button .L{font-family:var(--f-display);font-weight:800;font-size:1.3rem;width:28px;color:var(--accent)}
+.mode-list button small{display:block;color:var(--muted);font-size:.78rem}
+.mode-list button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.mode-view{display:flex;flex-direction:column;gap:12px}
+.mode-view svg{width:100%;max-width:420px;height:auto}
+.mode-view .ex{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:.8rem;padding:3px 9px;border-radius:99px;background:var(--sunk);color:var(--ink)}
+@media (max-width:700px){.modes{grid-template-columns:minmax(0,1fr)}}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-weight:500;font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--sunk)}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+.ctrl th.hl, .ctrl td.hl{background:var(--accent-soft)}
+
+/* Activity */
+.activity{background:var(--surface);border:1.5px dashed var(--accent);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.activity-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.activity-head .eyebrow{color:var(--accent)}
+.activity-head .score{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.items{display:flex;flex-direction:column;gap:10px}
+.item{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+.item .q{font-size:.95rem}
+.item .opts{display:flex;flex-wrap:wrap;gap:6px}
+.item .opts button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 10px;font-size:.84rem}
+.item .opts button:hover:not(:disabled){border-color:var(--accent)}
+.item .opts button.right{background:var(--good-soft);border-color:var(--good);color:var(--good);font-weight:600}
+.item .opts button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.item .fb{font-size:.86rem;color:var(--muted)}
+.item.done-ok{border-color:var(--good)}
+.item.done-bad{border-color:var(--bad)}
+
+/* Triad */
+.triad{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:center}
+.triad svg{width:100%;max-width:440px;height:auto;justify-self:center}
+.triad .node{cursor:pointer}
+.triad .node rect{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.triad .node.on rect{stroke:var(--accent);stroke-width:2.5;fill:var(--accent-soft)}
+.triad .node text{fill:var(--ink);font-family:var(--f-display);font-weight:700;font-size:15px}
+.triad .edge line{stroke:var(--muted);stroke-width:2}
+.triad .edge.on line{stroke:var(--accent);stroke-width:3.5}
+.triad .edge text{fill:var(--muted);font-family:var(--f-mono);font-size:12px}
+.triad .edge.on text{fill:var(--accent);font-weight:500}
+.triad .edge{cursor:pointer}
+.triad .hit{stroke:transparent;stroke-width:22}
+@media (max-width:760px){.triad{grid-template-columns:minmax(0,1fr)}}
+
+/* Chain */
+.chain{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.chain button{flex:1 1 120px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;text-align:left;font-size:.86rem;line-height:1.3;position:relative;min-width:0}
+.chain button .s{font-family:var(--f-mono);font-size:.7rem;color:var(--muted);display:block;margin-bottom:4px}
+.chain button.zone-in{border-top:4px solid var(--gold)}
+.chain button.zone-out{border-top:4px solid var(--accent)}
+.chain button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chain button[aria-pressed="true"] .s{color:var(--bg)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:4px;vertical-align:middle;margin-right:6px}
+
+/* Flashcards */
+.fc-wrap{display:flex;flex-direction:column;gap:12px;align-items:center}
+.fc{width:min(100%,560px);aspect-ratio:16/9;max-width:100%;perspective:1200px;border:0;background:none;padding:0}
+.fc-in{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.fc.flip .fc-in{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:22px;text-align:center;border:1px solid var(--line)}
+.fc-front{background:var(--surface)}
+.fc-front b{font-family:var(--f-display);font-size:clamp(1.4rem,4vw,2rem)}
+.fc-back{background:var(--ink);color:var(--bg);transform:rotateY(180deg);font-size:1rem}
+.fc-face small{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;opacity:.7;position:absolute;top:14px;left:16px}
+.fc-ctrl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+.fc-ctrl .count{font-family:var(--f-mono);font-size:.82rem;color:var(--muted);min-width:60px;text-align:center}
+
+/* Quiz */
+.quiz{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.qz-setup{display:flex;flex-direction:column;gap:14px}
+.qz-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.qz-prog{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.qz-prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.qz-q{font-family:var(--f-display);font-size:1.25rem;font-weight:700}
+.qz-opts{display:flex;flex-direction:column;gap:8px}
+.qz-opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.qz-opts button .k{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);flex:none;padding-top:2px}
+.qz-opts button:hover:not(:disabled){border-color:var(--accent)}
+.qz-opts button.right{border-color:var(--good);background:var(--good-soft)}
+.qz-opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.qz-exp{border-radius:10px;padding:12px 14px;font-size:.93rem}
+.qz-exp.ok{background:var(--good-soft)}
+.qz-exp.no{background:var(--bad-soft)}
+.qz-exp b{display:block;margin-bottom:2px}
+.qz-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.res-big{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.res-big .pct{font-family:var(--f-display);font-weight:800;font-size:3.4rem;line-height:1}
+.lo-bars{display:flex;flex-direction:column;gap:8px}
+.lo-row{display:grid;grid-template-columns:minmax(0,1fr) 120px 48px;gap:10px;align-items:center;font-size:.86rem}
+.lo-row .b{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.lo-row .b i{display:block;height:100%}
+.lo-row .v{font-family:var(--f-mono);font-size:.78rem;text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:520px){.lo-row{grid-template-columns:minmax(0,1fr) 70px 42px}}
+.review{display:flex;flex-direction:column;gap:8px}
+.review details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.review summary{cursor:pointer;font-size:.92rem}
+.review .mk{font-family:var(--f-mono);font-weight:600;margin-right:6px}
+.review .mk.ok{color:var(--good)} .review .mk.no{color:var(--bad)}
+.review p{font-size:.88rem;margin-top:6px}
+
+.case{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px}
+@media (max-width:760px){.case{grid-template-columns:minmax(0,1fr)}}
+.case ol, .prose ol, .prose ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.dialog{display:flex;flex-direction:column;gap:8px}
+.line{padding:10px 12px;border-radius:10px;font-size:.92rem;max-width:88%}
+.line.c{background:var(--sunk);align-self:flex-start}
+.line.e{background:var(--accent-soft);align-self:flex-end}
+.line b{font-family:var(--f-mono);font-size:.7rem;display:block;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+footer{padding-block:24px;font-size:.8rem;color:var(--muted)}
+
+/* Chapter 5 additions */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.vs b{font-family:var(--f-display)}
+.vs ul{margin:6px 0 0;padding-left:1.1em;font-size:.88rem;display:flex;flex-direction:column;gap:2px}
+.grid5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.grid5{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:460px){.grid5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.sym{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
+.sym svg{width:90px;height:50px}
+.sym svg ellipse,.sym svg rect,.sym svg polygon{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.sym svg line{stroke:var(--accent);stroke-width:2.5}
+.sym svg polygon.fillink{fill:var(--accent);stroke:none}
+.sym b{font-size:.92rem}
+.sym span{font-size:.78rem;color:var(--muted)}
+.typo tbody tr{cursor:pointer}
+.typo tbody tr:hover td{background:var(--sunk)}
+.typo tbody tr.on td{background:var(--accent-soft)}
+.frame{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+.fcol{flex:1 1 150px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.farrow{align-self:center;font-size:1.4rem;color:var(--muted)}
+.fbox{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;font-weight:600;font-size:.9rem;text-align:left}
+button.fbox:hover{border-color:var(--accent)}
+button.fbox[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.fbox.static{background:var(--sunk)}
+.fbox.small{font-size:.84rem}
+.fbox span{font-weight:400;font-size:.78rem;color:var(--muted)}
+.fbox.good{border-color:var(--good);background:var(--good-soft)}
+.fbox.bad{border-color:var(--bad);background:var(--bad-soft)}
+@media (max-width:760px){.farrow{transform:rotate(90deg);align-self:flex-start}.fcol{flex-basis:100%}}
+
+.pfd{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px}
+.pfd svg{min-width:680px;width:100%;height:auto;display:block}
+.pfd text{font-family:var(--f-body);fill:var(--ink)}
+.pfd .ct{font-family:var(--f-mono);font-size:12px;fill:var(--muted)}
+.pfd .box{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.pfd .box.bn{fill:var(--bad-soft);stroke:var(--bad);stroke-width:2.5}
+.pfd .term{fill:var(--sunk);stroke:var(--muted);stroke-width:1.5}
+.pfd .wait{fill:var(--gold-soft);stroke:var(--gold);stroke-width:1.5}
+.pfd .ln{stroke:var(--muted);stroke-width:1.6;fill:none}
+.pfd .ln.crit{stroke:var(--ink);stroke-width:2.6}
+.pfd .ah{fill:var(--muted)}
+
+.lab{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:16px;align-items:start}
+@media (max-width:820px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab-in,.lab-out{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.inrow{display:grid;grid-template-columns:minmax(0,1fr) 80px 60px;gap:8px;align-items:center;font-size:.92rem}
+.inrow input,.inrow select,.lb-row select{font:inherit;font-family:var(--f-mono);font-size:.9rem;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
+.check{display:flex;gap:8px;align-items:center;font-size:.9rem}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi .l{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.kpi .v{font-family:var(--f-display);font-weight:700;font-size:1.35rem;font-variant-numeric:tabular-nums}
+.kpi .w{font-size:.78rem;color:var(--muted);font-family:var(--f-mono)}
+.kpi.bn{border-color:var(--bad);background:var(--bad-soft)}
+.gantt-wrap{overflow-x:auto}
+.gantt-wrap svg{min-width:640px;width:100%;height:auto;display:block}
+.gantt-wrap text{font-family:var(--f-mono);font-size:11px;fill:var(--muted)}
+.gantt-wrap .lbl{font-family:var(--f-body);font-size:12px;fill:var(--ink)}
+.gantt-wrap .grid{stroke:var(--line);stroke-width:1}
+.gantt-wrap .bar-t{font-family:var(--f-mono);font-size:11px;fill:var(--accent-ink);font-weight:500}
+
+.lb-row{display:grid;grid-template-columns:28px minmax(0,1fr) 52px 104px;gap:8px;align-items:center;font-size:.88rem;padding:6px 0;border-top:1px dashed var(--line)}
+.lb-row:first-child{border-top:0}
+.lb-row .t{font-family:var(--f-mono);text-align:right;color:var(--muted)}
+.lb-row .id{font-family:var(--f-mono);font-weight:500;color:var(--accent)}
+.job{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.job + .job{margin-top:8px}
+.job.bn{border-color:var(--bad);background:var(--bad-soft)}
+.job .nm{font-weight:600;font-size:.92rem}
+.job .meta{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);grid-column:1/-1}
+.step{display:inline-flex;align-items:center;gap:6px}
+.step button{width:28px;height:28px;border-radius:7px;border:1px solid var(--line);background:var(--surface);font-weight:600}
+.step span{font-family:var(--f-mono);min-width:1.5em;text-align:center}
+.ratebar{grid-column:1/-1;height:6px;background:var(--sunk);border-radius:99px;position:relative;overflow:visible}
+.ratebar i{display:block;height:100%;border-radius:99px;background:var(--accent)}
+.ratebar b{position:absolute;top:-4px;width:2px;height:14px;background:var(--ink)}
+.verdict{border-radius:10px;padding:12px 14px;font-size:.92rem;margin-top:10px}
+.verdict.ok{background:var(--good-soft)}
+.verdict.no{background:var(--gold-soft)}
+.grid-lay{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-width:360px}
+.grid-lay button{aspect-ratio:1/1;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px}
+.grid-lay button b{font-family:var(--f-display);font-size:1.6rem;line-height:1}
+.grid-lay button span{font-size:.7rem;color:var(--muted);text-align:center;line-height:1.2}
+.grid-lay button.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px var(--accent-soft)}
+.mx td,.mx th{text-align:center;font-family:var(--f-mono);font-variant-numeric:tabular-nums;padding:6px 8px}
+.mx td:first-child,.mx th:first-child{text-align:left}
+.mx td.far{background:var(--bad-soft);color:var(--bad);font-weight:600}
+.mx td.near{color:var(--good)}
+.pairs{font-family:var(--f-mono);font-size:.84rem;display:flex;flex-direction:column;gap:3px}
+.bigscore{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.bigscore .n{font-family:var(--f-display);font-weight:800;font-size:2.6rem;line-height:1;font-variant-numeric:tabular-nums}
+.formula td:last-child{font-family:var(--f-mono);font-size:.82rem}
+
+.brand{flex:1 1 auto}
+.brand .ch{white-space:nowrap;flex:none}
+.meter{flex:none}
+#meterTxt{white-space:nowrap}
+@media (max-width:520px){#meterTxt{display:none}}
+
+/* Chapter 6 additions */
+.slider-row{display:grid;grid-template-columns:110px minmax(0,1fr) 36px;gap:10px;align-items:center;font-size:.9rem}
+.slider-row input[type=range]{width:100%;accent-color:var(--accent)}
+.slider-row output{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+.meterline{position:relative;height:44px;margin-top:6px}
+.meterline .track{position:absolute;left:0;right:0;top:18px;height:8px;border-radius:99px;background:linear-gradient(90deg,var(--bad-soft),var(--sunk) 50%,var(--good-soft))}
+.meterline .pin{position:absolute;top:10px;width:3px;height:24px;background:var(--ink);border-radius:2px;transition:left .2s}
+.meterline .lab{position:absolute;top:0;font-family:var(--f-mono);font-size:.68rem;color:var(--muted);transform:translateX(-50%)}
+.verdict-big{font-family:var(--f-display);font-weight:700;font-size:1.3rem}
+
+.gapsvg{width:100%;height:auto;max-width:640px;display:block;margin:0 auto}
+.gapsvg .bx{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.gapsvg .bx.cust{fill:var(--accent-soft);stroke:var(--accent)}
+.gapsvg text{font-family:var(--f-body);fill:var(--ink);font-size:12.5px}
+.gapsvg .sep{stroke:var(--muted);stroke-dasharray:6 5;stroke-width:1.2}
+.gapsvg .sepl{font-family:var(--f-mono);font-size:10.5px;fill:var(--muted)}
+.gapsvg .ar{stroke:var(--muted);stroke-width:1.5;fill:none}
+.gapsvg .gap{cursor:pointer}
+.gapsvg .gap circle{fill:var(--gold-soft);stroke:var(--gold);stroke-width:2}
+.gapsvg .gap text{font-family:var(--f-mono);font-weight:600;font-size:12px}
+.gapsvg .gap.on circle{fill:var(--gold);stroke:var(--gold)}
+.gapsvg .gap.on text{fill:var(--bg)}
+.gapsvg .gl{stroke:var(--gold);stroke-width:2;stroke-dasharray:3 3}
+
+.sq-table{width:100%}
+.sq-row{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) minmax(0,1fr) 54px;gap:10px;align-items:center;padding:8px 0;border-top:1px dashed var(--line);font-size:.88rem}
+.sq-row:first-child{border-top:0}
+.sq-row.h{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.sq-row .dim{font-family:var(--f-mono);font-size:.68rem;color:var(--accent);display:block}
+.sq-row input[type=range]{width:100%;accent-color:var(--accent)}
+.sq-row .g{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+@media (max-width:620px){.sq-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 44px}.sq-row .st{grid-column:1/-1}.sq-row.h .st{display:none}}
+.chartbox svg{width:100%;height:auto;display:block}
+.chartbox text{font-family:var(--f-mono);font-size:11px;fill:var(--muted)}
+.chartbox .lbl{font-family:var(--f-body);font-size:12px;fill:var(--ink)}
+.chartbox .axis{stroke:var(--line)}
+.chartbox .grid{stroke:var(--line);stroke-width:1;opacity:.6}
+
+.hoq-wrap{overflow-x:auto}
+.hoq{border-collapse:separate;border-spacing:3px;min-width:560px;font-size:.86rem}
+.hoq th,.hoq td{border:0;padding:6px 8px;background:transparent}
+.hoq thead th{font-family:var(--f-body);text-transform:none;letter-spacing:0;font-size:.82rem;color:var(--ink);background:var(--sunk);border-radius:8px;text-align:center;vertical-align:bottom}
+.hoq td.rel select,.hoq td.imp select{font:inherit;font-family:var(--f-mono);border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--ink);padding:4px 6px;width:100%}
+.hoq td.rel{text-align:center;border-radius:8px}
+.hoq td.rel.v9{background:var(--accent-soft)}
+.hoq td.rel.v5,.hoq td.rel.v3{background:color-mix(in srgb,var(--accent-soft) 50%,transparent)}
+.hoq td.imp{background:var(--gold-soft);border-radius:8px}
+.hoq tfoot td{font-family:var(--f-mono);font-weight:600;text-align:center;background:var(--sunk);border-radius:8px;font-variant-numeric:tabular-nums}
+.hoq tfoot td.top{background:var(--good-soft);color:var(--good)}
+.hoq tfoot tr.rank td{font-weight:400;background:transparent;color:var(--muted)}
+.roof{display:flex;gap:8px;flex-wrap:wrap;font-size:.84rem}
+.roof span{background:var(--sunk);border-radius:99px;padding:3px 10px}
+
+.sorter{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:620px){.sorter{grid-template-columns:minmax(0,1fr)}}
+.ladder{display:flex;flex-direction:column-reverse;gap:6px;max-width:520px}
+.ladder div{border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:var(--surface);font-size:.9rem;display:flex;justify-content:space-between;gap:10px}
+.ladder div span{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.iceberg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:760px){.iceberg{grid-template-columns:minmax(0,1fr)}}
+.dots{display:flex;flex-wrap:wrap;gap:3px;max-width:100%}
+.dots i{width:9px;height:9px;border-radius:2px;background:var(--sunk);display:block}
+.dots i.c{background:var(--accent)}
+.dots i.s{background:var(--bad)}
+.dots i.k{background:var(--gold)}
+.legend2{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.legend2 b{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.phase{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:700px){.phase{grid-template-columns:minmax(0,1fr)}}
+.phase button{text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:4px}
+.phase button .s{font-family:var(--f-mono);font-size:.7rem;color:var(--muted)}
+.phase button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.gcheck{display:flex;flex-direction:column;gap:8px}
+.gcheck label{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);cursor:pointer}
+.gcheck input{width:18px;height:18px;accent-color:var(--accent);margin-top:2px;flex:none}
+.data-grid{overflow-x:auto}
+.data-grid table{min-width:420px}
+.data-grid input{width:58px;font:inherit;font-family:var(--f-mono);font-size:.85rem;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);text-align:right}
+.data-grid td,.data-grid th{text-align:center;padding:6px}
+.data-grid td:first-child,.data-grid th:first-child{text-align:left}
+.data-grid tr.calc td{font-family:var(--f-mono);font-variant-numeric:tabular-nums;background:var(--sunk)}
+.data-grid tr.calc td.out{color:var(--bad);font-weight:600}
+.flag{display:inline-block;font-family:var(--f-mono);font-size:.72rem;padding:2px 8px;border-radius:99px}
+.flag.ok{background:var(--good-soft);color:var(--good)}
+.flag.no{background:var(--bad-soft);color:var(--bad)}
+.inline-inputs{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:.9rem}
+.inline-inputs input,.inline-inputs select{font:inherit;font-family:var(--f-mono);font-size:.88rem;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:110px}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-family:var(--f-mono);font-size:.76rem;padding:6px 9px;border-radius:6px;z-index:50;white-space:nowrap}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <div class="brand"><span class="ch">CH 6</span><b>Service Quality</b></div>
+  <div class="meter" aria-label="Study progress"><span id="meterTxt">0 / 9 units</span><span class="bar"><i id="meterBar"></i></span></div>
+</div></header>
+
+<div class="shell">
+<nav class="toc" aria-label="Chapter sections">
+  <ol id="tocList">
+    <li><a href="#overview"><span class="n">00</span>Overview</a></li>
+    <li><a href="#rater"><span class="n">01</span>Defining quality: RATER<span class="dot"></span></a></li>
+    <li><a href="#gaps"><span class="n">02</span>The gap model<span class="dot"></span></a></li>
+    <li><a href="#measure"><span class="n">03</span>SERVQUAL &amp; walk-through audit<span class="dot"></span></a></li>
+    <li><a href="#design"><span class="n">04</span>Quality by design &amp; poka-yoke<span class="dot"></span></a></li>
+    <li><a href="#qfd"><span class="n">05</span>House of quality<span class="dot"></span></a></li>
+    <li><a href="#coq"><span class="n">06</span>Cost of quality<span class="dot"></span></a></li>
+    <li><a href="#spc"><span class="n">07</span>Statistical process control<span class="dot"></span></a></li>
+    <li><a href="#guarantee"><span class="n">08</span>Guarantees &amp; recovery<span class="dot"></span></a></li>
+    <li><a href="#terms"><span class="n">09</span>Key terms &amp; cases<span class="dot"></span></a></li>
+    <li><a href="#selftest"><span class="n">✓</span>Self-test</a></li>
+  </ol>
+  <p class="lo-note">Based on Bordoloi, Fitzsimmons &amp; Fitzsimmons, <i>Service Management</i> (McGraw Hill, 2022), Chapter 6.</p>
+</nav>
+
+<main>
+<!-- OVERVIEW -->
+<section class="unit" id="overview" style="border-bottom:0;padding-top:0">
+  <div class="hero">
+    <div>
+      <p class="eyebrow">Service Management · Chapter 6</p>
+      <h1>Quality is the gap between what customers <em>expect</em> and what they <em>get</em>.</h1>
+      <p class="sub">Service quality is judged during delivery, one moment of truth at a time. This module shows how to define it, measure it, design it in, control it with charts, and recover when it fails. Every unit has something to try.</p>
+      <div class="cta"><a class="btn" href="#rater">Start studying</a><a class="btn ghost" href="#spc">Open the control-chart lab</a></div>
+    </div>
+    <div class="journey">
+      <p class="eyebrow">Why guarantee quality?</p>
+      <div class="kpis" style="margin-top:10px">
+        <div class="kpi"><span class="l">Hampton Inns</span><span class="v">$8 : $1</span><span class="w">revenue per $1 refunded</span></div>
+        <div class="kpi"><span class="l">First Interstate Bank</span><span class="v">$5</span><span class="w">paid per reported failure</span></div>
+      </div>
+      <p class="muted" style="font-size:.86rem;margin-top:10px">Over 100 of 300 Hampton guests who invoked the guarantee had already stayed again. At First Interstate, staff kept a branch open until 8:30 PM, out of pride, until a broken ATM was fixed.</p>
+    </div>
+  </div>
+  <h3>Learning objectives</h3>
+  <ul class="objectives">
+    <li><span class="num">LO1</span>Describe and illustrate the five dimensions of service quality.</li>
+    <li><span class="num">LO2</span>Use the service quality gap model to diagnose quality problems.</li>
+    <li><span class="num">LO3</span>Apply poka-yoke methods to a service.</li>
+    <li><span class="num">LO4</span>Construct a "house of quality" in a quality function deployment project.</li>
+    <li><span class="num">LO5</span>Construct a statistical process control chart for a service operation.</li>
+    <li><span class="num">LO6</span>Describe the features and managerial benefits of an unconditional service guarantee.</li>
+    <li><span class="num">LO7</span>Perform a walk-through audit (WtA).</li>
+    <li><span class="num">LO8</span>Explain what service recovery is and why it matters.</li>
+  </ul>
+</section>
+
+<!-- 1 RATER -->
+<section class="unit" id="rater" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 01</p><h2>Defining service quality: the five RATER dimensions</h2><div class="lo-tags"><span class="lo">LO1</span></div></div>
+  <p class="lead">Customers compare the service they <b>expect</b> (shaped by word of mouth, personal needs and past experience) with the service they <b>perceive</b>. They judge on five dimensions.</p>
+  <div class="grid5">
+    <div class="card"><span class="tag">R · Reliability</span><p>Perform the promised service dependably and accurately: on time, the same way, without errors, every time. Includes accurate billing.</p></div>
+    <div class="card"><span class="tag">A · Assurance</span><p>Knowledge and courtesy of staff, and their ability to convey trust: competence, respect, good communication.</p></div>
+    <div class="card"><span class="tag">T · Tangibles</span><p>Appearance of facilities, equipment, staff and materials. Even a noisy guest next door counts.</p></div>
+    <div class="card"><span class="tag">E · Empathy</span><p>Caring, individualized attention: approachability, sensitivity, effort to understand needs.</p></div>
+    <div class="card"><span class="tag">R · Responsiveness</span><p>Willingness to help and give prompt service, including fast, professional recovery.</p></div>
+  </div>
+
+  <div class="lab">
+    <div class="lab-in">
+      <p class="eyebrow">Try it · Expectation vs. perception (Fig. 6.1)</p>
+      <p class="muted" style="font-size:.88rem">Think of a recent service, for example ordering food through a delivery app. Set what you expected and what you got.</p>
+      <div class="slider-row"><label for="es">Expected</label><input id="es" type="range" min="1" max="10" value="7"><output id="esO">7</output></div>
+      <div class="slider-row"><label for="ps">Perceived</label><input id="ps" type="range" min="1" max="10" value="9"><output id="psO">9</output></div>
+    </div>
+    <div class="lab-out" id="epOut" aria-live="polite"></div>
+  </div>
+
+  <div class="activity" data-activity="rater">
+    <div class="activity-head"><p class="eyebrow">Practice · Which dimension is the customer talking about?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+</section>
+
+<!-- 2 GAPS -->
+<section class="unit" id="gaps" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 02</p><h2>The service quality gap model</h2><div class="lo-tags"><span class="lo">LO2</span></div></div>
+  <p class="lead">GAP 5, the customer satisfaction gap, depends on closing gaps 1 to 4 inside the firm. The numbering is also the order to follow when designing a new service. Tap a gap.</p>
+  <div class="lab">
+    <div class="lab-in" style="padding:10px">
+      <svg class="gapsvg" viewBox="0 0 560 470" role="img" aria-label="Service quality gap model">
+        <text class="sepl" x="10" y="20">CUSTOMER</text>
+        <rect class="bx cust" x="190" y="30" width="220" height="40" rx="8"/><text x="300" y="55" text-anchor="middle">Expected service</text>
+        <rect class="bx cust" x="190" y="110" width="220" height="40" rx="8"/><text x="300" y="135" text-anchor="middle">Perceived service</text>
+        <line class="sep" x1="0" y1="180" x2="560" y2="180"/><text class="sepl" x="10" y="200">PROVIDER</text>
+        <rect class="bx" x="190" y="215" width="220" height="40" rx="8"/><text x="300" y="240" text-anchor="middle">Service delivery</text>
+        <rect class="bx" x="400" y="140" width="0" height="0"/>
+        <rect class="bx" x="430" y="215" width="120" height="40" rx="8"/><text x="490" y="232" text-anchor="middle">External</text><text x="490" y="247" text-anchor="middle">communications</text>
+        <rect class="bx" x="190" y="305" width="220" height="40" rx="8"/><text x="300" y="322" text-anchor="middle">Service designs</text><text x="300" y="337" text-anchor="middle">and standards</text>
+        <rect class="bx" x="190" y="395" width="220" height="40" rx="8"/><text x="300" y="412" text-anchor="middle">Management perceptions</text><text x="300" y="427" text-anchor="middle">of customer expectations</text>
+        <line class="ar" x1="300" y1="215" x2="300" y2="150"/><line class="ar" x1="300" y1="305" x2="300" y2="255"/><line class="ar" x1="300" y1="395" x2="300" y2="345"/>
+        <line class="ar" x1="430" y1="235" x2="410" y2="235"/><line class="ar" x1="490" y1="215" x2="410" y2="60"/>
+        <line class="gl" x1="160" y1="50" x2="160" y2="415"/><line class="gl" x1="160" y1="50" x2="190" y2="50"/><line class="gl" x1="160" y1="415" x2="190" y2="415"/>
+        <g class="gap" data-g="1" tabindex="0" role="button" aria-label="Gap 1"><circle cx="160" cy="232" r="16"/><text x="160" y="236" text-anchor="middle">G1</text></g>
+        <g class="gap" data-g="2" tabindex="0" role="button" aria-label="Gap 2"><circle cx="340" cy="370" r="16"/><text x="340" y="374" text-anchor="middle">G2</text></g>
+        <g class="gap" data-g="3" tabindex="0" role="button" aria-label="Gap 3"><circle cx="340" cy="280" r="16"/><text x="340" y="284" text-anchor="middle">G3</text></g>
+        <g class="gap" data-g="4" tabindex="0" role="button" aria-label="Gap 4"><circle cx="420" cy="290" r="16"/><text x="420" y="294" text-anchor="middle">G4</text></g>
+        <g class="gap" data-g="5" tabindex="0" role="button" aria-label="Gap 5"><circle cx="340" cy="90" r="16"/><text x="340" y="94" text-anchor="middle">G5</text></g>
+      </svg>
+    </div>
+    <div class="lab-out" id="gapView" aria-live="polite"></div>
+  </div>
+  <p class="fig">Simplified from Figure 6.3, Service Quality Gap Model</p>
+
+  <div class="activity" data-activity="gapdx">
+    <div class="activity-head"><p class="eyebrow">Practice · Diagnose the gap</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+</section>
+
+<!-- 3 MEASURE -->
+<section class="unit" id="measure" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 03</p><h2>Measuring quality: SERVQUAL and the walk-through audit</h2><div class="lo-tags"><span class="lo">LO1</span><span class="lo">LO7</span></div></div>
+  <p class="lead">Service quality has psychological features (ambiance) and can reach far beyond the encounter (health care). <b>SERVQUAL</b> pairs 22 expectation statements with 22 perception statements; perception minus expectation is the GAP 5 score.</p>
+
+  <div class="panel">
+    <div class="activity-head"><p class="eyebrow">Try it · A mini SERVQUAL survey (10 of the 22 item types, 7-point scale)</p>
+      <div class="seg" id="sqPreset"><button data-p="clinic">Campus clinic example</button><button data-p="mid">Reset to neutral</button></div></div>
+    <p class="muted" style="font-size:.86rem;margin:6px 0 10px">Move both sliders for each statement: how strongly you <b>expect</b> an excellent firm to do this, and how strongly you <b>perceive</b> this firm does it (1 = strongly disagree, 7 = strongly agree).</p>
+    <div class="sq-table" id="sq"></div>
+  </div>
+  <div class="lab">
+    <div class="lab-out chartbox"><p class="eyebrow">Gap by dimension (perception − expectation)</p><div id="sqChart"></div></div>
+    <div class="lab-out" id="sqSum" aria-live="polite"></div>
+  </div>
+
+  <h3>Walk-through audit (WtA)</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th></th><th>Customer satisfaction survey</th><th>Walk-through audit</th></tr></thead>
+    <tbody>
+      <tr><td>Purpose</td><td style="font-weight:400">Overall satisfaction with current service level</td><td style="font-weight:400">Systematic assessment of the whole experience, start to finish</td></tr>
+      <tr><td>Orientation</td><td style="font-weight:400">Marketing</td><td style="font-weight:400">Operations / process: find improvement opportunities</td></tr>
+      <tr><td>Who answers</td><td style="font-weight:400">Customers, any time after service</td><td style="font-weight:400">Customers during or right after service, plus managers, staff, benchmark firms</td></tr>
+      <tr><td>Starts from</td><td style="font-weight:400">Common service dimensions</td><td style="font-weight:400">A flowchart of the delivery process from the customer's view</td></tr>
+      <tr><td>Run by</td><td style="font-weight:400">Marketing staff</td><td style="font-weight:400">Operations staff</td></tr>
+    </tbody>
+  </table></div>
+  <p class="fig">Based on Table 6.1</p>
+  <div class="grid3">
+    <div class="card"><span class="tag">Design rules</span><p>Flowchart the process first; group statements by stage (ticketing, information, experience, facilities, satisfaction); write <b>declarative statements</b>, not questions; 5-point Likert scale; add a comments box; keep it to two pages.</p></div>
+    <div class="card"><span class="tag">Administration</span><p>Best done in person right after the experience. A reward (gift certificate, discount) raises participation. Mind sample size and cover all customer segments.</p></div>
+    <div class="card"><span class="tag">As a diagnostic</span><p>Give the same audit to customers, staff and managers. Managers see the site daily and miss slow decline (peeling paint, worn rugs) that infrequent customers notice.</p></div>
+  </div>
+  <div class="activity" data-activity="wta">
+    <div class="activity-head"><p class="eyebrow">Practice · Is this a well-written WtA item?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+</section>
+
+<!-- 4 DESIGN -->
+<section class="unit" id="design" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 04</p><h2>Quality by design and poka-yoke</h2><div class="lo-tags"><span class="lo">LO3</span></div></div>
+  <p class="lead">Quality cannot be inspected in or added on; it starts with the design of the delivery system. A budget hotel defines quality as <b>conformance to requirements</b> for every part of the service package, with a measurable standard and a corrective action for each.</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Package feature</th><th>Requirement</th><th>Measurement</th><th>If nonconforming</th></tr></thead>
+    <tbody>
+      <tr><td>Supporting facility</td><td style="font-weight:400">Air-conditioning and heating</td><td style="font-weight:400">68° ± 2°F</td><td style="font-weight:400">Repair or replace</td></tr>
+      <tr><td>Facilitating goods</td><td style="font-weight:400">Soap supply</td><td style="font-weight:400">Two bars per bed</td><td style="font-weight:400">Restock</td></tr>
+      <tr><td>Information</td><td style="font-weight:400">Guest preferences</td><td style="font-weight:400">Complete</td><td style="font-weight:400">Update</td></tr>
+      <tr><td>Explicit services</td><td style="font-weight:400">Swimming-pool water purity</td><td style="font-weight:400">Marker at bottom of deep end visible</td><td style="font-weight:400">Change filter, check chemicals</td></tr>
+      <tr><td>Implicit services</td><td style="font-weight:400">Lobby congestion</td><td style="font-weight:400">No customer waits for a room</td><td style="font-weight:400">Review cleaning schedule</td></tr>
+    </tbody>
+  </table></div>
+  <p class="fig">Selected rows from Table 6.2, Quality Requirements for Budget Hotel</p>
+
+  <h3>Poka-yoke: failsafing both sides of the counter</h3>
+  <p class="prose">Shigeo Shingo saw that errors come from interruptions and lapses of attention, not incompetence. Poka-yoke uses checklists or simple devices that make the mistake impossible. Customers co-produce services, so they need failsafes too (Table 6.3).</p>
+  <div class="sorter">
+    <div class="card"><span class="tag">Server errors</span>
+      <p><b>Task</b>: wrong, unneeded, out-of-order or too-slow work. <i>McDonald's French-fry scoop.</i></p>
+      <p><b>Treatment</b>: not acknowledging, listening or reacting. <i>Tellers record the customer's eye color, forcing eye contact.</i></p>
+      <p><b>Tangible</b>: dirty facilities or uniforms, unproofed documents. <i>Mirrors in staff break rooms; spell check before sending.</i></p></div>
+    <div class="card"><span class="tag">Customer errors</span>
+      <p><b>Preparation</b>: not bringing materials, not understanding one's role. <i>Shouldice's medical questionnaire before admission.</i></p>
+      <p><b>Encounter</b>: not remembering steps, following flow, or specifying wants. <i>Height bars at amusement rides; carry-on size frames.</i></p>
+      <p><b>Resolution</b>: not signaling failure, learning, or doing post-encounter actions. <i>Tray-return stands and bins at the exit.</i></p></div>
+  </div>
+  <div class="activity" data-activity="poka">
+    <div class="activity-head"><p class="eyebrow">Practice · Classify the poka-yoke</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+</section>
+
+<!-- 5 QFD -->
+<section class="unit" id="qfd" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 05</p><h2>Quality function deployment: the house of quality</h2><div class="lo-tags"><span class="lo">LO4</span></div></div>
+  <p class="lead">QFD (from Toyota) translates what customers want into what the firm can change. Rows are customer expectations with importance weights; columns are service elements; cells rate how strongly each element affects each expectation (0–9). Weighted score of an element = Σ importance × relationship.</p>
+  <div class="callout"><p class="eyebrow">Textbook check · Village Volvo</p><p>Training: (9)(8) + (7)(3) + (6)(5) + (4)(0) + (2)(2) = <b>127</b>, the highest weighted score. Training also links (strong to weak) with attitudes, capacity and equipment, and is only fourth of five in difficulty to improve. So: invest in training first.</p></div>
+
+  <div class="panel">
+    <div class="activity-head"><p class="eyebrow">Try it · House of quality for a university IT help desk (illustrative data)</p>
+      <div class="seg" id="hoqPreset"><button data-p="base">Example weights</button><button data-p="equal">All importance = 5 (Ex. 6.1 test)</button></div></div>
+    <p class="muted" style="font-size:.86rem;margin:6px 0 10px">Change any importance or relationship. Watch which element rises to the top.</p>
+    <div class="hoq-wrap"><table class="hoq" id="hoq"></table></div>
+    <div class="roof" style="margin-top:10px"><b style="font-size:.84rem">Roof (correlations between elements):</b><span>Training ✱ Attitudes (strong)</span><span>Training • Information system (medium)</span><span>Staffing ø Facilities (weak)</span></div>
+  </div>
+  <div class="panel" id="hoqSum" aria-live="polite"></div>
+  <div class="prose">
+    <p><b>The nine QFD steps</b></p>
+    <ol><li>Set the aim of the project.</li><li>Determine customer expectations (rows).</li><li>Describe the service elements (columns).</li><li>Note correlations between elements (roof).</li><li>Rate expectation–element links, 0–9 (body).</li><li>Weight the elements using importance (chimney → basement).</li><li>Rank improvement difficulty (1 = hardest).</li><li>Assess the competition.</li><li>Set strategy and goals.</li></ol>
+    <p class="muted">Treat weighted scores with caution and common sense: they rest on uncertain estimates.</p>
+  </div>
+</section>
+
+<!-- 6 COST OF QUALITY -->
+<section class="unit" id="coq" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 06</p><h2>The cost of quality</h2><div class="lo-tags"><span class="lo">LO2</span><span class="lo">LO8</span></div></div>
+  <p class="lead">Juran's four cost categories make the case to top management. In most manufacturers, internal plus external failure costs were <b>50–80%</b> of the total cost of quality. The rule of thumb: <b>$1</b> in prevention saves <b>$100</b> in detection and <b>$10,000</b> in failure.</p>
+  <div class="grid4">
+    <div class="card"><span class="tag">Prevention</span><p>Keep failures from happening. <i>Quality planning, recruitment and selection, training, improvement projects.</i></p></div>
+    <div class="card"><span class="tag">Detection</span><p>Check conformance. <i>Inspection, process control, checking and balancing, collecting quality data.</i></p></div>
+    <div class="card"><span class="tag">Internal failure</span><p>Fix before the customer sees it. <i>Scrapped forms, rework, machine downtime.</i></p></div>
+    <div class="card"><span class="tag">External failure</span><p>Fix after delivery. <i>Interest penalties, investigation time, legal judgments, bad word of mouth, lost business.</i></p></div>
+  </div>
+  <p class="fig">Based on Table 6.4, Costs of Quality for Services (bank example)</p>
+
+  <div class="lab">
+    <div class="lab-in">
+      <p class="eyebrow">Try it · Where should the next rupiah go?</p>
+      <p class="muted" style="font-size:.86rem">A bank has 1,000 errors a month. Each dollar of prevention stops errors upstream. Move the budget and compare total cost. Costs per error use the 1 : 100 : 10,000 rule scaled down (prevent $1, detect $10, fix internally $50, external failure $500).</p>
+      <div class="slider-row"><label for="prevB">Prevention budget</label><input id="prevB" type="range" min="0" max="20000" step="1000" value="2000"><output id="prevBO"></output></div>
+      <div class="slider-row"><label for="detB">Detection rate</label><input id="detB" type="range" min="0" max="90" step="5" value="40"><output id="detBO"></output></div>
+    </div>
+    <div class="lab-out chartbox" id="coqOut" aria-live="polite"></div>
+  </div>
+
+  <div class="activity" data-activity="coq">
+    <div class="activity-head"><p class="eyebrow">Practice · Which cost category?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+</section>
+
+<!-- 7 SPC -->
+<section class="unit" id="spc" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 07</p><h2>Statistical process control</h2><div class="lo-tags"><span class="lo">LO5</span></div></div>
+  <p class="lead">Performance varies. The question is whether a change is random noise or a real shift. A control chart plots sample means against ±3σ limits (99.7% of in-control samples fall inside).</p>
+  <div class="grid2">
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>True state</th><th>Take corrective action</th><th>Do nothing</th></tr></thead>
+      <tbody><tr><td>Process in control</td><td style="font-weight:400;color:var(--bad)">Type I error (producer's risk)</td><td style="font-weight:400;color:var(--good)">Correct</td></tr>
+      <tr><td>Process out of control</td><td style="font-weight:400;color:var(--good)">Correct</td><td style="font-weight:400;color:var(--bad)">Type II error (consumer's risk)</td></tr></tbody></table></div>
+    <div class="card"><span class="tag">Out-of-control signals</span><p>A sample mean outside the UCL or LCL, <b>or</b> a run of seven means all above or all below the center line. Then: evaluate, take corrective action, check results.</p><p class="muted">Variable charts (X̄ and R) for measurements such as time; attribute charts (p) for proportions defective.</p></div>
+  </div>
+
+  <h3>Lab A · X̄-chart and R-chart</h3>
+  <div class="panel">
+    <div class="activity-head"><p class="eyebrow">Historical data (edit any cell)</p><div class="seg" id="xPreset"><button data-p="amb">Ambulance (Ex. 6.2)</button><button data-p="resort">Resort reservations (Solved 1)</button><button data-p="motel">Motel beds (Ex. 6.3)</button></div></div>
+    <p class="muted" id="xNote" style="font-size:.86rem;margin:6px 0 8px"></p>
+    <div class="data-grid" id="xGrid"></div>
+  </div>
+  <div class="lab">
+    <div class="lab-out" id="xLimits" aria-live="polite"></div>
+    <div class="lab-out">
+      <p class="eyebrow">Monitor new samples</p>
+      <p class="muted" style="font-size:.86rem">Enter new sample means separated by commas, or simulate a shift in the true process.</p>
+      <div class="inline-inputs"><input id="xNew" style="width:100%" aria-label="New sample means"></div>
+      <div class="slider-row"><label for="shift">True mean shift</label><input id="shift" type="range" min="-3" max="3" step="0.5" value="0"><output id="shiftO">0σ</output></div>
+      <div class="seg"><button id="xSim">Simulate 10 more samples</button><button id="xClear">Clear new samples</button></div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="panel chartbox"><p class="eyebrow">X̄-chart</p><div id="xChart"></div></div>
+    <div class="panel chartbox"><p class="eyebrow">R-chart</p><div id="rChart"></div></div>
+  </div>
+  <div class="panel" id="xVerdict" aria-live="polite"></div>
+
+  <h3>Lab B · p-chart for attributes</h3>
+  <div class="panel">
+    <div class="activity-head"><p class="eyebrow">Proportion defective (or on time) per sample</p><div class="seg" id="pPreset"><button data-p="zip">ZIP sorter (Ex. 6.3)</button><button data-p="air">Airline on-time (Solved 2)</button><button data-p="lab">Blood lab (Ex. 6.7)</button><button data-p="gotham">Gotham traffic (Ex. 6.6)</button></div></div>
+    <p class="muted" id="pNote" style="font-size:.86rem;margin:6px 0 8px"></p>
+    <div class="inline-inputs">
+      <label>Sample size n <input id="pn" type="number" min="1" value="100"></label>
+      <label>p̄ (blank = from data) <input id="pbar" type="number" step="0.001" min="0" max="1"></label>
+      <label style="flex:1 1 260px">Counts per sample <input id="pdata" style="width:100%"></label>
+    </div>
+  </div>
+  <div class="lab">
+    <div class="lab-out" id="pLimits" aria-live="polite"></div>
+    <div class="lab-out chartbox"><p class="eyebrow">p-chart</p><div id="pChart"></div></div>
+  </div>
+
+  <details class="panel"><summary style="cursor:pointer;font-weight:600">Control chart constants (Table 6.7)</summary>
+    <div class="tbl-wrap" style="margin-top:10px"><table id="constTbl"></table></div></details>
+</section>
+
+<!-- 8 GUARANTEE & RECOVERY -->
+<section class="unit" id="guarantee" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 08</p><h2>Service guarantees and service recovery</h2><div class="lo-tags"><span class="lo">LO6</span><span class="lo">LO8</span></div></div>
+  <p class="lead">A good unconditional guarantee has five features (Christopher Hart). Test one below; a single missing feature can make customers distrust the whole promise.</p>
+  <div class="lab">
+    <div class="lab-in">
+      <p class="eyebrow">Try it · Grade a guarantee</p>
+      <div class="seg" id="gPick"></div>
+      <p id="gText" style="font-style:italic;margin:6px 0"></p>
+      <div class="gcheck" id="gChecks"></div>
+      <button class="btn" id="gCheck" style="align-self:flex-start">Check my grading</button>
+    </div>
+    <div class="lab-out" id="gOut" aria-live="polite">
+      <p class="eyebrow">The five features</p>
+      <ol style="margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px;font-size:.92rem">
+        <li><b>Unconditional</b>: no exceptions (L.L. Bean takes all returns).</li>
+        <li><b>Easy to understand and communicate</b>: measurable (lunch in 15 minutes or free).</li>
+        <li><b>Meaningful</b>: matters to the customer (Domino's $3 off instead of a free pizza).</li>
+        <li><b>Easy to invoke</b>: no forms or letters (one toll-free call).</li>
+        <li><b>Easy to collect</b>: resolved on the spot.</li>
+      </ol>
+      <p class="muted" style="font-size:.86rem">Benefits to the firm: focuses on customers, sets clear standards (FedEx "absolutely, positively by 10:30 AM"), guarantees feedback, forces understanding of the delivery system, builds loyalty.</p>
+    </div>
+  </div>
+
+  <h3>The complaint iceberg (Table 6.8)</h3>
+  <div class="iceberg">
+    <div class="lab-in">
+      <div class="slider-row"><label for="dis">Dissatisfied customers</label><input id="dis" type="range" min="100" max="2000" step="100" value="1000"><output id="disO"></output></div>
+      <div class="slider-row"><label for="resq">Complaints resolved quickly</label><input id="resq" type="range" min="0" max="100" step="10" value="50"><output id="resqO"></output></div>
+      <div id="iceDots" class="dots" aria-hidden="true"></div>
+      <div class="legend2"><span><b style="background:var(--accent)"></b>complained (4%)</span><span><b style="background:var(--bad)"></b>silent, serious problem</span><span><b style="background:var(--sunk);border:1px solid var(--line)"></b>silent, minor</span></div>
+    </div>
+    <div class="lab-out" id="iceOut" aria-live="polite"></div>
+  </div>
+
+  <h3>Phases of service recovery (Club Med in a storm)</h3>
+  <div class="phase" id="phase">
+    <button data-i="0" aria-pressed="true"><span class="s">Phase 1</span><b>Pre-recovery</b><span class="muted" style="font-size:.84rem">failure → firm aware</span></button>
+    <button data-i="1" aria-pressed="false"><span class="s">Phase 2</span><b>Immediate recovery</b><span class="muted" style="font-size:.84rem">→ fair restitution</span></button>
+    <button data-i="2" aria-pressed="false"><span class="s">Phase 3</span><b>Follow-up</b><span class="muted" style="font-size:.84rem">→ retention, loyalty</span></button>
+  </div>
+  <div class="panel" id="phaseView" aria-live="polite"></div>
+
+  <div class="activity" data-activity="recovery">
+    <div class="activity-head"><p class="eyebrow">Practice · Which recovery approach?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><span class="tag">Complaint-handling policy</span><p>Every complaint is a gift. Welcome and encourage complaints, make complaining easy, handle complaints fast and fairly, empower staff, use customer- and employee-friendly systems, reward good handling, keep records and learn.</p></div>
+    <div class="card"><span class="tag">Service benchmark · Bronson Methodist Hospital</span><p>Baldrige-recognized hospital with patient satisfaction at the 97th percentile or better. It listens through surveys, post-discharge calls, focus groups and leader rounds, and invests heavily in staff, which keeps turnover very low.</p></div>
+  </div>
+</section>
+
+<!-- 9 TERMS -->
+<section class="unit" id="terms" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 09</p><h2>Key terms, the quality ladder and cases</h2></div>
+  <div class="fc-wrap">
+    <button class="fc" id="fc" aria-label="Flashcard, click to flip"><div class="fc-in">
+      <div class="fc-face fc-front"><small>Term</small><b id="fcTerm"></b><span class="muted" style="margin-top:10px;font-size:.85rem">Click to reveal</span></div>
+      <div class="fc-face fc-back"><small>Definition</small><p id="fcDef"></p></div>
+    </div></button>
+    <div class="fc-ctrl"><button class="btn ghost" id="fcPrev" aria-label="Previous card">←</button><span class="count" id="fcCount"></span><button class="btn ghost" id="fcNext" aria-label="Next card">→</button><button class="btn ghost" id="fcShuffle">Shuffle</button></div>
+  </div>
+  <div class="case">
+    <div class="panel prose">
+      <p class="eyebrow">The service quality ladder (Fig. 6.12)</p>
+      <p>Firms usually start at the bottom rung, <b>inspection</b> (checking hotel rooms after cleaning), and climb toward <b>quality function deployment</b> at the top, where quality is a basic customer requirement designed into the delivery process. The tools in this chapter sit on the rungs in between.</p>
+    </div>
+    <div class="panel prose">
+      <p class="eyebrow">Cases for class</p>
+      <ul>
+        <li><b>6.1 Clean Sweep, Inc.:</b> a custodial firm whose strategy rests on a small, highly productive crew. How should it control quality?</li>
+        <li><b>6.2 The Complaint Letter:</b> respond to an angry customer using the recovery principles.</li>
+        <li><b>6.3 Helsinki Museum of Art and Design:</b> the walk-through audit and the gaps between customers, staff and managers.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="panel prose">
+    <p class="eyebrow">Topics for discussion</p>
+    <ol><li>How do the five dimensions of service quality differ from those of product quality?</li><li>Why is measuring service quality so difficult?</li><li>Illustrate the four components of the cost of quality for a service of your choice.</li><li>Why do service firms hesitate to offer a service guarantee?</li><li>How can recovery from a service failure be a blessing in disguise?</li></ol>
+    <p class="muted"><b>Group exercise:</b> each group finds its members' worst and best service experiences, then reports what they reveal about service quality.</p>
+  </div>
+</section>
+
+<!-- SELF TEST -->
+<section class="unit" id="selftest" style="border-bottom:0">
+  <div class="unit-head"><p class="eyebrow">Self-test</p><h2>Check your understanding</h2></div>
+  <div class="quiz" id="quiz"></div>
+</section>
+
+<footer>Study aid based on Chapter 6, "Service Quality," in Bordoloi, Fitzsimmons &amp; Fitzsimmons, <i>Service Management: Operations, Strategy, Information Technology</i> (McGraw Hill, 2022). Read the chapter for the full text, figures, exercises and cases.</footer>
+</main>
+</div>
+<div class="tip" id="tip" hidden></div>
+<script>
+(function(){
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+const f2 = x => (Math.round(x*100)/100).toFixed(2);
+const f3 = x => (Math.round(x*1000)/1000).toFixed(3);
+const money = x => "$" + Math.round(x).toLocaleString("en-US");
+
+/* tooltip */
+const tip = $("#tip");
+function bindTips(root){
+  $$("[data-tip]", root).forEach(el=>{
+    el.addEventListener("mouseenter",e=>{ tip.textContent = el.dataset.tip; tip.hidden=false; });
+    el.addEventListener("mousemove",e=>{ tip.style.left=(e.clientX+12)+"px"; tip.style.top=(e.clientY-30)+"px"; });
+    el.addEventListener("mouseleave",()=>{ tip.hidden=true; });
+  });
+}
+
+/* ---------- Expectation vs perception ---------- */
+function ep(){
+  const e=+$("#es").value, p=+$("#ps").value; $("#esO").textContent=e; $("#psO").textContent=p;
+  const d=p-e;
+  const v = d>0?["Exceeded: quality perceived as exceptional","var(--good)","A pleasant surprise. Customers are delighted and likely to spread good word of mouth."]
+          : d===0?["Confirmed: quality is satisfactory","var(--ink)","Expectations met. Satisfied, but not delighted."]
+          :["Not met: quality is unacceptable","var(--bad)","The customer feels let down. This is a negative GAP 5."];
+  const pos = (d+9)/18*100;
+  $("#epOut").innerHTML = `<p class="eyebrow">Perceived quality = perception − expectation = ${d>0?"+":""}${d}</p>
+    <p class="verdict-big" style="color:${v[1]}">${v[0]}</p>
+    <div class="meterline"><span class="lab" style="left:8%">Unacceptable</span><span class="lab" style="left:50%">Satisfactory</span><span class="lab" style="left:90%">Ideal</span><div class="track"></div><div class="pin" style="left:calc(${pos}% - 1.5px)"></div></div>
+    <p class="muted" style="font-size:.9rem">${v[2]} Raising perception is not the only lever: what the firm promises in advertising also moves expectations.</p>`;
+}
+["es","ps"].forEach(id=>$("#"+id).addEventListener("input",ep)); ep();
+
+/* ---------- Gap model ---------- */
+const GAPS = {
+  1:["GAP 1 · Market research gap","Customer expectations vs. management's perception of them.","Management doesn't fully understand how customers form expectations (advertising, past experience, personal needs, friends).","Better market research, better communication between managers and contact staff, fewer management levels."],
+  2:["GAP 2 · Design gap","Management's perception of expectations vs. the service designs and standards it sets.","Lack of management commitment to quality, or a belief that meeting expectations is impractical.","Set goals and standardize service delivery tasks."],
+  3:["GAP 3 · Conformance gap","Service standards vs. the service actually delivered.","Poor teamwork, poor employee selection, inadequate training, inappropriate job design.","Selection, training, teamwork and job design (see Chapter 4)."],
+  4:["GAP 4 · Communication gap","Service delivered vs. what external communications promised; customer perceptions at odds with intended delivery.","Operations fails to manage the evidence at the point of delivery; lack of controls or poor training; over-promising.","Align promises with delivery; manage what customers see and experience."],
+  5:["GAP 5 · Customer satisfaction gap","Expected service vs. perceived service. This is what SERVQUAL measures.","The outcome of gaps 1–4.","Close gaps 1–4 in order: research, design, conformance, communication."]
+};
+function renderGap(g){
+  $$(".gap").forEach(x=>x.classList.toggle("on", x.dataset.g==g));
+  const d=GAPS[g];
+  $("#gapView").innerHTML = `<p class="eyebrow">Selected gap</p><h3 style="margin:2px 0 6px">${d[0]}</h3><p><b>Between:</b> ${d[1]}</p><p><b>Causes:</b> ${d[2]}</p><p><b>To close it:</b> ${d[3]}</p>`;
+}
+$$(".gap").forEach(g=>{ g.addEventListener("click",()=>renderGap(g.dataset.g)); g.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();renderGap(g.dataset.g);} }); });
+renderGap(5);
+
+/* ---------- Practice activities ---------- */
+const ACT = {
+  rater:{ opts:["Reliability","Assurance","Tangibles","Empathy","Responsiveness"], items:[
+    ["\"My bill was wrong again this month.\"","Reliability","Accurate, dependable performance includes back-office billing."],
+    ["\"The pharmacist explained my medicine clearly and I trusted her.\"","Assurance","Knowledge, courtesy and the ability to convey trust."],
+    ["\"The waiting room was dirty and the posters were torn.\"","Tangibles","Appearance of facilities and materials."],
+    ["\"When I missed my connection, the agent treated it as her own problem.\"","Empathy","Individualized attention: the book's own gate-agent example."],
+    ["\"I waited 40 minutes on hold for a simple question.\"","Responsiveness","Willingness to help and give prompt service."],
+    ["\"The ojek driver arrived exactly when the app said, as always.\"","Reliability","Performed as promised, every time."],
+    ["\"The noisy guests next door ruined my night.\"","Tangibles","The conduct of other customers in the service environment counts as tangibles."]
+  ]},
+  gapdx:{ opts:["Gap 1","Gap 2","Gap 3","Gap 4"], items:[
+    ["A hotel's managers assume guests care most about room size; surveys show they care most about fast Wi-Fi.","Gap 1","Management misreads what customers expect: market research gap."],
+    ["Managers know patients want short waits but set no waiting-time standard because \"it's impossible to control\".","Gap 2","Known expectations are not turned into standards: design gap."],
+    ["The standard says calls are answered in 3 rings, but new, untrained staff let phones ring 10 times.","Gap 3","Delivery does not conform to the standard: conformance gap."],
+    ["An ad shows a spacious, empty gym; members arrive to find crowded equipment at peak hours.","Gap 4","Promises do not match delivery: communication gap."],
+    ["A bank sets a 5-minute teller standard but schedules too few tellers on paydays.","Gap 3","The standard exists but delivery fails because of job design and staffing."]
+  ]},
+  wta:{ opts:["Well written","Rewrite it"], items:[
+    ["\"Signs give clear information about exhibit locations.\"","Well written","A declarative statement about one observable thing, ready for a 1–5 agree scale."],
+    ["\"Did you find the staff friendly?\"","Rewrite it","WtA items should be declarative statements, not questions: \"The staff helping you were friendly.\""],
+    ["\"The ticket price was fair and the café food was good.\"","Rewrite it","Two issues in one statement; split them so each can be rated."],
+    ["\"The restrooms were clean.\"","Well written","Single, observable, declarative."],
+    ["\"How would you rate our overall excellence?\"","Rewrite it","A question, and a vague overall rating. WtA focuses on specific stages of the process."]
+  ]},
+  poka:{ opts:["Server: task","Server: treatment","Server: tangible","Customer: preparation","Customer: encounter","Customer: resolution"], items:[
+    ["A fast-food scoop that measures exactly one portion of fries.","Server: task","Prevents doing the work incorrectly."],
+    ["Tellers must note each customer's eye color at the start of a transaction.","Server: treatment","Forces eye contact, so staff acknowledge the customer."],
+    ["A full-length mirror at the staff exit to the restaurant floor.","Server: tangible","Checks appearance before facing customers."],
+    ["A clinic texts patients a checklist of documents to bring to their appointment.","Customer: preparation","Helps customers arrive with the necessary materials."],
+    ["A metal frame at the gate shows the maximum carry-on bag size.","Customer: encounter","Helps customers follow the rules during the encounter."],
+    ["Trash bins and tray-return stands placed at a food court's exits.","Customer: resolution","Guides the post-encounter action."],
+    ["An e-mail client won't send until spell check has run.","Server: tangible","Failure to proofread documents is a tangible error."]
+  ]},
+  coq:{ opts:["Prevention","Detection","Internal failure","External failure"], items:[
+    ["Training tellers in new account procedures.","Prevention","Keeps failures from happening."],
+    ["Supervisors balancing and verifying the day's transactions.","Detection","Checking conformance."],
+    ["Reprinting a batch of statements with a formatting error before mailing.","Internal failure","Rework before the customer sees it."],
+    ["Paying interest penalties after posting a customer's deposit late.","External failure","Failure discovered after delivery."],
+    ["Careful recruitment and selection of customer-contact staff.","Prevention","Hiring people with the right attitudes avoids future failures."],
+    ["A customer closes all accounts and tells friends why.","External failure","Lost business and negative word of mouth."]
+  ]},
+  recovery:{ opts:["Case-by-case","Systematic response","Early intervention","Substitute service"], items:[
+    ["Overbooked flight: agents follow a set protocol offering vouchers to volunteers.","Systematic response","A planned response at a known failure point; consistent and timely."],
+    ["A courier learns a truck broke down and moves the parcels to another truck before anyone notices.","Early intervention","Fixes the process problem before it reaches the customer."],
+    ["An overbooked hotel books the guest into a nearby equivalent hotel and pays the room and taxi.","Substitute service","A competitor satisfies the customer; risk of losing the customer."],
+    ["Each complaint is handled individually by whoever receives it, so the loudest complainers get the most.","Case-by-case","Cheap and easy, but inconsistent and can seem unfair."]
+  ]}
+};
+const actState = {};
+function renderActivity(el){
+  const key = el.dataset.activity, cfg = ACT[key];
+  actState[key] = {done:0, right:0, total:cfg.items.length};
+  const itemsEl = $("[data-items]", el);
+  itemsEl.innerHTML = cfg.items.map((it,i)=>`<div class="item" data-i="${i}"><p class="q">${it[0]}</p><div class="opts">${cfg.opts.map(o=>`<button data-o="${o}">${o}</button>`).join("")}</div><p class="fb" hidden></p></div>`).join("");
+  const upd = ()=>{ const s=actState[key]; $("[data-score]",el).textContent = `${s.right} correct · ${s.done}/${s.total} answered`; };
+  upd();
+  $$(".item", itemsEl).forEach(item=>{
+    const it = cfg.items[+item.dataset.i];
+    $$("button", item).forEach(b=>b.addEventListener("click",()=>{
+      const ok = b.dataset.o===it[1];
+      $$("button", item).forEach(x=>{ x.disabled=true; if(x.dataset.o===it[1]) x.classList.add("right"); });
+      if(!ok) b.classList.add("wrong");
+      item.classList.add(ok?"done-ok":"done-bad");
+      const fb = $(".fb", item); fb.hidden=false; fb.innerHTML = (ok?"<b style='color:var(--good)'>Correct.</b> ":"<b style='color:var(--bad)'>Not quite.</b> ")+it[2];
+      actState[key].done++; if(ok) actState[key].right++; upd();
+    }));
+  });
+}
+$$("[data-activity]").forEach(renderActivity);
+
+/* ---------- Mini SERVQUAL ---------- */
+const DIMN = ["Reliability","Assurance","Tangibles","Empathy","Responsiveness"];
+const SQ = [
+  [0,"Performs the service right the first time."],[0,"Keeps its records and bills accurate."],
+  [1,"Employees are consistently courteous."],[1,"Employees have the knowledge to answer questions."],
+  [2,"Has modern-looking equipment."],[2,"Facilities are clean and visually appealing."],
+  [3,"Gives customers individual attention."],[3,"Has the customer's best interests at heart."],
+  [4,"Employees give prompt service."],[4,"Employees are never too busy to respond to requests."]
+];
+const SQP = { clinic:{e:[7,7,6,6,5,6,6,6,7,6], p:[5,6,6,4,4,5,5,5,3,3]}, mid:{e:Array(10).fill(4), p:Array(10).fill(4)} };
+let sqE = SQP.clinic.e.slice(), sqP = SQP.clinic.p.slice();
+function sqBuild(){
+  $("#sq").innerHTML = `<div class="sq-row h"><span class="st">Statement</span><span>Expectation</span><span>Perception</span><span style="text-align:right">P − E</span></div>` +
+    SQ.map((s,i)=>`<div class="sq-row"><span class="st"><span class="dim">${DIMN[s[0]]}</span>${s[1]}</span>
+      <input type="range" min="1" max="7" value="${sqE[i]}" data-k="e" data-i="${i}" aria-label="Expectation: ${s[1]}">
+      <input type="range" min="1" max="7" value="${sqP[i]}" data-k="p" data-i="${i}" aria-label="Perception: ${s[1]}">
+      <span class="g" id="sqg${i}"></span></div>`).join("");
+  $$("#sq input").forEach(inp=>inp.addEventListener("input",()=>{ (inp.dataset.k==="e"?sqE:sqP)[+inp.dataset.i]=+inp.value; sqCalc(); }));
+  sqCalc();
+}
+function sqCalc(){
+  SQ.forEach((s,i)=>{ const g=sqP[i]-sqE[i]; const el=$("#sqg"+i); el.textContent=(g>0?"+":"")+g; el.style.color=g<0?"var(--bad)":g>0?"var(--good)":"var(--muted)"; });
+  const dg = DIMN.map((_,d)=>{ const ix=SQ.map((s,i)=>s[0]===d?i:-1).filter(i=>i>=0); return ix.reduce((a,i)=>a+sqP[i]-sqE[i],0)/ix.length; });
+  // chart: horizontal diverging bars
+  const W=420, rowH=34, L=110, mid=L+(W-L-20)/2, span=(W-L-20)/2, H=DIMN.length*rowH+30;
+  let g=`<line class="axis" x1="${mid}" y1="4" x2="${mid}" y2="${H-24}"/>`;
+  [-6,-3,0,3,6].forEach(t=>{ const x=mid+t/6*span; g+=`<text x="${x}" y="${H-8}" text-anchor="middle">${t>0?"+":""}${t}</text>`; if(t) g+=`<line class="grid" x1="${x}" y1="4" x2="${x}" y2="${H-24}"/>`; });
+  dg.forEach((v,i)=>{ const y=8+i*rowH, w=Math.abs(v)/6*span, x=v<0?mid-w:mid;
+    g+=`<text class="lbl" x="0" y="${y+16}">${DIMN[i]}</text>`;
+    g+=`<rect x="${x}" y="${y+4}" width="${Math.max(w,1)}" height="${rowH-14}" rx="4" fill="${v<0?"var(--bad)":"var(--good)"}" data-tip="${DIMN[i]}: ${v>0?"+":""}${f2(v)}"/>`;
+    g+=`<text x="${v<0?x-6:x+w+6}" y="${y+18}" text-anchor="${v<0?"end":"start"}" style="fill:var(--ink)">${v>0?"+":""}${f2(v)}</text>`; });
+  $("#sqChart").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="SERVQUAL gaps by dimension">${g}</svg><p class="muted" style="font-size:.8rem">Red = perception below expectation (shortfall); green = exceeds expectation.</p>`;
+  bindTips($("#sqChart"));
+  const overall = dg.reduce((a,b)=>a+b,0)/5;
+  const worst = dg.indexOf(Math.min(...dg));
+  $("#sqSum").innerHTML = `<p class="eyebrow">Your SERVQUAL result</p>
+    <div class="bigscore"><span class="n" style="color:${overall<0?"var(--bad)":"var(--good)"}">${overall>0?"+":""}${f2(overall)}</span><span>average GAP 5 score</span></div>
+    <p>${dg[worst]<0?`The biggest shortfall is <b>${DIMN[worst]}</b> (${f2(dg[worst])}). Work back through the gap model: is this a research, design, conformance or communication problem?`:"No dimension falls short of expectations."}</p>
+    <p class="muted" style="font-size:.86rem">Main use: track the trend through periodic surveys, compare sites in a multisite chain, or compare with a competitor.</p>`;
+}
+$$("#sqPreset button").forEach(b=>b.addEventListener("click",()=>{ sqE=SQP[b.dataset.p].e.slice(); sqP=SQP[b.dataset.p].p.slice(); sqBuild(); }));
+sqBuild();
+
+/* ---------- House of quality ---------- */
+const HR = ["Reliability","Responsiveness","Assurance","Empathy","Tangibles"];
+const HC = ["Staff training","Staff attitudes","Staffing capacity","Information system","Facilities & equipment"];
+const HDIFF = [4,5,2,3,1];
+const HBASE = { imp:[9,8,6,4,3], rel:[[9,1,5,9,5],[3,5,9,5,1],[9,5,0,3,1],[3,9,3,1,0],[1,1,0,1,9]] };
+let hoq = JSON.parse(JSON.stringify(HBASE));
+function hoqRender(){
+  const opts = (v,max)=>Array.from({length:max+1},(_,i)=>`<option ${i===v?"selected":""}>${i}</option>`).join("");
+  const scores = HC.map((_,c)=>hoq.rel.reduce((a,row,r)=>a+row[c]*hoq.imp[r],0));
+  const max = Math.max(...scores);
+  const order = scores.map((s,i)=>[s,i]).sort((a,b)=>b[0]-a[0]);
+  $("#hoq").innerHTML = `<thead><tr><th style="text-align:left">Customer expectation</th><th>Importance (1–9)</th>${HC.map(c=>`<th>${c}</th>`).join("")}</tr></thead>
+    <tbody>${HR.map((r,ri)=>`<tr><td style="font-weight:600">${r}</td><td class="imp"><select data-imp="${ri}" aria-label="Importance of ${r}">${opts(hoq.imp[ri],9).replace("<option>0</option>","")}</select></td>${HC.map((c,ci)=>`<td class="rel v${hoq.rel[ri][ci]>=7?9:hoq.rel[ri][ci]>=3?5:0}"><select data-r="${ri}" data-c="${ci}" aria-label="${r} vs ${c}">${opts(hoq.rel[ri][ci],9)}</select></td>`).join("")}</tr>`).join("")}</tbody>
+    <tfoot><tr><td style="text-align:left;font-family:var(--f-body)">Weighted score</td><td></td>${scores.map(s=>`<td class="${s===max?"top":""}">${s}</td>`).join("")}</tr>
+    <tr class="rank"><td style="text-align:left;font-family:var(--f-body)">Difficulty rank (1 = hardest)</td><td></td>${HDIFF.map(d=>`<td>${d}</td>`).join("")}</tr></tfoot>`;
+  $$("#hoq select").forEach(s=>s.addEventListener("change",()=>{ if(s.dataset.imp!==undefined) hoq.imp[+s.dataset.imp]=+s.value; else hoq.rel[+s.dataset.r][+s.dataset.c]=+s.value; hoqRender(); }));
+  const top = order[0][1];
+  const calc = HR.map((r,ri)=>`(${hoq.imp[ri]})(${hoq.rel[ri][top]})`).join(" + ");
+  const W=420,rowH=30,L=150,H=HC.length*rowH+8;
+  let g=""; order.forEach(([s,i],k)=>{ const y=4+k*rowH, w=s/max*(W-L-50);
+    g+=`<text class="lbl" x="0" y="${y+18}">${HC[i]}</text><rect x="${L}" y="${y+4}" width="${Math.max(w,1)}" height="${rowH-12}" rx="4" fill="${i===top?"var(--accent)":"var(--muted)"}" opacity="${i===top?1:.45}" data-tip="${HC[i]}: ${s}"/><text x="${L+w+6}" y="${y+18}" style="fill:var(--ink)">${s}</text>`; });
+  $("#hoqSum").innerHTML = `<div class="iceberg"><div class="chartbox"><p class="eyebrow">Elements ranked by weighted score</p><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Weighted scores">${g}</svg></div>
+    <div><p class="eyebrow">Reading the house</p><p><b>${HC[top]}</b> scores highest: ${calc} = <b>${max}</b>.</p>
+    <p>Its difficulty rank is <b>${HDIFF[top]}</b> of 5 (1 = hardest). ${HDIFF[top]>=3?"It is relatively easy to improve, so it is a strong first priority.":"It is hard to improve (capital-intensive), so weigh the cost before committing."}</p>
+    <p class="muted" style="font-size:.86rem">Try setting every importance to 5. If the top element doesn't change, the recommendation is robust to the importance weights (the point of Exercise 6.1).</p></div></div>`;
+  bindTips($("#hoqSum"));
+}
+$$("#hoqPreset button").forEach(b=>b.addEventListener("click",()=>{ hoq = JSON.parse(JSON.stringify(HBASE)); if(b.dataset.p==="equal") hoq.imp=[5,5,5,5,5]; hoqRender(); }));
+hoqRender();
+
+/* ---------- Cost of quality simulator ---------- */
+function coq(){
+  const P=+$("#prevB").value, d=+$("#detB").value/100;
+  $("#prevBO").textContent = "$"+(P/1000)+"k"; $("#detBO").textContent = Math.round(d*100)+"%";
+  const errors = 1000*Math.pow(0.9, P/1000);
+  const det = 25000*d*d;            // detection gets costlier as you aim to catch more
+  const internal = errors*d*50;
+  const external = errors*(1-d)*500;
+  const total = P+det+internal+external;
+  const cats = [["Prevention",P],["Detection",det],["Internal failure",internal],["External failure",external]];
+  const max = Math.max(...cats.map(c=>c[1]),1);
+  const W=420,L=120,rowH=30;
+  let g=""; cats.forEach((c,i)=>{ const y=4+i*rowH,w=c[1]/max*(W-L-80);
+    g+=`<text class="lbl" x="0" y="${y+18}">${c[0]}</text><rect x="${L}" y="${y+4}" width="${Math.max(w,1)}" height="${rowH-12}" rx="4" fill="${i<2?"var(--accent)":"var(--bad)"}" opacity="${i<2?.85:1}" data-tip="${c[0]}: ${money(c[1])}"/><text x="${L+w+6}" y="${y+18}" style="fill:var(--ink)">${money(c[1])}</text>`; });
+  const fail = (internal+external)/total*100;
+  $("#coqOut").innerHTML = `<p class="eyebrow">Monthly cost of quality (illustrative model)</p>
+    <div class="bigscore"><span class="n">${money(total)}</span><span>total · ${Math.round(errors)} errors reach the process · failure costs = ${Math.round(fail)}% of total</span></div>
+    <svg viewBox="0 0 ${W} ${4*rowH+8}" role="img" aria-label="Cost by category">${g}</svg>
+    <p class="muted" style="font-size:.86rem">${fail>50?"Failure costs dominate, as Juran found in most firms. Shift money upstream to prevention.":"Most spending is now upstream, and failure costs are under control."} Try to find the cheapest mix; prevention usually beats chasing errors with inspection.</p>`;
+  bindTips($("#coqOut"));
+}
+["prevB","detB"].forEach(id=>$("#"+id).addEventListener("input",coq)); coq();
+
+/* ---------- SPC: X-bar / R ---------- */
+const CONST = {2:[1.880,0,3.267],3:[1.023,0,2.574],4:[0.729,0,2.282],5:[0.577,0,2.114],6:[0.483,0,2.004],7:[0.419,0.076,1.924],8:[0.373,0.136,1.864],9:[0.337,0.184,1.816],10:[0.308,0.223,1.777],12:[0.266,0.283,1.717],14:[0.235,0.328,1.672],16:[0.212,0.363,1.637],18:[0.194,0.391,1.608],20:[0.180,0.415,1.585],22:[0.167,0.434,1.566],24:[0.157,0.451,1.548]};
+const D2 = {2:1.128,3:1.693,4:2.059,5:2.326,6:2.534,7:2.704,8:2.847};
+$("#constTbl").innerHTML = `<thead><tr><th>n</th><th>A2 (X̄)</th><th>D3 (R, LCL)</th><th>D4 (R, UCL)</th></tr></thead><tbody>${Object.entries(CONST).map(([n,c])=>`<tr><td>${n}</td><td style="font-weight:400">${c[0].toFixed(3)}</td><td style="font-weight:400">${c[1].toFixed(3)}</td><td style="font-weight:400">${c[2].toFixed(3)}</td></tr>`).join("")}</tbody>`;
+const XP = {
+  amb:{ note:"Ambulance response time (minutes). Four calls sampled each day, one per shift, for 7 days. The new samples are illustrative: spring break starts on day 8 and beach trips lengthen responses.", unit:"min",
+    cols:["Day 1","Day 2","Day 3","Day 4","Day 5","Day 6","Day 7"], rows:["Morning","Afternoon","Evening","Night"],
+    data:[[3.6,4.5,2.9,7.1,4.3,6.7,2.8],[5.2,6.3,4.7,6.2,2.8,5.8,5.6],[6.5,7.2,3.8,3.9,5.9,6.9,3.8],[4.9,6.9,4.3,5.6,3.2,4.9,4.9]], newv:"5.8, 6.5, 7.2" },
+  resort:{ note:"Resort International reservation calls (minutes). Each day one random call per clerk, four clerks. Above the UCL means lost productivity; below the LCL may mean curt service.", unit:"min",
+    cols:["Mon","Tue","Wed","Thu","Fri"], rows:["Alice","Bill","Janice","Mike"],
+    data:[[5,11,12,13,10],[6,5,12,10,13],[14,13,10,9,9],[8,6,9,12,14]], newv:"" },
+  motel:{ note:"Exercise 6.3: seconds to make a bed, four housekeepers observed on three days. Part (b) asks about a new sample of 185, 150, 192 and 178 s (mean 176.25), already entered below.", unit:"s",
+    cols:["Mon","Tue","Fri"], rows:["Ann","Linda","Marie","Michael"],
+    data:[[120,90,150],[130,110,140],[200,180,175],[165,155,140]], newv:"176.25" }
+};
+let xs = null, newMeans = [];
+function loadX(k){ xs = JSON.parse(JSON.stringify(XP[k])); $("#xNote").textContent = xs.note; $("#xNew").value = xs.newv; xRenderGrid(); }
+function xStats(){
+  const n = xs.rows.length;
+  const means = xs.cols.map((_,c)=>xs.data.reduce((a,r)=>a+r[c],0)/n);
+  const ranges = xs.cols.map((_,c)=>{ const v=xs.data.map(r=>r[c]); return Math.max(...v)-Math.min(...v); });
+  const xbb = means.reduce((a,b)=>a+b,0)/means.length, rb = ranges.reduce((a,b)=>a+b,0)/ranges.length;
+  const k = CONST[n] || CONST[4];
+  return {n, means, ranges, xbb, rb, ucl:xbb+k[0]*rb, lcl:xbb-k[0]*rb, rucl:k[2]*rb, rlcl:k[1]*rb, A2:k[0], D3:k[1], D4:k[2]};
+}
+function xRenderGrid(){
+  const s = xStats();
+  $("#xGrid").innerHTML = `<table><thead><tr><th></th>${xs.cols.map(c=>`<th>${c}</th>`).join("")}</tr></thead><tbody>
+    ${xs.rows.map((r,ri)=>`<tr><td>${r}</td>${xs.cols.map((_,ci)=>`<td><input type="number" step="any" value="${xs.data[ri][ci]}" data-r="${ri}" data-c="${ci}" aria-label="${r} ${xs.cols[ci]}"></td>`).join("")}</tr>`).join("")}
+    <tr class="calc"><td>X̄</td>${s.means.map(m=>`<td class="${m>s.ucl||m<s.lcl?"out":""}">${f2(m)}</td>`).join("")}</tr>
+    <tr class="calc"><td>Range</td>${s.ranges.map(m=>`<td class="${m>s.rucl||m<s.rlcl?"out":""}">${f2(m)}</td>`).join("")}</tr></tbody></table>`;
+  $$("#xGrid input").forEach(inp=>inp.addEventListener("change",()=>{ xs.data[+inp.dataset.r][+inp.dataset.c] = +inp.value||0; xRenderGrid(); }));
+  xRender();
+}
+function controlChart(pts, center, ucl, lcl, opts){
+  const W=560,H=240,L=46,R=14,T=14,B=30;
+  const vals = pts.map(p=>p.v).concat([ucl,lcl,center]);
+  let lo=Math.min(...vals), hi=Math.max(...vals); const pad=(hi-lo)*0.12||1; lo-=pad; hi+=pad;
+  if(opts.floor!=null) lo=Math.max(opts.floor,lo);
+  const sx = i => L + (pts.length<=1?0.5:i/(pts.length-1))*(W-L-R);
+  const sy = v => T + (hi-v)/(hi-lo)*(H-T-B);
+  let g = "";
+  const ticks = 5; for(let i=0;i<=ticks;i++){ const v=lo+(hi-lo)*i/ticks; g+=`<line class="grid" x1="${L}" y1="${sy(v)}" x2="${W-R}" y2="${sy(v)}"/><text x="${L-6}" y="${sy(v)+4}" text-anchor="end">${opts.fmt(v)}</text>`; }
+  const hl = (v,lab,dash)=>`<line x1="${L}" y1="${sy(v)}" x2="${W-R}" y2="${sy(v)}" stroke="${lab==="CL"?"var(--ink)":"var(--bad)"}" stroke-width="1.5" ${dash?'stroke-dasharray="6 4"':""}/><text x="${L+4}" y="${sy(v)-4}" text-anchor="start" style="fill:${lab==="CL"?"var(--ink)":"var(--bad)"}">${lab} ${opts.fmt(v)}</text>`;
+  g += hl(ucl,"UCL",true) + hl(center,"CL",false) + hl(lcl,"LCL",true);
+  const split = pts.findIndex(p=>p.isNew);
+  if(split>0){ const x=(sx(split-1)+sx(split))/2; g+=`<line x1="${x}" y1="${T}" x2="${x}" y2="${H-B}" stroke="var(--muted)" stroke-dasharray="2 4"/><text x="${x+4}" y="${T+10}">new samples →</text>`; }
+  g += `<polyline fill="none" stroke="var(--accent)" stroke-width="2" points="${pts.map((p,i)=>`${sx(i)},${sy(p.v)}`).join(" ")}"/>`;
+  pts.forEach((p,i)=>{ const out = p.v>ucl+1e-9 || p.v<lcl-1e-9; const run = p.run;
+    g += `<circle cx="${sx(i)}" cy="${sy(p.v)}" r="${out||run?6:4.5}" fill="${out?"var(--bad)":run?"var(--gold)":p.isNew?"var(--surface)":"var(--accent)"}" stroke="${out?"var(--bad)":run?"var(--gold)":"var(--accent)"}" stroke-width="2" data-tip="${p.label}: ${opts.fmt(p.v)}${out?" · OUT OF CONTROL":run?" · part of a run of 7":""}"/>`;
+    if(pts.length<=16 || i%2===0) g += `<text x="${sx(i)}" y="${H-10}" text-anchor="middle">${p.short}</text>`; });
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${opts.aria}">${g}</svg>`;
+}
+function markRuns(pts, center){
+  let start=0;
+  for(let i=1;i<=pts.length;i++){
+    const sideI = i<pts.length ? Math.sign(pts[i].v-center) : 0, sideS = Math.sign(pts[start].v-center);
+    if(i===pts.length || sideI!==sideS || sideS===0){ if(i-start>=7 && sideS!==0) for(let k=start;k<i;k++) pts[k].run=true; start=i; }
+  }
+  return pts.some(p=>p.run);
+}
+function xRender(){
+  const s = xStats();
+  newMeans = ($("#xNew").value.trim() ? $("#xNew").value.split(/[,;\s]+/).filter(Boolean).map(Number).filter(v=>!isNaN(v)) : []);
+  const pts = s.means.map((m,i)=>({v:m,label:xs.cols[i],short:String(i+1)})).concat(newMeans.map((m,i)=>({v:m,label:"New sample "+(i+1),short:String(s.means.length+i+1),isNew:true})));
+  const runs = markRuns(pts, s.xbb);
+  $("#xChart").innerHTML = controlChart(pts, s.xbb, s.ucl, s.lcl, {fmt:v=>(Math.round(v*100)/100).toString(), aria:"X-bar chart"});
+  const rpts = s.ranges.map((m,i)=>({v:m,label:xs.cols[i]+" range",short:String(i+1)}));
+  $("#rChart").innerHTML = controlChart(rpts, s.rb, s.rucl, s.rlcl, {fmt:v=>(Math.round(v*100)/100).toString(), aria:"R chart", floor:0});
+  bindTips($("#xChart")); bindTips($("#rChart"));
+  $("#xLimits").innerHTML = `<p class="eyebrow">Control limits (n = ${s.n})</p>
+    <div class="kpis">
+      <div class="kpi"><span class="l">X̄̄ (center)</span><span class="v">${f2(s.xbb)}</span><span class="w">mean of ${s.means.length} sample means</span></div>
+      <div class="kpi"><span class="l">R̄</span><span class="v">${f2(s.rb)}</span><span class="w">mean range</span></div>
+      <div class="kpi"><span class="l">X̄ UCL / LCL</span><span class="v">${f2(s.ucl)} / ${f2(s.lcl)}</span><span class="w">X̄̄ ± ${s.A2}·R̄</span></div>
+      <div class="kpi"><span class="l">R UCL / LCL</span><span class="v">${f2(s.rucl)} / ${f2(s.rlcl)}</span><span class="w">D4·R̄ / D3·R̄ = ${s.D4} / ${s.D3}</span></div>
+    </div><p class="muted" style="font-size:.82rem">The book rounds X̄̄ and R̄ first (e.g., 5.0 and 2.6 for the ambulance), so its limits differ slightly in the second decimal.</p>`;
+  const histOutR = s.ranges.some(r=>r>s.rucl||r<s.rlcl), histOutX = s.means.some(m=>m>s.ucl||m<s.lcl);
+  const newOut = newMeans.map((m,i)=>m>s.ucl||m<s.lcl?i+1:0).filter(Boolean);
+  let msg = "";
+  if(histOutR) msg += `<span class="flag no">R-chart: variability out of control</span> Fix the process dispersion before relying on the X̄-chart. `;
+  else msg += `<span class="flag ok">R-chart in control</span> Variability is stable, so the X̄-chart can be built. `;
+  if(histOutX) msg += `<br><span class="flag no">Historical means outside limits</span> The baseline data are not representative; investigate and recompute. `;
+  if(newMeans.length){
+    msg += newOut.length ? `<br><span class="flag no">Signal</span> New sample${newOut.length>1?"s":""} ${newOut.join(", ")} ${newOut.length>1?"fall":"falls"} outside the limits. Evaluate, take corrective action, check results.` :
+      runs ? `<br><span class="flag no">Signal</span> A run of seven means on one side of the center line: the mean has probably shifted.` :
+      `<br><span class="flag ok">New samples in control</span> No action: reacting now would risk a Type I error.`;
+  }
+  $("#xVerdict").innerHTML = `<p class="eyebrow">Interpretation</p><p>${msg}</p>`;
+}
+function randn(){ let u=0,v=0; while(!u)u=Math.random(); while(!v)v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+$("#shift").addEventListener("input",()=>{ $("#shiftO").textContent = (+$("#shift").value>0?"+":"")+$("#shift").value+"σ"; });
+$("#xSim").addEventListener("click",()=>{
+  const s = xStats(); const sigma = s.rb/(D2[s.n]||2.059); const mu = s.xbb + (+$("#shift").value)*sigma;
+  const sims = Array.from({length:10},()=>{ let t=0; for(let i=0;i<s.n;i++) t+=mu+sigma*randn(); return Math.round(t/s.n*100)/100; });
+  const cur = $("#xNew").value.trim(); $("#xNew").value = (cur?cur+", ":"")+sims.join(", "); xRender();
+});
+$("#xClear").addEventListener("click",()=>{ $("#xNew").value=""; xRender(); });
+$("#xNew").addEventListener("change",xRender);
+$$("#xPreset button").forEach(b=>b.addEventListener("click",()=>loadX(b.dataset.p)));
+loadX("amb");
+
+/* ---------- SPC: p-chart ---------- */
+const PP = {
+  zip:{ n:100, pbar:0.05, data:"4, 7, 9, 6, 12, 8, 10, 11, 9", note:"Skilled sorters err about 5% of the time (p̄ = 0.05), samples of 100 parcels. The nine probation-day counts for the new operator are illustrative. Would you keep this person?", what:"errors" },
+  air:{ n:20, pbar:"", data:"17, 16, 18, 19, 16, 15, 20, 17, 18, 16", note:"On-time departures out of 20 daily flights at the Memphis hub over 10 days. Here p measures the share on time, so only falling below the LCL calls for investigation.", what:"on-time departures" },
+  lab:{ n:100, pbar:"", data:"8,3,1,0,4,2,9,6,3,1,4,6,5,10,2,1,0,6,3,2", note:"Exercise 6.7: incorrect analyses found when 100 blood samples are retested each day for 20 days. Part (b): the expected number per 100 is 100 × p̄.", what:"incorrect tests" },
+  gotham:{ n:1000, pbar:"", data:"14,18,14,12,16,8,19,12,14,7,10,18", note:"Exercise 6.6: monthly congestion reports at 1,000 intersections. Part (b) asks whether next year's Jan–Mar (15, 9, 11) justifies reprogramming the lights: plot them against these limits.", what:"congested intersections" }
+};
+let pWhat = "";
+function loadP(k){ const p=PP[k]; $("#pn").value=p.n; $("#pbar").value=p.pbar; $("#pdata").value=p.data; $("#pNote").textContent=p.note; pWhat=p.what; pRender(); }
+function pRender(){
+  const n = Math.max(1,+$("#pn").value||1);
+  const counts = $("#pdata").value.split(/[,;\s]+/).filter(Boolean).map(Number).filter(v=>!isNaN(v));
+  if(!counts.length){ $("#pChart").innerHTML=""; $("#pLimits").innerHTML="<p>Enter counts.</p>"; return; }
+  const props = counts.map(c=>c/n);
+  const pb = $("#pbar").value!=="" ? +$("#pbar").value : counts.reduce((a,b)=>a+b,0)/(counts.length*n);
+  const se = Math.sqrt(pb*(1-pb)/n);
+  let ucl = pb+3*se, lcl = pb-3*se; const uclRaw=ucl, lclRaw=lcl;
+  ucl = Math.min(1,ucl); lcl = Math.max(0,lcl);
+  const pts = props.map((v,i)=>({v, label:`Sample ${i+1}: ${counts[i]} of ${n}`, short:String(i+1)}));
+  markRuns(pts,pb);
+  $("#pChart").innerHTML = controlChart(pts,pb,ucl,lcl,{fmt:v=>f3(v),aria:"p chart",floor:0});
+  bindTips($("#pChart"));
+  const outs = pts.map((p,i)=>p.v>ucl+1e-9||p.v<lcl-1e-9?i+1:0).filter(Boolean);
+  $("#pLimits").innerHTML = `<p class="eyebrow">p-chart limits</p>
+    <div class="kpis">
+      <div class="kpi"><span class="l">p̄</span><span class="v">${f3(pb)}</span><span class="w">${$("#pbar").value!==""?"given":"Σ counts ÷ (samples × n)"}</span></div>
+      <div class="kpi"><span class="l">Standard error</span><span class="v">${f3(se)}</span><span class="w">√(p̄(1−p̄)/n)</span></div>
+      <div class="kpi"><span class="l">UCL</span><span class="v">${f3(ucl)}</span><span class="w">${uclRaw>1?`${f3(uclRaw)} → set to 1.00`:"p̄ + 3·SE"}</span></div>
+      <div class="kpi"><span class="l">LCL</span><span class="v">${f3(lcl)}</span><span class="w">${lclRaw<0?`${f3(lclRaw)} → set to 0`:"p̄ − 3·SE"}</span></div>
+    </div>
+    <p style="margin-top:6px">${outs.length?`<span class="flag no">Out of control</span> Sample${outs.length>1?"s":""} ${outs.join(", ")} ${outs.length>1?"fall":"falls"} outside the limits.`:pts.some(p=>p.run)?`<span class="flag no">Run of 7</span> Seven or more samples on one side of p̄.`:`<span class="flag ok">In control</span> All samples within limits.`}</p>
+    <p class="muted" style="font-size:.84rem">Expected ${pWhat||"count"} per sample: n × p̄ = ${f2(n*pb)}.</p>`;
+}
+["pn","pbar","pdata"].forEach(id=>$("#"+id).addEventListener("input",pRender));
+$$("#pPreset button").forEach(b=>b.addEventListener("click",()=>loadP(b.dataset.p)));
+loadP("zip");
+
+/* ---------- Guarantee grader ---------- */
+const FEAT = ["Unconditional","Easy to understand and communicate","Meaningful","Easy to invoke","Easy to collect"];
+const GUAR = [
+  {name:"Laundry", text:"\"Shirts ready by 5 PM the same day, or they're free. Just tell the counter staff.\"", met:[0,1,2,3,4], why:"No exceptions, a measurable promise, a refund worth having, and you invoke and collect it at the counter on the spot."},
+  {name:"Courier", text:"\"We guarantee excellent service.* *Refund requests must be mailed with the original receipt and are processed in 6–8 weeks. Excludes holidays.\"", met:[2], why:"\"Excellent service\" is not measurable, the exclusions make it conditional, and mailing receipts and waiting weeks make it hard to invoke and collect. Only the refund itself is meaningful."},
+  {name:"Coffee shop", text:"\"Order not ready in 5 minutes? Get a free cookie (minimum purchase Rp 200,000).\"", met:[1,3,4], why:"Clear and easy to claim at the counter, but the minimum purchase makes it conditional and a cookie is hardly meaningful to a customer who is in a hurry."}
+];
+let gi = 0;
+$("#gPick").innerHTML = GUAR.map((g,i)=>`<button data-i="${i}" aria-pressed="${i===0}">${g.name}</button>`).join("");
+function gRender(){
+  $$("#gPick button").forEach((b,i)=>b.setAttribute("aria-pressed",i===gi));
+  $("#gText").textContent = GUAR[gi].text;
+  $("#gChecks").innerHTML = FEAT.map((f,i)=>`<label><input type="checkbox" data-f="${i}"> ${f}</label>`).join("");
+  $("#gCheck").disabled=false;
+}
+$$("#gPick button").forEach(b=>b.addEventListener("click",()=>{ gi=+b.dataset.i; gRender(); }));
+$("#gCheck").addEventListener("click",()=>{
+  const g = GUAR[gi]; let right=0;
+  $$("#gChecks label").forEach(l=>{ const i=+$("input",l).dataset.f, on=$("input",l).checked, should=g.met.includes(i); if(on===should) right++;
+    l.style.borderColor = on===should?"var(--good)":"var(--bad)"; l.style.background = on===should?"var(--good-soft)":"var(--bad-soft)";
+    if(!l.querySelector(".ans")) l.insertAdjacentHTML("beforeend",`<span class="ans mono" style="margin-left:auto;font-size:.75rem">${should?"meets":"fails"}</span>`); });
+  $("#gChecks").insertAdjacentHTML("beforeend",`<p style="font-size:.9rem"><b>${right}/5 graded correctly.</b> ${g.why}</p>`);
+  $("#gCheck").disabled=true;
+});
+gRender();
+
+/* ---------- Complaint iceberg ---------- */
+function ice(){
+  const N=+$("#dis").value, q=+$("#resq").value/100;
+  $("#disO").textContent=N; $("#resqO").textContent=Math.round(q*100)+"%";
+  const comp = Math.round(N*0.04), silent=N-comp, serious=Math.round(silent*0.25);
+  const stayQ = Math.round(comp*q*0.95), staySlow = Math.round(comp*(1-q)*0.60);
+  const dots = Math.round(N/10), dc=Math.round(comp/10), ds=Math.round(serious/10);
+  $("#iceDots").innerHTML = Array.from({length:dots},(_,i)=>`<i class="${i<dc?"c":i<dc+ds?"s":""}"></i>`).join("");
+  $("#iceOut").innerHTML = `<p class="eyebrow">What happens to ${N.toLocaleString()} dissatisfied customers (1 square = 10 people)</p>
+    <div class="kpis">
+      <div class="kpi"><span class="l">You hear from</span><span class="v">${comp}</span><span class="w">4% complain</span></div>
+      <div class="kpi"><span class="l">Silent</span><span class="v">${silent}</span><span class="w">${serious} with serious problems</span></div>
+      <div class="kpi"><span class="l">Complainers retained</span><span class="v">${stayQ+staySlow} of ${comp}</span><span class="w">95% if fast, 60% if slow</span></div>
+      <div class="kpi"><span class="l">Negative word of mouth</span><span class="v">${(silent*10).toLocaleString()}–${(silent*20).toLocaleString()}</span><span class="w">people told by silent customers (10–20 each)</span></div>
+    </div>
+    <p style="font-size:.9rem">Each resolved complainer tells about 5 people, so ${(comp*5).toLocaleString()} people hear a recovery story. The hidden ${silent} are the real risk, which is why the policy is to <b>encourage</b> complaints and make complaining easy.</p>`;
+}
+["dis","resq"].forEach(id=>$("#"+id).addEventListener("input",ice)); ice();
+
+/* ---------- Recovery phases ---------- */
+const PH = [
+  ["Pre-recovery","Between the failure and the moment the firm becomes aware of it. The customer's recovery expectation forms here, driven by severity of the failure, past experience of service quality, loyalty, and any service guarantee.","Dark clouds gather. Guests know beach activities will be canceled but expect Club Med to have alternatives ready."],
+  ["Immediate recovery","Ends with fair restitution. Its quality depends on staff empathy, an appropriate response, speed of recovery and frontline discretion.","Staff improvise group games and stage shows: the \"Club Med magic\" that turns a storm into a memory."],
+  ["Follow-up","After restitution. Done well, it retains the customer and can raise loyalty above where it was before the failure.","Guests receive photos and souvenirs; in severe cases, a discount on a return visit."]
+];
+function phRender(i){ $$("#phase button").forEach((b,j)=>b.setAttribute("aria-pressed",i===j)); $("#phaseView").innerHTML=`<h3 style="margin:0 0 6px">${PH[i][0]}</h3><p>${PH[i][1]}</p><p class="muted" style="margin-top:6px"><b>Club Med:</b> ${PH[i][2]}</p>`; }
+$$("#phase button").forEach(b=>b.addEventListener("click",()=>phRender(+b.dataset.i))); phRender(0);
+
+/* ---------- Flashcards ---------- */
+const TERMS = [
+  ["RATER","The five dimensions of service quality: reliability, assurance, tangibles, empathy, responsiveness."],
+  ["Service quality gap (GAP 5)","The difference between the service a customer expected and the service the customer perceived."],
+  ["SERVQUAL","A customer survey instrument of 22 paired expectation and perception statements used to measure service quality gaps."],
+  ["Walk-through audit","A process-oriented survey given to customers, employees and managers to evaluate perceptions of the customer's service experience."],
+  ["Likert scale","Survey statements that ask for opinions ranging from \"strongly agree\" to \"strongly disagree\"."],
+  ["Poka-yoke","A foolproof device or checklist that helps employees (or customers) avoid a mistake."],
+  ["Quality function deployment","A process that builds a \"house of quality\" to bring customer needs into the design of a service process."],
+  ["Cost of quality","Juran's four categories: prevention, detection, internal failure and external failure costs."],
+  ["Statistical process control","Using a control chart to monitor a process performance measure and signal when intervention is needed."],
+  ["Control chart","A chart with upper and lower control limits on which sample means are plotted to show when a process is out of control."],
+  ["Type I error","Concluding a process is out of control when it is actually fine (producer's risk)."],
+  ["Type II error","Concluding a process is in control when it has actually shifted (consumer's risk)."],
+  ["Unconditional service guarantee","A service warranty that is unconditional, easy to understand, meaningful, easy to invoke and easy to collect."],
+  ["Service recovery","Converting a previously dissatisfied customer into a loyal customer."]
+];
+let fcOrder = TERMS.map((_,i)=>i), fcI = 0;
+function renderFc(){ const t = TERMS[fcOrder[fcI]]; $("#fc").classList.remove("flip"); $("#fcTerm").textContent=t[0]; $("#fcDef").textContent=t[1]; $("#fcCount").textContent=`${fcI+1} / ${TERMS.length}`; }
+$("#fc").addEventListener("click",()=>$("#fc").classList.toggle("flip"));
+$("#fcPrev").addEventListener("click",()=>{ fcI=(fcI-1+TERMS.length)%TERMS.length; renderFc(); });
+$("#fcNext").addEventListener("click",()=>{ fcI=(fcI+1)%TERMS.length; renderFc(); });
+$("#fcShuffle").addEventListener("click",()=>{ fcOrder=shuffle(fcOrder); fcI=0; renderFc(); });
+renderFc();
+
+/* ---------- Quiz ---------- */
+const LO_NAMES = {1:"Five dimensions",2:"Gap model",3:"Poka-yoke",4:"House of quality",5:"Control charts",6:"Service guarantees",7:"Walk-through audit",8:"Service recovery"};
+const Q = [
+ [1,"\"Performing the promised service dependably and accurately\" defines:",["Assurance","Reliability","Responsiveness","Tangibles"],1,"Reliability: on time, the same way, without errors, every time."],
+ [1,"An airline gate agent treats a passenger's missed connection as her own problem. Which dimension?",["Empathy","Assurance","Reliability","Tangibles"],0,"Caring, individualized attention is empathy."],
+ [1,"Serving free drinks on a delayed flight mainly addresses:",["Tangibles","Responsiveness","Assurance","Reliability"],1,"Prompt help and quick, professional recovery are responsiveness."],
+ [1,"A noisy guest in the next hotel room affects which dimension?",["Empathy","Tangibles","Reliability","Assurance"],1,"Tangibles can extend to the conduct of other customers."],
+ [1,"When perceived service exceeds expected service, quality is perceived as:",["Unacceptable","Satisfactory","Exceptional (a pleasant surprise)","Unmeasurable"],2,"Exceeding expectations creates exceptional quality."],
+ [1,"Which is NOT a source of customer expectations in Figure 6.1?",["Word of mouth","Personal needs","Past experience","The firm's cost structure"],3,"Expectations come from word of mouth, personal needs and past experience."],
+ [2,"The gap between customer expectations and management's perception of those expectations is:",["Gap 1: market research","Gap 2: design","Gap 3: conformance","Gap 4: communication"],0,"Management misunderstands what customers expect."],
+ [2,"A firm knows what customers want but fails to set standards for it. This is:",["Gap 1","Gap 2","Gap 3","Gap 5"],1,"The design gap: expectations not turned into workable standards."],
+ [2,"Poor employee selection, inadequate training and inappropriate job design mainly cause:",["Gap 1","Gap 2","Gap 3","Gap 4"],2,"The conformance gap: delivery doesn't meet the standards."],
+ [2,"An advertisement promises more than operations can deliver. This is:",["Gap 2","Gap 3","Gap 4","Gap 1"],2,"The communication gap."],
+ [2,"Which gap does SERVQUAL directly measure?",["Gap 1","Gap 3","Gap 4","Gap 5"],3,"SERVQUAL scores perception minus expectation: GAP 5."],
+ [2,"Juran found that internal and external failure costs together were what share of the total cost of quality?",["5–10%","20–30%","50–80%","Over 95%"],2,"50 to 80 percent, so he urged more attention to prevention."],
+ [2,"Recruitment and selection of service personnel is classified as which cost of quality?",["Prevention","Detection","Internal failure","External failure"],0,"Hiring the right people prevents failures."],
+ [2,"Negative word of mouth and loss of future business are:",["Detection costs","Prevention costs","Internal failure costs","External failure costs"],3,"They occur after the service reaches the customer."],
+ [3,"McDonald's French-fry scoop is a poka-yoke for which error type?",["Server task","Server treatment","Customer encounter","Customer preparation"],0,"It prevents doing the task incorrectly."],
+ [3,"Tellers record each customer's eye color. This poka-yoke targets:",["Tangible errors","Treatment errors","Resolution errors","Task errors"],1,"It forces eye contact: acknowledging the customer."],
+ [3,"Height bars at amusement rides are which customer poka-yoke?",["Preparation","Encounter","Resolution","Treatment"],1,"They guide customers during the encounter."],
+ [3,"Shouldice Hospital's medical questionnaire before admission is a:",["Preparation poka-yoke","Encounter poka-yoke","Resolution poka-yoke","Tangible poka-yoke"],0,"It ensures customers are prepared and suitable."],
+ [3,"According to Shingo, most errors happen because of:",["Incompetent employees","Interruptions in routine or lapses in attention","Poor customers","Lack of inspection"],1,"Hence low-cost, in-process failsafes instead of costly inspection."],
+ [4,"In a house of quality, the body of the matrix contains:",["Competitor prices","Strength of link between expectations and service elements (0–9)","Correlations between service elements","Difficulty ranks"],1,"The roof holds element correlations; the basement holds weighted scores and difficulty."],
+ [4,"Village Volvo's training score is (9)(8) + (7)(3) + (6)(5) + (4)(0) + (2)(2). What is it?",["99","117","127","145"],2,"72 + 21 + 30 + 0 + 4 = 127."],
+ [4,"The roof of the house of quality shows:",["Importance of customer expectations","Correlations between pairs of service elements","Competitive assessment","Weighted scores"],1,"E.g., a strong relationship between training and attitudes."],
+ [4,"Why did Village Volvo choose training as its first priority?",["Lowest weighted score","Highest weighted score, leverage with other elements, and not too hard to improve","Most capital-intensive","Customers asked for it by name"],1,"Score 127, links to attitudes, capacity and equipment, difficulty rank 4 of 5."],
+ [4,"QFD originated in:",["U.S. airlines","Japan, used extensively by Toyota","European banks","Hospital management"],1,"Developed in Japan and used by Toyota and its suppliers."],
+ [5,"Concluding a process is out of control when it is actually in control is a:",["Type I error (producer's risk)","Type II error (consumer's risk)","Correct decision","Sampling error"],0,"The producer bears the cost of the needless fix."],
+ [5,"Ambulance data: X̄̄ = 5.0, R̄ = 2.6, n = 4 (A2 = 0.729). The UCL of the X̄-chart is:",["5.7","6.9","7.6","8.0"],1,"5.0 + 0.729 × 2.6 = 6.9."],
+ [5,"For the same data, the R-chart UCL with D4 = 2.282 is:",["2.6","4.1","6.0","6.9"],2,"2.282 × 2.6 = 5.9 ≈ 6.0."],
+ [5,"Besides a point outside the limits, the chapter treats which pattern as out of control?",["Two points near the center line","A run of seven means all above or all below the average","Alternating up and down points","Any point above the mean"],1,"A run of seven on one side signals a shifted mean."],
+ [5,"Why is the R-chart usually built before the X̄-chart?",["It is easier to draw","To confirm process variability is in control first","It uses fewer data","It replaces the X̄-chart"],1,"The X̄-chart limits rely on R̄, so dispersion must be stable."],
+ [5,"ZIP sorting: p̄ = 0.05, n = 100. The UCL of the p-chart is about:",["0.07","0.09","0.115","0.15"],2,"0.05 + 3√(0.05×0.95/100) = 0.05 + 3(0.0218) = 0.115."],
+ [5,"When the computed LCL of a p-chart is negative, you:",["Use its absolute value","Set it to zero","Increase the sample size until positive","Ignore the chart"],1,"Proportions cannot be negative."],
+ [5,"Airline on-time p̄ = 0.86 with 20 flights per day. The LCL is 0.63. Action is taken when:",["Any day is below 0.86","On-time share falls below 63%","On-time share exceeds 1.00","Never"],1,"Fewer than 13 of 20 on time would trigger an investigation."],
+ [5,"Which chart suits the number of billing errors per 100 invoices?",["X̄-chart","R-chart","p-chart","Gantt chart"],2,"An attribute (proportion defective) calls for a p-chart."],
+ [6,"Domino's offered $3 off instead of a free pizza because customers found it more reasonable. This illustrates which guarantee feature?",["Unconditional","Meaningful","Easy to invoke","Easy to collect"],1,"The guarantee must matter to customers, financially and in service terms."],
+ [6,"\"Lunch served in 15 minutes or it's free\" best shows which feature?",["Easy to understand and communicate","Unconditional","Easy to collect","Meaningful"],0,"A precise, measurable promise."],
+ [6,"Which is a managerial benefit of a service guarantee?",["It removes the need for training","It sets clear standards for employees","It hides failures from management","It raises prices automatically"],1,"FedEx's \"absolutely, positively by 10:30 AM\" defines everyone's responsibilities."],
+ [6,"Hampton Inns estimated it received how much revenue for every $1 paid to disgruntled guests?",["$2","$4","$8","$20"],2,"About $8 for every $1 refunded."],
+ [7,"A walk-through audit differs from a customer satisfaction survey mainly because it is:",["Marketing-oriented","Operations/process-oriented, covering each stage of delivery","Shorter","Only for managers"],1,"It traces the whole experience to find improvement opportunities."],
+ [7,"The first step in designing a walk-through audit is to:",["Pick a Likert scale","Flowchart the customer's interactions with the service","Hire a marketing firm","Offer a reward"],1,"The audit follows the delivery process."],
+ [7,"WtA items should be written as:",["Open questions","Declarative statements rated on a Likert scale","Yes/no questions","Ranked lists"],1,"E.g., \"Signs give clear information about exhibit locations.\""],
+ [7,"Why might managers rate a facility higher than customers in a WtA?",["Managers are less honest","They see it daily and miss gradual deterioration","Customers always complain","Managers use a different scale"],1,"Infrequent visitors notice peeling paint and worn rugs."],
+ [8,"What share of dissatisfied customers actually complain to the business?",["4%","25%","50%","96%"],0,"Only 4%; of the silent 96%, a quarter have serious problems."],
+ [8,"If a complaint is resolved quickly, about what share of complainers stay?",["25%","60%","80%","95%"],3,"95% if resolved quickly; about 60% if resolved."],
+ [8,"An overbooked hotel books the guest at a nearby competitor and pays for it. This recovery approach is:",["Case-by-case","Systematic response","Early intervention","Substitute service"],3,"Allowing a competitor to serve the customer: the risk is losing them."],
+ [8,"In which recovery phase is the customer's recovery expectation formed?",["Pre-recovery","Immediate recovery","Follow-up","Post-purchase"],0,"Driven by severity, past quality, loyalty and any guarantee."],
+ [8,"The main weakness of the case-by-case recovery approach is that it:",["Is too expensive","Can be inconsistent and seem unfair","Requires a competitor","Must be automated"],1,"Persistent complainers get more than reasonable ones."]
+];
+const quizEl = $("#quiz");
+let run = null;
+function setup(){
+  const best = store.get("ch6_best");
+  quizEl.innerHTML = `<div class="qz-setup">
+    <p>Questions are drawn from all eight learning objectives, including control-chart calculations. You get feedback after each answer and a breakdown by objective at the end.</p>
+    <div><p class="eyebrow" style="margin-bottom:6px">Length</p><div class="seg" id="qzLen">
+      <button data-n="10" aria-pressed="true">Quick · 10 questions</button><button data-n="20" aria-pressed="false">Standard · 20</button><button data-n="${Q.length}" aria-pressed="false">Full · all ${Q.length}</button></div></div>
+    <div><p class="eyebrow" style="margin-bottom:6px">Focus</p><div class="seg" id="qzLo"><button data-lo="0" aria-pressed="true">All objectives</button>${Object.keys(LO_NAMES).map(k=>`<button data-lo="${k}" aria-pressed="false">LO${k}</button>`).join("")}</div></div>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><button class="btn" id="qzStart">Start self-test</button>${best!=null?`<span class="muted mono" style="font-size:.82rem">Your best on this device: ${best}%</span>`:""}</div>
+  </div>`;
+  let n=10, lo=0;
+  $$("#qzLen button").forEach(b=>b.addEventListener("click",()=>{ $$("#qzLen button").forEach(x=>x.setAttribute("aria-pressed",x===b)); n=+b.dataset.n; }));
+  $$("#qzLo button").forEach(b=>b.addEventListener("click",()=>{ $$("#qzLo button").forEach(x=>x.setAttribute("aria-pressed",x===b)); lo=+b.dataset.lo; }));
+  $("#qzStart").addEventListener("click",()=>{
+    let pool = Q.map((q,i)=>i).filter(i=>!lo||Q[i][0]===lo);
+    pool = shuffle(pool).slice(0, Math.min(n,pool.length));
+    run = {qs: pool.map(i=>{ const q=Q[i]; const order=shuffle(q[2].map((_,j)=>j)); return {lo:q[0], text:q[1], opts:order.map(j=>q[2][j]), ans:order.indexOf(q[3]), exp:q[4]}; }), i:0, picks:[]};
+    showQ();
+  });
+}
+function showQ(){
+  const r=run, q=r.qs[r.i], picked=r.picks[r.i];
+  quizEl.innerHTML = `<div class="qz-top"><span class="eyebrow">Question ${r.i+1} of ${r.qs.length} · LO${q.lo} ${LO_NAMES[q.lo]}</span><span class="mono muted" style="font-size:.8rem">${r.picks.filter((p,k)=>p===r.qs[k].ans).length} correct so far</span></div>
+    <div class="qz-prog"><i style="width:${(r.i)/r.qs.length*100}%"></i></div>
+    <p class="qz-q">${q.text}</p>
+    <div class="qz-opts">${q.opts.map((o,j)=>`<button data-j="${j}"><span class="k">${"ABCD"[j]}</span><span>${o}</span></button>`).join("")}</div>
+    <div id="qzExp"></div>
+    <div class="qz-nav"><button class="btn ghost" id="qzQuit">Quit</button><button class="btn" id="qzNext" ${picked==null?"disabled":""}>${r.i===r.qs.length-1?"See results":"Next question"}</button></div>`;
+  const lock = (j)=>{
+    $$(".qz-opts button").forEach(b=>{ b.disabled=true; const k=+b.dataset.j; if(k===q.ans) b.classList.add("right"); else if(k===j) b.classList.add("wrong"); });
+    const ok = j===q.ans;
+    $("#qzExp").innerHTML = `<div class="qz-exp ${ok?"ok":"no"}"><b>${ok?"Correct.":"Not quite. The answer is "+"ABCD"[q.ans]+"."}</b>${q.exp}</div>`;
+    $("#qzNext").disabled=false;
+  };
+  if(picked!=null) lock(picked);
+  $$(".qz-opts button").forEach(b=>b.addEventListener("click",()=>{ const j=+b.dataset.j; r.picks[r.i]=j; lock(j); $("#qzNext").focus(); }));
+  $("#qzNext").addEventListener("click",()=>{ if(r.i<r.qs.length-1){ r.i++; showQ(); } else results(); });
+  $("#qzQuit").addEventListener("click",setup);
+}
+function results(){
+  const r=run; const right=r.qs.filter((q,k)=>r.picks[k]===q.ans).length; const pct=Math.round(right/r.qs.length*100);
+  const best=store.get("ch6_best"); if(best==null||pct>best) store.set("ch6_best",pct);
+  const by={}; r.qs.forEach((q,k)=>{ by[q.lo]=by[q.lo]||{r:0,t:0}; by[q.lo].t++; if(r.picks[k]===q.ans) by[q.lo].r++; });
+  const verdict = pct>=85?"Strong grasp of the chapter.":pct>=65?"Good foundation. Review the objectives below 70%.":"Revisit the units for the weaker objectives, then try again.";
+  const unitFor = {1:"rater",2:"gaps",3:"design",4:"qfd",5:"spc",6:"guarantee",7:"measure",8:"guarantee"};
+  quizEl.innerHTML = `<div class="res-big"><span class="pct" style="color:${pct>=65?"var(--good)":"var(--bad)"}">${pct}%</span><span>${right} of ${r.qs.length} correct. ${verdict}</span></div>
+    <div><p class="eyebrow" style="margin-bottom:8px">By learning objective</p><div class="lo-bars">${Object.keys(by).sort().map(k=>{const v=by[k],p=Math.round(v.r/v.t*100);return `<div class="lo-row"><span><b class="mono">LO${k}</b> ${LO_NAMES[k]}${p<70?` · <a href="#${unitFor[k]}" style="color:var(--accent)">review</a>`:""}</span><span class="b"><i style="width:${p}%;background:${p>=70?"var(--good)":"var(--bad)"}"></i></span><span class="v">${v.r}/${v.t}</span></div>`;}).join("")}</div></div>
+    <div><p class="eyebrow" style="margin-bottom:8px">Review your answers</p><div class="review">${r.qs.map((q,k)=>{const ok=r.picks[k]===q.ans;return `<details ${ok?"":"open"}><summary><span class="mk ${ok?"ok":"no"}">${ok?"✓":"✗"}</span>${q.text}</summary><p><b>Your answer:</b> ${q.opts[r.picks[k]]}${ok?"":`<br><b>Correct:</b> ${q.opts[q.ans]}`}</p><p class="muted">${q.exp}</p></details>`;}).join("")}</div></div>
+    <div class="qz-nav"><button class="btn ghost" id="qzNew">Change settings</button><button class="btn" id="qzAgain">Retake with new questions</button></div>`;
+  $("#qzNew").addEventListener("click",setup);
+  $("#qzAgain").addEventListener("click",()=>{ setup(); $("#qzStart").click(); });
+  quizEl.scrollIntoView({block:"start"});
+}
+setup();
+
+/* ---------- Progress & nav ---------- */
+const units = $$("[data-unit]").map(s=>s.id);
+const seen = new Set(store.get("ch6_seen")||[]);
+function refreshProgress(){
+  const n = units.filter(u=>seen.has(u)).length;
+  $("#meterTxt").textContent = `${n} / ${units.length} units`;
+  $("#meterBar").style.width = (n/units.length*100)+"%";
+  $$("#tocList a").forEach(a=>a.classList.toggle("seen", seen.has(a.getAttribute("href").slice(1))));
+  store.set("ch6_seen",[...seen]);
+}
+if("IntersectionObserver" in window){
+  const io = new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ const id=e.target.id; $$("#tocList a").forEach(a=>a.classList.toggle("here", a.getAttribute("href")==="#"+id)); } }); },{rootMargin:"-40% 0px -55% 0px"});
+  $$("section.unit").forEach(s=>io.observe(s));
+  $$("[data-unit]").forEach(s=>{ const end=document.createElement("span"); end.style.cssText="display:block;height:1px"; end.dataset.for=s.id; s.appendChild(end); });
+  const endObs = new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ seen.add(e.target.dataset.for); refreshProgress(); endObs.unobserve(e.target);} }); });
+  $$("[data-for]").forEach(el=>endObs.observe(el));
+}
+refreshProgress();
+})();
+</script>
+</body>
+</html>
