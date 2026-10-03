@@ -153,11 +153,12 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 (function(){
 const PARTS = [
   {name:"Understanding Services", blurb:"The role of services in the economy and how service firms compete.", chapters:[[1,"The Service Economy"],[2,"Service Strategy"]]},
-  {name:"Designing the Service Enterprise", blurb:"Designing the service, the encounter, the facility and its quality.", chapters:[[3,"New Service Development"],[4,"The Service Encounter"],[5,"Supporting Facility and Process Flows"],[6,"Service Quality"],[7,"Process Improvement"],[8,"Service Facility Location"]]},
+  {name:"Designing the Service Enterprise", blurb:"Designing the service, the encounter, the facility and its quality.", chapters:[[3,"New Service Development"],[4,"The Service Encounter"],[5,"Supporting Facility and Process Flows"],[6,"Service Quality"],["6S","Supplement: Improving Service Quality"],[7,"Process Improvement"],[8,"Service Facility Location"]]},
   {name:"Managing Service Operations", blurb:"Supply relationships, globalization, capacity, demand and queues.", chapters:[[9,"Service Supply Relationships"],[10,"Globalization of Services"],[11,"Managing Capacity and Demand"],[12,"Managing Waiting Lines"],[13,"Capacity Planning and Queuing Models"]]},
   {name:"Quantitative Models", blurb:"Forecasting, inventory and project management for services.", chapters:[[14,"Forecasting Demand for Services"],[15,"Managing Service Inventory"],[16,"Managing Service Projects"]]}
 ];
 const LIVE = {
+  "6S":{href:"ch06s/", desc:"A hands-on improvement toolkit: score a 22-item SERVQUAL survey, map attributes on an importance-performance grid (Martilla & James), rank priorities with a Pareto chart, find root causes with a fishbone diagram and the 5 Whys, and write a 5W1H corrective action plan. Bring your own survey data.", units:7, qs:36, tags:["7 objectives","4 practice sets","Use your own data","Flashcards"], labs:["SERVQUAL scorer","IPA grid","Pareto","Fishbone builder","5 Whys","5W1H plan"], key:"ch6s"},
   3:{href:"ch03/", desc:"Sources of service growth, levels of innovation, technology readiness and blockchain, the NSD cycle, service blueprinting, complexity and divergence, the process taxonomy, four design approaches and intellectual property, with Indonesian examples throughout.", units:9, qs:48, tags:["8 objectives","7 practice sets","Indonesian examples","Flashcards"], labs:["Blueprint explorer","Positioning map","Blockchain demo","Readiness check"], key:"ch3"},
   4:{href:"ch04/", desc:"Moments of truth, the service encounter triad, empowerment and control systems, selecting and training contact staff, customer types, and the service profit chain.", units:8, qs:39, tags:["8 objectives","4 practice sets","Flashcards"], labs:["Profit chain stepper"], key:"ch4"},
   5:{href:"ch05/", desc:"Servicescapes, facility design, process flow analysis and metrics, line balancing, and relative-location layout.", units:7, qs:35, tags:["7 objectives","3 practice sets","Flashcards"], labs:["Process metrics lab","Line balancing lab","Layout lab"], key:"ch5"},
@@ -190,8 +191,8 @@ document.getElementById("map").innerHTML = PARTS.map((p,i)=>`
 
 // continue panel
 document.getElementById("contList").innerHTML = Object.keys(LIVE).map(n=>{
-  const L=LIVE[n], g=prog(+n);
-  const t = PARTS.flatMap(p=>p.chapters).find(c=>c[0]===+n)[1];
+  const L=LIVE[n], g=prog(n);
+  const t = PARTS.flatMap(p=>p.chapters).find(c=>String(c[0])===String(n))[1];
   return `<a class="cont-row" href="${L.href}"><span class="n">${n}</span><span class="t">${t}<small>${g.seen} of ${g.units} units${g.best!=null?` · best ${g.best}%`:""}</small><span class="bar"><i style="width:${g.seen/g.units*100}%"></i></span></span><span class="pct">→</span></a>`;
 }).join("");
 })();
