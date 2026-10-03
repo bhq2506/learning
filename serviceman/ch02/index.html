@@ -1,0 +1,1438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Service Strategy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky chapter rail on the left (chip bar on phones) + one reading column of study units with textbook concepts, green Indonesian-example boxes and hands-on labs, ending in flashcards and a scored self-test. */
+:root{
+  --bg:#F2F4F8; --surface:#FFFFFF; --sunk:#E9EDF4; --ink:#15203A; --muted:#566079; --line:#D6DCE7;
+  --accent:#2B57C9; --accent-ink:#FFFFFF; --accent-soft:#E2E9FA;
+  --gold:#B57A00; --gold-soft:#FAF0D4;
+  --good:#1B7F53; --good-soft:#DDF3E8; --bad:#B73A33; --bad-soft:#F9E1DF;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0E1420; --surface:#161F31; --sunk:#1C2740; --ink:#E5E9F2; --muted:#9BA6BC; --line:#2A3551;
+  --accent:#7E9EF3; --accent-ink:#0E1420; --accent-soft:#1F2C50;
+  --gold:#E6B54B; --gold-soft:#3A2E10;
+  --good:#4FC48C; --good-soft:#12342A; --bad:#F07C72; --bad-soft:#3C1B19; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0E1420; --surface:#161F31; --sunk:#1C2740; --ink:#E5E9F2; --muted:#9BA6BC; --line:#2A3551;
+  --accent:#7E9EF3; --accent-ink:#0E1420; --accent-soft:#1F2C50;
+  --gold:#E6B54B; --gold-soft:#3A2E10;
+  --good:#4FC48C; --good-soft:#12342A; --bad:#F07C72; --bad-soft:#3C1B19; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6}
+h1,h2,h3,h4{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+h2{font-size:clamp(1.6rem,3.2vw,2.1rem);font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.2rem;font-weight:700;margin-top:.4rem}
+p{margin:0}
+.mono{font-family:var(--f-mono)}
+.eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+/* Top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1180px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px;min-width:0}
+.brand .ch{font-family:var(--f-mono);font-size:.8rem;background:var(--ink);color:var(--bg);padding:2px 8px;border-radius:4px}
+.brand b{font-family:var(--f-display);font-size:1.05rem}
+.meter{margin-left:auto;display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+.meter .bar{width:140px;height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.meter .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .4s}
+
+/* Shell */
+.shell{max-width:1180px;margin:0 auto;padding-inline:16px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:40px}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);align-self:start;padding-block:28px}
+.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.toc a{display:flex;gap:10px;align-items:center;padding:7px 10px;border-radius:8px;color:var(--muted);text-decoration:none;font-size:.92rem;line-height:1.3}
+.toc a .n{font-family:var(--f-mono);font-size:.74rem;width:1.6em;flex:none}
+.toc a .dot{margin-left:auto;width:8px;height:8px;border-radius:50%;border:1.5px solid var(--line);flex:none}
+.toc a.seen .dot{background:var(--accent);border-color:var(--accent)}
+.toc a.here{background:var(--surface);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.toc .lo-note{margin-top:18px;font-size:.8rem;color:var(--muted)}
+main{padding-block:28px 80px;min-width:0}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:0}
+  .top-in{flex-wrap:nowrap}
+  .brand b{font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .toc{position:static;background:var(--bg);padding-block:8px;border-bottom:1px solid var(--line);margin-inline:-16px;padding-inline:16px}
+  .toc ol{flex-direction:row;overflow-x:auto;gap:6px;scrollbar-width:none}
+  .toc a{white-space:nowrap;background:var(--surface);box-shadow:0 0 0 1px var(--line);padding:6px 10px}
+  .toc a .dot{display:none}
+  .toc .lo-note{display:none}
+  .meter .bar{width:80px}
+}
+
+/* Sections */
+section.unit{padding-block:36px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:18px;scroll-margin-top:80px}
+section.unit:first-child{padding-top:8px}
+.unit-head{display:flex;flex-direction:column;gap:8px}
+.lo-tags{display:flex;gap:6px;flex-wrap:wrap}
+.lo{font-family:var(--f-mono);font-size:.72rem;padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:500}
+.lead{font-size:1.08rem;max-width:66ch;color:var(--ink)}
+.prose{max-width:68ch;display:flex;flex-direction:column;gap:12px}
+.prose p{color:var(--ink)}
+.muted{color:var(--muted)}
+.callout{background:var(--gold-soft);border-radius:var(--r);padding:14px 16px;max-width:70ch}
+.callout .eyebrow{color:var(--gold)}
+.fig{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+
+/* Hero */
+.hero{padding-block:8px 34px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px;align-items:center}
+.hero h1{font-size:clamp(2.2rem,5.5vw,3.6rem);font-weight:800;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .sub{margin-top:14px;font-size:1.08rem;max-width:56ch;color:var(--muted)}
+.hero .cta{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:8px;padding:10px 16px;font-weight:600;background:var(--accent);color:var(--accent-ink);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn.ghost{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.journey{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.journey ol{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column}
+.journey li{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-top:1px dashed var(--line);font-size:.92rem}
+.journey li:first-child{border-top:0}
+.journey .pip{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);justify-self:center}
+.journey .md{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+@media (max-width:760px){.hero{grid-template-columns:minmax(0,1fr)}}
+
+.objectives{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.objectives li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:flex;gap:12px;font-size:.94rem}
+.objectives .num{font-family:var(--f-mono);color:var(--accent);font-weight:500;flex:none}
+.objectives{padding:0;margin:0}
+@media (max-width:640px){.objectives{grid-template-columns:minmax(0,1fr)}}
+
+/* Generic panels */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.grid3,.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.grid2,.grid3,.grid4{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card h4{font-size:1rem}
+.card p{font-size:.93rem}
+.card .tag{font-family:var(--f-mono);font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+/* Tabs / segmented */
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;font-size:.9rem;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* Tech modes */
+.modes{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:18px;align-items:start}
+.mode-list{display:flex;flex-direction:column;gap:6px}
+.mode-list button{display:flex;gap:12px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px}
+.mode-list button .L{font-family:var(--f-display);font-weight:800;font-size:1.3rem;width:28px;color:var(--accent)}
+.mode-list button small{display:block;color:var(--muted);font-size:.78rem}
+.mode-list button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.mode-view{display:flex;flex-direction:column;gap:12px}
+.mode-view svg{width:100%;max-width:420px;height:auto}
+.mode-view .ex{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:.8rem;padding:3px 9px;border-radius:99px;background:var(--sunk);color:var(--ink)}
+@media (max-width:700px){.modes{grid-template-columns:minmax(0,1fr)}}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-weight:500;font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--sunk)}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+.ctrl th.hl, .ctrl td.hl{background:var(--accent-soft)}
+
+/* Activity */
+.activity{background:var(--surface);border:1.5px dashed var(--accent);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.activity-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.activity-head .eyebrow{color:var(--accent)}
+.activity-head .score{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.items{display:flex;flex-direction:column;gap:10px}
+.item{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+.item .q{font-size:.95rem}
+.item .opts{display:flex;flex-wrap:wrap;gap:6px}
+.item .opts button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 10px;font-size:.84rem}
+.item .opts button:hover:not(:disabled){border-color:var(--accent)}
+.item .opts button.right{background:var(--good-soft);border-color:var(--good);color:var(--good);font-weight:600}
+.item .opts button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.item .fb{font-size:.86rem;color:var(--muted)}
+.item.done-ok{border-color:var(--good)}
+.item.done-bad{border-color:var(--bad)}
+
+/* Triad */
+.triad{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:center}
+.triad svg{width:100%;max-width:440px;height:auto;justify-self:center}
+.triad .node{cursor:pointer}
+.triad .node rect{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.triad .node.on rect{stroke:var(--accent);stroke-width:2.5;fill:var(--accent-soft)}
+.triad .node text{fill:var(--ink);font-family:var(--f-display);font-weight:700;font-size:15px}
+.triad .edge line{stroke:var(--muted);stroke-width:2}
+.triad .edge.on line{stroke:var(--accent);stroke-width:3.5}
+.triad .edge text{fill:var(--muted);font-family:var(--f-mono);font-size:12px}
+.triad .edge.on text{fill:var(--accent);font-weight:500}
+.triad .edge{cursor:pointer}
+.triad .hit{stroke:transparent;stroke-width:22}
+@media (max-width:760px){.triad{grid-template-columns:minmax(0,1fr)}}
+
+/* Chain */
+.chain{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.chain button{flex:1 1 120px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;text-align:left;font-size:.86rem;line-height:1.3;position:relative;min-width:0}
+.chain button .s{font-family:var(--f-mono);font-size:.7rem;color:var(--muted);display:block;margin-bottom:4px}
+.chain button.zone-in{border-top:4px solid var(--gold)}
+.chain button.zone-out{border-top:4px solid var(--accent)}
+.chain button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chain button[aria-pressed="true"] .s{color:var(--bg)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:4px;vertical-align:middle;margin-right:6px}
+
+/* Flashcards */
+.fc-wrap{display:flex;flex-direction:column;gap:12px;align-items:center}
+.fc{width:min(100%,560px);aspect-ratio:16/9;max-width:100%;perspective:1200px;border:0;background:none;padding:0}
+.fc-in{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.fc.flip .fc-in{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:22px;text-align:center;border:1px solid var(--line)}
+.fc-front{background:var(--surface)}
+.fc-front b{font-family:var(--f-display);font-size:clamp(1.4rem,4vw,2rem)}
+.fc-back{background:var(--ink);color:var(--bg);transform:rotateY(180deg);font-size:1rem}
+.fc-face small{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;opacity:.7;position:absolute;top:14px;left:16px}
+.fc-ctrl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+.fc-ctrl .count{font-family:var(--f-mono);font-size:.82rem;color:var(--muted);min-width:60px;text-align:center}
+
+/* Quiz */
+.quiz{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.qz-setup{display:flex;flex-direction:column;gap:14px}
+.qz-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.qz-prog{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.qz-prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.qz-q{font-family:var(--f-display);font-size:1.25rem;font-weight:700}
+.qz-opts{display:flex;flex-direction:column;gap:8px}
+.qz-opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.qz-opts button .k{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);flex:none;padding-top:2px}
+.qz-opts button:hover:not(:disabled){border-color:var(--accent)}
+.qz-opts button.right{border-color:var(--good);background:var(--good-soft)}
+.qz-opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.qz-exp{border-radius:10px;padding:12px 14px;font-size:.93rem}
+.qz-exp.ok{background:var(--good-soft)}
+.qz-exp.no{background:var(--bad-soft)}
+.qz-exp b{display:block;margin-bottom:2px}
+.qz-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.res-big{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.res-big .pct{font-family:var(--f-display);font-weight:800;font-size:3.4rem;line-height:1}
+.lo-bars{display:flex;flex-direction:column;gap:8px}
+.lo-row{display:grid;grid-template-columns:minmax(0,1fr) 120px 48px;gap:10px;align-items:center;font-size:.86rem}
+.lo-row .b{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.lo-row .b i{display:block;height:100%}
+.lo-row .v{font-family:var(--f-mono);font-size:.78rem;text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:520px){.lo-row{grid-template-columns:minmax(0,1fr) 70px 42px}}
+.review{display:flex;flex-direction:column;gap:8px}
+.review details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.review summary{cursor:pointer;font-size:.92rem}
+.review .mk{font-family:var(--f-mono);font-weight:600;margin-right:6px}
+.review .mk.ok{color:var(--good)} .review .mk.no{color:var(--bad)}
+.review p{font-size:.88rem;margin-top:6px}
+
+.case{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px}
+@media (max-width:760px){.case{grid-template-columns:minmax(0,1fr)}}
+.case ol, .prose ol, .prose ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.dialog{display:flex;flex-direction:column;gap:8px}
+.line{padding:10px 12px;border-radius:10px;font-size:.92rem;max-width:88%}
+.line.c{background:var(--sunk);align-self:flex-start}
+.line.e{background:var(--accent-soft);align-self:flex-end}
+.line b{font-family:var(--f-mono);font-size:.7rem;display:block;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+footer{padding-block:24px;font-size:.8rem;color:var(--muted)}
+
+/* Chapter 5 additions */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.vs b{font-family:var(--f-display)}
+.vs ul{margin:6px 0 0;padding-left:1.1em;font-size:.88rem;display:flex;flex-direction:column;gap:2px}
+.grid5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.grid5{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:460px){.grid5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.sym{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
+.sym svg{width:90px;height:50px}
+.sym svg ellipse,.sym svg rect,.sym svg polygon{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.sym svg line{stroke:var(--accent);stroke-width:2.5}
+.sym svg polygon.fillink{fill:var(--accent);stroke:none}
+.sym b{font-size:.92rem}
+.sym span{font-size:.78rem;color:var(--muted)}
+.typo tbody tr{cursor:pointer}
+.typo tbody tr:hover td{background:var(--sunk)}
+.typo tbody tr.on td{background:var(--accent-soft)}
+.frame{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+.fcol{flex:1 1 150px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.farrow{align-self:center;font-size:1.4rem;color:var(--muted)}
+.fbox{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;font-weight:600;font-size:.9rem;text-align:left}
+button.fbox:hover{border-color:var(--accent)}
+button.fbox[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.fbox.static{background:var(--sunk)}
+.fbox.small{font-size:.84rem}
+.fbox span{font-weight:400;font-size:.78rem;color:var(--muted)}
+.fbox.good{border-color:var(--good);background:var(--good-soft)}
+.fbox.bad{border-color:var(--bad);background:var(--bad-soft)}
+@media (max-width:760px){.farrow{transform:rotate(90deg);align-self:flex-start}.fcol{flex-basis:100%}}
+
+.pfd{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px}
+.pfd svg{min-width:680px;width:100%;height:auto;display:block}
+.pfd text{font-family:var(--f-body);fill:var(--ink)}
+.pfd .ct{font-family:var(--f-mono);font-size:12px;fill:var(--muted)}
+.pfd .box{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.pfd .box.bn{fill:var(--bad-soft);stroke:var(--bad);stroke-width:2.5}
+.pfd .term{fill:var(--sunk);stroke:var(--muted);stroke-width:1.5}
+.pfd .wait{fill:var(--gold-soft);stroke:var(--gold);stroke-width:1.5}
+.pfd .ln{stroke:var(--muted);stroke-width:1.6;fill:none}
+.pfd .ln.crit{stroke:var(--ink);stroke-width:2.6}
+.pfd .ah{fill:var(--muted)}
+
+.lab{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:16px;align-items:start}
+@media (max-width:820px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab-in,.lab-out{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.inrow{display:grid;grid-template-columns:minmax(0,1fr) 80px 60px;gap:8px;align-items:center;font-size:.92rem}
+.inrow input,.inrow select,.lb-row select{font:inherit;font-family:var(--f-mono);font-size:.9rem;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
+.check{display:flex;gap:8px;align-items:center;font-size:.9rem}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi .l{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.kpi .v{font-family:var(--f-display);font-weight:700;font-size:1.35rem;font-variant-numeric:tabular-nums}
+.kpi .w{font-size:.78rem;color:var(--muted);font-family:var(--f-mono)}
+.kpi.bn{border-color:var(--bad);background:var(--bad-soft)}
+.gantt-wrap{overflow-x:auto}
+.gantt-wrap svg{min-width:640px;width:100%;height:auto;display:block}
+.gantt-wrap text{font-family:var(--f-mono);font-size:11px;fill:var(--muted)}
+.gantt-wrap .lbl{font-family:var(--f-body);font-size:12px;fill:var(--ink)}
+.gantt-wrap .grid{stroke:var(--line);stroke-width:1}
+.gantt-wrap .bar-t{font-family:var(--f-mono);font-size:11px;fill:var(--accent-ink);font-weight:500}
+
+.lb-row{display:grid;grid-template-columns:28px minmax(0,1fr) 52px 104px;gap:8px;align-items:center;font-size:.88rem;padding:6px 0;border-top:1px dashed var(--line)}
+.lb-row:first-child{border-top:0}
+.lb-row .t{font-family:var(--f-mono);text-align:right;color:var(--muted)}
+.lb-row .id{font-family:var(--f-mono);font-weight:500;color:var(--accent)}
+.job{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.job + .job{margin-top:8px}
+.job.bn{border-color:var(--bad);background:var(--bad-soft)}
+.job .nm{font-weight:600;font-size:.92rem}
+.job .meta{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);grid-column:1/-1}
+.step{display:inline-flex;align-items:center;gap:6px}
+.step button{width:28px;height:28px;border-radius:7px;border:1px solid var(--line);background:var(--surface);font-weight:600}
+.step span{font-family:var(--f-mono);min-width:1.5em;text-align:center}
+.ratebar{grid-column:1/-1;height:6px;background:var(--sunk);border-radius:99px;position:relative;overflow:visible}
+.ratebar i{display:block;height:100%;border-radius:99px;background:var(--accent)}
+.ratebar b{position:absolute;top:-4px;width:2px;height:14px;background:var(--ink)}
+.verdict{border-radius:10px;padding:12px 14px;font-size:.92rem;margin-top:10px}
+.verdict.ok{background:var(--good-soft)}
+.verdict.no{background:var(--gold-soft)}
+.grid-lay{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-width:360px}
+.grid-lay button{aspect-ratio:1/1;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px}
+.grid-lay button b{font-family:var(--f-display);font-size:1.6rem;line-height:1}
+.grid-lay button span{font-size:.7rem;color:var(--muted);text-align:center;line-height:1.2}
+.grid-lay button.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px var(--accent-soft)}
+.mx td,.mx th{text-align:center;font-family:var(--f-mono);font-variant-numeric:tabular-nums;padding:6px 8px}
+.mx td:first-child,.mx th:first-child{text-align:left}
+.mx td.far{background:var(--bad-soft);color:var(--bad);font-weight:600}
+.mx td.near{color:var(--good)}
+.pairs{font-family:var(--f-mono);font-size:.84rem;display:flex;flex-direction:column;gap:3px}
+.bigscore{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.bigscore .n{font-family:var(--f-display);font-weight:800;font-size:2.6rem;line-height:1;font-variant-numeric:tabular-nums}
+.formula td:last-child{font-family:var(--f-mono);font-size:.82rem}
+
+.brand{flex:1 1 auto}
+.brand .ch{white-space:nowrap;flex:none}
+.meter{flex:none}
+#meterTxt{white-space:nowrap}
+@media (max-width:520px){#meterTxt{display:none}}
+
+/* Chapter 6 additions */
+.slider-row{display:grid;grid-template-columns:110px minmax(0,1fr) 36px;gap:10px;align-items:center;font-size:.9rem}
+.slider-row input[type=range]{width:100%;accent-color:var(--accent)}
+.slider-row output{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+.meterline{position:relative;height:44px;margin-top:6px}
+.meterline .track{position:absolute;left:0;right:0;top:18px;height:8px;border-radius:99px;background:linear-gradient(90deg,var(--bad-soft),var(--sunk) 50%,var(--good-soft))}
+.meterline .pin{position:absolute;top:10px;width:3px;height:24px;background:var(--ink);border-radius:2px;transition:left .2s}
+.meterline .lab{position:absolute;top:0;font-family:var(--f-mono);font-size:.68rem;color:var(--muted);transform:translateX(-50%)}
+.verdict-big{font-family:var(--f-display);font-weight:700;font-size:1.3rem}
+
+.gapsvg{width:100%;height:auto;max-width:640px;display:block;margin:0 auto}
+.gapsvg .bx{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.gapsvg .bx.cust{fill:var(--accent-soft);stroke:var(--accent)}
+.gapsvg text{font-family:var(--f-body);fill:var(--ink);font-size:12.5px}
+.gapsvg .sep{stroke:var(--muted);stroke-dasharray:6 5;stroke-width:1.2}
+.gapsvg .sepl{font-family:var(--f-mono);font-size:10.5px;fill:var(--muted)}
+.gapsvg .ar{stroke:var(--muted);stroke-width:1.5;fill:none}
+.gapsvg .gap{cursor:pointer}
+.gapsvg .gap circle{fill:var(--gold-soft);stroke:var(--gold);stroke-width:2}
+.gapsvg .gap text{font-family:var(--f-mono);font-weight:600;font-size:12px}
+.gapsvg .gap.on circle{fill:var(--gold);stroke:var(--gold)}
+.gapsvg .gap.on text{fill:var(--bg)}
+.gapsvg .gl{stroke:var(--gold);stroke-width:2;stroke-dasharray:3 3}
+
+.sq-table{width:100%}
+.sq-row{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) minmax(0,1fr) 54px;gap:10px;align-items:center;padding:8px 0;border-top:1px dashed var(--line);font-size:.88rem}
+.sq-row:first-child{border-top:0}
+.sq-row.h{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.sq-row .dim{font-family:var(--f-mono);font-size:.68rem;color:var(--accent);display:block}
+.sq-row input[type=range]{width:100%;accent-color:var(--accent)}
+.sq-row .g{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+@media (max-width:620px){.sq-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 44px}.sq-row .st{grid-column:1/-1}.sq-row.h .st{display:none}}
+.chartbox svg{width:100%;height:auto;display:block}
+.chartbox text{font-family:var(--f-mono);font-size:11px;fill:var(--muted)}
+.chartbox .lbl{font-family:var(--f-body);font-size:12px;fill:var(--ink)}
+.chartbox .axis{stroke:var(--line)}
+.chartbox .grid{stroke:var(--line);stroke-width:1;opacity:.6}
+
+.hoq-wrap{overflow-x:auto}
+.hoq{border-collapse:separate;border-spacing:3px;min-width:560px;font-size:.86rem}
+.hoq th,.hoq td{border:0;padding:6px 8px;background:transparent}
+.hoq thead th{font-family:var(--f-body);text-transform:none;letter-spacing:0;font-size:.82rem;color:var(--ink);background:var(--sunk);border-radius:8px;text-align:center;vertical-align:bottom}
+.hoq td.rel select,.hoq td.imp select{font:inherit;font-family:var(--f-mono);border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--ink);padding:4px 6px;width:100%}
+.hoq td.rel{text-align:center;border-radius:8px}
+.hoq td.rel.v9{background:var(--accent-soft)}
+.hoq td.rel.v5,.hoq td.rel.v3{background:color-mix(in srgb,var(--accent-soft) 50%,transparent)}
+.hoq td.imp{background:var(--gold-soft);border-radius:8px}
+.hoq tfoot td{font-family:var(--f-mono);font-weight:600;text-align:center;background:var(--sunk);border-radius:8px;font-variant-numeric:tabular-nums}
+.hoq tfoot td.top{background:var(--good-soft);color:var(--good)}
+.hoq tfoot tr.rank td{font-weight:400;background:transparent;color:var(--muted)}
+.roof{display:flex;gap:8px;flex-wrap:wrap;font-size:.84rem}
+.roof span{background:var(--sunk);border-radius:99px;padding:3px 10px}
+
+.sorter{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:620px){.sorter{grid-template-columns:minmax(0,1fr)}}
+.ladder{display:flex;flex-direction:column-reverse;gap:6px;max-width:520px}
+.ladder div{border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:var(--surface);font-size:.9rem;display:flex;justify-content:space-between;gap:10px}
+.ladder div span{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.iceberg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:760px){.iceberg{grid-template-columns:minmax(0,1fr)}}
+.dots{display:flex;flex-wrap:wrap;gap:3px;max-width:100%}
+.dots i{width:9px;height:9px;border-radius:2px;background:var(--sunk);display:block}
+.dots i.c{background:var(--accent)}
+.dots i.s{background:var(--bad)}
+.dots i.k{background:var(--gold)}
+.legend2{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.legend2 b{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.phase{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:700px){.phase{grid-template-columns:minmax(0,1fr)}}
+.phase button{text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:4px}
+.phase button .s{font-family:var(--f-mono);font-size:.7rem;color:var(--muted)}
+.phase button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.gcheck{display:flex;flex-direction:column;gap:8px}
+.gcheck label{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);cursor:pointer}
+.gcheck input{width:18px;height:18px;accent-color:var(--accent);margin-top:2px;flex:none}
+.data-grid{overflow-x:auto}
+.data-grid table{min-width:420px}
+.data-grid input{width:58px;font:inherit;font-family:var(--f-mono);font-size:.85rem;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);text-align:right}
+.data-grid td,.data-grid th{text-align:center;padding:6px}
+.data-grid td:first-child,.data-grid th:first-child{text-align:left}
+.data-grid tr.calc td{font-family:var(--f-mono);font-variant-numeric:tabular-nums;background:var(--sunk)}
+.data-grid tr.calc td.out{color:var(--bad);font-weight:600}
+.flag{display:inline-block;font-family:var(--f-mono);font-size:.72rem;padding:2px 8px;border-radius:99px}
+.flag.ok{background:var(--good-soft);color:var(--good)}
+.flag.no{background:var(--bad-soft);color:var(--bad)}
+.inline-inputs{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:.9rem}
+.inline-inputs input,.inline-inputs select{font:inherit;font-family:var(--f-mono);font-size:.88rem;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:110px}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-family:var(--f-mono);font-size:.76rem;padding:6px 9px;border-radius:6px;z-index:50;white-space:nowrap}
+
+/* Chapter 3 additions */
+.home{font-family:var(--f-mono);font-size:.78rem;text-decoration:none;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:3px 8px;white-space:nowrap;flex:none}
+.home:hover{color:var(--ink);border-color:var(--ink)}
+.id-box{background:color-mix(in srgb,var(--good-soft) 70%,var(--surface));border:1px solid color-mix(in srgb,var(--good) 35%,transparent);border-radius:12px;padding:14px 16px;max-width:none;display:flex;flex-direction:column;gap:6px}
+.id-box .eyebrow{color:var(--good)}
+.id-box .eyebrow::before{content:"ID · ";font-weight:600}
+.id-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.id-grid .card{border-top:3px solid var(--good)}
+.qa{border-left:3px solid var(--gold);padding:4px 0 4px 12px;font-size:.92rem;color:var(--muted)}
+.qa b{color:var(--ink)}
+
+/* NSD cycle */
+.cycle{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center}
+@media (max-width:760px){.cycle{grid-template-columns:minmax(0,1fr)}}
+.cycle svg{width:100%;max-width:420px;height:auto;justify-self:center}
+.cycle .st{cursor:pointer}
+.cycle .st path{fill:var(--accent-soft);stroke:var(--surface);stroke-width:4}
+.cycle .st.on path{fill:var(--accent)}
+.cycle .st text{font-family:var(--f-display);font-weight:700;font-size:14px;fill:var(--ink)}
+.cycle .st.on text{fill:var(--accent-ink)}
+.cycle .core circle{fill:var(--gold-soft);stroke:var(--gold);stroke-width:2}
+.cycle .core text{font-family:var(--f-mono);font-size:11.5px;fill:var(--ink)}
+.cycle .ring{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 4}
+.cycle .ringt{font-family:var(--f-mono);font-size:10.5px;fill:var(--muted)}
+
+/* Blueprint */
+.bp-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.bp{display:grid;grid-template-columns:150px repeat(7,minmax(118px,1fr));min-width:1000px;font-size:.82rem}
+.bp .lane{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:10px;background:var(--sunk);display:flex;align-items:center}
+.bp .cell{padding:8px;border-left:1px solid var(--line);display:flex;align-items:center;justify-content:center;text-align:center;min-height:62px;position:relative}
+.bp .cell span{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px;line-height:1.25;width:100%}
+.bp .cell.ev span{background:transparent;border-style:dashed;color:var(--muted)}
+.bp .cell.ca span{background:var(--accent-soft);border-color:var(--accent);font-weight:600}
+.bp .cell.empty span{visibility:hidden}
+.bp .cell.col-on span{outline:2px solid var(--gold);outline-offset:1px}
+.bp .fail{position:absolute;top:2px;right:4px;width:20px;height:20px;border-radius:50%;background:var(--bad);color:#fff;font-family:var(--f-mono);font-size:.7rem;display:grid;place-items:center;font-weight:600}
+.bp .divider{grid-column:1/-1;height:0;border-top:2px dashed var(--muted);position:relative}
+.bp .divider.dot{border-top-style:dotted;border-top-color:var(--bad)}
+.bp .divider b{position:absolute;right:8px;top:-9px;background:var(--surface);padding:0 6px;font-family:var(--f-mono);font-size:.66rem;font-weight:500;color:var(--muted)}
+.bp .divider.dot b{color:var(--bad)}
+.bp .colhead{padding:8px;border-left:1px solid var(--line);font-family:var(--f-mono);font-size:.7rem;color:var(--muted);text-align:center;cursor:pointer;background:var(--sunk)}
+.bp .colhead[aria-pressed="true"]{background:var(--gold-soft);color:var(--ink)}
+.bp-hide-fail .fail{display:none}
+
+/* Position map */
+.posmap svg{width:100%;max-width:440px;height:auto;display:block;margin:0 auto}
+.posmap text{font-family:var(--f-mono);font-size:11px;fill:var(--muted)}
+.posmap .ql{font-family:var(--f-body);font-size:12px;fill:var(--ink)}
+.opt-row{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;padding:10px 0;border-top:1px dashed var(--line)}
+.opt-row:first-child{border-top:0}
+.opt-row b{font-size:.9rem}
+.opt-row .seg button{font-size:.8rem;padding:6px 10px;text-align:left}
+
+/* Taxonomy */
+.tax-wrap{overflow-x:auto}
+.tax{border-collapse:separate;border-spacing:4px;min-width:760px;font-size:.82rem}
+.tax th{background:var(--sunk);border-radius:8px;text-align:center;font-size:.68rem}
+.tax td{border:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px;vertical-align:top;cursor:pointer}
+.tax td.rh{cursor:default;background:var(--sunk);font-family:var(--f-mono);font-size:.7rem;color:var(--muted);font-weight:500}
+.tax td:not(.rh):hover{border-color:var(--accent)}
+.tax td.on{background:var(--accent-soft);border-color:var(--accent)}
+.tax td .bk{display:block;color:var(--muted)}
+.tax td .idn{display:block;margin-top:4px;color:var(--good);font-weight:600}
+
+/* Hash chain */
+.chain3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:820px){.chain3{grid-template-columns:minmax(0,1fr)}}
+.blk{border:2px solid var(--good);background:var(--surface);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.blk.bad{border-color:var(--bad);background:var(--bad-soft)}
+.blk label{font-family:var(--f-mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.blk textarea{font:inherit;font-size:.86rem;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--bg);color:var(--ink);resize:vertical;min-height:52px;width:100%}
+.blk code{font-family:var(--f-mono);font-size:.7rem;word-break:break-all;background:var(--sunk);border-radius:6px;padding:4px 6px;display:block}
+.blk .st{font-family:var(--f-mono);font-size:.74rem;font-weight:600}
+
+/* Channel matrix */
+.chan{display:flex;gap:6px;flex-wrap:wrap}
+.chan button{flex:1 1 120px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;text-align:left;font-size:.84rem;line-height:1.3}
+.chan button small{display:block;font-family:var(--f-mono);font-size:.68rem;color:var(--muted);margin-bottom:3px}
+.chan button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chan button[aria-pressed="true"] small{color:var(--bg)}
+.twobar{display:grid;grid-template-columns:150px minmax(0,1fr) 46px;gap:10px;align-items:center;font-size:.88rem}
+.twobar .t{height:12px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.twobar .t i{display:block;height:100%;border-radius:99px;transition:width .3s}
+.twobar .v{font-family:var(--f-mono);font-size:.78rem;text-align:right}
+
+.paradox{display:grid;grid-template-columns:110px minmax(0,1fr) 110px;gap:10px;align-items:center;font-size:.86rem;padding:4px 0}
+.paradox span:first-child{text-align:right;color:var(--good)}
+.paradox span:last-child{color:var(--bad)}
+.paradox input{width:100%;accent-color:var(--accent)}
+@media (max-width:520px){.paradox{grid-template-columns:80px minmax(0,1fr) 80px;font-size:.78rem}}
+.home{font-family:var(--f-body);font-size:.88rem;font-weight:600;text-decoration:none;color:var(--accent-ink);background:var(--accent);border:0;border-radius:8px;padding:7px 14px;white-space:nowrap;flex:none;box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.home:hover{filter:brightness(1.08);color:var(--accent-ink)}
+.home:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+@media (max-width:520px){.home{font-size:.8rem;padding:6px 10px}}
+footer{display:flex;flex-direction:column;gap:8px}
+.dept-foot{border-top:1px solid var(--line);padding-top:14px}
+.dept-foot a{color:var(--ink);font-weight:600;text-decoration:none;letter-spacing:.02em}
+.dept-foot a span{color:var(--muted);margin:0 4px}
+.dept-foot a:hover{color:var(--accent);text-decoration:underline}
+/* Chapter 1 & 2 additions */
+.quad{display:grid;grid-template-columns:28px minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto auto;gap:8px;align-items:stretch}
+.quad .ax{font-family:var(--f-mono);font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;justify-content:center;text-align:center}
+.quad .ax.v{writing-mode:vertical-rl;transform:rotate(180deg)}
+.quad .cell{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;min-height:120px;min-width:0;transition:background .2s,border-color .2s}
+.quad .cell h4{font-size:.98rem}
+.quad .cell p{font-size:.84rem;color:var(--muted)}
+.quad .cell.on{border-color:var(--accent);background:var(--accent-soft)}
+.quad .cell .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto}
+.quad .cell .chips span{font-size:.75rem;padding:2px 8px;border-radius:99px;background:var(--good-soft);color:var(--ink);border:1px solid color-mix(in srgb,var(--good) 35%,transparent)}
+.quad .cell .chips span.bad{background:var(--bad-soft);border-color:color-mix(in srgb,var(--bad) 35%,transparent)}
+.placer{display:flex;flex-direction:column;gap:10px}
+.placer .pq{font-weight:600}
+.placer .pbtn{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.placer .pbtn button{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px;font-size:.86rem;text-align:left}
+.placer .pbtn button:hover{border-color:var(--accent)}
+.stagebar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.stagebar button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 8px;text-align:left;display:flex;flex-direction:column;gap:2px;min-width:0}
+.stagebar button b{font-family:var(--f-display);font-size:.95rem}
+.stagebar button small{font-family:var(--f-mono);font-size:.68rem;color:var(--muted);text-transform:uppercase}
+.stagebar button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stagebar button[aria-pressed="true"] small{color:var(--bg);opacity:.75}
+.stagebar.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.stagebar button b{overflow-wrap:anywhere}
+@media (max-width:640px){.stagebar,.stagebar.four{grid-template-columns:repeat(2,minmax(0,1fr))}.placer .pbtn{grid-template-columns:minmax(0,1fr)}}
+.empbar{display:grid;grid-template-columns:120px minmax(0,1fr) 48px;gap:8px;align-items:center;font-size:.85rem}
+.empbar .bars{display:flex;height:18px;border-radius:4px;overflow:hidden;background:var(--sunk)}
+.empbar .bars i{display:block;height:100%}
+.empbar.idn{font-weight:700}
+.empbar.idn .nm::after{content:" ●";color:var(--good)}
+.empbar .v{font-family:var(--f-mono);font-size:.78rem;text-align:right;color:var(--muted)}
+.c-agri{background:#C59A3B}.c-ind{background:#7C8AA5}.c-svc{background:var(--accent)}
+.fp-list details{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:10px 14px}
+.fp-list details+details{margin-top:6px}
+.fp-list summary{cursor:pointer;font-weight:600;font-size:.93rem}
+.fp-list summary .n{font-family:var(--f-mono);color:var(--accent);margin-right:8px}
+.fp-list details p{font-size:.9rem;margin-top:6px}
+.onion{display:flex;justify-content:center}
+.onion svg{width:100%;max-width:360px;height:auto}
+.onion text{font-family:var(--f-body);font-size:12px;fill:var(--ink)}
+.force-row{display:grid;grid-template-columns:150px minmax(0,1fr) 30px;gap:10px;align-items:center;font-size:.88rem}
+.force-row input[type=range]{width:100%;accent-color:var(--accent)}
+.force-row output{font-family:var(--f-mono);text-align:right}
+.pillrow{display:flex;gap:6px;flex-wrap:wrap}
+.lvl{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+.lvl .lr{display:grid;grid-template-columns:130px repeat(4,minmax(0,1fr));gap:6px;align-items:stretch}
+.lvl .lr>span{font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;color:var(--muted);display:flex;align-items:center}
+.lvl .lr button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 8px;font-size:.78rem;text-align:left;line-height:1.3}
+.lvl .lr button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);font-weight:600}
+.lvl .hd{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;color:var(--muted);text-align:center}
+@media (max-width:760px){.lvl .lr{grid-template-columns:minmax(0,1fr)}.lvl .hd{display:none}.lvl .lr>span{margin-top:8px}}
+.placer .pbtn button.right{border-color:var(--good);background:var(--good-soft)}
+.placer .pbtn button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.placer .pbtn button:disabled{cursor:default}
+.placer .fb{font-size:.9rem}
+.lab.stack{grid-template-columns:minmax(0,1fr)!important}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <a class="home" href="../" aria-label="Back to the course home page">← Back to Home</a>
+  <div class="brand"><span class="ch">CH 2</span><b>Service Strategy</b></div>
+  <div class="meter" aria-label="Study progress"><span id="meterTxt">0 / 9 units</span><span class="bar"><i id="meterBar"></i></span></div>
+</div></header>
+
+<div class="shell">
+<nav class="toc" aria-label="Chapter sections">
+  <ol id="tocList">
+    <li><a href="#overview"><span class="n">00</span>Overview</a></li>
+    <li><a href="#vision"><span class="n">01</span>Strategic service vision<span class="dot"></span></a></li>
+    <li><a href="#generic"><span class="n">02</span>Competitive environment &amp; generic strategies<span class="dot"></span></a></li>
+    <li><a href="#analysis"><span class="n">03</span>Five Forces &amp; SWOT<span class="dot"></span></a></li>
+    <li><a href="#winners"><span class="n">04</span>Qualifiers, winners, losers<span class="dot"></span></a></li>
+    <li><a href="#information"><span class="n">05</span>Competitive role of information<span class="dot"></span></a></li>
+    <li><a href="#vvc"><span class="n">06</span>Virtual value chain &amp; analytics<span class="dot"></span></a></li>
+    <li><a href="#scale"><span class="n">07</span>Scalability &amp; sustainability<span class="dot"></span></a></li>
+    <li><a href="#stages"><span class="n">08</span>Stages of competitiveness<span class="dot"></span></a></li>
+    <li><a href="#terms"><span class="n">09</span>Key terms &amp; cases<span class="dot"></span></a></li>
+    <li><a href="#selftest"><span class="n">✓</span>Self-test</a></li>
+  </ol>
+  <p class="lo-note">Based on Bordoloi, Fitzsimmons &amp; Fitzsimmons, <i>Service Management</i> (McGraw Hill, 2022), Chapter 2. Green "ID" boxes add Indonesian examples.</p>
+</nav>
+
+<main>
+<!-- OVERVIEW -->
+<section class="unit" id="overview" style="border-bottom:0;padding-top:0">
+  <div class="hero">
+    <div>
+      <p class="eyebrow">Service Management · Chapter 2</p>
+      <h1>Strategy is deciding <em>who</em> you serve and <em>how</em> you will win.</h1>
+      <p class="sub">Service firms face low entry barriers, easy imitation and few economies of scale. This module shows how to formulate a strategic service vision, choose a generic strategy, analyze an industry, understand how customers choose, use information as a weapon, scale and sustain a service, and judge how competitive an operation really is.</p>
+      <div class="cta"><a class="btn" href="#vision">Start studying</a><a class="btn ghost" href="#information">Try the yield-management lab</a></div>
+    </div>
+    <div class="journey">
+      <p class="eyebrow">Gig platforms changed the rules</p>
+      <p style="margin-top:8px;font-size:.93rem">Uber showed that a service firm can scale without owning cars or employing drivers: an app matches customers with independent providers and keeps a commission. The strategic questions remain: who is the target market, what is the service concept, how are quality and cost controlled?</p>
+      <div class="id-box" style="margin-top:12px"><p class="eyebrow">Indonesia's version</p><p style="font-size:.88rem">Gojek began as an ojek call center (2010), launched its app in 2015, and grew into rides, food, payments and logistics. In 2018 Uber sold its Southeast Asian business to Grab. Strategy, not just technology, decided who survived.</p></div>
+    </div>
+  </div>
+  <h3>Learning objectives</h3>
+  <ul class="objectives">
+    <li><span class="num">LO1</span>Formulate a strategic service vision.</li>
+    <li><span class="num">LO2</span>Describe how a service competes using the three generic service strategies.</li>
+    <li><span class="num">LO3</span>Perform a SWOT and Five Forces analysis.</li>
+    <li><span class="num">LO4</span>Explain qualifiers, service winners and service losers.</li>
+    <li><span class="num">LO5</span>Discuss the competitive role of information in services and its limits.</li>
+    <li><span class="num">LO6</span>Explain the virtual value chain and its role in service innovation.</li>
+    <li><span class="num">LO7</span>Discuss service firm sustainability and the triple bottom line.</li>
+    <li><span class="num">LO8</span>Explain which features of a service firm lead to economies of scalability.</li>
+    <li><span class="num">LO9</span>Categorize a service firm by its stage of competitiveness.</li>
+  </ul>
+</section>
+
+<!-- 1 VISION -->
+<section class="unit" id="vision" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 01</p><h2>The strategic service vision</h2><div class="lo-tags"><span class="lo">LO1</span></div></div>
+  <p class="lead">A service firm starts with an entrepreneur's idea and an unmet need. Heskett, Sasser and Schlesinger's <b>strategic service vision</b> (Table 2.1) frames it as questions across four elements. Between each pair, ask whether one supports the next. For a start-up, work <b>right to left</b>: begin with the target market.</p>
+  <div class="grid4">
+    <div class="card"><span class="tag">Service delivery system</span><p>Important features (people, technology)? Capacity? How does it differentiate (quality, price, convenience)? Does it create barriers to entry?</p></div>
+    <div class="card"><span class="tag">Operating strategy</span><p>Key business features (operations, finance, marketing, organization)? Where are effort and investment focused? How are quality and cost controlled? Expected results vs. competition?</p></div>
+    <div class="card"><span class="tag">Service concept</span><p>How are results stated in terms of the customer? How should customers and employees perceive it? What effort is needed in design, marketing and delivery?</p></div>
+    <div class="card"><span class="tag">Target market segment</span><p>Common characteristics? How to segment (demographics)? How important is each segment? How well, and by whom, are its needs served now?</p></div>
+  </div>
+  <p class="muted" style="font-size:.88rem">Table 2.1 is for a domestic U.S. service; for global services, add cultural questions (Chapter 10).</p>
+  <h3>Southwest Airlines' initial vision (Table 2.2)</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Delivery system</th><th>Operating strategy</th><th>Service concept</th><th>Target market</th></tr></thead>
+    <tbody><tr>
+      <td style="font-weight:400">Fun cabin atmosphere to differentiate; only Boeing 737s to control maintenance and operating cost; cabin crew hired for attitude</td>
+      <td style="font-weight:400">Quick gate turnaround gives high aircraft utilization; no assigned seating rewards punctuality and promotes on-time performance</td>
+      <td style="font-weight:400">Short, frequent flights; peanuts and soft drinks only; inner-city or low-traffic airports avoid congestion; carry-on luggage</td>
+      <td style="font-weight:400">Texas residents; business travelers who drove because airline service was inadequate; inexpensive weekend family travel</td>
+    </tr></tbody>
+  </table></div>
+  <div class="id-box"><p class="eyebrow">Reading a local SSV: a grab-and-go coffee chain</p><p style="font-size:.92rem">Kopi Kenangan (founded in Jakarta in 2017) is a useful case to analyze from public information. <b>Target market:</b> young urban workers and students who want affordable iced milk coffee. <b>Service concept:</b> good coffee, fast, cheap, near where you are. <b>Operating strategy:</b> a narrow menu, standardized recipes, rapid outlet roll-out and app ordering. <b>Delivery system:</b> small kiosks for take-away and delivery rather than large seating areas. Sort the statements below to build the vision yourself.</p></div>
+  <div class="activity" data-activity="ssv">
+    <div class="activity-head"><p class="eyebrow">Practice · Build the vision: which element is this?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+</section>
+
+<!-- 2 GENERIC -->
+<section class="unit" id="generic" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 02</p><h2>The competitive environment and three generic strategies</h2><div class="lo-tags"><span class="lo">LO2</span></div></div>
+  <p class="lead">Service industries are fragmented, full of small and medium firms. Seven features make competition hard, and they explain why the generic strategies look the way they do in services.</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Feature</th><th>What it means</th><th>Indonesian illustration</th></tr></thead>
+    <tbody>
+      <tr><td>Low entry barriers</td><td style="font-weight:400">Innovations can't be patented and most services aren't capital-intensive, so they are easily copied. (Exception: the best beach site for a resort.)</td><td style="font-weight:400">A successful <i>es kopi susu</i> recipe is copied by dozens of kiosks within months.</td></tr>
+      <tr><td>Minimal economies of scale</td><td style="font-weight:400">Customers must travel, so outlets stay small. Franchising and the Internet help.</td><td style="font-weight:400">A <i>warung</i> serves one neighborhood; a franchise shares purchasing and advertising.</td></tr>
+      <tr><td>Erratic sales fluctuations</td><td style="font-weight:400">Demand varies by hour, day and season, with random arrivals.</td><td style="font-weight:400">Ramadan and Lebaran swing demand for restaurants, transport and retail.</td></tr>
+      <tr><td>No size advantage with buyers or suppliers</td><td style="font-weight:400">Small firms bargain weakly (exceptions: McDonald's beef, Marriott mattresses).</td><td style="font-weight:400">A single café pays more for milk than a national chain.</td></tr>
+      <tr><td>Product substitution</td><td style="font-weight:400">Products can replace services (home pregnancy test).</td><td style="font-weight:400">Home blood-pressure monitors and test kits reduce clinic visits.</td></tr>
+      <tr><td>Customer loyalty</td><td style="font-weight:400">Personalized service builds a loyal base that blocks entrants (supplier terminals at hospitals).</td><td style="font-weight:400">A family's long-time tailor, barber or <i>bengkel</i>.</td></tr>
+      <tr><td>Exit barriers</td><td style="font-weight:400">Marginal firms keep going for family employment or hobby appeal.</td><td style="font-weight:400">A family warung that employs relatives survives on thin margins, frustrating profit-driven rivals.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Overall cost leadership</h3>
+  <p class="muted" style="max-width:70ch">Efficient-scale facilities, tight cost and overhead control, often innovative technology; usually high capital investment, aggressive pricing and start-up losses (McDonald's, Walmart, Southwest).</p>
+  <div class="grid3">
+    <div class="card"><span class="tag">Seek low-cost customers</span><p>USAA serves only military families comfortable with phone, mail and online business: no sales force. Costco targets bulk buyers who self-serve.</p><p class="muted"><b style="color:var(--good)">ID ·</b> Digital-only banks serve customers who do everything on the phone, with no branch network.</p></div>
+    <div class="card"><span class="tag">Standardize a custom service</span><p>H&amp;R Block does routine tax returns; storefront legal services and urgent-care clinics. Key word: <i>routine</i>. Danger: product substitutes (TurboTax).</p><p class="muted"><b style="color:var(--good)">ID ·</b> Fixed-price medical check-up packages at laboratory chains.</p></div>
+    <div class="card"><span class="tag">Reduce the personal element</span><p>High-risk, but accepted when it adds convenience: ATMs replaced tellers.</p><p class="muted"><b style="color:var(--good)">ID ·</b> Mobile banking and cash-deposit machines handle most routine transactions once done at the teller counter.</p></div>
+    <div class="card"><span class="tag">Reduce network costs</span><p>FedEx's hub-and-spoke network: each new city adds only one route to and from Memphis.</p><p class="muted"><b style="color:var(--good)">ID ·</b> Couriers route parcels through regional sorting hubs; airlines concentrate flights at Jakarta and Surabaya.</p></div>
+    <div class="card"><span class="tag">Take operations offline</span><p>Decouple work that doesn't need the customer: shoe-repair kiosks feeding a central factory; offshore call centers. Run the back office like a factory.</p><p class="muted"><b style="color:var(--good)">ID ·</b> Laundry counters in malls and apartments feed one central washing plant.</p></div>
+  </div>
+
+  <h3>Differentiation</h3>
+  <p class="muted" style="max-width:70ch">Create a service perceived as unique: brand image, technology, features, customer service, dealer network. Cost isn't ignored, but the thrust is loyalty, at a price the target customer will pay.</p>
+  <div class="grid3">
+    <div class="card"><span class="tag">Make the intangible tangible</span><p>Branded hotel toiletries; Hartford Steam Boiler adding inspections to insurance.</p><p class="muted"><b style="color:var(--good)">ID ·</b> A workshop sends before-and-after photos of the repair over WhatsApp.</p></div>
+    <div class="card"><span class="tag">Customize the standard product</span><p>Greeting guests by name; salons vs. barbershops; Burger King's made-to-order.</p><p class="muted"><b style="color:var(--good)">ID ·</b> Choosing sugar level and ice in your <i>es teh</i>; a hotel that remembers your pillow preference.</p></div>
+    <div class="card"><span class="tag">Reduce perceived risk</span><p>Explain the work, keep a clean facility, guarantee it (Village Volvo). Peace of mind is worth paying for.</p><p class="muted"><b style="color:var(--good)">ID ·</b> Taxi firms built reputations on metered fares and honest drivers, which mattered most to first-time visitors.</p></div>
+    <div class="card"><span class="tag">Give attention to training</span><p>Hard to replicate. McDonald's Hamburger University.</p><p class="muted"><b style="color:var(--good)">ID ·</b> Large banks and airlines run in-house training centers for frontline staff.</p></div>
+    <div class="card"><span class="tag">Control quality</span><p>Training, procedures, technology, limited scope, supervision, peer pressure. Magic Pan's foolproof crêpe machine.</p><p class="muted"><b style="color:var(--good)">ID ·</b> Drink chains use automatic machines and fixed recipes so every outlet tastes the same.</p></div>
+  </div>
+
+  <h3>Focus</h3>
+  <div class="grid2">
+    <div class="prose"><p>Serve a particular target market very well: a buyer group (USAA), a service (Shouldice, hernias), budget travelers (Motel 6), guaranteed overnight delivery (FedEx) or a region (a community college). Focus is <b>differentiation and/or cost leadership applied to one segment</b>.</p><p>Davidow and Uttal stress customer selection: (1) segment the market to design core services, (2) classify customers by the value they place on service, (3) set expectations slightly below perceived performance. A Palo Alto bank even closes accounts after two bounced checks.</p></div>
+    <div class="id-grid grid1" style="display:flex;flex-direction:column;gap:10px">
+      <div class="card"><span class="tag">ID · Focus + cost</span><p>BRI built its franchise on micro-lending through thousands of small village units; BTPN Syariah serves women micro-entrepreneurs through community groups.</p></div>
+      <div class="card"><span class="tag">ID · Focus + differentiation</span><p>Specialist eye hospitals do one family of procedures at high volume, the same logic as Shouldice's hernia focus.</p></div>
+    </div>
+  </div>
+  <div class="activity" data-activity="generic">
+    <div class="activity-head"><p class="eyebrow">Practice · Which strategy (and which approach) is this?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+</section>
+
+<!-- 3 ANALYSIS -->
+<section class="unit" id="analysis" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 03</p><h2>Strategic analysis: Five Forces and SWOT</h2><div class="lo-tags"><span class="lo">LO3</span></div></div>
+  <p class="lead">Start with an objective ("should we enter this industry with a new service?"). Use <b>Porter's Five Forces</b> at the <b>industry</b> level to judge competitive intensity and attractiveness, then <b>SWOT</b> at the <b>firm</b> level.</p>
+  <div class="grid3">
+    <div class="card"><span class="tag">Competitive rivalry (center)</span><p>Often the major determinant. Price or non-price rivalry; industry capacity vs. demand. Netflix's mail-order DVDs faced only rental stores such as Blockbuster.</p></div>
+    <div class="card"><span class="tag">Potential new entrants</span><p>High returns invite entry. Walmart challenged Netflix but left, unable to beat its brand.</p></div>
+    <div class="card"><span class="tag">Threat of substitutes</span><p>For services, often a product: TurboTax vs. an accountant. Netflix later faced streaming (Amazon Prime on smart TVs).</p></div>
+    <div class="card"><span class="tag">Bargaining power of suppliers</span><p>Unique inputs or monopoly sources. Netflix had leverage over DVD distributors through volume.</p></div>
+    <div class="card"><span class="tag">Bargaining power of customers</span><p>Price pressure; Priceline and Hotwire shifted information asymmetry to travelers. Netflix's recommendations stimulate demand.</p></div>
+    <div class="card"><span class="tag">SWOT</span><p>Internal strengths and weaknesses, external opportunities and threats. Conclude with strengths to leverage, weaknesses to remedy, opportunities to capture, threats to counter. Subjective, so do it as a team.</p></div>
+  </div>
+  <div class="lab">
+    <div class="lab-in">
+      <div class="activity-head"><p class="eyebrow">Try it · Rate the five forces</p><div class="seg" id="ffPreset"></div></div>
+      <p class="muted" style="font-size:.82rem">Presets are teaching judgments for discussion, not research findings. 1 = weak force (good for profits), 5 = strong force.</p>
+      <div id="ffSliders" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+    <div class="lab-out">
+      <div class="chartbox" id="ffChart"></div>
+      <div id="ffTxt" aria-live="polite"></div>
+    </div>
+  </div>
+  <h3>SWOT for a new specialty café near ITS</h3>
+  <div class="activity" data-activity="swot">
+    <div class="activity-head"><p class="eyebrow">Practice · Strength, weakness, opportunity or threat?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+  <p class="qa"><b>Remember:</b> strengths and weaknesses are <i>inside</i> the firm and under its control; opportunities and threats are <i>outside</i>. "A new competitor opening nearby" is a threat, even if it feels like a weakness.</p>
+</section>
+
+<!-- 4 WINNERS -->
+<section class="unit" id="winners" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 04</p><h2>Winning customers: qualifiers, winners and losers</h2><div class="lo-tags"><span class="lo">LO4</span></div></div>
+  <p class="lead">Customers choose using competitive criteria. Adding a new criterion is itself differentiation: American Airlines' AAdvantage program added loyalty to airline competition.</p>
+  <div class="grid3">
+    <div class="card"><span class="tag">Availability</span><p>How accessible? ATMs and 24/7 websites.</p></div>
+    <div class="card"><span class="tag">Convenience</span><p>Location on busy streets: fuel stations, fast food, dry cleaners.</p></div>
+    <div class="card"><span class="tag">Dependability</span><p>Reliable? Bugs returning after the exterminator; fixing the car on the first visit; on-time flights.</p></div>
+    <div class="card"><span class="tag">Personalization</span><p>Treated as an individual? Greeting repeat guests by name.</p></div>
+    <div class="card"><span class="tag">Price</span><p>Less effective than for goods; in professional services price may signal quality.</p></div>
+    <div class="card"><span class="tag">Quality</span><p>Expectations vs. perceptions, judged on process and outcome.</p></div>
+    <div class="card"><span class="tag">Reputation</span><p>Word of mouth resolves uncertainty; a bad service can't be returned.</p></div>
+    <div class="card"><span class="tag">Safety</span><p>Customers put their lives in the provider's hands: air travel, medicine.</p></div>
+    <div class="card"><span class="tag">Speed</span><p>Response time is the key measure for emergency services.</p></div>
+  </div>
+  <h3>The purchase decision (after Terry Hill)</h3>
+  <div class="grid3">
+    <div class="card" style="border-top:3px solid var(--muted)"><span class="tag">1 · Qualifiers</span><p>The minimum level to be taken seriously, defined by other players. Airline safety; cleanliness in fast food. Yesterday's winners (drive-through) become today's qualifiers.</p></div>
+    <div class="card" style="border-top:3px solid var(--good)"><span class="tag">2 · Service winners</span><p>The criteria used to choose among qualified firms, varying by occasion: convenience for lunch, reputation for a dinner date.</p></div>
+    <div class="card" style="border-top:3px solid var(--bad)"><span class="tag">3 · Service losers</span><p>Falling below expectations loses the customer forever. Dependability, personalization and speed are especially vulnerable.</p></div>
+  </div>
+  <div class="id-box"><p class="eyebrow">Choosing a restaurant in Surabaya</p><p style="font-size:.92rem"><b>Qualifier:</b> for most Muslim diners, halal assurance (being phased in as a legal requirement for food businesses) and basic cleanliness. <b>Winner:</b> for a quick lunch, walking distance and price; for a family celebration, reputation, ambience and a private room. <b>Loser:</b> a 45-minute wait, a wrong order on a delivery app, or rude staff. The same criterion can play different roles for different customers and occasions.</p></div>
+  <div class="activity" data-activity="qwl">
+    <div class="activity-head"><p class="eyebrow">Practice · Qualifier, winner or loser?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+</section>
+
+<!-- 5 INFORMATION -->
+<section class="unit" id="information" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 05</p><h2>The competitive role of information</h2><div class="lo-tags"><span class="lo">LO5</span></div></div>
+  <p class="lead">Figure 2.2 crosses two questions: is the information used <b>online (real time)</b> or <b>offline (analysis)</b>, and is it aimed at <b>external customers</b> or <b>internal operations</b>? The result is four strategic roles.</p>
+  <div class="quad" id="infoQuad"></div>
+  <div class="panel" id="infoView" aria-live="polite"></div>
+
+  <h3>Try it · Yield management: how many seats to protect for full fare?</h3>
+  <div class="lab">
+    <div class="lab-in">
+      <p class="muted" style="font-size:.84rem">Illustrative. An executive train from Surabaya to Jakarta has <b>150 seats</b>. Promo fares sell out early; full-fare passengers book late and their demand is uncertain (average and spread below). Every seat you <b>protect</b> for full fare is a promo seat you don't sell.</p>
+      <div class="slider-row"><span>Full fare</span><input type="range" id="ymFull" min="400" max="1200" step="50" value="800"><output id="ymFullO"></output></div>
+      <div class="slider-row"><span>Promo fare</span><input type="range" id="ymPromo" min="150" max="800" step="50" value="400"><output id="ymPromoO"></output></div>
+      <div class="slider-row"><span>Avg. full-fare demand</span><input type="range" id="ymMu" min="10" max="120" step="5" value="60"><output id="ymMuO"></output></div>
+      <div class="slider-row"><span>Spread (std. dev.)</span><input type="range" id="ymSd" min="5" max="40" step="1" value="20"><output id="ymSdO"></output></div>
+      <div class="slider-row"><span><b>Seats protected</b></span><input type="range" id="ymY" min="0" max="150" step="1" value="30"><output id="ymYO"></output></div>
+      <button class="btn ghost" id="ymBest" style="align-self:flex-start">Show the optimal protection level</button>
+    </div>
+    <div class="lab-out">
+      <div class="chartbox" id="ymChart"></div>
+      <div class="kpis" id="ymKpi"></div>
+      <div id="ymTxt" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="id-box"><p class="eyebrow">Where you meet yield management</p><p style="font-size:.92rem">Airline fares on travel apps that rise as the flight fills, hotel rates that jump on long weekends, and train fares that move within an upper and lower band set by the operator. Like American's SABRE, the goal is that no seat goes empty for want of a bargain hunter, while some are held for late full-fare buyers. Chapter 11 covers the method in detail.</p></div>
+
+  <h3>Using information to categorize customers</h3>
+  <div class="grid4">
+    <div class="card"><span class="tag">Coding</span><p>Grade customers by profitability; codes tell staff how to handle each.</p></div>
+    <div class="card"><span class="tag">Routing</span><p>Call centers queue by code: big spenders to senior problem-solvers; others may never reach a person.</p></div>
+    <div class="card"><span class="tag">Targeting</span><p>Fees waived and hidden discounts for valuable customers.</p></div>
+    <div class="card"><span class="tag">Sharing</span><p>Transaction history shared with other firms as a revenue source.</p></div>
+  </div>
+  <div class="id-box"><p class="eyebrow">Priority banking</p><p style="font-size:.92rem">Major Indonesian banks run priority-banking tiers for customers above a balance threshold: separate lounges, a dedicated relationship manager, a priority call-center line and fee waivers. That is coding, routing and targeting in one program. Ask: is it fair to the customer in the regular queue?</p></div>
+
+  <h3>Limits in the use of information</h3>
+  <div class="grid3">
+    <div class="card"><span class="tag">Invasion of privacy</span><p>Cloud storage and data mining can expose lifestyle, medical and financial details.</p></div>
+    <div class="card"><span class="tag">Data security</span><p>Records released without consent can be used to blackball employees or patients.</p></div>
+    <div class="card"><span class="tag">Reliability</span><p>Corrupt data create havoc; people need the right to review records.</p></div>
+    <div class="card"><span class="tag">Anticompetitive</span><p>Reservation systems and frequent-user programs can block competition.</p></div>
+    <div class="card"><span class="tag">Fairness</span><p>Under yield management, two passengers in adjacent seats may pay very different fares.</p></div>
+    <div class="card" style="border-top:3px solid var(--good)"><span class="tag">ID · The law caught up</span><p>Indonesia's Personal Data Protection Law (UU 27/2022) requires a lawful basis and consent for processing personal data and gives individuals rights to access and correct it, after several high-profile alleged data leaks.</p></div>
+  </div>
+  <div class="activity" data-activity="info">
+    <div class="activity-head"><p class="eyebrow">Practice · Which strategic role of information?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+</section>
+
+<!-- 6 VVC -->
+<section class="unit" id="vvc" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 06</p><h2>The virtual value chain, data analytics and IoT</h2><div class="lo-tags"><span class="lo">LO6</span></div></div>
+  <p class="lead">Firms compete in a physical <b>marketplace</b> and a virtual <b>marketspace</b> of information. In the virtual value chain, information is not just support: it creates value. Every stage involves five activities: <b>gather, organize, select, synthesize, distribute</b>. FedEx's package tracking was the classic first step.</p>
+  <div class="grid2">
+    <div>
+      <p class="eyebrow" style="margin-bottom:8px">USAA's four-stage evolution</p>
+      <div class="stagebar four" id="vvcBar" role="group" aria-label="Four stages"></div>
+      <div class="panel" id="vvcView" aria-live="polite" style="margin-top:8px"></div>
+    </div>
+    <div class="id-box"><p class="eyebrow">Reading Gojek through the same lens (our interpretation)</p><p style="font-size:.9rem"><b>New processes:</b> a phone call center replaced by app dispatch with GPS matching. <b>New knowledge:</b> every trip records where people travel, when and how they pay. <b>New products:</b> that knowledge supported food delivery, parcels and the GoPay wallet. <b>New relationships:</b> merchants and drivers became co-creators, using platform tools to manage their own businesses.</p></div>
+  </div>
+
+  <h3>Data analytics</h3>
+  <p class="muted" style="max-width:70ch">The discovery, interpretation and processing of meaningful patterns in data for better decisions, combining statistics, programming and operations research. Big data bring four components to manage: <b>volume, variety, velocity, variability</b>.</p>
+  <div class="grid4">
+    <div class="card"><span class="tag">Descriptive</span><h4>What happened?</h4><p>Last month's average waiting time at each puskesmas.</p></div>
+    <div class="card"><span class="tag">Diagnostic</span><h4>Why did it happen?</h4><p>Waits spike on Monday mornings when the registration system is slow.</p></div>
+    <div class="card"><span class="tag">Predictive</span><h4>What will happen?</h4><p>Forecasting patient arrivals in the week after Lebaran.</p></div>
+    <div class="card"><span class="tag">Prescriptive</span><h4>What should we do?</h4><p>An optimized staff roster that meets a 30-minute waiting-time target.</p></div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Service industry (Table 2.4)</th><th>Analytics application</th><th>Indonesian illustration</th></tr></thead>
+    <tbody>
+      <tr><td>Airlines</td><td style="font-weight:400">Operational performance and pricing models</td><td style="font-weight:400">Dynamic fares on domestic routes</td></tr>
+      <tr><td>Investment banks</td><td style="font-weight:400">Portfolio management and risk assessment</td><td style="font-weight:400">Robo-advisors in mutual-fund apps</td></tr>
+      <tr><td>Insurance</td><td style="font-weight:400">Health assessment</td><td style="font-weight:400">Claims analysis for national health insurance</td></tr>
+      <tr><td>Hospitals</td><td style="font-weight:400">In-patient care</td><td style="font-weight:400">Bed-occupancy dashboards</td></tr>
+      <tr><td>Hotels/restaurants</td><td style="font-weight:400">Revenue management</td><td style="font-weight:400">Bali villas pricing for peak season</td></tr>
+      <tr><td>Marketing firms</td><td style="font-weight:400">Sales and profitability improvement</td><td style="font-weight:400">Campaign targeting for e-commerce sales days such as 12.12</td></tr>
+      <tr><td>Casinos</td><td style="font-weight:400">Customer loyalty programs</td><td style="font-weight:400">(Not applicable; compare retail and airline loyalty programs)</td></tr>
+      <tr><td>Retailers</td><td style="font-weight:400">Supply chain management</td><td style="font-weight:400">Minimarket replenishment from store-level sales</td></tr>
+      <tr><td>Sports franchises</td><td style="font-weight:400">Drafting athletes, in-game play-making</td><td style="font-weight:400">Match analytics in professional football and badminton</td></tr>
+    </tbody>
+  </table></div>
+  <div class="grid2">
+    <div class="card"><span class="tag">Internet of Things (IoT)</span><p>Devices with sensors (collect data) and actuators (act on it), connected through the Internet: the alarm clock that checks traffic, the rice cooker that times itself. Built on a trajectory from RFID onward; it converges wireless communication, real-time analytics, machine learning and embedded systems.</p></div>
+    <div class="card"><span class="tag">Internet of Medical Things (IoMT)</span><p>Remote monitoring of chronic patients, connected infusion pumps, sensor beds, tracking medication orders. Drawbacks: overloading physicians with data, and constant security updates.</p></div>
+  </div>
+  <div class="activity" data-activity="vvcs">
+    <div class="activity-head"><p class="eyebrow">Practice · Which virtual-value-chain stage?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+  <div class="activity" data-activity="analytics">
+    <div class="activity-head"><p class="eyebrow">Practice · Which type of analytics?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+</section>
+
+<!-- 7 SCALE & TBL -->
+<section class="unit" id="scale" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 07</p><h2>Economics of scalability and sustainability</h2><div class="lo-tags"><span class="lo">LO8</span><span class="lo">LO7</span></div></div>
+  <p class="lead"><b>Scalability</b> is the ability to improve contribution margin (revenue minus variable costs) as volume grows. Infinite scalability requires a <b>zero variable cost</b> for each extra customer. Three sources: (1) conduct only information or data-transfer services, (2) let customers serve themselves, (3) let customers serve other customers.</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Dimension (Table 2.5)</th><th>High scalability →</th><th></th><th></th><th>→ Low</th></tr></thead>
+    <tbody>
+      <tr><td>E-commerce continuum</td><td style="font-weight:400">Selling information</td><td style="font-weight:400">Selling value-added service</td><td style="font-weight:400">Selling services with goods</td><td style="font-weight:400">Selling goods</td></tr>
+      <tr><td>Customer contact</td><td style="font-weight:400">Self-service</td><td style="font-weight:400">Call-center backup</td><td style="font-weight:400">Online ordering</td><td style="font-weight:400">Call-center order processing</td></tr>
+      <tr><td>Standardization</td><td style="font-weight:400">Mass distribution</td><td style="font-weight:400">Some personalization</td><td style="font-weight:400">Limited customization</td><td style="font-weight:400">Fill individual orders</td></tr>
+      <tr><td>Shipping and handling</td><td style="font-weight:400">Digital asset</td><td style="font-weight:400">Mailing</td><td style="font-weight:400">Shipping</td><td style="font-weight:400">Shipping, fulfillment, warehousing</td></tr>
+      <tr><td>After-sales service</td><td style="font-weight:400">None</td><td style="font-weight:400">Answer questions</td><td style="font-weight:400">Meal credit</td><td style="font-weight:400">Returns possible</td></tr>
+      <tr><td>Textbook example</td><td style="font-weight:400">Kbb.com used-car prices</td><td style="font-weight:400">InfoHub travel agent</td><td style="font-weight:400">Blue Apron meal kits</td><td style="font-weight:400">Amazon</td></tr>
+      <tr><td><span style="color:var(--good)">ID</span> example</td><td style="font-weight:400">Property-price and listing portals</td><td style="font-weight:400">Online travel agents</td><td style="font-weight:400">Grocery and meal-kit delivery</td><td style="font-weight:400">Marketplace sellers shipping goods</td></tr>
+    </tbody>
+  </table></div>
+  <div class="grid2">
+    <div class="card"><span class="tag">Beware commoditization</span><p>Scalability without differentiation leaves only the price leader. Differentiate with the <b>network effect</b> (each customer's value rises with the number of customers, as on eBay) or with responsive, empathetic human help in the call center.</p></div>
+    <div class="card"><span class="tag">Self-service satisfies</span><p>In the ACSI (Table 2.6), Internet retail (Amazon 83), Internet travel (Priceline 81) and Internet investment (Vanguard 80) score alongside leaders such as Chick-fil-A and Wegmans (86) and FedEx (82).</p></div>
+  </div>
+  <div class="activity" data-activity="scal">
+    <div class="activity-head"><p class="eyebrow">Practice · Which source of scalability?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+
+  <h3>Sustainability and the triple bottom line</h3>
+  <div class="grid2">
+    <div class="prose"><p>Service firms matter as much as factories for sustainability. The <b>triple bottom line</b> (TBL) evaluates a firm on <b>social</b> (labor practices, diversity, human rights, community), <b>economic</b> (capital efficiency, growth, cost, risk) and <b>environmental</b> (air, water, land, emissions, waste) criteria. Shell popularized "People, Planet, Profit"; overlaps are socio-economic (jobs, skills, ethics), eco-efficiency (resource efficiency, life cycle) and social-environmental (climate, environmental justice, health and safety). True sustainability satisfies all three.</p>
+    <p><b>Drivers:</b> regulation (EPA, WEEE, RoHS, ISO 14000/26000), image, economics (waste reduction), the <b>ripple effect</b> on customers' choices (a mortgage shapes a community), <b>strategic threats</b> (ski resorts without snow, insurers facing storms, NGO campaigns) and <b>emerging opportunities</b> (Starbucks' grower contracts). Walmart set goals of 100% renewable energy, zero waste and sustainable products; critics question the cost and labor conditions.</p></div>
+    <div class="id-grid" style="display:flex;flex-direction:column;gap:10px">
+      <div class="card"><span class="tag">ID · Regulation</span><p>OJK regulation POJK 51/2017 on sustainable finance requires financial institutions and listed companies to publish sustainability reports.</p></div>
+      <div class="card"><span class="tag">ID · Planet</span><p>Bali's Governor Regulation 97/2018 restricts single-use plastic bags, straws and styrofoam, pushing hotels, restaurants and shops to change packaging.</p></div>
+      <div class="card"><span class="tag">ID · Strategic threat</span><p>Coastal flooding in northern Java and coral bleaching threaten logistics hubs and dive tourism: climate risk is a business risk.</p></div>
+    </div>
+  </div>
+  <div class="activity" data-activity="tbl">
+    <div class="activity-head"><p class="eyebrow">Practice · A hospital's TBL: people, planet or profit?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+  <div class="callout"><p class="eyebrow">COVID-19's socio-economic effects</p><p style="font-size:.92rem">The pandemic required trillions in response packages, risked sustainability setbacks and a cycle of environmental degradation and zoonotic outbreaks, and deepened inequalities by age, gender, education and income. The speed of recovery will shape the social and environmental balance.</p></div>
+</section>
+
+<!-- 8 STAGES -->
+<section class="unit" id="stages" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 08</p><h2>Stages in service firm competitiveness</h2><div class="lo-tags"><span class="lo">LO9</span></div></div>
+  <p class="lead">Chase and Hayes describe four stages by the role operations plays. Firms need not start at stage 1 (FedEx arguably began at stage 3) and can slip back through neglect.</p>
+  <div class="grid4">
+    <div class="card"><span class="tag">1 · Available for service</span><p>Operations is a necessary evil at minimum cost. Customers often have no alternative; workers need direct supervision; technology only when survival demands it.</p></div>
+    <div class="card"><span class="tag">2 · Journeyman</span><p>Competition forces parity: copy industry practice (everyone adds a drive-through). Operations is competitive-neutral; firms look alike.</p></div>
+    <div class="card"><span class="tag">3 · Distinctive competence</span><p>Leaders understand what creates value (SAS's Jan Carlzon and on-time departures). Service guarantees, empowerment, cross-training, Six Sigma.</p></div>
+    <div class="card"><span class="tag">4 · World-class</span><p>Expands customer expectations beyond competitors' reach (Disney, Marriott). Technology as an advantage (FedEx COSMOS tracking); employees identify with the mission.</p></div>
+  </div>
+  <div class="lab stack">
+    <div class="lab-in">
+      <p class="eyebrow">Try it · Assess a service you know (Table 2.7)</p>
+      <p class="muted" style="font-size:.84rem">Pick the description that best fits each dimension, for example your bank, a hospital, or a public service office. The profile shows where operations helps or holds back competitiveness.</p>
+      <div class="lvl" id="lvl"></div>
+    </div>
+    <div class="lab-out" id="lvlOut" aria-live="polite"></div>
+  </div>
+  <div class="id-box"><p class="eyebrow">From "available for service" upward</p><p style="font-size:.92rem">Many public services in Indonesia once fit stage 1: one counter, no alternative, cash only, long queues. One-stop public service malls (Mal Pelayanan Publik), online queue numbers and app-based renewals show agencies moving toward stage 2 or 3. Which stage is your campus's academic administration office? What one change would move it up?</p></div>
+  <div class="activity" data-activity="stage">
+    <div class="activity-head"><p class="eyebrow">Practice · Which stage does this describe?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+  <div class="callout"><p class="eyebrow">Service benchmark · Outside the box</p><p style="font-size:.92rem">To speed aircraft turnarounds, Southwest's planners watched pit crews at the Indianapolis 500, borrowing ideas on equipment, parts handling and teamwork that they could never have learned from other airlines. "Oftentimes, the race is won in the pits."</p></div>
+</section>
+
+<!-- 9 TERMS -->
+<section class="unit" id="terms" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 09</p><h2>Key terms and cases</h2></div>
+  <div class="fc-wrap">
+    <button class="fc" id="fc" aria-label="Flashcard, click to flip"><div class="fc-in">
+      <div class="fc-face fc-front"><small>Term</small><b id="fcTerm"></b><span class="muted" style="margin-top:10px;font-size:.85rem">Click to reveal</span></div>
+      <div class="fc-face fc-back"><small>Definition</small><p id="fcDef"></p></div>
+    </div></button>
+    <div class="fc-ctrl"><button class="btn ghost" id="fcPrev" aria-label="Previous card">←</button><span class="count" id="fcCount"></span><button class="btn ghost" id="fcNext" aria-label="Next card">→</button><button class="btn ghost" id="fcShuffle">Shuffle</button></div>
+  </div>
+
+  <div class="case">
+    <div class="panel prose">
+      <p class="eyebrow">Case 2.1 · United Commercial Bank and El Banco de Nuestra Comunidad</p>
+      <p>Two banks focused on ethnic communities. <b>UCB</b> served San Francisco's Chinese American community: high-interest savings and time deposits, very low fees, conservative real-estate lending (58% average loan-to-value), trade finance for importers, Chinese-speaking staff and cultural touches such as tea sets. <b>El Banco</b>, a licensed franchise inside existing banks, served Atlanta's fast-growing Latino community with a lively, Spanish-language setting and fee-based services: check cashing for people with or without accounts, ITIN-based mortgages and a Western Union-style approach to winning trust. The ending: in 2009 UCB failed and was merged into East West Bank; two executives were later charged with hiding loan losses.</p>
+      <p><b>Questions:</b> compare the two strategic service visions; identify the winners, qualifiers and losers; what differentiates banks serving ethnic communities; could a niche clientele support a bank exclusively?</p>
+    </div>
+    <div class="id-box">
+      <p class="eyebrow">Indonesian parallels</p>
+      <p style="font-size:.9rem">Islamic banks serve customers who want sharia-compliant products; rural banks (BPR) and cooperatives serve village communities; micro-finance banks serve women's groups. Pick one and build its strategic service vision. What would be its qualifier, its winner and its most dangerous loser? What does UCB's ending teach about focus without governance?</p>
+    </div>
+  </div>
+  <div class="case">
+    <div class="panel prose">
+      <p class="eyebrow">Case 2.2 · The Alamo Drafthouse</p>
+      <p>A cinema in Austin, Texas, that serves food and drink during films. The owners' first theater in Bakersfield failed; in Austin (1996) they designed "intentionally minimal" service: customers write orders on paper and staff avoid interrupting the movie. By 2021 there were five Drafthouses in Austin.</p>
+      <p><b>Questions:</b> position it on a market map; use the strategic service vision; identify qualifiers, winners and losers; apply the Five Forces; conduct a SWOT.</p>
+    </div>
+    <div class="id-box">
+      <p class="eyebrow">Your turn</p>
+      <p style="font-size:.9rem">Indonesian cinemas already compete on premium seats, in-studio food service and private screenings. Run the Five Forces lab above for "cinemas in Surabaya": how strong is the threat of substitutes from streaming?</p>
+    </div>
+  </div>
+  <div class="panel prose">
+    <p class="eyebrow">Topics for discussion</p>
+    <ol>
+      <li>Give examples of service firms that combine focus with differentiation, and focus with overall cost leadership.</li>
+      <li>What ethical issues are associated with micromarketing?</li>
+      <li>For each generic strategy, which of the four competitive uses of information is most powerful?</li>
+      <li>Give an example of a firm that began as world-class and has remained in that category.</li>
+      <li>Could firms in the "world-class" stage be described as learning organizations?</li>
+      <li>Compare sustainability efforts in service operations and manufacturing.</li>
+      <li>Conduct a triple-bottom-line evaluation of a hospital (try one in your city).</li>
+    </ol>
+  </div>
+</section>
+
+<!-- SELF TEST -->
+<section class="unit" id="selftest" style="border-bottom:0">
+  <div class="unit-head"><p class="eyebrow">Self-test</p><h2>Check your understanding</h2></div>
+  <div class="quiz" id="quiz"></div>
+</section>
+
+<footer><p class="dept-foot"><a href="https://www.its.ac.id/mb" target="_blank" rel="noopener">Department of Business Management <span>|</span> INSTITUT TEKNOLOGI SEPULUH NOPEMBER</a></p><p>Study aid based on Chapter 2, "Service Strategy," in Bordoloi, Fitzsimmons &amp; Fitzsimmons, <i>Service Management: Operations, Strategy, Information Technology</i> (McGraw Hill, 2022). Indonesian examples are added for discussion and are not from the textbook; lab data and presets are illustrative. Read the chapter for the full text, figures and cases.</p></footer>
+</main>
+</div>
+
+<script>
+(function(){
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const KEY = "ch2";
+const UNIT_FOR = {1:"vision",2:"generic",3:"analysis",4:"winners",5:"information",6:"vvc",7:"scale",8:"scale",9:"stages"};
+
+/* ---------- Practice activities ---------- */
+const ACT = {
+  ssv:{ opts:["Target market segment","Service concept","Operating strategy","Service delivery system"], items:[
+    ["Young urban workers and students who want affordable iced coffee every day.","Target market segment","Who the customers are and what they have in common."],
+    ["'Good coffee, fast and cheap, close to where you are.'","Service concept","The result stated in terms of the customer."],
+    ["A narrow menu and standardized recipes keep ingredient cost and preparation time low.","Operating strategy","How quality and cost are controlled; where effort is focused."],
+    ["Small kiosks designed for take-away and delivery pickup, with app ordering.","Service delivery system","The physical and technological features that deliver the concept."],
+    ["Rapid outlet roll-out funded by investors to win locations before rivals do.","Operating strategy","Where investment is focused (finance and operations)."],
+    ["Customers order ahead in the app and collect without queuing.","Service delivery system","Technology and capacity features of the system."],
+    ["Office workers in business districts are a more important segment than tourists.","Target market segment","Judging the importance of segments."]
+  ]},
+  generic:{ opts:["Cost leadership","Differentiation","Focus"], items:[
+    ["A courier routes all parcels through regional sorting hubs instead of direct routes between every pair of cities.","Cost leadership","Reducing network costs with hub-and-spoke, like FedEx."],
+    ["A workshop sends customers photos of worn parts before replacing them and guarantees its work.","Differentiation","Reducing perceived risk and making the intangible tangible."],
+    ["A bank serves only micro-entrepreneurs in villages, with products designed for irregular incomes.","Focus","Serving one target market very well."],
+    ["A laundry takes orders at small counters and washes everything in one central plant.","Cost leadership","Taking service operations offline: run the back office like a factory."],
+    ["A hotel trains staff to greet returning guests by name and remember their preferences.","Differentiation","Customizing the standard product."],
+    ["An eye hospital performs only cataract and refractive surgery, at high volume.","Focus","A narrow service focus, like Shouldice."],
+    ["A bank moves routine transactions to mobile banking and cash-deposit machines.","Cost leadership","Reducing the personal element in service delivery."],
+    ["A clinic chain offers fixed-price, routine health check-up packages.","Cost leadership","Standardizing a custom service, like H&R Block."]
+  ]},
+  swot:{ opts:["Strength","Weakness","Opportunity","Threat"], items:[
+    ["The owner is a certified barista with a loyal student following on social media.","Strength","An internal advantage the café controls."],
+    ["The café has only 12 seats and no parking.","Weakness","An internal limitation."],
+    ["Thousands of new students arrive every August.","Opportunity","An external trend the café can capture."],
+    ["A national coffee chain is opening a kiosk across the street.","Threat","An external competitor. Not a weakness, because it is outside the firm."],
+    ["Coffee-bean prices are rising sharply on world markets.","Threat","An external cost pressure."],
+    ["The café has no cash reserve to survive the long semester break.","Weakness","An internal cash-flow problem."],
+    ["Delivery apps let the café sell to dormitories without adding seats.","Opportunity","Technology offering new service options."],
+    ["It roasts its own beans from a partner farm in East Java.","Strength","A unique resource competitors lack."]
+  ]},
+  qwl:{ opts:["Qualifier","Service winner","Service loser"], items:[
+    ["An airline's safety record and aircraft airworthiness.","Qualifier","Without it, the airline isn't considered at all."],
+    ["Halal assurance for a restaurant targeting Muslim families.","Qualifier","A minimum requirement to enter the choice set."],
+    ["Choosing the café closest to campus for a quick lunch.","Service winner","Convenience decides among qualified options."],
+    ["A courier fails to deliver a 'next-day' parcel on time.","Service loser","Speed and dependability failures lose customers."],
+    ["Picking a wedding venue because friends praised it.","Service winner","Reputation decides the final choice."],
+    ["A doctor treats a patient rudely and dismissively.","Service loser","Personalization failure, a textbook example."],
+    ["Basic cleanliness of a fast-food outlet in a mature market.","Qualifier","Established competitors define the level new entrants must match."]
+  ]},
+  info:{ opts:["Barriers to entry","Revenue generation","Database asset","Productivity enhancement"], items:[
+    ["An airline's frequent-flyer miles keep business travelers loyal.","Barriers to entry","Frequent-user clubs make discount fares from new entrants unappealing."],
+    ["A company's payroll is paid into one bank with automatic bill payments, making switching a hassle.","Barriers to entry","Switching costs."],
+    ["Train fares rise as seats fill closer to the departure date.","Revenue generation","Yield management of time-perishable capacity."],
+    ["A waiter's handheld device sends orders to the kitchen and suggests a dessert.","Revenue generation","Point-of-sale technology for suggestive selling."],
+    ["A credit bureau sells access to borrowers' repayment histories.","Database asset","Selling information, like Dun & Bradstreet."],
+    ["A ride-hailing firm uses trip data to launch a food-delivery service.","Database asset","Developing new services from the database."],
+    ["A minimarket chain uses daily scanner data to replenish each store's shelves.","Productivity enhancement","Inventory status, like Frito-Lay."],
+    ["A bank compares 200 branches with DEA to find the efficient ones and share their practices.","Productivity enhancement","Data envelopment analysis."]
+  ]},
+  vvcs:{ opts:["New processes","New knowledge","New products","New relationships"], items:[
+    ["A hospital moves from paper files to electronic medical records.","New processes","Seeing physical operations more effectively with information (USAA's 'paperless operation')."],
+    ["An insurer sells only by phone and online, capturing rich data on every member.","New knowledge","Virtual alternatives replace physical activities and build a database."],
+    ["Analyzing aging members, the insurer launches retirement products.","New products","Using the database to discover new needs."],
+    ["Members use web planning tools and join online seminars with advisers.","New relationships","Collaboration in the co-creation of value."]
+  ]},
+  analytics:{ opts:["Descriptive","Diagnostic","Predictive","Prescriptive"], items:[
+    ["A dashboard shows how many passengers each KRL station handled last month.","Descriptive","What happened."],
+    ["Analysts find that complaints rose because a new app update broke the top-up feature.","Diagnostic","Why it happened."],
+    ["A model forecasts how many travelers will fly out of Surabaya before Lebaran.","Predictive","What will happen."],
+    ["An optimizer recommends how many check-in counters to open each hour.","Prescriptive","What should be done."],
+    ["A hospital flags patients likely to be readmitted within 30 days.","Predictive","A probability of a future event."]
+  ]},
+  scal:{ opts:["Information only","Customers serve themselves","Customers serve customers","Low scalability"], items:[
+    ["A website publishing used-motorbike price guides.","Information only","A digital asset: near-zero cost per extra user."],
+    ["Booking and paying for a train ticket in an app.","Customers serve themselves","Online reservations: self-service."],
+    ["A marketplace where people sell second-hand goods to each other.","Customers serve customers","Like online auctions, with a network effect."],
+    ["An online furniture store that ships, assembles and accepts returns.","Low scalability","Goods dominate: shipping, fulfillment and returns add variable cost."],
+    ["A Q&A forum where students answer each other's questions.","Customers serve customers","Users create the service for other users."],
+    ["Downloading an e-book on Indonesian tax rules.","Information only","Pure data transfer."]
+  ]},
+  tbl:{ opts:["People (social)","Planet (environmental)","Profit (economic)"], items:[
+    ["Fair shift schedules and safety training for nurses.","People (social)","Labor practices."],
+    ["Treating medical waste and wastewater before disposal.","Planet (environmental)","Waste management and clean water."],
+    ["Reducing average length of stay to free beds and cut cost.","Profit (economic)","Capital efficiency and cost reduction."],
+    ["Free health screenings in surrounding neighborhoods.","People (social)","Community outreach."],
+    ["Rooftop solar panels and LED lighting.","Planet (environmental)","Emission control and energy efficiency (also eco-efficiency)."],
+    ["Diversifying revenue with a new outpatient wing to manage financial risk.","Profit (economic)","Growth and risk management."]
+  ]},
+  stage:{ opts:["Available for service","Journeyman","Distinctive competence","World-class"], items:[
+    ["Customers use it only because there is no alternative; the back office is a 'counting room'.","Available for service","Operations is reactive at best."],
+    ["It copies the industry's standard practices; customers neither seek it out nor avoid it.","Journeyman","Competitive-neutral operations."],
+    ["Customers seek it out for its sustained reputation; managers listen to customers and coach staff.","Distinctive competence","Operations continually excels."],
+    ["Its name is synonymous with excellence; it raises expectations competitors can't meet.","World-class","Disney, Marriott."],
+    ["New technology is adopted only when justified by cost savings.","Journeyman","Stage 3 adopts it to enhance service; stage 4 for first-mover advantage."],
+    ["Workers are seen as a negative constraint needing direct supervision.","Available for service","Minimal training investment."]
+  ]}
+};
+
+/* ---------- Five forces ---------- */
+const FF = ["Competitive rivalry","Threat of new entrants","Threat of substitutes","Supplier power","Buyer power"];
+const FFP = {
+  "Ride-hailing":[[5,2,4,3,4],"Rivalry is intense and customers switch apps for vouchers, but network effects and the cash needed to subsidize growth deter new entrants. Substitutes: own motorbike, public transport. Drivers (suppliers) can multi-home and protest commission cuts."],
+  "Campus coffee":[[5,5,3,2,4],"Almost no entry barriers: a kiosk and an espresso machine. Many rivals, price-sensitive students, and substitutes from sachet and minimarket coffee. Supplier power is low (many bean and milk suppliers)."],
+  "Cinemas":[[3,2,5,4,3],"Few chains and high capital cost limit rivalry and entry, but streaming is a powerful substitute and film distributors control the key input."],
+  "Private universities":[[4,2,2,3,3],"Licensing and accreditation raise entry barriers. Rivalry for students is real; qualified lecturers are a scarce input; online courses are only a partial substitute for a degree."]
+};
+let ffV = FFP["Ride-hailing"][0].slice(), ffK = "Ride-hailing";
+function ffRender(){
+  $("#ffPreset").innerHTML = Object.keys(FFP).map(k=>`<button data-k="${k}" aria-pressed="${k===ffK}">${k}</button>`).join("");
+  $$("#ffPreset button").forEach(b=>b.addEventListener("click",()=>{ ffK=b.dataset.k; ffV=FFP[ffK][0].slice(); ffRender(); }));
+  $("#ffSliders").innerHTML = FF.map((f,i)=>`<div class="force-row"><span>${f}</span><input type="range" min="1" max="5" step="1" value="${ffV[i]}" data-i="${i}" aria-label="${f}"><output>${ffV[i]}</output></div>`).join("");
+  $$("#ffSliders input").forEach(inp=>inp.addEventListener("input",()=>{ ffV[+inp.dataset.i]=+inp.value; inp.nextElementSibling.textContent=inp.value; ffK=null; $$("#ffPreset button").forEach(b=>b.setAttribute("aria-pressed","false")); ffOut(); }));
+  ffOut();
+}
+function ffOut(){
+  const W=420,H=190,L=150,bh=26,g=10;
+  let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Force strength bars">`;
+  FF.forEach((f,i)=>{ const y=10+i*(bh+g), w=(W-L-30)*ffV[i]/5, col=ffV[i]>=4?"var(--bad)":ffV[i]<=2?"var(--good)":"var(--gold)";
+    svg+=`<text class="lbl" x="${L-8}" y="${y+bh/2+4}" text-anchor="end">${f}</text><rect x="${L}" y="${y}" width="${W-L-30}" height="${bh}" rx="4" fill="var(--sunk)"/><rect x="${L}" y="${y}" width="${w}" height="${bh}" rx="4" fill="${col}"/><text x="${L+w+6}" y="${y+bh/2+4}">${ffV[i]}</text>`; });
+  svg+=`</svg>`;
+  $("#ffChart").innerHTML = svg;
+  const avg = ffV.reduce((a,b)=>a+b,0)/5, strongest = FF[ffV.indexOf(Math.max(...ffV))];
+  const verdict = avg>=3.8?"Unattractive: strong forces will squeeze profits. Enter only with a clear differentiation or focus strategy.":avg>=2.8?"Moderately attractive: profitable for firms that manage the strongest force well.":"Attractive: weak forces leave room for healthy margins (and will invite entrants).";
+  $("#ffTxt").innerHTML = `<div class="bigscore"><span class="n">${avg.toFixed(1)}</span><span class="muted">average force strength (1–5)</span></div><div class="verdict ${avg<2.8?"ok":"no"}">${verdict} Strongest force: <b>${strongest}</b>.</div>${ffK?`<p class="muted" style="font-size:.88rem;margin-top:8px">${FFP[ffK][1]}</p>`:""}`;
+}
+ffRender();
+
+/* ---------- Information roles quad ---------- */
+const IR = [
+  ["Barriers to entry","Online · external","Reservation systems (SABRE, Apollo); frequent-user clubs; switching costs (supplier terminals in hospitals).","GarudaMiles and other frequent-flyer programs; payroll accounts and auto-debits that make changing banks a hassle; app-based ordering tied to a supplier."],
+  ["Revenue generation","Online · internal","Yield management; point-of-sale suggestive selling; expert systems (Otis field technicians).","Dynamic fares; table QR ordering that suggests add-ons; technicians using diagnostic apps in the field."],
+  ["Database asset","Offline · external","Selling information (Dun & Bradstreet, American Express); developing services (Club Med families, cruises, Workation); micromarketing (Borden, Kraft).","Credit bureaus; ride-hailing data seeding food delivery and payments; personalized vouchers on e-commerce apps."],
+  ["Productivity enhancement","Offline · internal","Inventory status (Frito-Lay handhelds); data envelopment analysis (60 fast-food units, 33 efficient).","Minimarket replenishment from scanner data; DEA studies comparing bank branches, puskesmas or hospitals."]
+];
+let irI = 0;
+function irRender(){
+  const CH=[["Reservation systems","Frequent-user clubs","Switching costs"],["Yield management","Point of sale","Expert systems"],["Selling information","Developing services","Micromarketing"],["Inventory status","Data envelopment analysis"]];
+  const c=i=>`<button class="cell ${irI===i?"on":""}" data-i="${i}" style="text-align:left"><h4>${IR[i][0]}</h4><p>${IR[i][1]} · click for examples</p><div class="chips">${CH[i].map(x=>`<span>${x}</span>`).join("")}</div></button>`;
+  $("#infoQuad").innerHTML = `<span></span><span class="ax">External focus (customer)</span><span class="ax">Internal focus (operations)</span><span class="ax v">Online</span>${c(0)}${c(1)}<span class="ax v">Offline</span>${c(2)}${c(3)}`;
+  $("#infoView").innerHTML = `<p class="eyebrow">${IR[irI][0]} · ${IR[irI][1]}</p><p style="margin-top:6px"><b>Textbook:</b> ${IR[irI][2]}</p><div class="id-box" style="margin-top:10px"><p class="eyebrow">In Indonesia</p><p style="font-size:.9rem">${IR[irI][3]}</p></div>`;
+  $$("#infoQuad .cell").forEach(b=>b.addEventListener("click",()=>{ irI=+b.dataset.i; irRender(); }));
+}
+irRender();
+
+/* ---------- Yield management ---------- */
+const CAP = 150; let ymShowBest = false;
+function npdf(x,m,s){ return Math.exp(-0.5*((x-m)/s)**2); }
+function ymCalc(){
+  const full=+$("#ymFull").value, promo=+$("#ymPromo").value, mu=+$("#ymMu").value, sd=+$("#ymSd").value;
+  const ds=[]; let tot=0; for(let d=0; d<=300; d++){ const p=npdf(d,mu,sd); ds.push(p); tot+=p; }
+  const P = ds.map(p=>p/tot);
+  const R=[], E=[];
+  for(let y=0;y<=CAP;y++){ let emin=0; for(let d=0; d<P.length; d++) emin += P[d]*Math.min(d,y); E.push(emin); R.push(promo*(CAP-y)+full*emin); }
+  const ED=P.reduce((a,p,d)=>a+p*d,0);
+  return {full,promo,mu,sd,P,R,E,ED};
+}
+function ymRender(){
+  const m=ymCalc(), y=+$("#ymY").value;
+  $("#ymFullO").textContent=(m.full)+"k"; $("#ymPromoO").textContent=m.promo+"k"; $("#ymMuO").textContent=m.mu; $("#ymSdO").textContent=m.sd; $("#ymYO").textContent=y;
+  let best=0; m.R.forEach((r,i)=>{ if(r>m.R[best]) best=i; });
+  const W=520,H=220,L=56,B=28,T=12, xmax=CAP, rmin=Math.min(...m.R), rmax=Math.max(...m.R), pad=(rmax-rmin)*0.1||1;
+  const X=v=>L+(W-L-10)*v/xmax, Y=v=>T+(H-T-B)*(1-(v-(rmin-pad))/((rmax+pad)-(rmin-pad)));
+  let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Expected revenue by protection level">`;
+  for(let k=0;k<=4;k++){ const v=rmin-pad+((rmax+pad)-(rmin-pad))*k/4; svg+=`<line class="grid" x1="${L}" x2="${W-10}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${L-6}" y="${Y(v)+4}" text-anchor="end">${(v/1000).toFixed(0)}M</text>`; }
+  [0,30,60,90,120,150].forEach(v=>{ svg+=`<text x="${X(v)}" y="${H-10}" text-anchor="middle">${v}</text>`; });
+  svg+=`<polyline fill="none" stroke="var(--accent)" stroke-width="2.5" points="${m.R.map((r,i)=>X(i)+","+Y(r)).join(" ")}"/>`;
+  svg+=`<line x1="${X(y)}" x2="${X(y)}" y1="${T}" y2="${H-B}" stroke="var(--ink)" stroke-dasharray="4 3"/><circle cx="${X(y)}" cy="${Y(m.R[y])}" r="5" fill="var(--ink)"/>`;
+  if(ymShowBest) svg+=`<circle cx="${X(best)}" cy="${Y(m.R[best])}" r="7" fill="none" stroke="var(--good)" stroke-width="3"/><text x="${X(best)}" y="${Y(m.R[best])-12}" text-anchor="middle" style="fill:var(--good);font-weight:600">best ${best}</text>`;
+  svg+=`<text x="${(L+W)/2}" y="${H}" text-anchor="middle" style="font-size:10px">seats protected for full fare</text></svg>`;
+  $("#ymChart").innerHTML=svg;
+  const empty = y - m.E[y], turned = m.ED - m.E[y];
+  const fmt=v=>"Rp "+(v/1000).toFixed(1)+" M";
+  $("#ymKpi").innerHTML = `<div class="kpi"><span class="l">Expected revenue</span><span class="v">${fmt(m.R[y])}</span><span class="w">per departure</span></div>
+  <div class="kpi"><span class="l">vs. no protection</span><span class="v">${m.R[y]>=m.R[0]?"+":""}${fmt(m.R[y]-m.R[0])}</span><span class="w">all 150 sold as promo</span></div>
+  <div class="kpi ${empty>10?"bn":""}"><span class="l">Protected seats left empty</span><span class="v">${empty.toFixed(1)}</span><span class="w">expected spoilage</span></div>
+  <div class="kpi ${turned>10?"bn":""}"><span class="l">Full-fare buyers turned away</span><span class="v">${Math.max(0,turned).toFixed(1)}</span><span class="w">expected spill</span></div>`;
+  const ratio = m.promo/m.full;
+  $("#ymTxt").innerHTML = ymShowBest ? `<div class="verdict ok"><b>Optimal: protect about ${best} seats</b> (expected ${fmt(m.R[best])}). The rule (Littlewood): keep protecting while the chance that full-fare demand exceeds the protected seats is higher than promo ÷ full = ${ratio.toFixed(2)}. ${ratio>=1?"Here the promo fare is not lower, so protecting seats makes no sense.":ratio<0.5?"Because the promo fare is cheap relative to full fare, it pays to protect more than the average full-fare demand.":"Because the promo fare is a large share of the full fare, it pays to protect fewer seats than the average full-fare demand."}</div>`
+    : `<p class="muted" style="font-size:.88rem">Move the protection slider: too few protected seats spill full-fare buyers; too many leave seats empty (spoilage). Then reveal the optimum.</p>`;
+}
+["ymFull","ymPromo","ymMu","ymSd","ymY"].forEach(id=>$("#"+id).addEventListener("input",ymRender));
+$("#ymBest").addEventListener("click",()=>{ ymShowBest=true; ymRender(); });
+ymRender();
+
+/* ---------- Virtual value chain stages ---------- */
+const VVC = [
+  ["Stage 1","New processes","See physical operations more effectively with information. USAA moved from paper files to a central computerized database: a 'paperless operation'."],
+  ["Stage 2","New knowledge","Virtual alternatives substitute for physical activities. USAA automated sales and underwriting; with no traveling sales force, it built a database on members used to little human interaction."],
+  ["Stage 3","New products","Analyze member information to discover needs. Risk profiles, customized policies and products for aging members: banking, life insurance, mutual funds, retirement communities; 'event-oriented service' such as auto insurance for a teenage child."],
+  ["Stage 4","New relationships","Collaborate with customers to co-create value: web-based investment planning tools and online seminars."]
+];
+let vvI=0;
+function vvRender(){
+  $("#vvcBar").innerHTML = VVC.map((v,i)=>`<button data-i="${i}" aria-pressed="${i===vvI}"><small>${v[0]}</small><b>${v[1]}</b></button>`).join("");
+  $("#vvcView").innerHTML = `<p class="eyebrow">${VVC[vvI][0]} · ${VVC[vvI][1]}</p><p style="margin-top:6px;font-size:.93rem">${VVC[vvI][2]}</p>`;
+  $$("#vvcBar button").forEach(b=>b.addEventListener("click",()=>{ vvI=+b.dataset.i; vvRender(); }));
+}
+vvRender();
+
+/* ---------- Chase & Hayes self-assessment ---------- */
+const STG = ["Available for service","Journeyman","Distinctive competence","World-class"];
+const DIMS = [
+  ["Reputation",["Customers come for reasons other than performance","Customers neither seek out nor avoid the firm","Customers seek it out for its sustained reputation","Name synonymous with excellence; delights customers"]],
+  ["Operations",["Reactive, at best","Mediocre, uninspired","Continually excels; intense customer focus","Quick learner, fast innovator; masters every step"]],
+  ["Service quality",["Subsidiary to cost; highly variable","Meets some expectations; consistent on one or two dimensions","Exceeds expectations; consistent on many dimensions","Raises expectations; improves continuously"]],
+  ["Back office",["Counting room","Contributes, but a separate role","Equally valued with the front office","Proactive; develops capabilities, creates opportunities"]],
+  ["Customer",["Unspecified; satisfied at minimum cost","A segment whose basic needs are understood","Individuals whose varied needs are understood","A source of stimulation, ideas, opportunities"]],
+  ["New technology",["Only when needed for survival","When justified by cost savings","When it promises to enhance service","Source of first-mover advantage"]],
+  ["Workforce",["Negative constraint","Efficient resource; follows procedures","Permitted to choose among procedures","Innovative; creates procedures"]],
+  ["First-line management",["Controls workers","Controls the process","Listens to customers; coaches workers","Heard by top management; mentors workers"]]
+];
+const lvSel = DIMS.map(()=>-1);
+function lvRender(){
+  $("#lvl").innerHTML = `<div class="lr"><span></span>${STG.map((s,i)=>`<span class="hd">${i+1} · ${s}</span>`).join("")}</div>` + DIMS.map((d,i)=>`<div class="lr"><span>${d[0]}</span>${d[1].map((t,j)=>`<button data-i="${i}" data-j="${j}" aria-pressed="${lvSel[i]===j}">${t}</button>`).join("")}</div>`).join("");
+  $$("#lvl button").forEach(b=>b.addEventListener("click",()=>{ lvSel[+b.dataset.i]=+b.dataset.j; lvRender(); }));
+  const done = lvSel.filter(v=>v>=0);
+  if(!done.length){ $("#lvlOut").innerHTML = `<p class="eyebrow">Your profile</p><p class="muted">Choose one description per row. The profile appears here.</p>`; return; }
+  const avg = done.reduce((a,b)=>a+b,0)/done.length, st=Math.round(avg);
+  const low = DIMS.map((d,i)=>[d[0],lvSel[i]]).filter(x=>x[1]>=0 && x[1]<st);
+  $("#lvlOut").innerHTML = `<p class="eyebrow">Your profile · ${done.length}/8 rated</p>
+  <div class="bigscore"><span class="n">${(avg+1).toFixed(1)}</span><span>closest to stage <b>${st+1} · ${STG[st]}</b></span></div>
+  <div style="display:flex;flex-direction:column;gap:5px;margin-top:8px">${DIMS.map((d,i)=>`<div class="lo-row"><span>${d[0]}</span><span class="b"><i style="width:${lvSel[i]<0?0:(lvSel[i]+1)*25}%;background:${lvSel[i]>=st?"var(--good)":"var(--bad)"}"></i></span><span class="v">${lvSel[i]<0?"–":lvSel[i]+1}</span></div>`).join("")}</div>
+  ${low.length?`<div class="verdict no"><b>Holding it back:</b> ${low.map(x=>x[0]).join(", ")}. These are the first places to invest if the firm wants to move up a stage.</div>`:`<div class="verdict ok">A consistent profile: operations supports the firm's position on every dimension rated.</div>`}`;
+}
+lvRender();
+
+/* ---------- Flashcards ---------- */
+const TERMS = [
+  ["Strategic service vision","A framework of questions about the target market, service concept, operating strategy and delivery system."],
+  ["Overall cost leadership","A competitive strategy based on efficient operations, cost control and innovative technology."],
+  ["Differentiation","A competitive strategy that creates a service perceived as unique."],
+  ["Focus","A strategy of serving a particular target market very well by addressing its specific needs."],
+  ["Five forces model","Industry analysis of competitive rivalry, new entrants, substitutes, and the bargaining power of suppliers and customers."],
+  ["SWOT analysis","Assessment of a firm's internal strengths and weaknesses and external opportunities and threats."],
+  ["Qualifiers","Criteria a customer uses to create a subset of firms meeting minimum performance requirements."],
+  ["Service winners","Criteria used to make the final choice among qualified competitors."],
+  ["Service losers","Failure to deliver at or above the expected level, losing the customer forever."],
+  ["Switching cost","The inconvenience cost for a customer of switching to another provider."],
+  ["Yield management","An information system that maximizes revenue for services with time-perishable capacity, such as airlines and hotels."],
+  ["Expert system","A computer program that makes inferences using a knowledge base and decision rules."],
+  ["Data envelopment analysis","A linear programming technique that compares service units to find an efficiency frontier for internal benchmarking."],
+  ["Virtual value chain","Stages in which information is gathered, organized, selected, synthesized and distributed to create value."],
+  ["Data analytics","The discovery, interpretation and processing of meaningful patterns in data for better decisions."],
+  ["Big data","Extremely large and complex data sets analyzed computationally to reveal patterns; volume, variety, velocity, variability."],
+  ["Internet of Things","Internetworking of physical devices with sensors and actuators controlled through the Internet."],
+  ["Scalability","The ability to improve contribution margin as sales volume increases; infinite when the variable cost of an extra customer is zero."],
+  ["Network effect","When each customer's value grows with the total number of customers."],
+  ["Triple bottom line","Evaluating a firm on social, economic and environmental criteria (people, profit, planet)."],
+  ["Sustainability","The long-term viability of a service firm."]
+];
+
+/* ---------- Quiz ---------- */
+const LO_NAMES = {1:"Strategic service vision",2:"Generic strategies",3:"Five Forces & SWOT",4:"Qualifiers, winners, losers",5:"Role of information",6:"Virtual value chain",7:"Sustainability & TBL",8:"Scalability",9:"Stages of competitiveness"};
+const Q = [
+ [1,"The four elements of the strategic service vision are:",["Price, product, place, promotion","Target market, service concept, operating strategy, delivery system","Strengths, weaknesses, opportunities, threats","Rivalry, entrants, substitutes, suppliers"],1,"From Heskett, Sasser and Schlesinger (Table 2.1)."],
+ [1,"For a start-up, in which direction should the strategic service vision be applied?",["Left to right, starting with the delivery system","Right to left, starting with the target market","Starting with operating strategy","Any order"],1,"Begin with the target market."],
+ [1,"Southwest flying only Boeing 737s belongs to which element of its vision?",["Target market","Service concept","Service delivery system","Customer segment"],2,"It controls maintenance and operating costs."],
+ [1,"'How are results stated in terms of the customer?' is a question for:",["Service concept","Operating strategy","Delivery system","Target market"],0,"The service concept expresses value from the customer's view."],
+ [1,"'How will quality and cost be controlled?' belongs to:",["Target market","Service concept","Operating strategy","Delivery system"],2,"Operating strategy covers operations, finance, marketing and organization."],
+ [2,"Which is NOT a feature of the competitive environment of services?",["Low entry barriers","Minimal economies of scale","Strong patent protection","Product substitution"],2,"Service innovations are generally not patentable."],
+ [2,"A family warung that keeps running on thin margins to employ relatives illustrates:",["Exit barriers","Economies of scale","Supplier power","Product substitution"],0,"Non-profit goals keep marginal firms in the market."],
+ [2,"FedEx's hub-and-spoke network is an example of cost leadership by:",["Seeking low-cost customers","Reducing network costs","Taking operations offline","Standardizing a custom service"],1,"Each new city adds only one route."],
+ [2,"H&R Block's routine tax preparation illustrates:",["Reducing perceived risk","Standardizing a custom service","Focus on a region","Making the intangible tangible"],1,"The key word is routine."],
+ [2,"Mall laundry counters feeding a central plant illustrate:",["Taking service operations offline","Customizing the standard product","Reducing perceived risk","Personnel training"],0,"Decoupled work can be run like a factory."],
+ [2,"Hotels giving branded toiletries are using differentiation by:",["Controlling quality","Making the intangible tangible","Reducing the personal element","Focus"],1,"A physical reminder of an intangible stay."],
+ [2,"A focus strategy is best described as:",["Ignoring costs","Differentiation and/or cost leadership applied to one segment","Serving every segment","A pricing tactic"],1,"Focus applies the other two strategies to a target market."],
+ [2,"USAA serving only military families who do business by phone and online illustrates:",["Seeking out low-cost customers","Reducing network costs","Differentiation by training","Exit barriers"],0,"No sales force is needed."],
+ [3,"Porter's Five Forces is applied at which level?",["Individual employee","Firm","Industry","Department"],2,"SWOT is applied at the firm level."],
+ [3,"For services, the threat of substitutes often comes from:",["Other services only","Products such as software replacing an accountant","Suppliers","Government"],1,"E.g., TurboTax for a tax accountant; home test kits for clinic visits."],
+ [3,"A national chain opening a kiosk across the street from your café is a:",["Strength","Weakness","Opportunity","Threat"],3,"It is external to the firm."],
+ [3,"Netflix had leverage over DVD distributors because of:",["Patents","Volume purchases","Government protection","Exclusive contracts"],1,"Large volumes reduce supplier power."],
+ [3,"Priceline and Hotwire increased which force in travel?",["Supplier power","Bargaining power of customers","Threat of entry","Rivalry only"],1,"They shifted information asymmetry to customers."],
+ [3,"Why should SWOT be done collaboratively?",["It's legally required","It is subjective; different people reach different versions","It needs many calculations","Competitors must approve it"],1,"Collaboration improves a subjective analysis."],
+ [4,"Criteria a customer uses to form a subset of acceptable firms are:",["Service winners","Qualifiers","Service losers","Switching costs"],1,"Qualifiers set the minimum level."],
+ [4,"In airline service, safety is an obvious:",["Service winner","Qualifier","Service loser","Barrier"],1,"Without it, the airline isn't considered."],
+ [4,"Which dimensions are especially vulnerable to becoming service losers?",["Price, reputation, safety","Dependability, personalization, speed","Availability, convenience, price","Quality, safety, price"],1,"E.g., a car not fixed, a rude doctor, a late package."],
+ [4,"A drive-through window that became necessary to compete is an example of:",["A winner becoming a qualifier","A loser becoming a winner","A qualifier becoming a loser","Switching cost"],0,"Yesterday's winners become today's qualifiers."],
+ [4,"Why is competing on price less effective in services?",["Prices are regulated","Services are hard to compare objectively and price can signal quality","Customers ignore price","Costs are fixed"],1,"Especially for professional services."],
+ [4,"For a family celebration dinner, the likely service winner is:",["Walking distance","Reputation","Speed","Halal certification as a qualifier"],1,"For a quick lunch, convenience may win; for a celebration, reputation."],
+ [5,"Frequent-flyer programs are a use of information to create:",["Revenue generation","Barriers to entry","Productivity enhancement","Database asset"],1,"They make new entrants' discount fares unappealing."],
+ [5,"Yield management belongs to which strategic role of information?",["Barriers to entry","Revenue generation","Database asset","Productivity enhancement"],1,"Online, internally focused."],
+ [5,"Data envelopment analysis is used for:",["Revenue generation","Productivity enhancement","Barriers to entry","Selling information"],1,"It identifies efficient units to benchmark."],
+ [5,"Club Med adding family resorts after studying its members illustrates:",["Selling information","Developing services from a database","Switching costs","Expert systems"],1,"Database asset: developing services."],
+ [5,"Call centers placing big spenders in a faster queue is:",["Coding","Routing","Targeting","Sharing"],1,"Routing uses the customer's code."],
+ [5,"Two passengers paying very different prices for adjacent seats raises which limit of information use?",["Reliability","Fairness","Data security","Anticompetitive"],1,"Yield management makes price a moving target."],
+ [5,"In yield management, protecting more seats for full fare increases the risk of:",["Spill of full-fare passengers","Empty seats (spoilage) if full-fare demand is low","Lower full fares","Overbooking"],1,"Too much protection leaves seats empty."],
+ [5,"Indonesia's law that governs processing of personal data is:",["UU 27/2022 on Personal Data Protection","UU 20/2016 on Trademarks","POJK 51/2017","UU 33/2014"],0,"It requires a lawful basis and gives data subjects rights."],
+ [6,"The five activities that add value in each stage of the virtual value chain are:",["Plan, do, check, act, repeat","Gather, organize, select, synthesize, distribute","Design, build, test, launch, review","Code, route, target, share, sell"],1,"Rayport and Sviokla."],
+ [6,"USAA becoming a 'paperless operation' is which stage?",["New processes","New knowledge","New products","New relationships"],0,"Stage 1: seeing physical operations more effectively."],
+ [6,"USAA's web-based investment planning tools and online seminars represent:",["New processes","New knowledge","New products","New relationships"],3,"Co-creation of value with members."],
+ [6,"FedEx letting customers track packages online is an early example of:",["Exploiting the virtual value chain","Taking operations offline","Exit barriers","Focus"],0,"Information itself became customer value."],
+ [6,"'Why did complaints rise last month?' is a question for:",["Descriptive analytics","Diagnostic analytics","Predictive analytics","Prescriptive analytics"],1,"Diagnostic analytics explains causes."],
+ [6,"The four components of big data are:",["Volume, variety, velocity, variability","Value, vision, volume, velocity","Variety, validity, value, voice","Volume, value, version, vendor"],0,"They change fast and require special techniques."],
+ [6,"In IoT, the devices that produce actions triggered by sensor information are:",["Sensors","Actuators","Routers","Servers"],1,"Sensors collect data; actuators act."],
+ [7,"The triple bottom line evaluates a firm on:",["Price, quality, speed","Social, economic and environmental criteria","Revenue, cost, profit","Customers, employees, suppliers"],1,"People, profit, planet."],
+ [7,"A bank's mortgage decisions affecting a community's traffic and diversity illustrate:",["Ripple effect","Eco-efficiency","Exit barriers","Switching cost"],0,"A service firm's biggest impact may be on customers' choices."],
+ [7,"Ski resorts losing snow because of global warming illustrate a sustainability:",["Opportunity","Strategic threat","Regulation","Image benefit"],1,"Sustainability trends can threaten a business's foundation."],
+ [7,"Which Indonesian regulation requires sustainability reports from financial institutions and listed companies?",["POJK 51/2017","UU 27/2022","Pergub Bali 97/2018","UU 20/2016"],0,"OJK's sustainable finance regulation."],
+ [7,"Treating hospital wastewater before disposal falls under:",["People","Planet","Profit","None"],1,"Environmental: clean water and waste management."],
+ [8,"Infinite scalability is possible only when:",["Fixed costs are zero","The variable cost of serving an additional customer is zero","Prices are high","There are no competitors"],1,"Scalability improves contribution margin with volume."],
+ [8,"Which is NOT one of the three sources of scalability?",["Conduct only information services","Let customers serve themselves","Let customers serve other customers","Ship goods from a warehouse"],3,"Goods-dominant e-commerce is the least scalable."],
+ [8,"An online marketplace where each new seller attracts more buyers, and vice versa, benefits from:",["A network effect","Exit barriers","Switching costs only","Yield management"],0,"Value rises with the number of customers."],
+ [8,"In Table 2.5, which example is most scalable?",["Amazon selling goods","Kbb.com used-car price information","Blue Apron meal kits","InfoHub travel agent"],1,"Selling information: a digital asset."],
+ [8,"Why can scalability alone be dangerous?",["It increases costs","Without differentiation it leads to commoditization","It reduces volume","It is illegal"],1,"Only the price leader survives."],
+ [9,"A firm where 'operations is reactive, at best' and the back office is a 'counting room' is at stage:",["Available for service","Journeyman","Distinctive competence","World-class"],0,"Stage 1."],
+ [9,"At which stage does new technology become a source of first-mover advantage?",["Journeyman","Distinctive competence","World-class service delivery","Available for service"],2,"Stage 4."],
+ [9,"Copying the industry's drive-through windows to maintain parity is typical of:",["Available for service","Journeyman","Distinctive competence","World-class"],1,"Operations is competitive-neutral."],
+ [9,"Jan Carlzon improving on-time departures at SAS illustrates:",["Journeyman","Distinctive competence achieved","Available for service","Exit barriers"],1,"Leadership that understands operations' role."],
+ [9,"Southwest planners studying Indianapolis 500 pit crews illustrates:",["Benchmarking outside the industry","Focus","Yield management","Product substitution"],0,"Insights other airlines couldn't provide."]
+];
+
+function renderActivity(el){
+  const key = el.dataset.activity, cfg = ACT[key];
+  const st = {done:0, right:0, total:cfg.items.length};
+  const itemsEl = $("[data-items]", el);
+  itemsEl.innerHTML = cfg.items.map((it,i)=>`<div class="item" data-i="${i}"><p class="q">${it[0]}</p><div class="opts">${cfg.opts.map(o=>`<button data-o="${esc(o)}">${o}</button>`).join("")}</div><p class="fb" hidden></p></div>`).join("");
+  const upd = ()=>{ $("[data-score]",el).textContent = `${st.right} correct · ${st.done}/${st.total} answered`; };
+  upd();
+  $$(".item", itemsEl).forEach(item=>{
+    const it = cfg.items[+item.dataset.i];
+    $$("button", item).forEach(b=>b.addEventListener("click",()=>{
+      const ok = b.dataset.o===it[1];
+      $$("button", item).forEach(x=>{ x.disabled=true; if(x.dataset.o===it[1]) x.classList.add("right"); });
+      if(!ok) b.classList.add("wrong");
+      item.classList.add(ok?"done-ok":"done-bad");
+      const fb = $(".fb", item); fb.hidden=false; fb.innerHTML = (ok?"<b style='color:var(--good)'>Correct.</b> ":"<b style='color:var(--bad)'>Not quite.</b> ")+it[2];
+      st.done++; if(ok) st.right++; upd();
+    }));
+  });
+}
+$$("[data-activity]").forEach(renderActivity);
+let fcOrder = TERMS.map((_,i)=>i), fcI = 0;
+function renderFc(){ const t = TERMS[fcOrder[fcI]]; $("#fc").classList.remove("flip"); $("#fcTerm").textContent=t[0]; $("#fcDef").textContent=t[1]; $("#fcCount").textContent=`${fcI+1} / ${TERMS.length}`; }
+$("#fc").addEventListener("click",()=>$("#fc").classList.toggle("flip"));
+$("#fcPrev").addEventListener("click",()=>{ fcI=(fcI-1+TERMS.length)%TERMS.length; renderFc(); });
+$("#fcNext").addEventListener("click",()=>{ fcI=(fcI+1)%TERMS.length; renderFc(); });
+$("#fcShuffle").addEventListener("click",()=>{ fcOrder=shuffle(fcOrder); fcI=0; renderFc(); });
+renderFc();
+const quizEl = $("#quiz");
+let run = null;
+function setup(){
+  const best = store.get(KEY+"_best");
+  quizEl.innerHTML = `<div class="qz-setup">
+    <p>Questions are drawn from all ${Object.keys(LO_NAMES).length} learning objectives, including Indonesian applications. You get feedback after each answer and a breakdown by objective at the end.</p>
+    <div><p class="eyebrow" style="margin-bottom:6px">Length</p><div class="seg" id="qzLen">
+      <button data-n="10" aria-pressed="true">Quick · 10 questions</button><button data-n="20" aria-pressed="false">Standard · 20</button><button data-n="${Q.length}" aria-pressed="false">Full · all ${Q.length}</button></div></div>
+    <div><p class="eyebrow" style="margin-bottom:6px">Focus</p><div class="seg" id="qzLo"><button data-lo="0" aria-pressed="true">All objectives</button>${Object.keys(LO_NAMES).map(k=>`<button data-lo="${k}" aria-pressed="false">LO${k}</button>`).join("")}</div></div>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><button class="btn" id="qzStart">Start self-test</button>${best!=null?`<span class="muted mono" style="font-size:.82rem">Your best on this device: ${best}%</span>`:""}</div>
+  </div>`;
+  let n=10, lo=0;
+  $$("#qzLen button").forEach(b=>b.addEventListener("click",()=>{ $$("#qzLen button").forEach(x=>x.setAttribute("aria-pressed",x===b)); n=+b.dataset.n; }));
+  $$("#qzLo button").forEach(b=>b.addEventListener("click",()=>{ $$("#qzLo button").forEach(x=>x.setAttribute("aria-pressed",x===b)); lo=+b.dataset.lo; }));
+  $("#qzStart").addEventListener("click",()=>{
+    let pool = Q.map((q,i)=>i).filter(i=>!lo||Q[i][0]===lo);
+    pool = shuffle(pool).slice(0, Math.min(n,pool.length));
+    run = {qs: pool.map(i=>{ const q=Q[i]; const order=shuffle(q[2].map((_,j)=>j)); return {lo:q[0], text:q[1], opts:order.map(j=>q[2][j]), ans:order.indexOf(q[3]), exp:q[4]}; }), i:0, picks:[]};
+    showQ();
+  });
+}
+function showQ(){
+  const r=run, q=r.qs[r.i], picked=r.picks[r.i];
+  quizEl.innerHTML = `<div class="qz-top"><span class="eyebrow">Question ${r.i+1} of ${r.qs.length} · LO${q.lo} ${LO_NAMES[q.lo]}</span><span class="mono muted" style="font-size:.8rem">${r.picks.filter((p,k)=>p===r.qs[k].ans).length} correct so far</span></div>
+    <div class="qz-prog"><i style="width:${(r.i)/r.qs.length*100}%"></i></div>
+    <p class="qz-q">${q.text}</p>
+    <div class="qz-opts">${q.opts.map((o,j)=>`<button data-j="${j}"><span class="k">${"ABCD"[j]}</span><span>${o}</span></button>`).join("")}</div>
+    <div id="qzExp"></div>
+    <div class="qz-nav"><button class="btn ghost" id="qzQuit">Quit</button><button class="btn" id="qzNext" ${picked==null?"disabled":""}>${r.i===r.qs.length-1?"See results":"Next question"}</button></div>`;
+  const lock = (j)=>{
+    $$(".qz-opts button").forEach(b=>{ b.disabled=true; const k=+b.dataset.j; if(k===q.ans) b.classList.add("right"); else if(k===j) b.classList.add("wrong"); });
+    const ok = j===q.ans;
+    $("#qzExp").innerHTML = `<div class="qz-exp ${ok?"ok":"no"}"><b>${ok?"Correct.":"Not quite. The answer is "+"ABCD"[q.ans]+"."}</b>${q.exp}</div>`;
+    $("#qzNext").disabled=false;
+  };
+  if(picked!=null) lock(picked);
+  $$(".qz-opts button").forEach(b=>b.addEventListener("click",()=>{ const j=+b.dataset.j; r.picks[r.i]=j; lock(j); $("#qzNext").focus(); }));
+  $("#qzNext").addEventListener("click",()=>{ if(r.i<r.qs.length-1){ r.i++; showQ(); } else results(); });
+  $("#qzQuit").addEventListener("click",setup);
+}
+function results(){
+  const r=run; const right=r.qs.filter((q,k)=>r.picks[k]===q.ans).length; const pct=Math.round(right/r.qs.length*100);
+  const best=store.get(KEY+"_best"); if(best==null||pct>best) store.set(KEY+"_best",pct);
+  const by={}; r.qs.forEach((q,k)=>{ by[q.lo]=by[q.lo]||{r:0,t:0}; by[q.lo].t++; if(r.picks[k]===q.ans) by[q.lo].r++; });
+  const verdict = pct>=85?"Strong grasp of the chapter.":pct>=65?"Good foundation. Review the objectives below 70%.":"Revisit the units for the weaker objectives, then try again.";
+  const unitFor = UNIT_FOR;
+  quizEl.innerHTML = `<div class="res-big"><span class="pct" style="color:${pct>=65?"var(--good)":"var(--bad)"}">${pct}%</span><span>${right} of ${r.qs.length} correct. ${verdict}</span></div>
+    <div><p class="eyebrow" style="margin-bottom:8px">By learning objective</p><div class="lo-bars">${Object.keys(by).sort().map(k=>{const v=by[k],p=Math.round(v.r/v.t*100);return `<div class="lo-row"><span><b class="mono">LO${k}</b> ${LO_NAMES[k]}${p<70?` · <a href="#${unitFor[k]}" style="color:var(--accent)">review</a>`:""}</span><span class="b"><i style="width:${p}%;background:${p>=70?"var(--good)":"var(--bad)"}"></i></span><span class="v">${v.r}/${v.t}</span></div>`;}).join("")}</div></div>
+    <div><p class="eyebrow" style="margin-bottom:8px">Review your answers</p><div class="review">${r.qs.map((q,k)=>{const ok=r.picks[k]===q.ans;return `<details ${ok?"":"open"}><summary><span class="mk ${ok?"ok":"no"}">${ok?"✓":"✗"}</span>${q.text}</summary><p><b>Your answer:</b> ${q.opts[r.picks[k]]}${ok?"":`<br><b>Correct:</b> ${q.opts[q.ans]}`}</p><p class="muted">${q.exp}</p></details>`;}).join("")}</div></div>
+    <div class="qz-nav"><button class="btn ghost" id="qzNew">Change settings</button><button class="btn" id="qzAgain">Retake with new questions</button></div>`;
+  $("#qzNew").addEventListener("click",setup);
+  $("#qzAgain").addEventListener("click",()=>{ setup(); $("#qzStart").click(); });
+  quizEl.scrollIntoView({block:"start"});
+}
+setup();
+
+/* ---------- Progress & nav ---------- */
+const units = $$("[data-unit]").map(s=>s.id);
+const seen = new Set(store.get(KEY+"_seen")||[]);
+function refreshProgress(){
+  const n = units.filter(u=>seen.has(u)).length;
+  $("#meterTxt").textContent = `${n} / ${units.length} units`;
+  $("#meterBar").style.width = (n/units.length*100)+"%";
+  $$("#tocList a").forEach(a=>a.classList.toggle("seen", seen.has(a.getAttribute("href").slice(1))));
+  store.set(KEY+"_seen",[...seen]);
+}
+if("IntersectionObserver" in window){
+  const io = new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ const id=e.target.id; $$("#tocList a").forEach(a=>a.classList.toggle("here", a.getAttribute("href")==="#"+id)); } }); },{rootMargin:"-40% 0px -55% 0px"});
+  $$("section.unit").forEach(s=>io.observe(s));
+  $$("[data-unit]").forEach(s=>{ const end=document.createElement("span"); end.style.cssText="display:block;height:1px"; end.dataset.for=s.id; s.appendChild(end); });
+  const endObs = new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ seen.add(e.target.dataset.for); refreshProgress(); endObs.unobserve(e.target);} }); });
+  $$("[data-for]").forEach(el=>endObs.observe(el));
+}
+refreshProgress();
+})();
+</script>
+</body>
+</html>
