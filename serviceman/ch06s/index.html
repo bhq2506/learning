@@ -637,11 +637,20 @@ textarea.csv{width:100%;min-height:150px;font-family:var(--f-mono);font-size:.8r
 @media (max-width:560px){.rate-row{grid-template-columns:minmax(0,1fr)}.rate button{width:36px}}
 .pbody .see{border-left:3px solid var(--accent);padding:4px 0 4px 10px;font-size:.9rem}
 .qt-dim{font-weight:600}
+.home{font-family:var(--f-body);font-size:.88rem;font-weight:600;text-decoration:none;color:var(--accent-ink);background:var(--accent);border:0;border-radius:8px;padding:7px 14px;white-space:nowrap;flex:none;box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.home:hover{filter:brightness(1.08);color:var(--accent-ink)}
+.home:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+@media (max-width:520px){.home{font-size:.8rem;padding:6px 10px}}
+footer{display:flex;flex-direction:column;gap:8px}
+.dept-foot{border-top:1px solid var(--line);padding-top:14px}
+.dept-foot a{color:var(--ink);font-weight:600;text-decoration:none;letter-spacing:.02em}
+.dept-foot a span{color:var(--muted);margin:0 4px}
+.dept-foot a:hover{color:var(--accent);text-decoration:underline}
 </style>
 </head>
 <body>
 <header class="top"><div class="top-in">
-  <a class="home" href="../" aria-label="All chapters">← Course</a>
+  <a class="home" href="../" aria-label="Back to the course home page">← Back to Home</a>
   <div class="brand"><span class="ch">CH 6S</span><b>Improving Service Quality</b></div>
   <div class="meter" aria-label="Study progress"><span id="meterTxt">0 / 7 units</span><span class="bar"><i id="meterBar"></i></span></div>
 </div></header>
@@ -1081,7 +1090,7 @@ textarea.csv{width:100%;min-height:150px;font-family:var(--f-mono);font-size:.8r
   <div class="quiz" id="quiz"></div>
 </section>
 
-<footer>Supplement to Chapter 6, "Service Quality," in Bordoloi, Fitzsimmons &amp; Fitzsimmons, <i>Service Management</i> (McGraw Hill, 2022). The Klinik Sehat Sentosa case and its data are fictional, created for teaching. The auto-dealer data are from Martilla &amp; James (1977).</footer>
+<footer><p class="dept-foot"><a href="https://www.its.ac.id/mb" target="_blank" rel="noopener">Department of Business Management <span>|</span> INSTITUT TEKNOLOGI SEPULUH NOPEMBER</a></p><p>Supplement to Chapter 6, "Service Quality," in Bordoloi, Fitzsimmons &amp; Fitzsimmons, <i>Service Management</i> (McGraw Hill, 2022). The Klinik Sehat Sentosa case and its data are fictional, created for teaching. The auto-dealer data are from Martilla &amp; James (1977).</p></footer>
 </main>
 </div>
 <div class="tip" id="tip" hidden></div>
