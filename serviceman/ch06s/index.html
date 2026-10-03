@@ -605,6 +605,11 @@ textarea.csv{width:100%;min-height:150px;font-family:var(--f-mono);font-size:.8r
 .cmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 @media (max-width:620px){.cmp{grid-template-columns:minmax(0,1fr)}}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:.86rem;z-index:60}
+.journey ol.why3{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:8px;counter-reset:w}
+.journey ol.why3 li{display:grid;grid-template-columns:26px minmax(0,1fr);gap:4px 10px;align-items:start;border-top:1px dashed var(--line);padding:8px 0 0;font-size:.92rem;counter-increment:w}
+.journey ol.why3 li:first-child{border-top:0;padding-top:0}
+.journey ol.why3 li::before{content:counter(w);grid-row:span 2;width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-family:var(--f-mono);font-size:.78rem;display:grid;place-items:center}
+.journey ol.why3 li .muted{grid-column:2;font-family:var(--f-mono);font-size:.76rem}
 </style>
 </head>
 <body>
@@ -643,10 +648,10 @@ textarea.csv{width:100%;min-height:150px;font-family:var(--f-mono);font-size:.8r
     <div class="journey">
       <p class="eyebrow">Why not just fix the lowest score?</p>
       <p style="margin-top:8px;font-size:.93rem">A low score on something customers barely care about is not urgent. A modest gap on something they care about a lot can be costing you customers. And fixing a symptom (adding chairs to the waiting room) rarely fixes the cause (no appointment system). You need three answers:</p>
-      <ol style="margin:10px 0 0;padding-left:1.2em;font-size:.92rem;display:flex;flex-direction:column;gap:4px">
-        <li><b>Where</b> are we falling short? <span class="muted">SERVQUAL</span></li>
-        <li><b>Which</b> shortfall matters most? <span class="muted">IPA, Pareto</span></li>
-        <li><b>Why</b> does it happen, and what will we do? <span class="muted">Fishbone, 5 Whys, 5W1H</span></li>
+      <ol class="why3">
+        <li><span><b>Where</b> are we falling short?</span><span class="muted">SERVQUAL</span></li>
+        <li><span><b>Which</b> shortfall matters most?</span><span class="muted">IPA, Pareto</span></li>
+        <li><span><b>Why</b> does it happen, and what will we do?</span><span class="muted">Fishbone, 5 Whys, 5W1H</span></li>
       </ol>
     </div>
   </div>
