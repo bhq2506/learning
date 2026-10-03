@@ -628,6 +628,15 @@ textarea.csv{width:100%;min-height:150px;font-family:var(--f-mono);font-size:.8r
 .pbody code,.fx{font-family:var(--f-mono);font-size:.84rem;background:var(--sunk);border-radius:6px;padding:1px 6px}
 @media (max-width:620px){.pbody{padding:0 14px 14px 14px}}
 .pbody .tbl-wrap table{min-width:540px}
+.rate-row{display:grid;grid-template-columns:190px minmax(0,1fr);gap:10px;align-items:center;margin-top:6px}
+.rate-row .rl{font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+.rate{display:flex;gap:6px;flex-wrap:wrap}
+.rate button{width:40px;height:36px;border:1px solid var(--line);border-radius:8px;background:var(--bg);font-family:var(--f-mono);font-weight:600}
+.rate[data-r="e"] button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.rate[data-r="p"] button[aria-pressed="true"]{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+@media (max-width:560px){.rate-row{grid-template-columns:minmax(0,1fr)}.rate button{width:36px}}
+.pbody .see{border-left:3px solid var(--accent);padding:4px 0 4px 10px;font-size:.9rem}
+.qt-dim{font-weight:600}
 </style>
 </head>
 <body>
@@ -706,20 +715,35 @@ textarea.csv{width:100%;min-height:150px;font-family:var(--f-mono);font-size:.8r
   <div class="unit-head"><p class="eyebrow">Unit 01 · Measure</p><h2>SERVQUAL in depth</h2><div class="lo-tags"><span class="lo">LO1</span><span class="lo">LO2</span></div></div>
   <p class="lead">Parasuraman, Zeithaml and Berry built their <b>gap model</b> in 1985 from focus groups across several service industries. In 1988 they published <b>SERVQUAL</b>: a scale that turns GAP 5, the customer's expectation–perception gap, into numbers.</p>
   <div class="grid3">
-    <div class="card"><span class="tag">Structure</span><p><b>22 items</b> grouped into <b>5 dimensions</b>. Each item is asked twice: once about an excellent firm in the industry (<b>expectation, E</b>) and once about this firm (<b>perception, P</b>). Both use a 7-point scale, from 1 = strongly disagree to 7 = strongly agree.</p></div>
+    <div class="card"><span class="tag">Structure</span><p><b>22 items</b> grouped into <b>5 dimensions (RATER)</b>. Every respondent rates <b>each item twice</b>: their <b>expectation (E)</b> of an excellent firm, and their <b>perception (P)</b> of how this firm actually performed. Both use a 7-point scale, from 1 = strongly disagree to 7 = strongly agree.</p></div>
     <div class="card"><span class="tag">Scoring</span><p>Item gap = <b>P − E</b>. A negative gap means a shortfall. A dimension score is the average gap of its items. The <b>unweighted SERVQUAL</b> score is the average of the five dimension scores. The <b>weighted</b> score uses customers' 100-point allocation of importance across the dimensions.</p></div>
     <div class="card"><span class="tag">Uses</span><p>Track quality over time; compare branches of a multisite firm; benchmark against a competitor; segment customers by their quality perceptions; and, most important for us, find the items with the largest shortfalls.</p></div>
   </div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>Dimension</th><th>Items</th><th>What it covers</th><th>Typical weight customers give</th></tr></thead>
+    <thead><tr><th>Dimension (RATER order)</th><th>Items</th><th>What it covers</th><th>Typical weight customers give</th></tr></thead>
     <tbody>
-      <tr><td>Tangibles</td><td style="font-weight:400">4 (items 1–4)</td><td style="font-weight:400">Facilities, equipment, staff appearance, materials</td><td style="font-weight:400">Usually lowest</td></tr>
-      <tr><td>Reliability</td><td style="font-weight:400">5 (items 5–9)</td><td style="font-weight:400">Performing the promised service dependably and accurately</td><td style="font-weight:400">Usually highest</td></tr>
-      <tr><td>Responsiveness</td><td style="font-weight:400">4 (items 10–13)</td><td style="font-weight:400">Willingness to help; prompt service</td><td style="font-weight:400">High</td></tr>
-      <tr><td>Assurance</td><td style="font-weight:400">4 (items 14–17)</td><td style="font-weight:400">Knowledge, courtesy, ability to inspire trust</td><td style="font-weight:400">Medium–high</td></tr>
-      <tr><td>Empathy</td><td style="font-weight:400">5 (items 18–22)</td><td style="font-weight:400">Caring, individualized attention</td><td style="font-weight:400">Medium</td></tr>
+      <tr><td>R · Reliability</td><td style="font-weight:400">5 (items 5–9)</td><td style="font-weight:400">Performing the promised service dependably and accurately</td><td style="font-weight:400">Usually highest</td></tr>
+      <tr><td>A · Assurance</td><td style="font-weight:400">4 (items 14–17)</td><td style="font-weight:400">Knowledge, courtesy, ability to inspire trust</td><td style="font-weight:400">Medium–high</td></tr>
+      <tr><td>T · Tangibles</td><td style="font-weight:400">4 (items 1–4)</td><td style="font-weight:400">Facilities, equipment, staff appearance, materials</td><td style="font-weight:400">Usually lowest</td></tr>
+      <tr><td>E · Empathy</td><td style="font-weight:400">5 (items 18–22)</td><td style="font-weight:400">Caring, individualized attention</td><td style="font-weight:400">Medium</td></tr>
+      <tr><td>R · Responsiveness</td><td style="font-weight:400">4 (items 10–13)</td><td style="font-weight:400">Willingness to help; prompt service</td><td style="font-weight:400">High</td></tr>
     </tbody>
   </table></div>
+  <p class="fig">Item numbers follow the original 1988 questionnaire; rows are listed in RATER order, as in Chapter 6.</p>
+  <h3 id="sq-howto">How respondents answer: two ratings for every item</h3>
+  <div class="cmp">
+    <div class="card" style="border-top:4px solid var(--accent)"><span class="tag">Rating 1 · Expectation (E)</span><h4>What should an excellent service do?</h4><p>The respondent thinks of an <b>excellent</b> firm in this industry (not this firm) and rates how strongly they agree that such a firm would have this feature. This captures the <b>standard</b> the customer holds.</p><p class="mono" style="font-size:.82rem">"Excellent clinics will have doctors who start consultations at the scheduled time."</p></div>
+    <div class="card" style="border-top:4px solid var(--gold)"><span class="tag">Rating 2 · Perception of performance (P)</span><h4>How did this service actually perform?</h4><p>The same respondent then rates <b>this</b> firm on exactly the same feature, based on the service they actually received. This captures <b>perceived performance</b>.</p><p class="mono" style="font-size:.82rem">"At Klinik Sehat Sentosa, doctors start consultations at the scheduled time."</p></div>
+  </div>
+  <div class="panel">
+    <p class="eyebrow">Try answering one item as a patient would</p>
+    <p style="font-size:.92rem;margin:6px 0 10px"><b>Item R5:</b> Doctors start consultations at the scheduled time. <span class="muted">(1 = strongly disagree … 7 = strongly agree)</span></p>
+    <div class="rate-row"><span class="rl">E · Excellent clinics will…</span><div class="rate" data-r="e" role="group" aria-label="Expectation rating"><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button><button data-v="6">6</button><button data-v="7">7</button></div></div>
+    <div class="rate-row"><span class="rl">P · This clinic does…</span><div class="rate" data-r="p" role="group" aria-label="Perception rating"><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button><button data-v="6">6</button><button data-v="7">7</button></div></div>
+    <p id="rateOut" style="margin-top:10px;font-size:.95rem" aria-live="polite"></p>
+  </div>
+  <div class="callout"><p class="eyebrow">Remember</p><p>Every one of the 22 items gets <b>both</b> ratings from the <b>same</b> respondent: 22 expectation ratings plus 22 perception ratings, 44 in total. The gap <b>P − E</b> is computed for each item. Without both ratings there is no gap, and no SERVQUAL score. If you only collect performance ratings, you have SERVPERF, not SERVQUAL.</p></div>
+
 
   <div class="grid2">
     <div class="card"><span class="tag">Adapting the items</span><p>SERVQUAL is a skeleton, not a script. Reword items for the setting ("The clinic has modern-looking medical equipment"), keep one idea per statement, translate carefully (pilot the Bahasa Indonesia version), and add industry-specific items if focus groups reveal them. Keep the five-dimension structure so results stay comparable.</p></div>
@@ -742,9 +766,10 @@ textarea.csv{width:100%;min-height:150px;font-family:var(--f-mono);font-size:.8r
 
     <details class="pstep"><summary><span class="pn">2</span><span class="pt"><b>Adapt the 22 items to your service</b><small>Keep the five dimensions; change the words</small></span></summary>
       <div class="pbody">
-        <p><b>Do:</b> Start from the 22 statements (4 tangibles, 5 reliability, 4 responsiveness, 4 assurance, 5 empathy). Reword each one for your setting, e.g., "Excellent clinics will have modern-looking medical equipment." Run a short focus group or interview 5–10 customers and frontline staff to find missing attributes; add them as extra items, assigned to a dimension.</p>
+        <p><b>Do:</b> Start from the 22 statements (5 reliability, 4 assurance, 4 tangibles, 5 empathy, 4 responsiveness). Reword each one for your setting, e.g., "Excellent clinics will have modern-looking medical equipment." Run a short focus group or interview 5–10 customers and frontline staff to find missing attributes; add them as extra items, assigned to a dimension.</p>
         <p><b>Tip:</b> One idea per statement. Avoid double-barreled items ("clean and quiet"). Write all items positively: the 1991 refinement of SERVQUAL dropped the negatively worded items of the 1988 version because they confused respondents.</p>
-        <p class="pout"><b>Output:</b> an item list with a code (T1…E22) and dimension for each statement.</p>
+        <p class="pout"><b>Output:</b> an item list with a code (R5…S13) and dimension for each statement.</p>
+        <p class="see"><b>Example:</b> the 22 clinic statements, grouped by dimension, are in <a href="#sq-try">Try it · Score the clinic's survey</a> below. Compare them with the generic wording to see how items were adapted.</p>
       </div></details>
 
     <details class="pstep"><summary><span class="pn">3</span><span class="pt"><b>Build the questionnaire</b><small>Expectations, importance, perceptions, profile</small></span></summary>
@@ -752,13 +777,14 @@ textarea.csv{width:100%;min-height:150px;font-family:var(--f-mono);font-size:.8r
         <div class="tbl-wrap"><table>
           <thead><tr><th>Part</th><th>Content</th><th>Scale</th></tr></thead>
           <tbody>
-            <tr><td>1 · Expectations (E)</td><td style="font-weight:400">The 22 statements about an <i>excellent</i> firm in this industry ("Excellent clinics will…")</td><td style="font-weight:400">1 = strongly disagree … 7 = strongly agree</td></tr>
+            <tr><td>1 · Expectations (E)</td><td style="font-weight:400">All 22 statements, grouped by dimension, about an <i>excellent</i> firm in this industry ("Excellent clinics will…"). The respondent rates each one.</td><td style="font-weight:400">1 = strongly disagree … 7 = strongly agree</td></tr>
             <tr><td>2 · Importance</td><td style="font-weight:400">Allocate 100 points across the five dimensions (each described in one sentence). Optionally add an importance rating per item for IPA.</td><td style="font-weight:400">Points summing to 100; or 1–7 per item</td></tr>
-            <tr><td>3 · Perceptions (P)</td><td style="font-weight:400">The same 22 statements, in the same order, about <i>this</i> firm ("Klinik Sehat Sentosa has…")</td><td style="font-weight:400">1–7, same anchors as Part 1</td></tr>
+            <tr><td>3 · Perceptions (P)</td><td style="font-weight:400">The same 22 statements, in the same order, about how <i>this</i> firm actually performed ("At Klinik Sehat Sentosa, …"). The respondent rates each one again.</td><td style="font-weight:400">1–7, same anchors as Part 1</td></tr>
             <tr><td>4 · Profile</td><td style="font-weight:400">Segment questions (visit type, frequency, age band), overall satisfaction, intention to return, open comments</td><td style="font-weight:400">Short categories</td></tr>
           </tbody></table></div>
         <p><b>Tip:</b> Translate into Bahasa Indonesia, then have someone else translate it back into English to check that the meaning survived (back-translation). Use exactly the same wording for the E and P versions of each item except the subject.</p>
-        <p class="pout"><b>Output:</b> a draft questionnaire. Use "Copy questionnaire template" above to start from the clinic items.</p>
+        <p class="pout"><b>Output:</b> a draft questionnaire. Use "Copy questionnaire template" above to start from the clinic items, grouped by RATER dimension.</p>
+        <p class="see"><b>Example:</b> <a href="#sq-try">Try it · Score the clinic's survey</a> shows what this questionnaire produces: one mean expectation (E) and one mean perception (P) per item, averaged over 120 patients.</p>
       </div></details>
 
     <details class="pstep"><summary><span class="pn">4</span><span class="pt"><b>Pilot test and check reliability</b><small>Fix confusing items before the real survey</small></span></summary>
@@ -801,7 +827,7 @@ textarea.csv{width:100%;min-height:150px;font-family:var(--f-mono);font-size:.8r
 
     <details class="pstep"><summary><span class="pn">9</span><span class="pt"><b>Compute overall SERVQUAL scores</b><small>Unweighted and weighted</small></span></summary>
       <div class="pbody">
-        <p><b>Unweighted:</b> <span class="fx">SQ = (Gap<sub>T</sub> + Gap<sub>R</sub> + Gap<sub>S</sub> + Gap<sub>A</sub> + Gap<sub>E</sub>) / 5</span></p>
+        <p><b>Unweighted:</b> <span class="fx">SQ = (Gap<sub>Rel</sub> + Gap<sub>Ass</sub> + Gap<sub>Tan</sub> + Gap<sub>Emp</sub> + Gap<sub>Res</sub>) / 5</span></p>
         <p><b>Weighted:</b> average the 100-point allocations across respondents to get weights w<sub>d</sub> (as fractions summing to 1), then <span class="fx">SQ<sub>w</sub> = Σ w<sub>d</sub> × Gap<sub>d</sub></span>. Strictly, the original method weights each respondent's own dimension gaps by that respondent's own points and then averages; with consistent data the two give very similar results.</p>
         <p class="pout"><b>Output:</b> two summary scores, plus the average importance weight of each dimension.</p>
       </div></details>
@@ -842,20 +868,21 @@ textarea.csv{width:100%;min-height:150px;font-family:var(--f-mono);font-size:.8r
     <div class="card"><span class="tag">Step 8 · Reliability dimension (5 items)</span>
       <p class="mono" style="font-size:.84rem">R5 −2.6 · R6 −1.4 · R7 −0.9 · R8 −1.8 · R9 −0.7</p>
       <p style="font-size:.9rem">Gap<sub>R</sub> = (−2.6 − 1.4 − 0.9 − 1.8 − 0.7) ÷ 5 = −7.4 ÷ 5 = <b style="color:var(--bad)">−1.48</b></p>
-      <p style="font-size:.9rem">The other dimensions come out the same way: T −0.53, S −1.75, A −0.53, E −0.68.</p></div>
+      <p style="font-size:.9rem">The other dimensions come out the same way: assurance −0.53, tangibles −0.53, empathy −0.68, responsiveness −1.75.</p></div>
   </div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>Step 9</th><th>Tangibles</th><th>Reliability</th><th>Responsiveness</th><th>Assurance</th><th>Empathy</th><th>Score</th></tr></thead>
+    <thead><tr><th>Step 9</th><th>Reliability</th><th>Assurance</th><th>Tangibles</th><th>Empathy</th><th>Responsiveness</th><th>Score</th></tr></thead>
     <tbody>
-      <tr><td>Dimension gap</td><td style="font-weight:400">−0.525</td><td style="font-weight:400">−1.480</td><td style="font-weight:400">−1.750</td><td style="font-weight:400">−0.525</td><td style="font-weight:400">−0.680</td><td>Unweighted = −4.96 ÷ 5 = <b style="color:var(--bad)">−0.99</b></td></tr>
-      <tr><td>Weight (100 points)</td><td style="font-weight:400">11</td><td style="font-weight:400">32</td><td style="font-weight:400">22</td><td style="font-weight:400">19</td><td style="font-weight:400">16</td><td style="font-weight:400">Sum = 100</td></tr>
-      <tr><td>Gap × weight ÷ 100</td><td style="font-weight:400">−0.058</td><td style="font-weight:400">−0.474</td><td style="font-weight:400">−0.385</td><td style="font-weight:400">−0.100</td><td style="font-weight:400">−0.109</td><td>Weighted = <b style="color:var(--bad)">−1.12</b></td></tr>
+      <tr><td>Dimension gap</td><td style="font-weight:400">−1.480</td><td style="font-weight:400">−0.525</td><td style="font-weight:400">−0.525</td><td style="font-weight:400">−0.680</td><td style="font-weight:400">−1.750</td><td>Unweighted = −4.96 ÷ 5 = <b style="color:var(--bad)">−0.99</b></td></tr>
+      <tr><td>Weight (100 points)</td><td style="font-weight:400">32</td><td style="font-weight:400">19</td><td style="font-weight:400">11</td><td style="font-weight:400">16</td><td style="font-weight:400">22</td><td style="font-weight:400">Sum = 100</td></tr>
+      <tr><td>Gap × weight ÷ 100</td><td style="font-weight:400">−0.474</td><td style="font-weight:400">−0.100</td><td style="font-weight:400">−0.058</td><td style="font-weight:400">−0.109</td><td style="font-weight:400">−0.385</td><td>Weighted = <b style="color:var(--bad)">−1.12</b></td></tr>
     </tbody></table></div>
   <div class="callout"><p class="eyebrow">Steps 11–12 · Interpretation</p><p>The weighted score (−1.12) is worse than the unweighted one (−0.99) because the two largest gaps, responsiveness and reliability, are also the two dimensions patients weight most (22 + 32 = 54 of 100 points). The worst items, R5 (doctor on time) and S11 (prompt registration), both point to a <b>Gap 2–3 problem</b>: no appointment and scheduling standard, and delivery that doesn't meet the posted session times. These go forward to the IPA grid and root-cause analysis. Check the numbers yourself in the scorer below.</p></div>
 
-  <h3>Try it · Score the clinic's survey</h3>
+  <h3 id="sq-try">Try it · Score the clinic's survey</h3>
+  <p class="muted" style="max-width:70ch">Each row is one questionnaire item. <b>E</b> is the patients' mean expectation rating of an excellent clinic; <b>P</b> is their mean perception rating of how Klinik Sehat Sentosa actually performed. Items are grouped by RATER dimension.</p>
   <div class="panel">
-    <div class="activity-head"><p class="eyebrow">Mean ratings from 120 patients (fictional). Edit any E or P value.</p><div class="seg"><button id="sqReset">Reset case data</button><button id="sqSortBtn" aria-pressed="false">Sort by gap</button></div></div>
+    <div class="activity-head"><p class="eyebrow">Mean ratings from 120 patients (fictional): E = expectation, P = perceived performance. Edit any value.</p><div class="seg"><button id="sqReset">Reset case data</button><button id="sqSortBtn" aria-pressed="false">Sort by gap</button></div></div>
     <div class="tbl-wrap" style="margin-top:10px"><table class="sqtbl" id="sqTbl"></table></div>
   </div>
   <div class="panel">
@@ -1024,7 +1051,7 @@ textarea.csv{width:100%;min-height:150px;font-family:var(--f-mono);font-size:.8r
   </div>
   <div class="panel">
     <div class="activity-head"><p class="eyebrow">Use your own data · paste item means (CSV)</p><div class="seg"><button id="csvLoad">Load into SERVQUAL and IPA</button><button id="csvSample">Show case data as CSV</button></div></div>
-    <p class="muted" style="font-size:.84rem;margin:6px 0 8px">One row per item: <code>code,dimension,item text,expectation,perception,importance</code>. Dimension must be T, R, S, A or E (tangibles, reliability, responsiveness, assurance, empathy). Values on your own scale (e.g., 1–7).</p>
+    <p class="muted" style="font-size:.84rem;margin:6px 0 8px">One row per item: <code>code,dimension,item text,expectation,perception,importance</code>. Dimension must be R, A, T, E or S (reliability, assurance, tangibles, empathy, responsiveness). Expectation = rating of an excellent firm; perception = rating of this firm's actual performance. Values on your own scale (e.g., 1–7).</p>
     <textarea class="csv" id="csvIn" spellcheck="false" aria-label="CSV data"></textarea>
     <p id="csvMsg" class="muted" style="font-size:.86rem;margin-top:6px" aria-live="polite"></p>
   </div>
@@ -1038,10 +1065,10 @@ textarea.csv{width:100%;min-height:150px;font-family:var(--f-mono);font-size:.8r
   <div class="panel prose">
     <p class="eyebrow">References</p>
     <ul style="font-size:.88rem">
-      <li>Parasuraman, A., Zeithaml, V. A., &amp; Berry, L. L. (1985). A conceptual model of service quality and its implications for future research. <i>Journal of Marketing</i>, 49(4), 41–50.</li>
-      <li>Parasuraman, A., Zeithaml, V. A., &amp; Berry, L. L. (1988). SERVQUAL: A multiple-item scale for measuring consumer perceptions of service quality. <i>Journal of Retailing</i>, 64(1), 12–40.</li>
-      <li>Martilla, J. A., &amp; James, J. C. (1977). Importance-performance analysis. <i>Journal of Marketing</i>, 41(1), 77–79.</li>
-      <li>Cronin, J. J., &amp; Taylor, S. A. (1992). Measuring service quality: A reexamination and extension. <i>Journal of Marketing</i>, 56(3), 55–68.</li>
+      <li>Parasuraman, A., Zeithaml, V. A., &amp; Berry, L. L. (1985). A conceptual model of service quality and its implications for future research. <i>Journal of Marketing</i>, 49(4), 41–50. <a href="https://doi.org/10.1177/002224298504900403" target="_blank" rel="noopener">doi.org/10.1177/002224298504900403</a></li>
+      <li>Parasuraman, A., Zeithaml, V. A., &amp; Berry, L. L. (1988). SERVQUAL: A multiple-item scale for measuring consumer perceptions of service quality. <i>Journal of Retailing</i>, 64(1), 12–40. <a href="https://scispace.com/papers/servqual-a-multiple-item-scale-for-measuring-consumer-3m4mamr0d3" target="_blank" rel="noopener">Article record (SciSpace)</a> <span class="muted">· this 1988 article has no DOI</span></li>
+      <li>Martilla, J. A., &amp; James, J. C. (1977). Importance-performance analysis. <i>Journal of Marketing</i>, 41(1), 77–79. <a href="https://doi.org/10.1177/002224297704100112" target="_blank" rel="noopener">doi.org/10.1177/002224297704100112</a> · <a href="https://slunik.slu.se/kursfiler/F%C3%960349/10294.1314/Martilla_James_1977.pdf" target="_blank" rel="noopener">PDF</a></li>
+      <li>Cronin, J. J., &amp; Taylor, S. A. (1992). Measuring service quality: A reexamination and extension. <i>Journal of Marketing</i>, 56(3), 55–68. <a href="https://doi.org/10.1177/002224299205600304" target="_blank" rel="noopener">doi.org/10.1177/002224299205600304</a></li>
       <li>Ishikawa, K. (1986). <i>Guide to Quality Control</i>. Asian Productivity Organization.</li>
       <li>Ohno, T. (1988). <i>Toyota Production System: Beyond Large-Scale Production</i>. Productivity Press.</li>
     </ul>
@@ -1077,7 +1104,7 @@ function toast(m){ const t=$("#toast"); t.textContent=m; t.hidden=false; clearTi
 
 /* ---------- Data ---------- */
 const DIMS = {T:"Tangibles",R:"Reliability",S:"Responsiveness",A:"Assurance",E:"Empathy"};
-const DORD = ["T","R","S","A","E"];
+const DORD = ["R","A","T","E","S"];
 const CASE = [
  ["T1","T","Modern-looking medical equipment",6.2,5.6,5.0],
  ["T2","T","Clean, comfortable waiting room",6.3,4.9,5.6],
@@ -1120,7 +1147,7 @@ function dimStats(){
 }
 function sqRender(){
   const order = sqSort ? items.map((x,i)=>i).sort((a,b)=>(items[a][4]-items[a][3])-(items[b][4]-items[b][3])) : null;
-  let h = `<thead><tr><th>Code</th><th>Statement (adapted)</th><th style="text-align:right">E</th><th style="text-align:right">P</th><th style="text-align:right">Gap P−E</th></tr></thead><tbody>`;
+  let h = `<thead><tr><th>Code</th><th>Statement (adapted)</th><th style="text-align:right">E (expected)</th><th style="text-align:right">P (perceived)</th><th style="text-align:right">Gap P−E</th></tr></thead><tbody>`;
   const row = i => { const x=items[i], g=x[4]-x[3]; return `<tr><td>${esc(x[0])}</td><td style="font-weight:400">${esc(x[2])}</td><td class="num"><input type="number" step="0.1" value="${x[3]}" data-i="${i}" data-k="3" aria-label="Expectation ${esc(x[0])}"></td><td class="num"><input type="number" step="0.1" value="${x[4]}" data-i="${i}" data-k="4" aria-label="Perception ${esc(x[0])}"></td><td class="num ${g<0?"neg":g>0?"pos":""}">${sgn(g)}</td></tr>`; };
   if(order){ h += order.map(row).join(""); }
   else { DORD.forEach(d=>{ const idx = items.map((x,i)=>x[1]===d?i:-1).filter(i=>i>=0); if(!idx.length) return; const st=dimStats()[d]; h += `<tr class="dimrow"><td colspan="4">${DIMS[d]} · ${idx.length} items</td><td class="num ${st.gap<0?"neg":"pos"}" style="font-family:var(--f-mono)">${sgn(st.gap)}</td></tr>` + idx.map(row).join(""); }); }
@@ -1412,13 +1439,14 @@ const LO_NAMES = {1:"SERVQUAL structure",2:"SERVQUAL scoring",3:"IPA grid",4:"Pr
 const Q = [
  [1,"How many items and dimensions does the 1988 SERVQUAL scale have?",["10 items, 3 dimensions","22 items, 5 dimensions","44 items, 10 dimensions","15 items, 5 dimensions"],1,"22 items asked twice (expectations and perceptions) across five dimensions."],
  [1,"SERVQUAL measures which gap of the gap model?",["Gap 1","Gap 3","Gap 4","Gap 5"],3,"The customer's expectation–perception gap."],
+ [1,"In SERVQUAL, each respondent rates every item:",["Once, on overall satisfaction","Twice: expectation of an excellent firm (E) and perception of this firm's actual performance (P)","Only on importance","Only on performance"],1,"Two ratings per item from the same respondent; the gap is P − E."],
  [1,"In SERVQUAL, the expectation statements ask about:",["This firm last month","An excellent firm in the industry","The respondent's ideal price","Competitors' advertising"],1,"Expectations refer to what an excellent firm would offer; perceptions refer to this firm."],
  [1,"Which dimension do customers typically weight most heavily?",["Tangibles","Empathy","Reliability","Assurance"],2,"Reliability is usually the most important; tangibles the least."],
  [1,"SERVPERF (Cronin & Taylor, 1992) differs from SERVQUAL by:",["Adding a sixth dimension","Using perceptions only","Using a 100-point scale","Measuring employees instead of customers"],1,"It drops the expectation half of the questionnaire."],
  [1,"When adapting SERVQUAL to a clinic in Surabaya, the best practice is to:",["Use the original English items word for word","Reword items for the setting, translate and pilot them, and keep the five dimensions","Drop the dimensions customers don't like","Ask only about tangibles"],1,"Adapt wording, pilot, and keep the structure for comparability."],
  [2,"An item has E = 6.4 and P = 3.8. Its gap score is:",["+2.6","−2.6","10.2","0.59"],1,"P − E = 3.8 − 6.4 = −2.6, a shortfall."],
  [2,"A dimension score in SERVQUAL is:",["The highest item gap in the dimension","The average gap of its items","The sum of perceptions","The weight times 100"],1,"Average the item gaps within the dimension."],
- [2,"Dimension gaps: T −0.5, R −1.4, S −1.8, A −0.4, E −0.7. The unweighted SERVQUAL score is:",["−0.96","−4.8","−1.8","−0.4"],0,"(−0.5 −1.4 −1.8 −0.4 −0.7) ÷ 5 = −0.96."],
+ [2,"Dimension gaps: reliability −1.4, assurance −0.4, tangibles −0.5, empathy −0.7, responsiveness −1.8. The unweighted SERVQUAL score is:",["−0.96","−4.8","−1.8","−0.4"],0,"(−1.4 −0.4 −0.5 −0.7 −1.8) ÷ 5 = −0.96."],
  [2,"If the weighted SERVQUAL score is more negative than the unweighted score, it means:",["The survey is invalid","The largest gaps are in the dimensions customers value most","Customers are satisfied","Weights were entered wrongly"],1,"Weighting amplifies gaps in highly valued dimensions."],
  [2,"A positive gap (P > E) on a low-importance item suggests:",["An urgent problem","Possible over-delivery: check before investing more","Measurement error","A Type II error"],1,"Customers get more than expected on something they value less."],
  [3,"In Martilla & James's IPA grid, the horizontal axis shows:",["Importance","Performance","Price","Gap score"],1,"Performance runs horizontally; importance vertically."],
@@ -1532,16 +1560,24 @@ refreshProgress();
   document.getElementById('procOpen').addEventListener('click',()=>steps.forEach(d=>d.open=true));
   document.getElementById('procClose').addEventListener('click',()=>steps.forEach(d=>d.open=false));
   const DN={T:"Tangibles",R:"Reliability",S:"Responsiveness",A:"Assurance",E:"Empathy"};
+  const rv={e:null,p:null};
+  document.querySelectorAll('.rate').forEach(g=>g.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ rv[g.dataset.r]=+b.dataset.v; g.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b)); rateOut(); })));
+  function rateOut(){ const o=document.getElementById('rateOut');
+    if(rv.e==null||rv.p==null){ o.innerHTML='<span class="muted">Pick one number in each row. '+(rv.e==null?'Start with your <b>expectation</b> of an excellent clinic.':'Now rate how <b>this clinic actually performed</b>.')+'</span>'; return; }
+    const g=rv.p-rv.e; o.innerHTML=`Your gap for R5 = P − E = ${rv.p} − ${rv.e} = <b style="color:${g<0?'var(--bad)':g>0?'var(--good)':'var(--ink)'}">${g>0?'+':''}${g}</b>. ${g<0?'A shortfall: the clinic performs below what you expect of an excellent clinic.':g>0?'The clinic exceeds what you expect of an excellent clinic.':'Expectation exactly met.'} SERVQUAL repeats this for all 22 items and averages over all respondents.`; }
+  rateOut();
   document.getElementById('procCopy').addEventListener('click',()=>{
     const rows=[...document.querySelectorAll('#sqTbl tbody tr:not(.dimrow)')].map(tr=>[tr.cells[0].textContent.trim(),tr.cells[1].textContent.trim()]);
-    rows.sort((a,b)=>(+a[0].replace(/\D/g,'')||0)-(+b[0].replace(/\D/g,'')||0));
+    const ORD=["R","A","T","E","S"];
+    rows.sort((a,b)=>(ORD.indexOf(a[0][0])-ORD.indexOf(b[0][0]))||((+a[0].replace(/\D/g,'')||0)-(+b[0].replace(/\D/g,'')||0)));
+    const grouped=(prefix,lead)=>{ let out="",n=0; ORD.forEach(d=>{ const g=rows.filter(r=>r[0][0]===d); if(!g.length) return; out+=`\n  ${DN[d].toUpperCase()}\n`; g.forEach(r=>{ n++; out+=`  ${prefix}${n}. [${r[0]}] ${lead}${r[1]}   1  2  3  4  5  6  7\n`; }); }); return out; };
     const scale="1 = Strongly disagree   2   3   4   5   6   7 = Strongly agree";
-    let t="SERVQUAL QUESTIONNAIRE (adapted)\n\nPART 1 - EXPECTATIONS\nThink about an EXCELLENT firm providing this service. Indicate how strongly you agree that such a firm would have each feature.\n"+scale+"\n";
-    rows.forEach((r,i)=>t+=`E${i+1}. [${r[0]}] Excellent firms: ${r[1]}\n`);
+    let t="SERVQUAL QUESTIONNAIRE (adapted)\n\nPART 1 - EXPECTATIONS\nThink about an EXCELLENT firm providing this service (not this firm). For EACH statement, rate how strongly you agree that an excellent firm would have this feature.\n"+scale+"\n";
+    t+=grouped("E","Excellent firms: ");
     t+="\nPART 2 - IMPORTANCE\nAllocate 100 points among the five features below according to how important each is to you.\n";
-    t+="Tangibles (appearance of facilities, equipment, staff, materials): ___\nReliability (performing the promised service dependably and accurately): ___\nResponsiveness (willingness to help and provide prompt service): ___\nAssurance (knowledge and courtesy of staff, ability to inspire trust): ___\nEmpathy (caring, individualized attention): ___\nTOTAL: 100\n";
-    t+="\nPART 3 - PERCEPTIONS\nNow think about THIS firm. Indicate how strongly you agree with each statement.\n"+scale+"\n";
-    rows.forEach((r,i)=>t+=`P${i+1}. [${r[0]}] This firm: ${r[1]}\n`);
+    t+="Reliability (performing the promised service dependably and accurately): ___\nAssurance (knowledge and courtesy of staff, ability to inspire trust): ___\nTangibles (appearance of facilities, equipment, staff, materials): ___\nEmpathy (caring, individualized attention): ___\nResponsiveness (willingness to help and provide prompt service): ___\nTOTAL: 100\n";
+    t+="\nPART 3 - PERCEPTIONS\nNow think about THIS firm and the service you actually received. For EACH statement, rate how strongly you agree that this firm performs this way.\n"+scale+"\n";
+    t+=grouped("P","This firm (actual performance): ");
     t+="\nPART 4 - ABOUT YOU\nVisit type: ___   Visits in last 12 months: ___   Age band: ___\nOverall satisfaction (1-7): ___   Would you return? Yes / No\nComments: ______________________\n";
     const done=()=>{ const tt=document.getElementById('toast'); tt.textContent="Questionnaire template copied. Paste it into a document and adapt the wording."; tt.hidden=false; setTimeout(()=>tt.hidden=true,2600); };
     const fb=()=>{ const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy'); done();}catch(e){} ta.remove(); };
