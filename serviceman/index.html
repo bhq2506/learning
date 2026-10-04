@@ -114,6 +114,10 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 .inst .logo{flex:none;width:52px;height:52px;border-radius:10px;background:#fff;display:grid;place-items:center;padding:4px;box-shadow:0 1px 0 rgba(0,0,0,.15)}
 .inst .logo img{width:100%;height:100%;object-fit:contain;display:block}
+.warn{display:flex;gap:12px;align-items:flex-start;margin-top:18px;max-width:60ch;background:rgba(255,205,0,.12);border:1px solid rgba(255,205,0,.55);border-left:5px solid var(--its-yellow);border-radius:10px;padding:12px 14px;color:#fff}
+.warn .ic{flex:none;width:24px;height:24px;border-radius:50%;background:var(--its-yellow);color:var(--its-blue);display:grid;place-items:center;font-weight:800;font-size:.95rem;line-height:1}
+.warn p{margin:0;font-size:.95rem;line-height:1.5}
+.warn b{color:var(--its-yellow)}
 .inst a.dept{color:var(--its-yellow);text-decoration:none;font-weight:600;border-bottom:1px solid transparent}
 .inst a.dept:hover{border-bottom-color:var(--its-yellow)}
 </style>
@@ -127,7 +131,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       <div class="inst"><a class="logo" href="https://www.its.ac.id" target="_blank" rel="noopener" aria-label="Institut Teknologi Sepuluh Nopember"><img src="https://www.its.ac.id/wp-content/uploads/2020/06/Lambang-ITS.png" alt="Lambang ITS" width="44" height="44" referrerpolicy="no-referrer" onerror="this.parentNode.outerHTML='&lt;span class=&quot;mark&quot;&gt;ITS&lt;/span&gt;'"></a><span><a class="dept" href="https://www.its.ac.id/mb" target="_blank" rel="noopener">Department of Business Management</a> · Institut Teknologi Sepuluh Nopember · Surabaya</span></div>
       <h1>Service <span>Management</span></h1>
       <p class="sub">Interactive chapter sites for the course. Study each chapter, practice with instant feedback, try the hands-on labs, then check yourself with a scored self-test.</p>
-      <p class="book">Textbook: <b>Bordoloi, Fitzsimmons &amp; Fitzsimmons, <i>Service Management: Operations, Strategy, Information Technology</i></b> (McGraw Hill, 2022). These sites support the reading; they don't replace it.</p>
+      <p class="book">Textbook: <b>Bordoloi, Fitzsimmons &amp; Fitzsimmons, <i>Service Management: Operations, Strategy, Information Technology</i></b> (McGraw Hill, 2022).</p>
+      <div class="warn" role="note"><span class="ic" aria-hidden="true">!</span><p><b>Important:</b> These sites support the reading; they don't replace it. Read the textbook chapter first, then use the site to practice and check yourself.</p></div>
     </div>
     <div class="cont" aria-label="Your progress">
       <p class="eyebrow">Your progress on this device</p>
