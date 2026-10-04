@@ -138,6 +138,20 @@
   }
   .bio .body p + p { margin-top: 10px; }
   @media (max-width: 420px) { .bio .body { padding-left: 18px; } }
+  /* Sub-links inside a collapsible card */
+  .bio .sub { display: grid; gap: 8px; }
+  .links .bio .sub a {
+    display: flex; align-items: center; gap: 8px;
+    padding: 11px 14px; border-radius: 8px;
+    border: 1px solid var(--border); border-left: 1px solid var(--border);
+    background: transparent; box-shadow: none; transform: none;
+    font-weight: 600; font-size: .92rem; color: var(--text);
+  }
+  .links .bio .sub a:hover, .links .bio .sub a:focus-visible {
+    border-color: var(--its-blue); background: rgba(1, 56, 128, .05);
+  }
+  .bio .sub small { display: inline; font-weight: 400; color: var(--muted); font-size: .8rem; margin: 0; }
+  .bio .sub span { margin-left: auto; color: var(--muted); }
   a:focus-visible { outline: 3px solid var(--its-gold); outline-offset: 2px; }
   footer { margin-top: 40px; color: var(--muted); font-size: .8rem; }
 
@@ -191,11 +205,19 @@
         </details>
       </li>
       <li>
-        <a href="https://scholar.its.ac.id/en/persons/imam-baihaqi-2/" target="_blank" rel="noopener">
-          <span class="ic"><svg viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
-          <span class="txt">My Scholarly Profile<small>Publications &amp; research at ITS</small></span>
-          <span class="arrow" aria-hidden="true">›</span>
-        </a>
+        <details class="bio">
+          <summary>
+            <span class="ic"><svg viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+            <span class="txt">My Scholarly Profile<small>ITS Scholar, Google Scholar, ORCID, Scopus</small></span>
+            <span class="chev" aria-hidden="true">›</span>
+          </summary>
+          <div class="body sub">
+            <a href="https://scholar.its.ac.id/en/persons/imam-baihaqi-2/" target="_blank" rel="noopener">ITS Scholar<span>›</span></a>
+            <a href="https://scholar.google.com/citations?user=E18htnsAAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar<span>›</span></a>
+            <a href="https://orcid.org/0000-0001-6815-061X" target="_blank" rel="noopener">ORCID<small>0000-0001-6815-061X</small><span>›</span></a>
+            <a href="https://www.scopus.com/authid/detail.uri?authorId=56174750400" target="_blank" rel="noopener">Scopus<small>Author ID 56174750400</small><span>›</span></a>
+          </div>
+        </details>
       </li>
       <li>
         <a href="https://calendar.google.com/calendar/embed?src=ibaihaqi%40gmail.com&amp;ctz=Asia%2FJakarta" target="_blank" rel="noopener">
