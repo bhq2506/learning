@@ -112,6 +112,32 @@
   .links .txt { flex: 1; }
   .links small { display: block; font-weight: 400; color: var(--muted); font-size: .82rem; margin-top: 2px; }
   .links .arrow { color: var(--muted); font-size: 1.1rem; }
+  /* Collapsible bio card, styled like the link cards */
+  .bio {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--its-blue);
+    border-radius: 12px;
+    text-align: left;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .bio[open] { border-left-color: var(--its-gold); box-shadow: 0 6px 18px rgba(1, 56, 128, .12); }
+  .bio summary {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 18px; cursor: pointer; list-style: none;
+    font-weight: 600; font-size: 1rem; border-radius: 12px;
+  }
+  .bio summary::-webkit-details-marker { display: none; }
+  .bio summary:hover { background: rgba(1, 56, 128, .03); }
+  .bio summary:focus-visible { outline: 3px solid var(--its-gold); outline-offset: 2px; }
+  .bio .chev { color: var(--muted); font-size: 1.1rem; transition: transform .2s; }
+  .bio[open] .chev { transform: rotate(90deg); }
+  .bio .body {
+    padding: 0 18px 18px 72px;
+    color: var(--text); font-size: .93rem; line-height: 1.65;
+  }
+  .bio .body p + p { margin-top: 10px; }
+  @media (max-width: 420px) { .bio .body { padding-left: 18px; } }
   a:focus-visible { outline: 3px solid var(--its-gold); outline-offset: 2px; }
   footer { margin-top: 40px; color: var(--muted); font-size: .8rem; }
 
@@ -150,6 +176,20 @@
     </nav>
 
     <ul class="links">
+      <li>
+        <details class="bio">
+          <summary>
+            <span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+            <span class="txt">About Me<small>Short biography</small></span>
+            <span class="chev" aria-hidden="true">›</span>
+          </summary>
+          <div class="body">
+            <p>Dr Imam Baihaqi is Vice Rector of Human Resources, Organization &amp; Information System Technology at Institut Teknologi Sepuluh Nopember (ITS) and an Associate Professor in the Department of Business Management.</p>
+            <p>He holds a PhD in Operations and Supply Chain Management from Monash University, an MSc in Information Management from Lancaster University, and a BEng in Industrial Engineering from ITS. He has taught at Monash University&rsquo;s Sunway Campus in Malaysia and held an invited position at National Yunlin University of Science and Technology in Taiwan.</p>
+            <p>His research uses field surveys and case studies to study supply chain management in Indonesia, covering digital traceability, halal supply chains, IoT adoption, and frugal innovation.</p>
+          </div>
+        </details>
+      </li>
       <li>
         <a href="https://scholar.its.ac.id/en/persons/imam-baihaqi-2/" target="_blank" rel="noopener">
           <span class="ic"><svg viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
