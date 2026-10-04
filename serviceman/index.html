@@ -195,7 +195,7 @@ document.getElementById("map").innerHTML = PARTS.map((p,i)=>`
   </section>`).join("");
 
 // continue panel
-document.getElementById("contList").innerHTML = Object.keys(LIVE).map(n=>{
+document.getElementById("contList").innerHTML = PARTS.flatMap(p=>p.chapters).map(c=>String(c[0])).filter(n=>LIVE[n]).map(n=>{
   const L=LIVE[n], g=prog(n);
   const t = PARTS.flatMap(p=>p.chapters).find(c=>String(c[0])===String(n))[1];
   return `<a class="cont-row" href="${L.href}"><span class="n">${n}</span><span class="t">${t}<small>${g.seen} of ${g.units} units${g.best!=null?` · best ${g.best}%`:""}</small><span class="bar"><i style="width:${g.seen/g.units*100}%"></i></span></span><span class="pct">→</span></a>`;
