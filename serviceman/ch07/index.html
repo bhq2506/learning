@@ -1,0 +1,1516 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Process Improvement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky chapter rail on the left (chip bar on phones) + one reading column of study units with textbook concepts, green Indonesian-example boxes and hands-on labs, ending in flashcards and a scored self-test. */
+:root{
+  --bg:#F2F4F8; --surface:#FFFFFF; --sunk:#E9EDF4; --ink:#15203A; --muted:#566079; --line:#D6DCE7;
+  --accent:#2B57C9; --accent-ink:#FFFFFF; --accent-soft:#E2E9FA;
+  --gold:#B57A00; --gold-soft:#FAF0D4;
+  --good:#1B7F53; --good-soft:#DDF3E8; --bad:#B73A33; --bad-soft:#F9E1DF;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0E1420; --surface:#161F31; --sunk:#1C2740; --ink:#E5E9F2; --muted:#9BA6BC; --line:#2A3551;
+  --accent:#7E9EF3; --accent-ink:#0E1420; --accent-soft:#1F2C50;
+  --gold:#E6B54B; --gold-soft:#3A2E10;
+  --good:#4FC48C; --good-soft:#12342A; --bad:#F07C72; --bad-soft:#3C1B19; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0E1420; --surface:#161F31; --sunk:#1C2740; --ink:#E5E9F2; --muted:#9BA6BC; --line:#2A3551;
+  --accent:#7E9EF3; --accent-ink:#0E1420; --accent-soft:#1F2C50;
+  --gold:#E6B54B; --gold-soft:#3A2E10;
+  --good:#4FC48C; --good-soft:#12342A; --bad:#F07C72; --bad-soft:#3C1B19; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6}
+h1,h2,h3,h4{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+h2{font-size:clamp(1.6rem,3.2vw,2.1rem);font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.2rem;font-weight:700;margin-top:.4rem}
+p{margin:0}
+.mono{font-family:var(--f-mono)}
+.eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+/* Top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1180px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px;min-width:0}
+.brand .ch{font-family:var(--f-mono);font-size:.8rem;background:var(--ink);color:var(--bg);padding:2px 8px;border-radius:4px}
+.brand b{font-family:var(--f-display);font-size:1.05rem}
+.meter{margin-left:auto;display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+.meter .bar{width:140px;height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.meter .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .4s}
+
+/* Shell */
+.shell{max-width:1180px;margin:0 auto;padding-inline:16px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:40px}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);align-self:start;padding-block:28px}
+.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.toc a{display:flex;gap:10px;align-items:center;padding:7px 10px;border-radius:8px;color:var(--muted);text-decoration:none;font-size:.92rem;line-height:1.3}
+.toc a .n{font-family:var(--f-mono);font-size:.74rem;width:1.6em;flex:none}
+.toc a .dot{margin-left:auto;width:8px;height:8px;border-radius:50%;border:1.5px solid var(--line);flex:none}
+.toc a.seen .dot{background:var(--accent);border-color:var(--accent)}
+.toc a.here{background:var(--surface);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.toc .lo-note{margin-top:18px;font-size:.8rem;color:var(--muted)}
+main{padding-block:28px 80px;min-width:0}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:0}
+  .top-in{flex-wrap:nowrap}
+  .brand b{font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .toc{position:static;background:var(--bg);padding-block:8px;border-bottom:1px solid var(--line);margin-inline:-16px;padding-inline:16px}
+  .toc ol{flex-direction:row;overflow-x:auto;gap:6px;scrollbar-width:none}
+  .toc a{white-space:nowrap;background:var(--surface);box-shadow:0 0 0 1px var(--line);padding:6px 10px}
+  .toc a .dot{display:none}
+  .toc .lo-note{display:none}
+  .meter .bar{width:80px}
+}
+
+/* Sections */
+section.unit{padding-block:36px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:18px;scroll-margin-top:80px}
+section.unit:first-child{padding-top:8px}
+.unit-head{display:flex;flex-direction:column;gap:8px}
+.lo-tags{display:flex;gap:6px;flex-wrap:wrap}
+.lo{font-family:var(--f-mono);font-size:.72rem;padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:500}
+.lead{font-size:1.08rem;max-width:66ch;color:var(--ink)}
+.prose{max-width:68ch;display:flex;flex-direction:column;gap:12px}
+.prose p{color:var(--ink)}
+.muted{color:var(--muted)}
+.callout{background:var(--gold-soft);border-radius:var(--r);padding:14px 16px;max-width:70ch}
+.callout .eyebrow{color:var(--gold)}
+.fig{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+
+/* Hero */
+.hero{padding-block:8px 34px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px;align-items:center}
+.hero h1{font-size:clamp(2.2rem,5.5vw,3.6rem);font-weight:800;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .sub{margin-top:14px;font-size:1.08rem;max-width:56ch;color:var(--muted)}
+.hero .cta{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:8px;padding:10px 16px;font-weight:600;background:var(--accent);color:var(--accent-ink);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn.ghost{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.journey{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.journey ol{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column}
+.journey li{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-top:1px dashed var(--line);font-size:.92rem}
+.journey li:first-child{border-top:0}
+.journey .pip{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);justify-self:center}
+.journey .md{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+@media (max-width:760px){.hero{grid-template-columns:minmax(0,1fr)}}
+
+.objectives{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.objectives li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:flex;gap:12px;font-size:.94rem}
+.objectives .num{font-family:var(--f-mono);color:var(--accent);font-weight:500;flex:none}
+.objectives{padding:0;margin:0}
+@media (max-width:640px){.objectives{grid-template-columns:minmax(0,1fr)}}
+
+/* Generic panels */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.grid3,.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.grid2,.grid3,.grid4{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card h4{font-size:1rem}
+.card p{font-size:.93rem}
+.card .tag{font-family:var(--f-mono);font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+/* Tabs / segmented */
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;font-size:.9rem;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* Tech modes */
+.modes{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:18px;align-items:start}
+.mode-list{display:flex;flex-direction:column;gap:6px}
+.mode-list button{display:flex;gap:12px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px}
+.mode-list button .L{font-family:var(--f-display);font-weight:800;font-size:1.3rem;width:28px;color:var(--accent)}
+.mode-list button small{display:block;color:var(--muted);font-size:.78rem}
+.mode-list button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.mode-view{display:flex;flex-direction:column;gap:12px}
+.mode-view svg{width:100%;max-width:420px;height:auto}
+.mode-view .ex{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:.8rem;padding:3px 9px;border-radius:99px;background:var(--sunk);color:var(--ink)}
+@media (max-width:700px){.modes{grid-template-columns:minmax(0,1fr)}}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-weight:500;font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--sunk)}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+.ctrl th.hl, .ctrl td.hl{background:var(--accent-soft)}
+
+/* Activity */
+.activity{background:var(--surface);border:1.5px dashed var(--accent);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.activity-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.activity-head .eyebrow{color:var(--accent)}
+.activity-head .score{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.items{display:flex;flex-direction:column;gap:10px}
+.item{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+.item .q{font-size:.95rem}
+.item .opts{display:flex;flex-wrap:wrap;gap:6px}
+.item .opts button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 10px;font-size:.84rem}
+.item .opts button:hover:not(:disabled){border-color:var(--accent)}
+.item .opts button.right{background:var(--good-soft);border-color:var(--good);color:var(--good);font-weight:600}
+.item .opts button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.item .fb{font-size:.86rem;color:var(--muted)}
+.item.done-ok{border-color:var(--good)}
+.item.done-bad{border-color:var(--bad)}
+
+/* Triad */
+.triad{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:center}
+.triad svg{width:100%;max-width:440px;height:auto;justify-self:center}
+.triad .node{cursor:pointer}
+.triad .node rect{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.triad .node.on rect{stroke:var(--accent);stroke-width:2.5;fill:var(--accent-soft)}
+.triad .node text{fill:var(--ink);font-family:var(--f-display);font-weight:700;font-size:15px}
+.triad .edge line{stroke:var(--muted);stroke-width:2}
+.triad .edge.on line{stroke:var(--accent);stroke-width:3.5}
+.triad .edge text{fill:var(--muted);font-family:var(--f-mono);font-size:12px}
+.triad .edge.on text{fill:var(--accent);font-weight:500}
+.triad .edge{cursor:pointer}
+.triad .hit{stroke:transparent;stroke-width:22}
+@media (max-width:760px){.triad{grid-template-columns:minmax(0,1fr)}}
+
+/* Chain */
+.chain{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.chain button{flex:1 1 120px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;text-align:left;font-size:.86rem;line-height:1.3;position:relative;min-width:0}
+.chain button .s{font-family:var(--f-mono);font-size:.7rem;color:var(--muted);display:block;margin-bottom:4px}
+.chain button.zone-in{border-top:4px solid var(--gold)}
+.chain button.zone-out{border-top:4px solid var(--accent)}
+.chain button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chain button[aria-pressed="true"] .s{color:var(--bg)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:4px;vertical-align:middle;margin-right:6px}
+
+/* Flashcards */
+.fc-wrap{display:flex;flex-direction:column;gap:12px;align-items:center}
+.fc{width:min(100%,560px);aspect-ratio:16/9;max-width:100%;perspective:1200px;border:0;background:none;padding:0}
+.fc-in{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.fc.flip .fc-in{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:22px;text-align:center;border:1px solid var(--line)}
+.fc-front{background:var(--surface)}
+.fc-front b{font-family:var(--f-display);font-size:clamp(1.4rem,4vw,2rem)}
+.fc-back{background:var(--ink);color:var(--bg);transform:rotateY(180deg);font-size:1rem}
+.fc-face small{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;opacity:.7;position:absolute;top:14px;left:16px}
+.fc-ctrl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+.fc-ctrl .count{font-family:var(--f-mono);font-size:.82rem;color:var(--muted);min-width:60px;text-align:center}
+
+/* Quiz */
+.quiz{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.qz-setup{display:flex;flex-direction:column;gap:14px}
+.qz-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.qz-prog{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.qz-prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.qz-q{font-family:var(--f-display);font-size:1.25rem;font-weight:700}
+.qz-opts{display:flex;flex-direction:column;gap:8px}
+.qz-opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.qz-opts button .k{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);flex:none;padding-top:2px}
+.qz-opts button:hover:not(:disabled){border-color:var(--accent)}
+.qz-opts button.right{border-color:var(--good);background:var(--good-soft)}
+.qz-opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.qz-exp{border-radius:10px;padding:12px 14px;font-size:.93rem}
+.qz-exp.ok{background:var(--good-soft)}
+.qz-exp.no{background:var(--bad-soft)}
+.qz-exp b{display:block;margin-bottom:2px}
+.qz-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.res-big{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.res-big .pct{font-family:var(--f-display);font-weight:800;font-size:3.4rem;line-height:1}
+.lo-bars{display:flex;flex-direction:column;gap:8px}
+.lo-row{display:grid;grid-template-columns:minmax(0,1fr) 120px 48px;gap:10px;align-items:center;font-size:.86rem}
+.lo-row .b{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.lo-row .b i{display:block;height:100%}
+.lo-row .v{font-family:var(--f-mono);font-size:.78rem;text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:520px){.lo-row{grid-template-columns:minmax(0,1fr) 70px 42px}}
+.review{display:flex;flex-direction:column;gap:8px}
+.review details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.review summary{cursor:pointer;font-size:.92rem}
+.review .mk{font-family:var(--f-mono);font-weight:600;margin-right:6px}
+.review .mk.ok{color:var(--good)} .review .mk.no{color:var(--bad)}
+.review p{font-size:.88rem;margin-top:6px}
+
+.case{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px}
+@media (max-width:760px){.case{grid-template-columns:minmax(0,1fr)}}
+.case ol, .prose ol, .prose ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.dialog{display:flex;flex-direction:column;gap:8px}
+.line{padding:10px 12px;border-radius:10px;font-size:.92rem;max-width:88%}
+.line.c{background:var(--sunk);align-self:flex-start}
+.line.e{background:var(--accent-soft);align-self:flex-end}
+.line b{font-family:var(--f-mono);font-size:.7rem;display:block;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+footer{padding-block:24px;font-size:.8rem;color:var(--muted)}
+
+/* Chapter 5 additions */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.vs b{font-family:var(--f-display)}
+.vs ul{margin:6px 0 0;padding-left:1.1em;font-size:.88rem;display:flex;flex-direction:column;gap:2px}
+.grid5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.grid5{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:460px){.grid5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.sym{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
+.sym svg{width:90px;height:50px}
+.sym svg ellipse,.sym svg rect,.sym svg polygon{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.sym svg line{stroke:var(--accent);stroke-width:2.5}
+.sym svg polygon.fillink{fill:var(--accent);stroke:none}
+.sym b{font-size:.92rem}
+.sym span{font-size:.78rem;color:var(--muted)}
+.typo tbody tr{cursor:pointer}
+.typo tbody tr:hover td{background:var(--sunk)}
+.typo tbody tr.on td{background:var(--accent-soft)}
+.frame{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+.fcol{flex:1 1 150px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.farrow{align-self:center;font-size:1.4rem;color:var(--muted)}
+.fbox{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;font-weight:600;font-size:.9rem;text-align:left}
+button.fbox:hover{border-color:var(--accent)}
+button.fbox[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.fbox.static{background:var(--sunk)}
+.fbox.small{font-size:.84rem}
+.fbox span{font-weight:400;font-size:.78rem;color:var(--muted)}
+.fbox.good{border-color:var(--good);background:var(--good-soft)}
+.fbox.bad{border-color:var(--bad);background:var(--bad-soft)}
+@media (max-width:760px){.farrow{transform:rotate(90deg);align-self:flex-start}.fcol{flex-basis:100%}}
+
+.pfd{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px}
+.pfd svg{min-width:680px;width:100%;height:auto;display:block}
+.pfd text{font-family:var(--f-body);fill:var(--ink)}
+.pfd .ct{font-family:var(--f-mono);font-size:12px;fill:var(--muted)}
+.pfd .box{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.pfd .box.bn{fill:var(--bad-soft);stroke:var(--bad);stroke-width:2.5}
+.pfd .term{fill:var(--sunk);stroke:var(--muted);stroke-width:1.5}
+.pfd .wait{fill:var(--gold-soft);stroke:var(--gold);stroke-width:1.5}
+.pfd .ln{stroke:var(--muted);stroke-width:1.6;fill:none}
+.pfd .ln.crit{stroke:var(--ink);stroke-width:2.6}
+.pfd .ah{fill:var(--muted)}
+
+.lab{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:16px;align-items:start}
+@media (max-width:820px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab-in,.lab-out{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.inrow{display:grid;grid-template-columns:minmax(0,1fr) 80px 60px;gap:8px;align-items:center;font-size:.92rem}
+.inrow input,.inrow select,.lb-row select{font:inherit;font-family:var(--f-mono);font-size:.9rem;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
+.check{display:flex;gap:8px;align-items:center;font-size:.9rem}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi .l{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.kpi .v{font-family:var(--f-display);font-weight:700;font-size:1.35rem;font-variant-numeric:tabular-nums}
+.kpi .w{font-size:.78rem;color:var(--muted);font-family:var(--f-mono)}
+.kpi.bn{border-color:var(--bad);background:var(--bad-soft)}
+.gantt-wrap{overflow-x:auto}
+.gantt-wrap svg{min-width:640px;width:100%;height:auto;display:block}
+.gantt-wrap text{font-family:var(--f-mono);font-size:11px;fill:var(--muted)}
+.gantt-wrap .lbl{font-family:var(--f-body);font-size:12px;fill:var(--ink)}
+.gantt-wrap .grid{stroke:var(--line);stroke-width:1}
+.gantt-wrap .bar-t{font-family:var(--f-mono);font-size:11px;fill:var(--accent-ink);font-weight:500}
+
+.lb-row{display:grid;grid-template-columns:28px minmax(0,1fr) 52px 104px;gap:8px;align-items:center;font-size:.88rem;padding:6px 0;border-top:1px dashed var(--line)}
+.lb-row:first-child{border-top:0}
+.lb-row .t{font-family:var(--f-mono);text-align:right;color:var(--muted)}
+.lb-row .id{font-family:var(--f-mono);font-weight:500;color:var(--accent)}
+.job{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.job + .job{margin-top:8px}
+.job.bn{border-color:var(--bad);background:var(--bad-soft)}
+.job .nm{font-weight:600;font-size:.92rem}
+.job .meta{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);grid-column:1/-1}
+.step{display:inline-flex;align-items:center;gap:6px}
+.step button{width:28px;height:28px;border-radius:7px;border:1px solid var(--line);background:var(--surface);font-weight:600}
+.step span{font-family:var(--f-mono);min-width:1.5em;text-align:center}
+.ratebar{grid-column:1/-1;height:6px;background:var(--sunk);border-radius:99px;position:relative;overflow:visible}
+.ratebar i{display:block;height:100%;border-radius:99px;background:var(--accent)}
+.ratebar b{position:absolute;top:-4px;width:2px;height:14px;background:var(--ink)}
+.verdict{border-radius:10px;padding:12px 14px;font-size:.92rem;margin-top:10px}
+.verdict.ok{background:var(--good-soft)}
+.verdict.no{background:var(--gold-soft)}
+.grid-lay{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-width:360px}
+.grid-lay button{aspect-ratio:1/1;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px}
+.grid-lay button b{font-family:var(--f-display);font-size:1.6rem;line-height:1}
+.grid-lay button span{font-size:.7rem;color:var(--muted);text-align:center;line-height:1.2}
+.grid-lay button.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px var(--accent-soft)}
+.mx td,.mx th{text-align:center;font-family:var(--f-mono);font-variant-numeric:tabular-nums;padding:6px 8px}
+.mx td:first-child,.mx th:first-child{text-align:left}
+.mx td.far{background:var(--bad-soft);color:var(--bad);font-weight:600}
+.mx td.near{color:var(--good)}
+.pairs{font-family:var(--f-mono);font-size:.84rem;display:flex;flex-direction:column;gap:3px}
+.bigscore{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.bigscore .n{font-family:var(--f-display);font-weight:800;font-size:2.6rem;line-height:1;font-variant-numeric:tabular-nums}
+.formula td:last-child{font-family:var(--f-mono);font-size:.82rem}
+
+.brand{flex:1 1 auto}
+.brand .ch{white-space:nowrap;flex:none}
+.meter{flex:none}
+#meterTxt{white-space:nowrap}
+@media (max-width:520px){#meterTxt{display:none}}
+
+/* Chapter 6 additions */
+.slider-row{display:grid;grid-template-columns:110px minmax(0,1fr) 36px;gap:10px;align-items:center;font-size:.9rem}
+.slider-row input[type=range]{width:100%;accent-color:var(--accent)}
+.slider-row output{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+.meterline{position:relative;height:44px;margin-top:6px}
+.meterline .track{position:absolute;left:0;right:0;top:18px;height:8px;border-radius:99px;background:linear-gradient(90deg,var(--bad-soft),var(--sunk) 50%,var(--good-soft))}
+.meterline .pin{position:absolute;top:10px;width:3px;height:24px;background:var(--ink);border-radius:2px;transition:left .2s}
+.meterline .lab{position:absolute;top:0;font-family:var(--f-mono);font-size:.68rem;color:var(--muted);transform:translateX(-50%)}
+.verdict-big{font-family:var(--f-display);font-weight:700;font-size:1.3rem}
+
+.gapsvg{width:100%;height:auto;max-width:640px;display:block;margin:0 auto}
+.gapsvg .bx{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.gapsvg .bx.cust{fill:var(--accent-soft);stroke:var(--accent)}
+.gapsvg text{font-family:var(--f-body);fill:var(--ink);font-size:12.5px}
+.gapsvg .sep{stroke:var(--muted);stroke-dasharray:6 5;stroke-width:1.2}
+.gapsvg .sepl{font-family:var(--f-mono);font-size:10.5px;fill:var(--muted)}
+.gapsvg .ar{stroke:var(--muted);stroke-width:1.5;fill:none}
+.gapsvg .gap{cursor:pointer}
+.gapsvg .gap circle{fill:var(--gold-soft);stroke:var(--gold);stroke-width:2}
+.gapsvg .gap text{font-family:var(--f-mono);font-weight:600;font-size:12px}
+.gapsvg .gap.on circle{fill:var(--gold);stroke:var(--gold)}
+.gapsvg .gap.on text{fill:var(--bg)}
+.gapsvg .gl{stroke:var(--gold);stroke-width:2;stroke-dasharray:3 3}
+
+.sq-table{width:100%}
+.sq-row{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) minmax(0,1fr) 54px;gap:10px;align-items:center;padding:8px 0;border-top:1px dashed var(--line);font-size:.88rem}
+.sq-row:first-child{border-top:0}
+.sq-row.h{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.sq-row .dim{font-family:var(--f-mono);font-size:.68rem;color:var(--accent);display:block}
+.sq-row input[type=range]{width:100%;accent-color:var(--accent)}
+.sq-row .g{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+@media (max-width:620px){.sq-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 44px}.sq-row .st{grid-column:1/-1}.sq-row.h .st{display:none}}
+.chartbox svg{width:100%;height:auto;display:block}
+.chartbox text{font-family:var(--f-mono);font-size:11px;fill:var(--muted)}
+.chartbox .lbl{font-family:var(--f-body);font-size:12px;fill:var(--ink)}
+.chartbox .axis{stroke:var(--line)}
+.chartbox .grid{stroke:var(--line);stroke-width:1;opacity:.6}
+
+.hoq-wrap{overflow-x:auto}
+.hoq{border-collapse:separate;border-spacing:3px;min-width:560px;font-size:.86rem}
+.hoq th,.hoq td{border:0;padding:6px 8px;background:transparent}
+.hoq thead th{font-family:var(--f-body);text-transform:none;letter-spacing:0;font-size:.82rem;color:var(--ink);background:var(--sunk);border-radius:8px;text-align:center;vertical-align:bottom}
+.hoq td.rel select,.hoq td.imp select{font:inherit;font-family:var(--f-mono);border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--ink);padding:4px 6px;width:100%}
+.hoq td.rel{text-align:center;border-radius:8px}
+.hoq td.rel.v9{background:var(--accent-soft)}
+.hoq td.rel.v5,.hoq td.rel.v3{background:color-mix(in srgb,var(--accent-soft) 50%,transparent)}
+.hoq td.imp{background:var(--gold-soft);border-radius:8px}
+.hoq tfoot td{font-family:var(--f-mono);font-weight:600;text-align:center;background:var(--sunk);border-radius:8px;font-variant-numeric:tabular-nums}
+.hoq tfoot td.top{background:var(--good-soft);color:var(--good)}
+.hoq tfoot tr.rank td{font-weight:400;background:transparent;color:var(--muted)}
+.roof{display:flex;gap:8px;flex-wrap:wrap;font-size:.84rem}
+.roof span{background:var(--sunk);border-radius:99px;padding:3px 10px}
+
+.sorter{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:620px){.sorter{grid-template-columns:minmax(0,1fr)}}
+.ladder{display:flex;flex-direction:column-reverse;gap:6px;max-width:520px}
+.ladder div{border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:var(--surface);font-size:.9rem;display:flex;justify-content:space-between;gap:10px}
+.ladder div span{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.iceberg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:760px){.iceberg{grid-template-columns:minmax(0,1fr)}}
+.dots{display:flex;flex-wrap:wrap;gap:3px;max-width:100%}
+.dots i{width:9px;height:9px;border-radius:2px;background:var(--sunk);display:block}
+.dots i.c{background:var(--accent)}
+.dots i.s{background:var(--bad)}
+.dots i.k{background:var(--gold)}
+.legend2{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.legend2 b{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.phase{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:700px){.phase{grid-template-columns:minmax(0,1fr)}}
+.phase button{text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:4px}
+.phase button .s{font-family:var(--f-mono);font-size:.7rem;color:var(--muted)}
+.phase button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.gcheck{display:flex;flex-direction:column;gap:8px}
+.gcheck label{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);cursor:pointer}
+.gcheck input{width:18px;height:18px;accent-color:var(--accent);margin-top:2px;flex:none}
+.data-grid{overflow-x:auto}
+.data-grid table{min-width:420px}
+.data-grid input{width:58px;font:inherit;font-family:var(--f-mono);font-size:.85rem;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);text-align:right}
+.data-grid td,.data-grid th{text-align:center;padding:6px}
+.data-grid td:first-child,.data-grid th:first-child{text-align:left}
+.data-grid tr.calc td{font-family:var(--f-mono);font-variant-numeric:tabular-nums;background:var(--sunk)}
+.data-grid tr.calc td.out{color:var(--bad);font-weight:600}
+.flag{display:inline-block;font-family:var(--f-mono);font-size:.72rem;padding:2px 8px;border-radius:99px}
+.flag.ok{background:var(--good-soft);color:var(--good)}
+.flag.no{background:var(--bad-soft);color:var(--bad)}
+.inline-inputs{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:.9rem}
+.inline-inputs input,.inline-inputs select{font:inherit;font-family:var(--f-mono);font-size:.88rem;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:110px}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-family:var(--f-mono);font-size:.76rem;padding:6px 9px;border-radius:6px;z-index:50;white-space:nowrap}
+
+/* Chapter 3 additions */
+.home{font-family:var(--f-mono);font-size:.78rem;text-decoration:none;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:3px 8px;white-space:nowrap;flex:none}
+.home:hover{color:var(--ink);border-color:var(--ink)}
+.id-box{background:color-mix(in srgb,var(--good-soft) 70%,var(--surface));border:1px solid color-mix(in srgb,var(--good) 35%,transparent);border-radius:12px;padding:14px 16px;max-width:none;display:flex;flex-direction:column;gap:6px}
+.id-box .eyebrow{color:var(--good)}
+.id-box .eyebrow::before{content:"ID · ";font-weight:600}
+.id-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.id-grid .card{border-top:3px solid var(--good)}
+.qa{border-left:3px solid var(--gold);padding:4px 0 4px 12px;font-size:.92rem;color:var(--muted)}
+.qa b{color:var(--ink)}
+
+/* NSD cycle */
+.cycle{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center}
+@media (max-width:760px){.cycle{grid-template-columns:minmax(0,1fr)}}
+.cycle svg{width:100%;max-width:420px;height:auto;justify-self:center}
+.cycle .st{cursor:pointer}
+.cycle .st path{fill:var(--accent-soft);stroke:var(--surface);stroke-width:4}
+.cycle .st.on path{fill:var(--accent)}
+.cycle .st text{font-family:var(--f-display);font-weight:700;font-size:14px;fill:var(--ink)}
+.cycle .st.on text{fill:var(--accent-ink)}
+.cycle .core circle{fill:var(--gold-soft);stroke:var(--gold);stroke-width:2}
+.cycle .core text{font-family:var(--f-mono);font-size:11.5px;fill:var(--ink)}
+.cycle .ring{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 4}
+.cycle .ringt{font-family:var(--f-mono);font-size:10.5px;fill:var(--muted)}
+
+/* Blueprint */
+.bp-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.bp{display:grid;grid-template-columns:150px repeat(7,minmax(118px,1fr));min-width:1000px;font-size:.82rem}
+.bp .lane{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:10px;background:var(--sunk);display:flex;align-items:center}
+.bp .cell{padding:8px;border-left:1px solid var(--line);display:flex;align-items:center;justify-content:center;text-align:center;min-height:62px;position:relative}
+.bp .cell span{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px;line-height:1.25;width:100%}
+.bp .cell.ev span{background:transparent;border-style:dashed;color:var(--muted)}
+.bp .cell.ca span{background:var(--accent-soft);border-color:var(--accent);font-weight:600}
+.bp .cell.empty span{visibility:hidden}
+.bp .cell.col-on span{outline:2px solid var(--gold);outline-offset:1px}
+.bp .fail{position:absolute;top:2px;right:4px;width:20px;height:20px;border-radius:50%;background:var(--bad);color:#fff;font-family:var(--f-mono);font-size:.7rem;display:grid;place-items:center;font-weight:600}
+.bp .divider{grid-column:1/-1;height:0;border-top:2px dashed var(--muted);position:relative}
+.bp .divider.dot{border-top-style:dotted;border-top-color:var(--bad)}
+.bp .divider b{position:absolute;right:8px;top:-9px;background:var(--surface);padding:0 6px;font-family:var(--f-mono);font-size:.66rem;font-weight:500;color:var(--muted)}
+.bp .divider.dot b{color:var(--bad)}
+.bp .colhead{padding:8px;border-left:1px solid var(--line);font-family:var(--f-mono);font-size:.7rem;color:var(--muted);text-align:center;cursor:pointer;background:var(--sunk)}
+.bp .colhead[aria-pressed="true"]{background:var(--gold-soft);color:var(--ink)}
+.bp-hide-fail .fail{display:none}
+
+/* Position map */
+.posmap svg{width:100%;max-width:440px;height:auto;display:block;margin:0 auto}
+.posmap text{font-family:var(--f-mono);font-size:11px;fill:var(--muted)}
+.posmap .ql{font-family:var(--f-body);font-size:12px;fill:var(--ink)}
+.opt-row{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;padding:10px 0;border-top:1px dashed var(--line)}
+.opt-row:first-child{border-top:0}
+.opt-row b{font-size:.9rem}
+.opt-row .seg button{font-size:.8rem;padding:6px 10px;text-align:left}
+
+/* Taxonomy */
+.tax-wrap{overflow-x:auto}
+.tax{border-collapse:separate;border-spacing:4px;min-width:760px;font-size:.82rem}
+.tax th{background:var(--sunk);border-radius:8px;text-align:center;font-size:.68rem}
+.tax td{border:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px;vertical-align:top;cursor:pointer}
+.tax td.rh{cursor:default;background:var(--sunk);font-family:var(--f-mono);font-size:.7rem;color:var(--muted);font-weight:500}
+.tax td:not(.rh):hover{border-color:var(--accent)}
+.tax td.on{background:var(--accent-soft);border-color:var(--accent)}
+.tax td .bk{display:block;color:var(--muted)}
+.tax td .idn{display:block;margin-top:4px;color:var(--good);font-weight:600}
+
+/* Hash chain */
+.chain3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:820px){.chain3{grid-template-columns:minmax(0,1fr)}}
+.blk{border:2px solid var(--good);background:var(--surface);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.blk.bad{border-color:var(--bad);background:var(--bad-soft)}
+.blk label{font-family:var(--f-mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.blk textarea{font:inherit;font-size:.86rem;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--bg);color:var(--ink);resize:vertical;min-height:52px;width:100%}
+.blk code{font-family:var(--f-mono);font-size:.7rem;word-break:break-all;background:var(--sunk);border-radius:6px;padding:4px 6px;display:block}
+.blk .st{font-family:var(--f-mono);font-size:.74rem;font-weight:600}
+
+/* Channel matrix */
+.chan{display:flex;gap:6px;flex-wrap:wrap}
+.chan button{flex:1 1 120px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;text-align:left;font-size:.84rem;line-height:1.3}
+.chan button small{display:block;font-family:var(--f-mono);font-size:.68rem;color:var(--muted);margin-bottom:3px}
+.chan button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chan button[aria-pressed="true"] small{color:var(--bg)}
+.twobar{display:grid;grid-template-columns:150px minmax(0,1fr) 46px;gap:10px;align-items:center;font-size:.88rem}
+.twobar .t{height:12px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.twobar .t i{display:block;height:100%;border-radius:99px;transition:width .3s}
+.twobar .v{font-family:var(--f-mono);font-size:.78rem;text-align:right}
+
+.paradox{display:grid;grid-template-columns:110px minmax(0,1fr) 110px;gap:10px;align-items:center;font-size:.86rem;padding:4px 0}
+.paradox span:first-child{text-align:right;color:var(--good)}
+.paradox span:last-child{color:var(--bad)}
+.paradox input{width:100%;accent-color:var(--accent)}
+@media (max-width:520px){.paradox{grid-template-columns:80px minmax(0,1fr) 80px;font-size:.78rem}}
+.home{font-family:var(--f-body);font-size:.88rem;font-weight:600;text-decoration:none;color:var(--accent-ink);background:var(--accent);border:0;border-radius:8px;padding:7px 14px;white-space:nowrap;flex:none;box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.home:hover{filter:brightness(1.08);color:var(--accent-ink)}
+.home:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+@media (max-width:520px){.home{font-size:.8rem;padding:6px 10px}}
+footer{display:flex;flex-direction:column;gap:8px}
+.dept-foot{border-top:1px solid var(--line);padding-top:14px}
+.dept-foot a{color:var(--ink);font-weight:600;text-decoration:none;letter-spacing:.02em}
+.dept-foot a span{color:var(--muted);margin:0 4px}
+.dept-foot a:hover{color:var(--accent);text-decoration:underline}
+/* Chapter 1 & 2 additions */
+.quad{display:grid;grid-template-columns:28px minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto auto;gap:8px;align-items:stretch}
+.quad .ax{font-family:var(--f-mono);font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;justify-content:center;text-align:center}
+.quad .ax.v{writing-mode:vertical-rl;transform:rotate(180deg)}
+.quad .cell{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;min-height:120px;min-width:0;transition:background .2s,border-color .2s}
+.quad .cell h4{font-size:.98rem}
+.quad .cell p{font-size:.84rem;color:var(--muted)}
+.quad .cell.on{border-color:var(--accent);background:var(--accent-soft)}
+.quad .cell .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto}
+.quad .cell .chips span{font-size:.75rem;padding:2px 8px;border-radius:99px;background:var(--good-soft);color:var(--ink);border:1px solid color-mix(in srgb,var(--good) 35%,transparent)}
+.quad .cell .chips span.bad{background:var(--bad-soft);border-color:color-mix(in srgb,var(--bad) 35%,transparent)}
+.placer{display:flex;flex-direction:column;gap:10px}
+.placer .pq{font-weight:600}
+.placer .pbtn{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.placer .pbtn button{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px;font-size:.86rem;text-align:left}
+.placer .pbtn button:hover{border-color:var(--accent)}
+.stagebar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.stagebar button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 8px;text-align:left;display:flex;flex-direction:column;gap:2px;min-width:0}
+.stagebar button b{font-family:var(--f-display);font-size:.95rem}
+.stagebar button small{font-family:var(--f-mono);font-size:.68rem;color:var(--muted);text-transform:uppercase}
+.stagebar button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stagebar button[aria-pressed="true"] small{color:var(--bg);opacity:.75}
+.stagebar.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.stagebar button b{overflow-wrap:anywhere}
+@media (max-width:640px){.stagebar,.stagebar.four{grid-template-columns:repeat(2,minmax(0,1fr))}.placer .pbtn{grid-template-columns:minmax(0,1fr)}}
+.empbar{display:grid;grid-template-columns:120px minmax(0,1fr) 48px;gap:8px;align-items:center;font-size:.85rem}
+.empbar .bars{display:flex;height:18px;border-radius:4px;overflow:hidden;background:var(--sunk)}
+.empbar .bars i{display:block;height:100%}
+.empbar.idn{font-weight:700}
+.empbar.idn .nm::after{content:" ●";color:var(--good)}
+.empbar .v{font-family:var(--f-mono);font-size:.78rem;text-align:right;color:var(--muted)}
+.c-agri{background:#C59A3B}.c-ind{background:#7C8AA5}.c-svc{background:var(--accent)}
+.fp-list details{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:10px 14px}
+.fp-list details+details{margin-top:6px}
+.fp-list summary{cursor:pointer;font-weight:600;font-size:.93rem}
+.fp-list summary .n{font-family:var(--f-mono);color:var(--accent);margin-right:8px}
+.fp-list details p{font-size:.9rem;margin-top:6px}
+.onion{display:flex;justify-content:center}
+.onion svg{width:100%;max-width:360px;height:auto}
+.onion text{font-family:var(--f-body);font-size:12px;fill:var(--ink)}
+.force-row{display:grid;grid-template-columns:150px minmax(0,1fr) 30px;gap:10px;align-items:center;font-size:.88rem}
+.force-row input[type=range]{width:100%;accent-color:var(--accent)}
+.force-row output{font-family:var(--f-mono);text-align:right}
+.pillrow{display:flex;gap:6px;flex-wrap:wrap}
+.lvl{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+.lvl .lr{display:grid;grid-template-columns:130px repeat(4,minmax(0,1fr));gap:6px;align-items:stretch}
+.lvl .lr>span{font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;color:var(--muted);display:flex;align-items:center}
+.lvl .lr button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 8px;font-size:.78rem;text-align:left;line-height:1.3}
+.lvl .lr button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);font-weight:600}
+.lvl .hd{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;color:var(--muted);text-align:center}
+@media (max-width:760px){.lvl .lr{grid-template-columns:minmax(0,1fr)}.lvl .hd{display:none}.lvl .lr>span{margin-top:8px}}
+.placer .pbtn button.right{border-color:var(--good);background:var(--good-soft)}
+.placer .pbtn button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.placer .pbtn button:disabled{cursor:default}
+.placer .fb{font-size:.9rem}
+.lab.stack{grid-template-columns:minmax(0,1fr)!important}
+.slider-row{grid-template-columns:110px minmax(0,1fr) 54px}
+.slider-row output{font-size:.85rem}
+.quad .cell h4{overflow-wrap:anywhere}
+@media (max-width:520px){.slider-row{grid-template-columns:92px minmax(0,1fr) 50px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <a class="home" href="../" aria-label="Back to the course home page">← Back to Home</a>
+  <div class="brand"><span class="ch">CH 7</span><b>Process Improvement</b></div>
+  <div class="meter" aria-label="Study progress"><span id="meterTxt">0 / 8 units</span><span class="bar"><i id="meterBar"></i></span></div>
+</div></header>
+
+<div class="shell">
+<nav class="toc" aria-label="Chapter sections">
+  <ol id="tocList">
+    <li><a href="#overview"><span class="n">00</span>Overview</a></li>
+    <li><a href="#pdca"><span class="n">01</span>Continuous improvement &amp; PDCA<span class="dot"></span></a></li>
+    <li><a href="#tools"><span class="n">02</span>Quality tools<span class="dot"></span></a></li>
+    <li><a href="#programs"><span class="n">03</span>Benchmarking, Deming &amp; ISO 9001<span class="dot"></span></a></li>
+    <li><a href="#capability"><span class="n">04</span>Process capability<span class="dot"></span></a></li>
+    <li><a href="#sixsigma"><span class="n">05</span>Six Sigma &amp; DMAIC<span class="dot"></span></a></li>
+    <li><a href="#lean"><span class="n">06</span>Lean service<span class="dot"></span></a></li>
+    <li><a href="#dea"><span class="n">07</span>Data envelopment analysis<span class="dot"></span></a></li>
+    <li><a href="#terms"><span class="n">08</span>Key terms &amp; cases<span class="dot"></span></a></li>
+    <li><a href="#selftest"><span class="n">✓</span>Self-test</a></li>
+  </ol>
+  <p class="lo-note">Based on Bordoloi, Fitzsimmons &amp; Fitzsimmons, <i>Service Management</i> (McGraw Hill, 2022), Chapter 7 and its DEA supplement. Green "ID" boxes add Indonesian examples.</p>
+</nav>
+
+<main>
+<!-- OVERVIEW -->
+<section class="unit" id="overview" style="border-bottom:0;padding-top:0">
+  <div class="hero">
+    <div>
+      <p class="eyebrow">Service Management · Chapter 7</p>
+      <h1>Improvement is a <em>habit</em>, not a project.</h1>
+      <p class="sub">Process improvement is the bedrock of a cost-leadership strategy, and world-class firms keep raising the bar. This module covers Deming's PDCA cycle, the quality tools, benchmarking, Deming's 14 points and ISO 9001, process capability, Six Sigma, Lean Service, and data envelopment analysis (DEA) for comparing service units.</p>
+      <div class="cta"><a class="btn" href="#pdca">Start studying</a><a class="btn ghost" href="#dea">Open the DEA solver</a></div>
+    </div>
+    <div class="journey">
+      <p class="eyebrow">Sleep Inn designs out labor</p>
+      <p style="margin-top:8px;font-size:.93rem">Washers and dryers sit behind the front desk so the night clerk can do laundry. Nightstands are bolted to the wall so there are no legs to vacuum around. Shower stalls are round, with no corners for dirt. Guests open doors with their own credit card, and the heating switches off at checkout.</p>
+      <div class="id-box" style="margin-top:12px"><p class="eyebrow">Same thinking, Indonesia</p><p style="font-size:.88rem">Budget hotel chains and capsule hotels use compact rooms, hard floors, wall-mounted fixtures and app check-in for the same reason: every minute of housekeeping and front-desk labor saved is repeated thousands of times a night.</p></div>
+    </div>
+  </div>
+  <h3>Learning objectives</h3>
+  <ul class="objectives">
+    <li><span class="num">LO1</span>Use quality tools for process analysis and problem solving.</li>
+    <li><span class="num">LO2</span>Describe and contrast corporate quality improvement programs.</li>
+    <li><span class="num">LO3</span>Lead a team in a process improvement initiative.</li>
+    <li><span class="num">LO4</span>Measure the capability of a process.</li>
+    <li><span class="num">LO5</span>Conduct a Six Sigma process analysis.</li>
+    <li><span class="num">LO6</span>Describe the philosophy of lean service.</li>
+    <li><span class="num">LO7</span>Conduct a data envelopment analysis (DEA).</li>
+  </ul>
+</section>
+
+<!-- 1 PDCA -->
+<section class="unit" id="pdca" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 01</p><h2>Continuous improvement and the PDCA cycle</h2><div class="lo-tags"><span class="lo">LO3</span></div></div>
+  <p class="lead">W. Edwards Deming helped post-war Japan export goods of high quality at affordable prices, a combination people thought impossible. His teaching rests on three principles, and his method is a wheel that improves quality a little with every turn.</p>
+  <div class="grid3">
+    <div class="card"><span class="tag">1 · Customer satisfaction</span><p>Put the customer first; satisfying customers' needs is the object of one's work.</p></div>
+    <div class="card"><span class="tag">2 · Management by facts</span><p>Collect objective data and analyze it statistically, so decisions rest on evidence, not opinion.</p></div>
+    <div class="card"><span class="tag">3 · Respect for people</span><p>All employees can be self-motivated and creative; their ideas are sought in mutual respect.</p></div>
+  </div>
+  <h3>The Deming wheel (Figure 7.1)</h3>
+  <div class="stagebar four" id="pdcaBar" role="group" aria-label="PDCA steps"></div>
+  <div class="panel" id="pdcaView" aria-live="polite"></div>
+
+  <h3>Ten problem-solving steps in the PDCA cycle (Table 7.1)</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Step</th><th>What happens</th><th>Tools used</th></tr></thead>
+    <tbody>
+      <tr><td>1 · Recognize the problem, set priorities</td><td style="font-weight:400">Management outlines the problem in general terms from many sources.</td><td style="font-weight:400">Complaints, indicators</td></tr>
+      <tr><td>2 · Form quality improvement teams</td><td style="font-weight:400">An interdisciplinary team close to the problem gets a mandate; management involvement shows buy-in.</td><td style="font-weight:400">Charter</td></tr>
+      <tr><td>3 · Define the problem</td><td style="font-weight:400">Define the problem and its scope clearly.</td><td style="font-weight:400">Pareto analysis</td></tr>
+      <tr><td>4 · Develop performance measures</td><td style="font-weight:400">Changes can be verified only with before-and-after measures.</td><td style="font-weight:400">Baseline data</td></tr>
+      <tr><td>5 · Analyze the problem/process</td><td style="font-weight:400">Understand all the intricacies of the process.</td><td style="font-weight:400">Flowchart</td></tr>
+      <tr><td>6 · Determine possible causes</td><td style="font-weight:400">Brainstorm with no arguing or criticism, then use data to find the root cause.</td><td style="font-weight:400">Fishbone, check sheet, scatter, histogram, run chart</td></tr>
+      <tr><td>7 · Select and implement the solution</td><td style="font-weight:400">Resist jumping to solutions. Criteria: root cause, prevents recurrence, cost-effective, timely.</td><td style="font-weight:400">Decision criteria</td></tr>
+      <tr><td>8 · Evaluate the solution</td><td style="font-weight:400">After time has passed, verify the problem is solved.</td><td style="font-weight:400">Run chart</td></tr>
+      <tr><td>9 · Ensure permanence</td><td style="font-weight:400">Establish new methods and train workers.</td><td style="font-weight:400">Control chart</td></tr>
+      <tr><td>10 · Continuous improvement</td><td style="font-weight:400">Pick the next opportunity and turn the wheel again.</td><td style="font-weight:400">Pareto (next bar)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="id-grid grid2">
+    <div class="card"><span class="tag">ID · PDCA on campus</span><p>Indonesian universities run their internal quality assurance (SPMI) on the <b>PPEPP</b> cycle: <i>Penetapan</i> (set standards), <i>Pelaksanaan</i> (implement), <i>Evaluasi</i> (evaluate), <i>Pengendalian</i> (control) and <i>Peningkatan</i> (improve). Map it to PDCA: which PPEPP step is "Check", and which two together are "Act"?</p></div>
+    <div class="card"><span class="tag">ID · Quality circles</span><p>Many Indonesian companies and state-owned enterprises run small improvement teams (QCC, <i>gugus kendali mutu</i>) that present their PDCA projects at internal and national conventions. These are the "Kaizen Teams" or "Quality Circles" the chapter describes under Lean.</p></div>
+  </div>
+  <div class="activity" data-activity="pdca">
+    <div class="activity-head"><p class="eyebrow">Practice · A puskesmas cuts waiting time: Plan, Do, Check or Act?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+</section>
+
+<!-- 2 TOOLS -->
+<section class="unit" id="tools" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 02</p><h2>Quality tools for analysis and problem solving</h2><div class="lo-tags"><span class="lo">LO1</span></div></div>
+  <p class="lead">The chapter follows <b>Midway Airlines</b>, a Chicago hub carrier whose on-time performance was slipping and irritating business travelers. The tools are presented in the order a team would use them.</p>
+  <div class="grid4">
+    <div class="card"><span class="tag">Check sheet</span><p>A historical tally of problem occurrences; today usually a spreadsheet.</p></div>
+    <div class="card"><span class="tag">Run chart</span><p>A variable over time to reveal trends, shifts or cycles, and to compare before vs. after.</p></div>
+    <div class="card"><span class="tag">Histogram</span><p>A frequency distribution. Skew or two peaks (bimodal) hint at underlying causes, e.g., seasonal weather.</p></div>
+    <div class="card"><span class="tag">Pareto chart</span><p>Problems in descending order. The 80/20 rule: a few causes explain most cases.</p></div>
+    <div class="card"><span class="tag">Flowchart</span><p>Ovals for start/end, rectangles for activities, diamonds for decisions. Shows where problems can arise (oversized carry-ons at the gate).</p></div>
+    <div class="card"><span class="tag">Cause-and-effect</span><p>Fishbone or Ishikawa diagram: the problem at the head, categories along the spine (information, customers, material, procedures, personnel, equipment).</p></div>
+    <div class="card"><span class="tag">Scatter diagram</span><p>Two variables plotted together; a tight trend line confirms a suspected root cause.</p></div>
+    <div class="card"><span class="tag">Control chart</span><p>Monitors the process after the fix: is it staying within limits (e.g., on-time above 90%, target 95%)?</p></div>
+  </div>
+  <div class="lab">
+    <div class="lab-in">
+      <div class="activity-head"><p class="eyebrow">Try it · Quality-tools workbench</p><div class="seg" id="qtData"><button data-d="0" aria-pressed="true">Midway Airlines (Fig. 7.2)</button><button data-d="1" aria-pressed="false">Sonora County Sheriff (Case 7.1)</button></div></div>
+      <div class="seg" id="qtView" role="group" aria-label="Tool"><button data-v="check" aria-pressed="true">Check sheet</button><button data-v="run" aria-pressed="false">Run chart</button><button data-v="hist" aria-pressed="false">Histogram</button><button data-v="pareto" aria-pressed="false">Pareto</button></div>
+      <div class="seg" id="qtCat" role="group" aria-label="Category"></div>
+      <div class="chartbox" id="qtOut"></div>
+    </div>
+    <div class="lab-out" id="qtTxt" aria-live="polite"></div>
+  </div>
+
+  <h3>From symptom to root cause at Midway</h3>
+  <div class="grid2">
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Cause of departure delay (Table 7.2)</th><th>% of incidents</th><th>Cumulative %</th></tr></thead>
+      <tbody>
+        <tr><td>Late passengers</td><td style="font-weight:400">53.3</td><td style="font-weight:400">53.3</td></tr>
+        <tr><td>Waiting for pushback</td><td style="font-weight:400">15.0</td><td style="font-weight:400">68.3</td></tr>
+        <tr><td>Waiting for fuel</td><td style="font-weight:400">11.3</td><td style="font-weight:400">79.6</td></tr>
+        <tr><td>Late weight-and-balance sheet</td><td style="font-weight:400">8.7</td><td style="font-weight:400">88.3</td></tr>
+      </tbody>
+    </table></div>
+    <div class="prose"><p>A scatter diagram of late passengers against departure delays confirmed the root cause: gate agents held flights to avoid antagonizing latecomers, inconveniencing punctual passengers. Midway <b>advertised an on-time departure policy and refused late passengers</b>, even with the plane still at the gate. Late arrivals fell sharply; then the team moved on to pushback and fueling. A control chart showed the process back in control.</p></div>
+  </div>
+  <div class="id-box"><p class="eyebrow">Build your own fishbone</p><p style="font-size:.92rem">Try the same sequence on a familiar problem, such as late departures of a domestic flight at Juanda, long queues at a campus canteen, or slow parcel delivery during a sales event. The <a href="../ch06s/#fishbone">Chapter 6 supplement</a> has an interactive fishbone builder and a 5 Whys tool you can use for the cause-and-effect step.</p></div>
+  <div class="activity" data-activity="tool">
+    <div class="activity-head"><p class="eyebrow">Practice · Which quality tool should the team use?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+</section>
+
+<!-- 3 PROGRAMS -->
+<section class="unit" id="programs" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 03</p><h2>Benchmarking and corporate improvement programs</h2><div class="lo-tags"><span class="lo">LO2</span></div></div>
+  <p class="lead"><b>Benchmarking</b> compares your performance with the "best in class": Singapore Airlines for cabin service, FedEx for overnight delivery, Hampton Inns for clean rooms, Nordstrom for attentive sales staff. It means visiting and learning how they do it, often outside your own industry (manufacturers studying race-car pit stops or Domino's 30-minute delivery).</p>
+  <div class="grid2">
+    <div class="prose"><p><b>Five steps:</b></p><ol><li>Select a critical process that needs improvement.</li><li>Identify an organization that excels in that process.</li><li>Contact the benchmark firm, visit and study the process.</li><li>Analyze the findings.</li><li>Improve your process accordingly.</li></ol><p class="muted">Example: an electronics firm improved purchasing by visiting Ford (fewer suppliers), Toyota (vendor relationships) and Reliance Electric (the buying process).</p></div>
+    <div class="id-box"><p class="eyebrow">Benchmarking across industries</p><p style="font-size:.92rem">A hospital pharmacy that wants faster prescription pickup could study a fast-food chain's order-to-counter flow; a university admissions office could study how e-commerce platforms keep buyers informed at every step. Who in Indonesia would you name as "best in class" for queue management? For complaint handling?</p></div>
+  </div>
+
+  <h3>Deming's 14-point program</h3>
+  <p class="muted" style="max-width:70ch">Deming argued management was responsible for 85% of quality problems, so management must lead the change in systems and processes.</p>
+  <div class="fp-list" id="demingList"></div>
+
+  <h3>ISO 9001</h3>
+  <div class="grid2">
+    <div class="prose"><p>A voluntary standard that has become a de facto requirement, a <b>qualifier</b>, in many industries. Certification signals a quality management system that ensures <b>consistency</b>: "say what you do, and do what you say." Three characteristics: it does <i>not</i> prescribe specific practices; it says nothing directly about the quality of the product or service itself; certification is done by a decentralized system of auditors and accreditation bodies (ISO only writes the standards).</p></div>
+    <div class="grid3" style="grid-template-columns:minmax(0,1fr)">
+      <div class="card"><span class="tag">1 · Planning</span><p>Goals, authority and responsibility for quality are defined and understood.</p></div>
+      <div class="card"><span class="tag">2 · Control</span><p>Requirements are met, problems anticipated and averted, corrective actions carried out.</p></div>
+      <div class="card"><span class="tag">3 · Documentation</span><p>Objectives and methods documented as objective evidence of system performance.</p></div>
+    </div>
+  </div>
+  <div class="id-grid grid2">
+    <div class="card"><span class="tag">ID · ISO 9001 as SNI</span><p>Indonesia's national standards body (BSN) adopts the standard as SNI ISO 9001. Certificates are common in hospitals, universities, government service units and suppliers to state-owned enterprises, often because a tender or accreditation asks for one. Remember the textbook's warning: certification proves consistency, not that the service is good.</p></div>
+    <div class="card"><span class="tag">ID · Baldrige-style awards</span><p>The chapter preview mentions the Baldrige National Quality Award. Indonesia's state-owned enterprises assess themselves with KPKU, an excellence framework adapted from the Baldrige criteria, which looks at leadership, strategy, customers, workforce, operations and results, not just documented procedures.</p></div>
+  </div>
+  <div class="activity" data-activity="deming">
+    <div class="activity-head"><p class="eyebrow">Practice · Consistent with Deming's 14 points, or not?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+  <div class="activity" data-activity="programs">
+    <div class="activity-head"><p class="eyebrow">Practice · Which program or tool is this?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+</section>
+
+<!-- 4 CAPABILITY -->
+<section class="unit" id="capability" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 04</p><h2>Variation and process capability</h2><div class="lo-tags"><span class="lo">LO4</span></div></div>
+  <p class="lead">Averages hide problems. Six Sigma's aim is to narrow variation until <b>six standard deviations</b> fit inside the customer's limits: the <b>lower</b> and <b>upper specification limits</b> (LSL, USL). For airline arrivals, the customer tolerates ±15 minutes, so Six Sigma needs σ = 15/6 = 2.5 minutes.</p>
+  <div class="grid2">
+    <div class="card"><span class="tag">Cp · mean centered</span><p class="mono" style="font-size:1.05rem">Cp = (USL − LSL) / 6σ</p><p>Cp ≥ 2.0 is the Six Sigma standard. Arrivals: (15 − (−15)) / (6 × 2.5) = <b>2.0</b>.</p></div>
+    <div class="card"><span class="tag">Cpk · mean off-center</span><p class="mono" style="font-size:1.05rem">Cpk = min[(USL − μ)/3σ, (μ − LSL)/3σ]</p><p>If the mean drifts to +1 minute: min[(15−1)/7.5, (1+15)/7.5] = min[1.87, 2.13] = <b>1.87</b>. No longer Six Sigma, though Cp is still 2.0.</p></div>
+  </div>
+  <div class="lab">
+    <div class="lab-in">
+      <div class="activity-head"><p class="eyebrow">Try it · Process capability calculator</p></div>
+      <div class="seg" id="capPreset"></div>
+      <div class="slider-row"><span>LSL</span><input type="range" id="capL"><output id="capLO"></output></div>
+      <div class="slider-row"><span>USL</span><input type="range" id="capU"><output id="capUO"></output></div>
+      <div class="slider-row"><span>Mean μ</span><input type="range" id="capM"><output id="capMO"></output></div>
+      <div class="slider-row"><span>Std. dev. σ</span><input type="range" id="capS"><output id="capSO"></output></div>
+      <p class="muted" id="capNote" style="font-size:.84rem"></p>
+    </div>
+    <div class="lab-out">
+      <div class="chartbox" id="capChart"></div>
+      <div class="kpis" id="capKpi"></div>
+      <div id="capTxt" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="id-box"><p class="eyebrow">Where specification limits come from</p><p style="font-size:.92rem">In Indonesia, packaged goods must not contain less than the declared net quantity beyond a legal tolerance (the metrology rules for <i>barang dalam keadaan terbungkus</i>), so a sambal or snack producer has a real LSL. A courier's "next-day" promise, a bank's 10-minute teller-service target and a hospital's 60-minute pharmacy target are service USLs. Ask: who sets the limit, the customer, the regulator or the firm?</p></div>
+</section>
+
+<!-- 5 SIX SIGMA -->
+<section class="unit" id="sixsigma" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 05</p><h2>Six Sigma and DMAIC</h2><div class="lo-tags"><span class="lo">LO5</span></div></div>
+  <p class="lead">Motorola engineers began reporting quality as <b>defects per million</b> in the mid-1980s and documented $16 billion in savings. Jack Welch made Six Sigma the cornerstone of GE's legend. The target: <b>3.4 errors per million</b> customer encounters.</p>
+  <div class="grid3">
+    <div class="card"><span class="tag">Why count errors</span><p>99.9% sounds excellent, but at a million packages a day it is <b>1,000 errors a day</b>. Reporting errors motivates more than reporting percent success.</p></div>
+    <div class="card"><span class="tag">The service catch</span><p>Perhaps half of a courier's errors are customer-induced (wrong address). A service can't reach Six Sigma unless the quality of customer input improves.</p></div>
+    <div class="card"><span class="tag">Project-oriented</span><p>Top-down support picks projects with the biggest financial benefit: fewer service failures, lower cost, less variability, higher productivity or satisfaction.</p></div>
+  </div>
+  <h3>Roles (Figure 7.11) and the DMAIC cycle (Table 7.3)</h3>
+  <div class="grid2">
+    <div class="prose"><ol><li><b>Executive</b>: sets direction and supports the program.</li><li><b>Champion</b>: sponsors projects and removes barriers.</li><li><b>Master black belt</b>: expert coach and trainer.</li><li><b>Black belt</b>: leads projects full time.</li><li><b>Green belt</b>: leads or supports projects part time.</li><li><b>Project member</b>: contributes process knowledge, and can train up to green belt.</li></ol></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Step</th><th>Definition</th></tr></thead>
+      <tbody>
+        <tr><td>Define</td><td style="font-weight:400">Project objectives, internal and external customers</td></tr>
+        <tr><td>Measure</td><td style="font-weight:400">Current level of performance</td></tr>
+        <tr><td>Analyze</td><td style="font-weight:400">Causes of current problems</td></tr>
+        <tr><td>Improve</td><td style="font-weight:400">How the process can be improved to eliminate the problems</td></tr>
+        <tr><td>Control</td><td style="font-weight:400">Mechanisms for controlling the improved process</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <h3>Try it · Example 7.1, Big Tex Burgers' "one-pounder"</h3>
+  <p class="muted" style="max-width:72ch">A consumer group claims the 16-ounce burger is underweight. <b>Define:</b> patty weight is the critical characteristic. <b>Measure:</b> limits are ±5% → 15.2 to 16.8 oz. <b>Analyze:</b> a sample shows μ = 15.8 oz, σ = 0.5 oz. <b>Improve:</b> switch the three textbook options on and off. <b>Control:</b> watch the X̄-chart.</p>
+  <div class="lab">
+    <div class="lab-in">
+      <p class="eyebrow">Improve · three options</p>
+      <label class="check"><input type="checkbox" id="btSd">a. Decrease variation: σ 0.5 → 0.4 oz</label>
+      <label class="check"><input type="checkbox" id="btMu">b. Center the process: μ 15.8 → 16.0 oz</label>
+      <label class="check"><input type="checkbox" id="btSpec">c. Negotiate wider specs: 15.0 to 17.0 oz</label>
+      <div class="kpis" id="btKpi"></div>
+      <div id="btTxt" aria-live="polite"></div>
+    </div>
+    <div class="lab-out">
+      <p class="eyebrow">Control · X̄-chart, 4 burgers sampled each hour (simulated)</p>
+      <div class="chartbox" id="btChart"></div>
+      <p class="muted" style="font-size:.82rem">Limits from Chapter 6 with n = 4 (A₂ = 0.729, D₄ = 2.282), X̄ = 16 and R̄ = 2: X̄-chart UCL 17.5, LCL 14.5; R-chart UCL 4.6, LCL 0. <button class="btn ghost" id="btResim" style="padding:4px 10px;font-size:.8rem;margin-left:6px">New samples</button></p>
+    </div>
+  </div>
+  <div class="activity" data-activity="dmaic">
+    <div class="activity-head"><p class="eyebrow">Practice · A courier's late deliveries: which DMAIC step?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+</section>
+
+<!-- 6 LEAN -->
+<section class="unit" id="lean" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 06</p><h2>Lean service</h2><div class="lo-tags"><span class="lo">LO6</span></div></div>
+  <p class="lead">Lean Service extends the Toyota Production System (waste elimination, continuous flow, customer demand pull, known in manufacturing as Just-in-Time) to services. The objective is a <b>continuous, rapid flow of value-adding activities</b>.</p>
+  <div class="grid2">
+    <div class="card"><span class="tag">Three guiding principles</span><p>(1) Do only activities that add value in the customer's eyes. (2) Define the <b>value stream</b> by flowcharting value-added and non-value-added steps. (3) Eliminate waste: anything the customer would not pay for.</p></div>
+    <div class="card"><span class="tag">Three goals of the perfect process</span><p><b>Right purpose (value):</b> customer-valued activities that are achievable, available, adequate and flexible. <b>Best method (process):</b> low-volume, high-variety flow pulled by demand. <b>Highest sense of accomplishment (people):</b> work that feels valuable and fulfilling.</p></div>
+  </div>
+  <div class="callout"><p class="eyebrow">Value-stream mapping (VSM)</p><p style="font-size:.92rem"><b>Overall efficiency = total value-added time ÷ throughput time.</b> In Example 7.2, a rural bank's small-business loan takes 95 min value-added + 45 min non-value-added = 140 min, so efficiency is 68%. An online application removes the 30-minute form and two waits (15 + 5 min): 65 ÷ 90 = 72%. Note that the online form still takes the customer's time; it just moves outside the branch.</p></div>
+
+  <h3>Try it · Value-stream map of a puskesmas outpatient visit</h3>
+  <div class="lab">
+    <div class="lab-in">
+      <p class="muted" style="font-size:.84rem">Illustrative times. Blue steps add value for the patient; grey steps are waiting or moving. Switch on improvements and watch throughput time and efficiency.</p>
+      <label class="check"><input type="checkbox" id="vsQ">Online queue number (e.g., via the Mobile JKN app): arrive near your turn</label>
+      <label class="check"><input type="checkbox" id="vsT">Second triage nurse at peak hours</label>
+      <label class="check"><input type="checkbox" id="vsA">Doctor appointment slots instead of one morning queue</label>
+      <label class="check"><input type="checkbox" id="vsP">E-prescription sent to the pharmacy before the patient walks over</label>
+      <div class="kpis" id="vsKpi"></div>
+    </div>
+    <div class="lab-out">
+      <div id="vsMap" style="display:flex;flex-direction:column;gap:6px"></div>
+      <div id="vsTxt" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <h3>Techniques for lean services</h3>
+  <div class="grid3" id="leanTech"></div>
+  <div class="callout"><p class="eyebrow">Rethinking lean after COVID-19</p><p style="font-size:.92rem">Hospitals asked whether they had become "too lean": with highly uncertain demand, minimal inventories of ventilators and PPE were risky. A better approach is different levels of lean for different supplies (bed linen can stay lean; PPE should not). Layouts needed separate flows, blueprints needed COVID-19 steps, and hygiene habits such as hand-washing may last.</p></div>
+  <div class="activity" data-activity="va">
+    <div class="activity-head"><p class="eyebrow">Practice · Value-added or non-value-added for the customer?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+  <div class="activity" data-activity="leantech">
+    <div class="activity-head"><p class="eyebrow">Practice · Which lean technique is this?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+</section>
+
+<!-- 7 DEA -->
+<section class="unit" id="dea" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 07 · Supplement</p><h2>Data envelopment analysis (DEA)</h2><div class="lo-tags"><span class="lo">LO7</span></div></div>
+  <p class="lead">How do you compare the productivity of branch banks, clinics or schools? Simple ratios (cost per teller transaction) ignore the <b>mix</b> of outputs and inputs, and profit can reflect location rather than efficiency. <b>DEA</b> is a linear program that compares each unit with all the others using multiple inputs and outputs, with no need to convert them to money.</p>
+  <div class="grid2">
+    <div class="prose"><p><b>CCR model</b> (Charnes, Cooper and Rhodes). For the unit being evaluated, <i>e</i>, choose output weights <i>u</i> and input weights <i>v</i> that make <i>e</i> look as efficient as possible:</p>
+    <p class="mono" style="font-size:.9rem">max E<sub>e</sub> = Σ u<sub>j</sub>O<sub>je</sub><br>s.t. Σ v<sub>i</sub>I<sub>ie</sub> = 1<br>Σ u<sub>j</sub>O<sub>jk</sub> − Σ v<sub>i</sub>I<sub>ik</sub> ≤ 0 for every unit k<br>u<sub>j</sub>, v<sub>i</sub> ≥ 0</p>
+    <p>No unit may exceed 100% with those same weights. Units scoring 1.0 form the <b>efficient frontier</b>; the others are "enveloped" by it. Rule of thumb for sample size: <b>K ≥ 2(N + M)</b> units for N inputs and M outputs.</p></div>
+    <div class="prose"><p><b>Reading the results</b></p><ul><li><b>Efficiency rating E</b>: 1.000 = relatively efficient.</li><li><b>Efficiency reference set</b>: the efficient peers an inefficient unit is compared with, with weights λ (the shadow prices of their constraints).</li><li><b>Composite reference unit</b>: Σλ × peers' inputs and outputs. The gap between it and the unit is the <b>excess input</b> to remove.</li><li><b>v values</b>: efficiency gained per unit of input reduced. Burger Palace S4: cut 2 labor-hours (2 × 0.0555 = 0.111) and it matches S3.</li></ul></div>
+  </div>
+
+  <div class="lab stack">
+    <div class="lab-in">
+      <div class="activity-head"><p class="eyebrow">Try it · DEA solver (CCR, input-oriented)</p><div class="seg" id="deaSet"></div></div>
+      <p class="muted" style="font-size:.84rem" id="deaNote"></p>
+      <div class="tbl-wrap"><table id="deaTbl"></table></div>
+      <p class="muted" style="font-size:.8rem">Edit any number; results update instantly. Click a row to see its reference set and excess inputs.</p>
+    </div>
+    <div class="lab-out"><div class="chartbox" id="deaChart" style="max-width:640px"></div></div>
+    <div class="lab-out" id="deaTxt" aria-live="polite"></div>
+  </div>
+
+  <h3>DEA and strategic planning (Figure 7.21)</h3>
+  <div class="quad" id="deaQuad"></div>
+  <div class="id-box"><p class="eyebrow">DEA in Indonesia</p><p style="font-size:.92rem">DEA is a favorite method of Indonesian researchers for comparing banks, regional hospitals, puskesmas, universities and regional governments, because it handles several inputs and outputs without prices. The "Puskesmas" dataset in the solver is invented for practice: try deciding which outputs (visits, immunizations, maternal checks) and inputs (staff, budget) are fair to compare, and what happens if one clinic serves a remote island.</p></div>
+  <div class="activity" data-activity="deaq">
+    <div class="activity-head"><p class="eyebrow">Practice · Where does this branch sit in the DEA strategic matrix?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+</section>
+
+<!-- 8 TERMS -->
+<section class="unit" id="terms" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 08</p><h2>Key terms and cases</h2></div>
+  <div class="fc-wrap">
+    <button class="fc" id="fc" aria-label="Flashcard, click to flip"><div class="fc-in">
+      <div class="fc-face fc-front"><small>Term</small><b id="fcTerm"></b><span class="muted" style="margin-top:10px;font-size:.85rem">Click to reveal</span></div>
+      <div class="fc-face fc-back"><small>Definition</small><p id="fcDef"></p></div>
+    </div></button>
+    <div class="fc-ctrl"><button class="btn ghost" id="fcPrev" aria-label="Previous card">←</button><span class="count" id="fcCount"></span><button class="btn ghost" id="fcNext" aria-label="Next card">→</button><button class="btn ghost" id="fcShuffle">Shuffle</button></div>
+  </div>
+
+  <div class="case">
+    <div class="panel prose">
+      <p class="eyebrow">Case 7.1 · Sonora County Sheriff</p>
+      <p>A rural California county with one city (about 150,000 people) and a university of 12,000 students. The sheriff's monthly incident check sheet (assault, burglary, disorderly, DUI, theft) suggests burglaries are rising. The data are loaded in the <a href="#tools">quality-tools workbench</a>.</p>
+      <p><b>Questions:</b> (1) Run charts for each category: should she worry about burglaries, and what would you plot against them in a scatter diagram? (2) What is unusual about disorderly and DUI incidents by month, and why? (3) Control charts for assault and theft? (4) Pareto of the year's totals: why might she <i>not</i> prioritize by it?</p>
+    </div>
+    <div class="id-box">
+      <p class="eyebrow">Think about the calendar</p>
+      <p style="font-size:.9rem">Look at months when students arrive, leave and celebrate. In an Indonesian city, which months would you expect patterns in traffic violations or petty theft (Ramadan, the Lebaran exodus leaving houses empty, New Year)? A Pareto by frequency ignores severity: one assault may matter more than ten thefts.</p>
+    </div>
+  </div>
+  <div class="case">
+    <div class="panel prose">
+      <p class="eyebrow">Case 7.2 · Mega Bytes Restaurant and the Seven-Step Method</p>
+      <p>A breakfast buffet for business travelers. The Pareto of complaints shows customers wait too long to be seated. Using Joiner Associates' Seven-Step Method: (1) define the project ("waiting to be seated", measured as % waiting over one minute); (2) study the current situation (run chart, flowchart, floor plan); data show tables are unavailable because they are <i>not cleared</i>, and most waiting customers want non-smoking; (3) analyze causes (fishbone: distance from tables to kitchen); (4) implement a solution (temporary work stations in the non-smoking area); (5) check results (a dramatic drop); (6) standardize (permanent stations); (7) plan the future (next Pareto bar: a disorganized buffet).</p>
+      <p class="muted">Lesson: the team had to resist defining the problem as a solution ("too few servers"). The real problem was "customers wait too long."</p>
+    </div>
+    <div class="panel prose">
+      <p class="eyebrow">Case 7.3 · Mid-Atlantic Bus Lines (DEA)</p>
+      <p>Eight franchised terminals from Philadelphia to Jacksonville; some franchisees complain of poor profits. Outputs: ticket and freight sales; inputs: labor-hours and facility dollars. The data are loaded in the <a href="#dea">DEA solver</a>: identify efficient and inefficient terminals, recommend input changes using reference sets, advise the one seriously inefficient terminal, and discuss DEA's shortcomings here.</p>
+      <p class="qa"><b>Indonesian adaptation:</b> intercity bus agents (<i>agen PO bus</i>) or courier drop-off points along the Pantura route.</p>
+    </div>
+  </div>
+  <div class="panel prose">
+    <p class="eyebrow">Topics for discussion</p>
+    <ol>
+      <li>Why was Deming's 14-point program rejected by U.S. firms but embraced by the Japanese after World War II?</li>
+      <li>How can the PDCA cycle support a strategy of low-cost leadership?</li>
+      <li>What are the limitations of benchmarking?</li>
+      <li>For a service industry of your choice, what policies are needed for an extended power failure after a severe climate event? (Consider a blackout in Java's grid.)</li>
+      <li>If Example 7.2's loan process were entirely online, which value-added activities could be eliminated, and what would overall efficiency be?</li>
+    </ol>
+    <p class="muted"><b>Interactive exercise:</b> as a class, prepare a value-stream map of a familiar service, such as student registration, and suggest how to eliminate waste.</p>
+  </div>
+  <div class="callout"><p class="eyebrow">Service benchmark · Sometimes just hit it with a hammer</p><p style="font-size:.92rem">A customer's L.L.Bean rolling case had a jammed handle. Customer service replied: give it a good whack with a rubber mallet, and if that fails, return it for an exchange or refund, because every product carries a 100% satisfaction guarantee. The whack worked. Honest, practical advice plus an unconditional guarantee built more loyalty than a replacement would have.</p></div>
+</section>
+
+<!-- SELF TEST -->
+<section class="unit" id="selftest" style="border-bottom:0">
+  <div class="unit-head"><p class="eyebrow">Self-test</p><h2>Check your understanding</h2></div>
+  <div class="quiz" id="quiz"></div>
+</section>
+
+<footer><p class="dept-foot"><a href="https://www.its.ac.id/mb" target="_blank" rel="noopener">Department of Business Management <span>|</span> INSTITUT TEKNOLOGI SEPULUH NOPEMBER</a></p><p>Study aid based on Chapter 7, "Process Improvement," and its supplement on data envelopment analysis in Bordoloi, Fitzsimmons &amp; Fitzsimmons, <i>Service Management: Operations, Strategy, Information Technology</i> (McGraw Hill, 2022). Indonesian examples are added for discussion and are not from the textbook; the puskesmas data and simulated samples are illustrative. Read the chapter for the full text, figures and cases.</p></footer>
+</main>
+</div>
+
+<script>
+(function(){
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const KEY = "ch7";
+const UNIT_FOR = {1:"tools",2:"programs",3:"pdca",4:"capability",5:"sixsigma",6:"lean",7:"dea"};
+function erfc(x){ const z=Math.abs(x), t=1/(1+0.5*z); const r=t*Math.exp(-z*z-1.26551223+t*(1.00002368+t*(0.37409196+t*(0.09678418+t*(-0.18628806+t*(0.27886807+t*(-1.13520398+t*(1.48851587+t*(-0.82215223+t*0.17087277))))))))); return x>=0?r:2-r; }
+const Phi = z => 0.5*erfc(-z/Math.SQRT2);
+const fmtPct = p => p*100<0.0001 ? "< 0.0001%" : p*100<0.01 ? (p*100).toFixed(4)+"%" : (p*100).toFixed(2)+"%";
+
+/* ---------- Practice activities ---------- */
+const ACT = {
+  pdca:{ opts:["Plan","Do","Check","Act"], items:[
+    ["Complaints about long waits rise; the team flowcharts the visit, collects waiting times and agrees the root cause is one registration counter at 07:30.","Plan","Select the problem, document the process, collect data, find the root cause, make an action plan."],
+    ["For one month, the puskesmas opens a second registration desk on Mondays as a trial.","Do","Implement the solution, perhaps on a trial basis, and monitor."],
+    ["The team compares average waits before and after the trial and notes that the pharmacy queue grew.","Check","Evaluate the result and look for unforeseen consequences."],
+    ["The second desk becomes standard procedure, staff are trained and the team celebrates, then turns to the pharmacy queue.","Act","Standardize, communicate, train, celebrate, start the next cycle."],
+    ["The team sets a target: 80% of patients registered within 10 minutes.","Plan","Measures of success and targets belong in the action plan."],
+    ["Daily waiting-time data are recorded during the trial against milestones.","Do","Monitoring the implementation is part of Do."]
+  ]},
+  tool:{ opts:["Check sheet","Run chart","Histogram","Pareto chart","Flowchart","Cause-and-effect diagram","Scatter diagram","Control chart"], items:[
+    ["Staff tally each day's complaint types on a shared spreadsheet.","Check sheet","The historical record that starts the analysis."],
+    ["Plot monthly late deliveries for the last two years to see whether they are trending up.","Run chart","A variable over time reveals trends, shifts and cycles."],
+    ["Rank all complaint types from most to least frequent to pick the first project.","Pareto chart","Focus on the vital few."],
+    ["Map every step at the boarding gate, with diamonds for decisions such as 'bag too big?'.","Flowchart","Shows where problems can occur."],
+    ["Brainstorm possible causes of slow table clearing under people, procedures, policy and physical environment.","Cause-and-effect diagram","The fishbone organizes causes by category."],
+    ["Plot the number of late passengers against minutes of departure delay for each day.","Scatter diagram","Tests whether two variables move together."],
+    ["After the fix, plot daily on-time percentage with upper and lower limits to see if it stays stable.","Control chart","Monitors the improved process."],
+    ["Show how often a clinic sees 0, 1–2, 3–4 or 5+ walk-out patients per day.","Histogram","A frequency distribution; look for skew or two peaks."]
+  ]},
+  deming:{ opts:["Consistent with Deming","Contradicts Deming"], items:[
+    ["Rewarding the cheapest caterer every year through open tender, regardless of quality record.","Contradicts Deming","Point 4: stop awarding business on price alone; reward quality suppliers with long-term contracts."],
+    ["Putting up posters that say 'Zero defects! Work harder!'.","Contradicts Deming","Point 10: slogans and exhortations breed resentment because most causes are in the system."],
+    ["Encouraging front-line staff to report problems without fear of blame.","Consistent with Deming","Point 8: drive out fear."],
+    ["Replacing final inspection of every form with improving how the form is designed and filled.","Consistent with Deming","Point 3: cease dependence on mass inspection; fix the process."],
+    ["Setting a quota of 60 calls per hour for each call-center agent.","Contradicts Deming","Point 11: quotas focus on quantity and guarantee poor quality."],
+    ["Cross-department teams of nurses, pharmacists and IT solve a medication-error problem together.","Consistent with Deming","Point 9: break down barriers between departments."]
+  ]},
+  programs:{ opts:["Benchmarking","ISO 9001","Six Sigma","Lean Service"], items:[
+    ["A hospital visits an airline's operations center to learn how it turns aircraft around quickly.","Benchmarking","Learning from a best-in-class firm, often in another industry."],
+    ["An auditor checks that the documented procedure for handling complaints is actually followed.","ISO 9001","'Say what you do, and do what you say.'"],
+    ["A black belt measures defects per million transactions and runs a DMAIC project.","Six Sigma","Defects per million, belts and DMAIC."],
+    ["A team maps the value stream of a loan application and removes waiting steps.","Lean Service","Value-stream mapping and waste elimination."],
+    ["A certificate that a firm has a quality management system, saying nothing about how good its service is.","ISO 9001","It certifies consistency, not service quality itself."],
+    ["A bank aims for 3.4 errors per million customer encounters.","Six Sigma","The Six Sigma target."]
+  ]},
+  dmaic:{ opts:["Define","Measure","Analyze","Improve","Control"], items:[
+    ["State the project goal: 'next-day' parcels delivered by 18:00, for online sellers and their buyers.","Define","Objectives and internal/external customers."],
+    ["Record delivery times for 2,000 parcels to find the current on-time rate.","Measure","Current level of performance."],
+    ["Find that most late parcels missed the last line-haul because of slow sorting after 21:00.","Analyze","Determine causes of current problems."],
+    ["Add a second sorting shift and move the cut-off for pickups earlier.","Improve","Change the process to eliminate the cause."],
+    ["Track the daily on-time percentage on a control chart and review it weekly.","Control","Mechanisms to hold the gain."]
+  ]},
+  va:{ opts:["Value-added","Non-value-added"], items:[
+    ["The doctor examining the patient.","Value-added","The patient would willingly pay for it."],
+    ["The patient waiting 40 minutes for the doctor.","Non-value-added","Waiting is waste in the value stream."],
+    ["A waiter delivering the meal to the table.","Value-added","The book's example of value-adding activity."],
+    ["A waiter walking to the cashier to process a card payment.","Non-value-added","The book's example of non-value-adding activity."],
+    ["Re-entering the same customer data on three different forms.","Non-value-added","Duplication the customer wouldn't pay for."],
+    ["A loan officer explaining repayment options to the borrower.","Value-added","Information the customer values."]
+  ]},
+  leantech:{ opts:["Pull system","Line balancing","Better housekeeping","Resource flexibility","Internal improvement teams","Looking for muda"], items:[
+    ["A burger kitchen faces the car park so cooks start grilling as cars arrive.","Pull system","Wendy's: demand pulls production."],
+    ["A fast-food chain offers a short breakfast menu to use staff better and cut waits.","Line balancing","McDonald's example of leveling resource use."],
+    ["A restaurant applies 5R (Ringkas, Rapi, Resik, Rawat, Rajin) so the dining area is spotless.","Better housekeeping","Cleanliness drives perceived quality (the Golden Broom idea)."],
+    ["An operating room is quickly re-equipped between different types of surgery.","Resource flexibility","Economies of scope through quick changeovers."],
+    ["Colleagues meet weekly to fix a local problem in the admissions office.","Internal improvement teams","Kaizen teams or quality circles."],
+    ["A hospital lists excessive patient waiting and poor information exchange as wastes to attack.","Looking for muda","Muda: Japanese for waste."]
+  ]},
+  deaq:{ opts:["Benchmark group (stars)","Underperforming potential stars","Candidates for divestiture","Problem branches"], items:[
+    ["A hotel that is very profitable and 100% DEA-efficient.","Benchmark group (stars)","Efficient and profitable: a model for others."],
+    ["A highly profitable branch with a DEA score of 0.78.","Underperforming potential stars","High profit but inefficient: unrealized potential."],
+    ["An efficient branch that earns little because of a poor location.","Candidates for divestiture","Efficient but unprofitable; sell to fund expansion."],
+    ["An inefficient branch with low profits.","Problem branches","The unclear quadrant: fix operations or exit."]
+  ]}
+};
+
+/* ---------- PDCA wheel ---------- */
+const PDCA = [
+  ["Plan","Select & analyze","Select the problem from customer indicators (defections, complaints). Narrow the focus, document the current process (flowchart), collect data. Brainstorm causes, agree on the root cause with data, and make an action plan with a workable solution, measures of success and targets."],
+  ["Do","Implement","Implement the solution or process change, perhaps on a trial basis. Monitor the plan by collecting performance data and noting progress against milestones."],
+  ["Check","Review results","Review and evaluate the result. Is the solution having the intended effect? Note unforeseen consequences."],
+  ["Act","Standardize & learn","If successful, standardize the change, communicate it and train everyone involved (sometimes customers and suppliers too). Celebrate, then start the cycle on another problem."]
+];
+let pdI=0;
+function pdRender(){
+  $("#pdcaBar").innerHTML = PDCA.map((p,i)=>`<button data-i="${i}" aria-pressed="${i===pdI}"><small>${p[1]}</small><b>${p[0]}</b></button>`).join("");
+  $("#pdcaView").innerHTML = `<p class="eyebrow">${PDCA[pdI][0]} · ${PDCA[pdI][1]}</p><p style="margin-top:6px">${PDCA[pdI][2]}</p>`;
+  $$("#pdcaBar button").forEach(b=>b.addEventListener("click",()=>{ pdI=+b.dataset.i; pdRender(); }));
+}
+pdRender();
+
+/* ---------- Quality tools workbench ---------- */
+const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const QT = [
+  {name:"Midway Airlines", cats:["Lost luggage","Departure delay","Mechanical","Overbooked","Other"], rows:[[1,2,3,3,1],[3,3,0,1,0],[2,5,3,2,3],[5,4,4,0,2],[4,7,2,3,0],[3,8,1,1,1],[6,6,3,0,2],[7,9,0,3,0],[4,7,3,0,2],[3,11,2,3,0],[2,10,1,0,0],[4,12,2,0,1]]},
+  {name:"Sonora County Sheriff", cats:["Assault","Burglary","Disorderly","DUI","Theft"], rows:[[2,2,3,6,6],[2,1,1,2,4],[1,3,2,4,5],[2,2,1,2,6],[2,4,2,3,7],[3,5,4,4,5],[2,4,5,3,3],[1,7,4,4,6],[3,9,2,3,5],[2,8,1,2,4],[1,10,2,4,5],[1,13,1,7,6]]}
+];
+let qtD=0, qtV="check", qtC=1;
+function qtRender(){
+  const d=QT[qtD];
+  $("#qtCat").innerHTML = (qtV==="run"||qtV==="hist") ? d.cats.map((c,i)=>`<button data-c="${i}" aria-pressed="${i===qtC}">${c}</button>`).join("") : "";
+  $$("#qtCat button").forEach(b=>b.addEventListener("click",()=>{ qtC=+b.dataset.c; qtRender(); }));
+  const tot = d.cats.map((_,j)=>d.rows.reduce((a,r)=>a+r[j],0));
+  let html="", txt="";
+  if(qtV==="check"){
+    html = `<div class="tbl-wrap"><table><thead><tr><th>Month</th>${d.cats.map(c=>`<th>${c}</th>`).join("")}</tr></thead><tbody>${d.rows.map((r,i)=>`<tr><td>${MONTHS[i]}</td>${r.map(v=>`<td style="font-weight:400">${v}</td>`).join("")}</tr>`).join("")}<tr><td>Total</td>${tot.map(v=>`<td>${v}</td>`).join("")}</tr></tbody></table></div>`;
+    txt = qtD===0 ? "The check sheet is the raw tally of a year's problems. It doesn't tell you anything until you chart it: switch to the run chart or Pareto." : "The sheriff's incident log for last year. Chart burglaries over time, then look at disorderly and DUI by month.";
+  } else if(qtV==="run"){
+    const v=d.rows.map(r=>r[qtC]), max=Math.max(...v,1)+1, W=520,H=220,L=34,B=26,T=10, X=i=>L+i*(W-L-14)/11, Y=y=>T+(H-T-B)*(1-y/max);
+    const mean=v.reduce((a,b)=>a+b,0)/12;
+    html=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Run chart">${[0,Math.round(max/2),max].map(t=>`<line class="grid" x1="${L}" x2="${W-6}" y1="${Y(t)}" y2="${Y(t)}"/><text x="${L-6}" y="${Y(t)+4}" text-anchor="end">${t}</text>`).join("")}
+      <line x1="${L}" x2="${W-6}" y1="${Y(mean)}" y2="${Y(mean)}" stroke="var(--muted)" stroke-dasharray="4 3"/><text x="${W-8}" y="${Y(mean)-4}" text-anchor="end">mean ${mean.toFixed(1)}</text>
+      <polyline fill="none" stroke="var(--accent)" stroke-width="2.5" points="${v.map((y,i)=>X(i)+","+Y(y)).join(" ")}"/>${v.map((y,i)=>`<circle cx="${X(i)}" cy="${Y(y)}" r="4" fill="var(--accent)"><title>${MONTHS[i]}: ${y}</title></circle><text x="${X(i)}" y="${H-8}" text-anchor="middle">${MONTHS[i]}</text>`).join("")}</svg>`;
+    const firstH=v.slice(0,6).reduce((a,b)=>a+b,0), secH=v.slice(6).reduce((a,b)=>a+b,0);
+    txt = `<b>${d.cats[qtC]}</b>: ${firstH} incidents in Jan–Jun vs. ${secH} in Jul–Dec. ${secH>firstH*1.4?"A clear upward trend: worth investigating.":secH<firstH*0.7?"A downward trend.":"No strong trend; look for cycles or one-off spikes."}`;
+    if(qtD===0&&qtC===1) txt += " This is Figure 7.3: departure delays rise steadily through the year.";
+    if(qtD===1&&qtC===1) txt += " Burglaries climb from about 2 a month to 13 by December. For a scatter diagram, think about what else changed: student population in town, empty houses during holidays, street lighting, patrol hours.";
+    if(qtD===1&&(qtC===2||qtC===3)) txt += " Notice the peaks: disorderly incidents rise in early summer, DUI spikes in December and January. Holidays and celebrations are a likely explanation, so targeted patrols at those times could help.";
+  } else if(qtV==="hist"){
+    const v=d.rows.map(r=>r[qtC]), mx=Math.max(...v); const bins=[]; for(let b=0;b<=mx;b++) bins.push(v.filter(x=>x===b).length);
+    const W=520,H=220,L=34,B=30,T=10, bw=(W-L-10)/bins.length, ym=Math.max(...bins), Y=y=>T+(H-T-B)*(1-y/ym);
+    html=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Histogram">${bins.map((c,b)=>`<rect x="${L+b*bw+2}" y="${Y(c)}" width="${bw-4}" height="${Y(0)-Y(c)}" fill="var(--accent)" rx="2"><title>${b} per month: ${c} months</title></rect><text x="${L+b*bw+bw/2}" y="${H-12}" text-anchor="middle">${b}</text>`).join("")}<text x="${(L+W)/2}" y="${H}" text-anchor="middle" style="font-size:10px">incidents per month (bars = number of months)</text>${[0,ym].map(t=>`<text x="${L-6}" y="${Y(t)+4}" text-anchor="end">${t}</text>`).join("")}</svg>`;
+    txt = `Distribution of monthly counts for <b>${d.cats[qtC]}</b>. Look for skew and for two peaks (bimodal), which suggest two different underlying conditions, for example seasons.${qtD===0&&qtC===0?" This is Figure 7.4: lost luggage is not symmetrical.":""}`;
+  } else {
+    const order=d.cats.map((c,i)=>[c,tot[i]]).sort((a,b)=>b[1]-a[1]), sum=tot.reduce((a,b)=>a+b,0);
+    const W=520,H=240,L=34,R=40,B=34,T=24, bw=(W-L-R)/order.length, Y=y=>T+(H-T-B)*(1-y/sum), Yp=p=>T+(H-T-B)*(1-p/100);
+    let cum=0; const pts=order.map((o,i)=>{ cum+=o[1]; return [L+i*bw+bw/2, cum/sum*100]; });
+    html=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Pareto chart">${order.map((o,i)=>`<rect x="${L+i*bw+4}" y="${Y(o[1])}" width="${bw-8}" height="${Y(0)-Y(o[1])}" fill="${i===0?"var(--accent)":"color-mix(in srgb,var(--accent) 45%,var(--surface))"}" rx="2"><title>${o[0]}: ${o[1]}</title></rect><text x="${L+i*bw+bw/2}" y="${Y(0)-Y(o[1])>20?Y(o[1])+14:Y(o[1])-4}" text-anchor="middle" style="${Y(0)-Y(o[1])>20?"fill:#fff;font-weight:600":""}">${o[1]}</text><text class="lbl" x="${L+i*bw+bw/2}" y="${H-14}" text-anchor="middle" style="font-size:11px">${o[0]}</text>`).join("")}
+      <polyline fill="none" stroke="var(--gold)" stroke-width="2.5" points="${pts.map(p=>p[0]+","+Yp(p[1])).join(" ")}"/>${pts.map(p=>`<circle cx="${p[0]}" cy="${Yp(p[1])}" r="3.5" fill="var(--gold)"/><text x="${p[0]}" y="${Yp(p[1])-9}" text-anchor="middle" style="fill:var(--gold);font-weight:600">${p[1].toFixed(0)}%</text>`).join("")}
+      ${[0,50,100].map(p=>`<text x="${W-R+6}" y="${Yp(p)+4}">${p}%</text>`).join("")}</svg>`;
+    txt = `<b>${order[0][0]}</b> is the largest category (${order[0][1]} of ${sum}, ${(order[0][1]/sum*100).toFixed(0)}%). ${qtD===0?"This is Figure 7.5: departure delay is the most serious customer problem, so Midway attacked it first.":"But frequency is not severity: an assault matters more than a theft, so the sheriff may not simply follow the tallest bar (Case question 4)."}`;
+  }
+  $("#qtOut").innerHTML = html;
+  $("#qtTxt").innerHTML = `<p class="eyebrow">${d.name} · what the tool shows</p><p style="font-size:.92rem;margin-top:6px">${txt}</p>`;
+}
+$$("#qtData button").forEach(b=>b.addEventListener("click",()=>{ $$("#qtData button").forEach(x=>x.setAttribute("aria-pressed",x===b)); qtD=+b.dataset.d; qtC=1; qtRender(); }));
+$$("#qtView button").forEach(b=>b.addEventListener("click",()=>{ $$("#qtView button").forEach(x=>x.setAttribute("aria-pressed",x===b)); qtV=b.dataset.v; qtRender(); }));
+qtRender();
+
+/* ---------- Deming 14 points ---------- */
+const DEM = [
+  ["Create constancy of purpose for improvement of product and service.","Stop the preoccupation with next quarter; build for the future and expect innovation everywhere."],
+  ["Adopt the new philosophy.","Refuse to accept commonly accepted poor work, delays and lax service."],
+  ["Cease dependence on mass inspection.","Inspection is too late and costly; improve the process itself."],
+  ["End the practice of awarding business on price tag alone.","Buy on statistical evidence of quality; fewer vendors, long-term contracts with quality suppliers."],
+  ["Constantly and forever improve the system of production and service.","Search for problems and reduce waste in every activity, front office and back office."],
+  ["Institute modern methods of training on the job.","Define acceptable levels of work; evaluate training statistically."],
+  ["Institute modern methods of supervising.","Supervision helps workers do a better job and gives them tools to take pride in their work."],
+  ["Drive out fear.","Encourage people to communicate problems and express ideas."],
+  ["Break down barriers between departments.","Solve problems through teamwork and quality-control circles."],
+  ["Eliminate numerical goals for the workforce.","Slogans and posters cause resentment; most needed changes are outside workers' control."],
+  ["Eliminate work standards and numerical quotas.","Quotas focus on quantity and guarantee poor quality; use statistical methods instead."],
+  ["Remove barriers that hinder hourly workers.","Give feedback on quality and remove barriers to pride in work."],
+  ["Institute a vigorous program of education and training.","Technology and turnover demand continual retraining, including basic statistics."],
+  ["Create a structure in top management that will push every day on the above 13 points.","Make management's commitment to continuous improvement permanent."]
+];
+$("#demingList").innerHTML = DEM.map((d,i)=>`<details><summary><span class="n">${String(i+1).padStart(2,"0")}</span>${d[0]}</summary><p>${d[1]}</p></details>`).join("");
+
+/* ---------- Capability calculator ---------- */
+const CAPP = {
+  "Airline arrivals":{L:-15,U:15,M:1,S:2.5,min:-40,max:40,step:0.5,smin:0.5,smax:15,sstep:0.1,unit:"min",note:"Textbook Figure 7.10: arrivals within ±15 minutes of schedule. With σ = 2.5 and the mean at +1, Cp = 2.0 but Cpk = 1.87. Try σ = 10 to see a typical 'current' airline."},
+  "Big Tex burger":{L:15.2,U:16.8,M:15.8,S:0.5,min:14,max:18,step:0.05,smin:0.05,smax:1,sstep:0.01,unit:"oz",note:"Example 7.1: ±5% around the advertised 16 ounces."},
+  "Sambal jar 250 g":{L:245,U:260,M:251,S:2.5,min:235,max:270,step:0.5,smin:0.5,smax:8,sstep:0.1,unit:"g",note:"Illustrative: a small producer fills jars labeled 250 g. Under-filling risks a legal problem; over-filling gives product away."}
+};
+let capK="Airline arrivals";
+function capSetup(){
+  $("#capPreset").innerHTML = Object.keys(CAPP).map(k=>`<button data-k="${k}" aria-pressed="${k===capK}">${k}</button>`).join("");
+  $$("#capPreset button").forEach(b=>b.addEventListener("click",()=>{ capK=b.dataset.k; capSetup(); }));
+  const p=CAPP[capK];
+  [["capL",p.L],["capU",p.U],["capM",p.M]].forEach(([id,v])=>{ const e=$("#"+id); e.min=p.min; e.max=p.max; e.step=p.step; e.value=v; });
+  const s=$("#capS"); s.min=p.smin; s.max=p.smax; s.step=p.sstep; s.value=p.S;
+  $("#capNote").textContent=p.note; capRender();
+}
+function capRender(){
+  const p=CAPP[capK]; let L=+$("#capL").value, U=+$("#capU").value; const M=+$("#capM").value, S=+$("#capS").value;
+  if(U<=L){ U=L+p.step; $("#capU").value=U; }
+  const dp = p.step<0.1?2:1;
+  $("#capLO").textContent=L.toFixed(dp); $("#capUO").textContent=U.toFixed(dp); $("#capMO").textContent=M.toFixed(dp); $("#capSO").textContent=S.toFixed(2);
+  const cp=(U-L)/(6*S), cpk=Math.min((U-M)/(3*S),(M-L)/(3*S));
+  const pl=Phi((L-M)/S), pu=1-Phi((U-M)/S), out=pl+pu, dpmo=out*1e6;
+  const W=520,H=220,B=28,T=10, lo=Math.min(L,M-4*S)-(U-L)*0.15, hi=Math.max(U,M+4*S)+(U-L)*0.15, X=x=>8+(W-16)*(x-lo)/(hi-lo), pk=1/(S*Math.sqrt(2*Math.PI)), Y=y=>T+(H-T-B)*(1-y/pk);
+  const f=x=>Math.exp(-0.5*((x-M)/S)**2)*pk;
+  const pts=[]; for(let i=0;i<=240;i++){ const x=lo+(hi-lo)*i/240; pts.push([x,f(x)]); }
+  const area=(a,b)=>{ const seg=pts.filter(q=>q[0]>=a&&q[0]<=b); if(seg.length<2) return ""; return `M${X(seg[0][0])},${Y(0)} `+seg.map(q=>`L${X(q[0])},${Y(q[1])}`).join(" ")+` L${X(seg[seg.length-1][0])},${Y(0)} Z`; };
+  let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Process distribution and specification limits">
+    <path d="${area(lo,L)}" fill="var(--bad)" opacity=".45"/><path d="${area(U,hi)}" fill="var(--bad)" opacity=".45"/><path d="${area(L,U)}" fill="var(--accent)" opacity=".15"/>
+    <polyline fill="none" stroke="var(--accent)" stroke-width="2.5" points="${pts.map(q=>X(q[0])+","+Y(q[1])).join(" ")}"/>
+    <line class="axis" x1="8" x2="${W-8}" y1="${Y(0)}" y2="${Y(0)}"/>
+    ${[["LSL",L],["USL",U]].map(([n,v])=>`<line x1="${X(v)}" x2="${X(v)}" y1="${T}" y2="${Y(0)}" stroke="var(--bad)" stroke-width="2"/><text x="${X(v)}" y="${H-10}" text-anchor="middle" style="fill:var(--bad);font-weight:600">${n} ${v.toFixed(dp)}</text>`).join("")}
+    <line x1="${X(M)}" x2="${X(M)}" y1="${Y(pk)}" y2="${Y(0)}" stroke="var(--ink)" stroke-dasharray="4 3"/><text x="${X(M)}" y="${T+8}" text-anchor="middle">μ ${M.toFixed(dp)}</text></svg>`;
+  $("#capChart").innerHTML=svg;
+  const lvl = cpk>=2?["ok","Six Sigma capable (Cpk ≥ 2.0)."]:cpk>=1.33?["ok","Capable by the common industry yardstick (Cpk ≥ 1.33), but not Six Sigma."]:cpk>=1?["no","Marginal: the process just fits inside the limits (Cpk ≥ 1)."]:["no","Not capable: a noticeable share of output falls outside the limits."];
+  $("#capKpi").innerHTML = `<div class="kpi"><span class="l">Cp</span><span class="v">${cp.toFixed(2)}</span><span class="w">potential, if centered</span></div><div class="kpi ${cpk<1?"bn":""}"><span class="l">Cpk</span><span class="v">${cpk.toFixed(2)}</span><span class="w">actual, given the mean</span></div><div class="kpi"><span class="l">Outside limits</span><span class="v">${fmtPct(out)}</span><span class="w">below ${fmtPct(pl)} · above ${fmtPct(pu)}</span></div><div class="kpi"><span class="l">Defects per million</span><span class="v">${dpmo<10?dpmo.toFixed(1):Math.round(dpmo).toLocaleString("en-US")}</span><span class="w">Six Sigma target: 3.4</span></div>`;
+  $("#capTxt").innerHTML = `<div class="verdict ${lvl[0]}">${lvl[1]} ${Math.abs(cp-cpk)>0.05?`Cp exceeds Cpk because the mean is off-center: re-centering alone would raise Cpk to ${cp.toFixed(2)}.`:"The process is centered, so Cp ≈ Cpk."} Six Sigma needs σ ≤ ${((U-L)/12).toFixed(dp+1)} ${p.unit} here.</div>`;
+}
+["capL","capU","capM","capS"].forEach(id=>$("#"+id).addEventListener("input",capRender));
+capSetup();
+
+/* ---------- Big Tex DMAIC ---------- */
+let btSeed = 7;
+function rnd(){ btSeed = (btSeed*1103515245+12345)%2147483648; return btSeed/2147483648; }
+function gauss(){ let u=0,v=0; while(u===0) u=rnd(); v=rnd(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+function btRender(){
+  const sd=$("#btSd").checked?0.4:0.5, mu=$("#btMu").checked?16:15.8, wide=$("#btSpec").checked, L=wide?15:15.2, U=wide?17:16.8;
+  const z=(L-mu)/sd, pl=Phi(z), pu=1-Phi((U-mu)/sd);
+  $("#btKpi").innerHTML = `<div class="kpi"><span class="l">Z at lower limit</span><span class="v">${z.toFixed(2)}</span><span class="w">(${L} − ${mu}) / ${sd}</span></div><div class="kpi ${pl>0.05?"bn":""}"><span class="l">Below ${L} oz</span><span class="v">${(pl*100).toFixed(2)}%</span><span class="w">underweight burgers</span></div><div class="kpi"><span class="l">Above ${U} oz</span><span class="v">${(pu*100).toFixed(2)}%</span><span class="w">giveaway: an internal error</span></div><div class="kpi"><span class="l">Cpk</span><span class="v">${Math.min((U-mu)/(3*sd),(mu-L)/(3*sd)).toFixed(2)}</span><span class="w">target ≥ 2.0</span></div>`;
+  const n=[$("#btSd").checked,$("#btMu").checked,$("#btSpec").checked].filter(Boolean).length;
+  $("#btTxt").innerHTML = `<div class="verdict ${pl<0.01?"ok":"no"}">${n===0?"Baseline: 11.51% of burgers weigh less than 15.2 oz. Unacceptable.":n===3?"All three together bring underweight burgers below 1% (textbook: 0.62%).":"One or two options bring the defect rate to roughly 5–7% (textbook: 6.68% for less variation, 5.48% for centering or wider specs)."} Note that option (c) changes the customer's expectation, not the process: use it last.</div>`;
+  // X-bar chart
+  const W=520,H=210,L0=62,B=24,T=10, lo=14,hi=18, X=i=>L0+i*(W-L0-14)/19, Y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+  btSeed = btSeedBase; const xb=[];
+  for(let h=0;h<20;h++){ let s=0; for(let k=0;k<4;k++) s+=mu+sd*gauss(); xb.push(s/4); }
+  let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="X-bar control chart">`;
+  [[17.5,"UCL 17.5","var(--bad)"],[16,"CL 16.0","var(--muted)"],[14.5,"LCL 14.5","var(--bad)"]].forEach(([v,t,c])=>{ svg+=`<line x1="${L0}" x2="${W-6}" y1="${Y(v)}" y2="${Y(v)}" stroke="${c}" stroke-dasharray="${v===16?"4 3":"0"}"/><text x="${L0-4}" y="${Y(v)+4}" text-anchor="end" style="font-size:9px">${t}</text>`; });
+  svg+=`<polyline fill="none" stroke="var(--accent)" stroke-width="2" points="${xb.map((v,i)=>X(i)+","+Y(v)).join(" ")}"/>`;
+  xb.forEach((v,i)=>{ const out=v>17.5||v<14.5; svg+=`<circle cx="${X(i)}" cy="${Y(v)}" r="${out?5:3.5}" fill="${out?"var(--bad)":"var(--accent)"}"><title>Hour ${i+1}: X̄ = ${v.toFixed(2)}</title></circle>`; });
+  svg+=`<text x="${(L0+W)/2}" y="${H-4}" text-anchor="middle" style="font-size:10px">hourly samples 1–20</text></svg>`;
+  $("#btChart").innerHTML = svg + `<p class="muted" style="font-size:.82rem;margin-top:6px">All points inside the limits means the process is <b>stable</b>, not that every burger meets the 15.2 oz spec: averages of four hide individual underweight patties. Stability (control) and capability are different questions.</p>`;
+}
+let btSeedBase = 7;
+["btSd","btMu","btSpec"].forEach(id=>$("#"+id).addEventListener("change",btRender));
+$("#btResim").addEventListener("click",()=>{ btSeedBase = Math.floor(Math.random()*1e6)+1; btRender(); });
+btRender();
+
+/* ---------- Value-stream map ---------- */
+const VS = [["Wait to register",20,false,"vsQ",5],["Registration & JKN check",5,true],["Wait for triage",15,false,"vsT",5],["Triage: vital signs",5,true],["Wait for doctor",40,false,"vsA",10],["Consultation",10,true],["Walk to pharmacy & wait",25,false,"vsP",8],["Receive medicine & advice",5,true]];
+function vsRender(){
+  const steps = VS.map(s=>[s[0], s[3]&&$("#"+s[3]).checked?s[4]:s[1], s[2]]);
+  const va=steps.filter(s=>s[2]).reduce((a,s)=>a+s[1],0), nva=steps.filter(s=>!s[2]).reduce((a,s)=>a+s[1],0), tp=va+nva, eff=va/tp;
+  const base=125;
+  $("#vsMap").innerHTML = `<div style="display:flex;height:34px;border-radius:6px;overflow:hidden;border:1px solid var(--line)">${steps.map(s=>`<div title="${s[0]}: ${s[1]} min" style="width:${s[1]/base*100}%;background:${s[2]?"var(--accent)":"var(--sunk)"};border-right:1px solid var(--surface);transition:width .3s"></div>`).join("")}</div>
+  <div class="muted mono" style="font-size:.72rem;display:flex;justify-content:space-between"><span>0</span><span>scale: original 125 min</span></div>
+  ${steps.map(s=>`<div class="lo-row"><span style="${s[2]?"font-weight:600":"color:var(--muted)"}">${s[2]?"■":"□"} ${s[0]}</span><span class="b"><i style="width:${s[1]/40*100}%;background:${s[2]?"var(--accent)":"var(--muted)"}"></i></span><span class="v">${s[1]} min</span></div>`).join("")}`;
+  $("#vsKpi").innerHTML = `<div class="kpi"><span class="l">Value-added</span><span class="v">${va} min</span><span class="w">unchanged by these fixes</span></div><div class="kpi ${nva>60?"bn":""}"><span class="l">Non-value-added</span><span class="v">${nva} min</span><span class="w">waiting and walking</span></div><div class="kpi"><span class="l">Throughput time</span><span class="v">${tp} min</span><span class="w">was ${base} min</span></div><div class="kpi"><span class="l">Overall efficiency</span><span class="v">${(eff*100).toFixed(0)}%</span><span class="w">VA ÷ throughput</span></div>`;
+  $("#vsTxt").innerHTML = `<div class="verdict ${eff>0.4?"ok":"no"}">${eff<0.25?"Only one minute in five adds value for the patient: typical of a walk-in clinic.":eff<0.4?"Better, but waiting still dominates.":"Most of the waste is gone. The next gains must come from the value-added steps themselves or from the patient's travel time."} Every improvement here attacks <i>waiting</i>; none needs extra doctors.</div>`;
+}
+["vsQ","vsT","vsA","vsP"].forEach(id=>$("#"+id).addEventListener("change",vsRender));
+vsRender();
+
+/* ---------- Lean techniques ---------- */
+const LT = [
+  ["Process flow improvements","Service blueprinting reveals redundant steps, e.g., a patient's path through a hospital.","Map a patient's journey from the emergency room to the ward in a regional hospital."],
+  ["Internal improvement teams","Lean Teams, Kaizen Teams or Quality Circles meet weekly on local problems.","Gugus kendali mutu (QCC) teams in companies and state-owned enterprises."],
+  ["Better housekeeping","Cleanliness shapes perceived quality; some cities give a Golden Broom Award.","5R (Ringkas, Rapi, Resik, Rawat, Rajin), the Indonesian version of 5S."],
+  ["Quality in service delivery","Chains like McDonald's and Marriott standardize delivery for consistency.","National minimarket chains with identical layouts and procedures."],
+  ["Resource flexibility","Quick changeovers let one resource serve many operations (operating rooms).","A multi-purpose campus hall switching from exam room to seminar venue."],
+  ["Pull system","Wendy's kitchens face the car park so cooks start when cars arrive.","Food stalls that cook on order from app notifications rather than in advance."],
+  ["Line balancing","McDonald's short breakfast menu levels staff use and shortens waits.","A limited menu during the Ramadan iftar rush."],
+  ["Layout improvements","Better hospital layouts improve patient, staff and material flow.","Co-locating registration, cashier and pharmacy in a clinic."],
+  ["Superior vendor management","A temp-staff supplier checks early that its people perform well.","Outsourced security or cleaning firms reviewed in the first week of a contract."],
+  ["Looking for muda","Muda is Japanese for waste: excessive waiting, poor information exchange.","Repeated photocopies of KTP and family cards demanded at every counter."]
+];
+$("#leanTech").innerHTML = LT.map(t=>`<div class="card"><span class="tag">${t[0]}</span><p>${t[1]}</p><p class="muted"><b style="color:var(--good)">ID ·</b> ${t[2]}</p></div>`).join("");
+
+/* ---------- DEA ---------- */
+function deaCCR(O, I, e){
+  const K=O.length, M=O[0].length, N=I[0].length, nv=M+N, nr=K+1, W=nv+nr;
+  const T=[];
+  for(let k=0;k<K;k++){ const r=new Array(W+1).fill(0); for(let j=0;j<M;j++) r[j]=O[k][j]; for(let i=0;i<N;i++) r[M+i]=-I[k][i]; r[nv+k]=1; T.push(r); }
+  { const r=new Array(W+1).fill(0); for(let i=0;i<N;i++) r[M+i]=I[e][i]; r[nv+K]=1; r[W]=1; T.push(r); }
+  const z=new Array(W+1).fill(0); for(let j=0;j<M;j++) z[j]=-O[e][j];
+  const basis=[]; for(let r=0;r<nr;r++) basis.push(nv+r);
+  for(let it=0; it<1000; it++){
+    let pc=-1; for(let c=0;c<W;c++){ if(z[c]<-1e-10){ pc=c; break; } }
+    if(pc<0) break;
+    let pr=-1, best=Infinity;
+    for(let r=0;r<nr;r++){ if(T[r][pc]>1e-10){ const q=T[r][W]/T[r][pc]; if(q<best-1e-12 || (Math.abs(q-best)<=1e-12 && basis[r]<basis[pr])){ best=q; pr=r; } } }
+    if(pr<0) return null;
+    const pv=T[pr][pc]; for(let c=0;c<=W;c++) T[pr][c]/=pv;
+    for(let r=0;r<nr;r++) if(r!==pr){ const f=T[r][pc]; if(f) for(let c=0;c<=W;c++) T[r][c]-=f*T[pr][c]; }
+    const f=z[pc]; for(let c=0;c<=W;c++) z[c]-=f*T[pr][c];
+    basis[pr]=pc;
+  }
+  const x=new Array(nv).fill(0); basis.forEach((b,r)=>{ if(b<nv) x[b]=T[r][W]; });
+  const lam=[]; for(let k=0;k<K;k++) lam.push(Math.max(0,z[nv+k]));
+  return {E:z[W], u:x.slice(0,M), v:x.slice(M), lam};
+}
+const DEAS = {
+  "Burger Palace":{note:"Example 7.3: six drive-in units, each selling 100 meals at lunch. Output: meals. Inputs: labor-hours and material dollars. With one equal output, the efficient frontier can be drawn.",outs:["Meals sold"],ins:["Labor-hours","Material $"],units:["S1","S2","S3","S4","S5","S6"],data:[[100,2,200],[100,4,150],[100,4,100],[100,6,100],[100,8,80],[100,10,50]]},
+  "Mid-Atlantic Bus Lines":{note:"Case 7.3, Table 7.9: eight franchised terminals. Outputs: ticket and freight sales. Inputs: labor-hours and facility dollars (a typical day).",outs:["Ticket sales","Freight sales"],ins:["Labor-hours","Facility $"],units:["Philadelphia","Baltimore","Washington","Richmond","Raleigh","Charleston","Savannah","Jacksonville"],data:[[700,300,40,500],[300,600,50,500],[200,700,50,400],[400,600,50,500],[500,400,40,400],[500,500,50,500],[800,500,40,600],[300,200,30,400]]},
+  "Puskesmas (illustrative)":{note:"Invented data for practice: eight puskesmas in one city. Outputs: outpatient visits and immunizations (thousands a year). Inputs: staff (FTE) and operating budget (Rp billion).",outs:["Visits (k)","Immunizations (k)"],ins:["Staff (FTE)","Budget (Rp bn)"],units:["PKM A","PKM B","PKM C","PKM D","PKM E","PKM F","PKM G","PKM H"],data:[[24,3.0,30,4.0],[18,2.6,28,3.6],[30,2.2,34,4.4],[15,2.8,22,3.0],[20,1.6,32,4.2],[27,3.4,33,4.1],[12,1.4,20,3.2],[22,2.9,26,3.3]]}
+};
+let deaK="Burger Palace", deaData=null, deaSel=3, deaRes=[];
+function deaLoad(){ const s=DEAS[deaK]; deaData=s.data.map(r=>r.slice()); deaSel = deaK==="Burger Palace"?3:deaK==="Mid-Atlantic Bus Lines"?7:1; deaTable(); deaSolve(); }
+function deaTable(){
+  const s=DEAS[deaK];
+  $("#deaSet").innerHTML = Object.keys(DEAS).map(k=>`<button data-k="${k}" aria-pressed="${k===deaK}">${k}</button>`).join("");
+  $$("#deaSet button").forEach(b=>b.addEventListener("click",()=>{ deaK=b.dataset.k; deaLoad(); }));
+  const M=s.outs.length, N=s.ins.length;
+  $("#deaNote").innerHTML = s.note + ` Sample-size check: K = ${s.units.length} units ${s.units.length>=2*(M+N)?"≥":"<"} 2(N + M) = ${2*(M+N)}.`;
+  $("#deaTbl").innerHTML = `<thead><tr><th>Unit</th>${s.outs.map(o=>`<th>Out · ${o}</th>`).join("")}${s.ins.map(i=>`<th>In · ${i}</th>`).join("")}<th>Efficiency E</th></tr></thead><tbody>${deaData.map((r,k)=>`<tr data-k="${k}" style="cursor:pointer"><td>${s.units[k]}</td>${r.map((v,c)=>`<td style="font-weight:400"><input type="number" min="0" step="any" value="${v}" data-k="${k}" data-c="${c}" style="width:76px;font:inherit;font-family:var(--f-mono);font-size:.85rem;padding:3px 5px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)" aria-label="${s.units[k]} value"></td>`).join("")}<td class="mono" data-e="${k}"></td></tr>`).join("")}</tbody>`;
+  $$("#deaTbl input").forEach(inp=>inp.addEventListener("input",()=>{ const v=parseFloat(inp.value); if(isFinite(v)&&v>0){ deaData[+inp.dataset.k][+inp.dataset.c]=v; deaSolve(); } }));
+  $$("#deaTbl tbody tr").forEach(tr=>tr.addEventListener("click",e=>{ if(e.target.tagName==="INPUT") return; deaSel=+tr.dataset.k; deaSolve(); }));
+}
+function deaSolve(){
+  const s=DEAS[deaK], M=s.outs.length, N=s.ins.length;
+  const O=deaData.map(r=>r.slice(0,M)), I=deaData.map(r=>r.slice(M));
+  deaRes = deaData.map((_,e)=>deaCCR(O,I,e));
+  $$("#deaTbl tbody tr").forEach((tr,k)=>{ const r=deaRes[k]; const c=$("[data-e]",tr); const E=r?r.E:NaN; c.textContent=isFinite(E)?E.toFixed(3):"–"; c.style.color=E>0.9995?"var(--good)":E<0.8?"var(--bad)":"var(--ink)"; c.style.fontWeight="600"; tr.style.background=k===deaSel?"var(--accent-soft)":""; });
+  // chart
+  const W=520,H=260,L=52,B=34,T=12;
+  let svg="";
+  if(M===1&&N===2){
+    const P=deaData.map(r=>[r[1]/r[0]*100, r[2]/r[0]*100]);
+    const xm=Math.max(...P.map(p=>p[0]))*1.15, ym=Math.max(...P.map(p=>p[1]))*1.15;
+    const X=x=>L+(W-L-12)*x/xm, Y=y=>T+(H-T-B)*(1-y/ym);
+    const eff=P.map((p,k)=>[p,k]).filter(q=>deaRes[q[1]]&&deaRes[q[1]].E>0.9995).sort((a,b)=>a[0][0]-b[0][0]);
+    svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Efficient frontier">`;
+    [0,.5,1].forEach(f=>{ svg+=`<text x="${X(xm*f)}" y="${H-16}" text-anchor="middle">${(xm*f).toFixed(1)}</text><text x="${L-6}" y="${Y(ym*f)+4}" text-anchor="end">${(ym*f).toFixed(0)}</text>`; });
+    svg+=`<line class="axis" x1="${L}" x2="${W-8}" y1="${Y(0)}" y2="${Y(0)}"/><line class="axis" x1="${L}" x2="${L}" y1="${T}" y2="${Y(0)}"/>`;
+    svg+=`<text x="${(L+W)/2}" y="${H-2}" text-anchor="middle" style="font-size:10px">${s.ins[0]} per 100 ${s.outs[0].toLowerCase()}</text><text x="12" y="${(T+H-B)/2}" text-anchor="middle" transform="rotate(-90 12 ${(T+H-B)/2})" style="font-size:10px">${s.ins[1]} per 100</text>`;
+    if(eff.length){ const pts=[[eff[0][0][0],ym],...eff.map(q=>q[0]),[xm,eff[eff.length-1][0][1]]]; svg+=`<polyline fill="none" stroke="var(--good)" stroke-width="2.5" points="${pts.map(p=>X(p[0])+","+Y(p[1])).join(" ")}"/>`; }
+    const sp=P[deaSel]; svg+=`<line x1="${X(0)}" y1="${Y(0)}" x2="${X(sp[0])}" y2="${Y(sp[1])}" stroke="var(--ink)" stroke-dasharray="4 3"/>`;
+    const r=deaRes[deaSel]; if(r&&r.E<0.9995){ svg+=`<circle cx="${X(sp[0]*r.E)}" cy="${Y(sp[1]*r.E)}" r="5" fill="none" stroke="var(--ink)" stroke-width="2"/><text x="${X(sp[0]*r.E)+8}" y="${Y(sp[1]*r.E)-6}">C</text>`; }
+    P.forEach((p,k)=>{ const ef=deaRes[k]&&deaRes[k].E>0.9995; svg+=`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="${k===deaSel?7:5}" fill="${ef?"var(--good)":"var(--bad)"}"><title>${s.units[k]}</title></circle><text x="${X(p[0])+8}" y="${Y(p[1])+4}" class="lbl">${s.units[k]}</text>`; });
+    svg+=`</svg><p class="muted" style="font-size:.8rem">Green: efficient units forming the frontier (Figure 7.19). The dashed ray from the origin to the selected unit crosses the frontier at the composite reference unit C.</p>`;
+  } else {
+    const bh=Math.min(24,(H-T-10)/deaData.length-6);
+    svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Efficiency by unit">`;
+    deaData.forEach((_,k)=>{ const y=T+k*(bh+6), E=deaRes[k]?deaRes[k].E:0, w=(W-150-40)*E; svg+=`<text class="lbl" x="142" y="${y+bh/2+4}" text-anchor="end" style="${k===deaSel?"font-weight:700":""}">${s.units[k]}</text><rect x="150" y="${y}" width="${W-150-40}" height="${bh}" rx="4" fill="var(--sunk)"/><rect x="150" y="${y}" width="${w}" height="${bh}" rx="4" fill="${E>0.9995?"var(--good)":E<0.8?"var(--bad)":"var(--gold)"}" opacity="${k===deaSel?1:.75}"/><text x="${150+w+4}" y="${y+bh/2+4}">${E.toFixed(2)}</text>`; });
+    svg+=`</svg><p class="muted" style="font-size:.8rem">With two outputs the frontier can't be drawn in two dimensions, so efficiency ratings are shown as bars.</p>`;
+  }
+  $("#deaChart").innerHTML=svg;
+  // detail
+  const r=deaRes[deaSel], name=s.units[deaSel];
+  if(!r){ $("#deaTxt").innerHTML="<p>Could not solve: check the data.</p>"; return; }
+  if(r.E>0.9995){
+    const users=deaRes.map((q,k)=>[k,q]).filter(([k,q])=>k!==deaSel&&q&&q.E<0.9995&&q.lam[deaSel]>1e-6).map(([k])=>s.units[k]);
+    $("#deaTxt").innerHTML=`<p class="eyebrow">${name} · relatively efficient</p><div class="bigscore"><span class="n" style="color:var(--good)">1.000</span><span class="muted">efficiency rating</span></div><p style="font-size:.92rem">No other unit, or combination of units, produces its outputs with fewer inputs. ${users.length?`It is a peer in the reference set of <b>${users.join(", ")}</b>: their managers should study how ${name} operates.`:"No inefficient unit uses it as a reference."}</p><p class="muted" style="font-size:.84rem">"Relatively" matters: DEA compares units only with each other, so an efficient unit can still improve.</p>`;
+    return;
+  }
+  const ref=r.lam.map((l,k)=>[k,l]).filter(q=>q[1]>1e-6);
+  const comp=deaData[0].map((_,c)=>ref.reduce((a,[k,l])=>a+l*deaData[k][c],0));
+  const rows=[...s.outs,...s.ins].map((lbl,c)=>{ const isIn=c>=M, own=deaData[deaSel][c], cv=comp[c], diff=own-cv; return `<tr><td>${isIn?"In":"Out"} · ${lbl}</td><td style="font-weight:400">${ref.map(([k,l])=>`${l.toFixed(4)} × ${deaData[k][c]}`).join(" + ")} = <b>${cv.toFixed(1)}</b></td><td style="font-weight:400">${own}</td><td style="font-weight:600;color:${isIn&&diff>0.05?"var(--bad)":"var(--ink)"}">${isIn?(diff>0.05?diff.toFixed(1)+" excess":"–"):(cv-own>0.05?"+"+(cv-own).toFixed(1)+" slack":"–")}</td></tr>`; }).join("");
+  $("#deaTxt").innerHTML=`<p class="eyebrow">${name} · relatively inefficient</p><div class="bigscore"><span class="n" style="color:${r.E<0.8?"var(--bad)":"var(--gold)"}">${r.E.toFixed(3)}</span><span class="muted">efficiency rating</span></div>
+  <p style="font-size:.9rem"><b>Efficiency reference set:</b> ${ref.map(([k,l])=>`${s.units[k]} (${l.toFixed(4)})`).join(", ")}. <b>Input weights v:</b> ${r.v.map((v,i)=>`${s.ins[i]} ${v.toFixed(4)}`).join(", ")}.</p>
+  <div class="tbl-wrap"><table><thead><tr><th>Measure</th><th>Composite reference unit C</th><th>${name}</th><th>Gap</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <p class="muted" style="font-size:.84rem">A blend of efficient peers produces at least ${name}'s outputs with only ${(r.E*100).toFixed(1)}% of its inputs. Management would choose how to close the gap based on cost, practicality and feasibility.${deaK==="Burger Palace"&&deaSel===3?" Matches Table 7.8: 0.7 excess labor-hours and $11.1 excess materials.":""}${deaK==="Burger Palace"&&deaSel===4?" (Table 7.7 prints 0.901 for S5; the LP solution in Table 7.6 is 0.909.)":""}</p>`;
+}
+deaLoad();
+(function(){
+  const c=(t,s,p,cls)=>`<div class="cell" style="${cls}"><h4>${t}</h4><p>${s}</p><p style="color:var(--ink)">${p}</p></div>`;
+  $("#deaQuad").innerHTML = `<span></span><span class="ax">Inefficient (E &lt; 1)</span><span class="ax">Efficient (E = 1)</span>
+  <span class="ax v">High profit</span>${c("Underperforming potential stars","High profit, inefficient","Unrealized potential: copy efficient peers for even more profit.","")}${c("Benchmark group (stars)","High profit, efficient","Examples for others in both operations and marketing.","border-color:var(--good)")}
+  <span class="ax v">Low profit</span>${c("Problem branches","Low profit, inefficient","Unclear: improving efficiency may only create a future divestiture candidate.","border-color:var(--bad)")}${c("Candidates for divestiture","Low profit, efficient","Limited potential (e.g., poor location): sell to fund new territories.","")}`;
+})();
+
+/* ---------- Flashcards ---------- */
+const TERMS = [
+  ["PDCA cycle","Deming's continuous-improvement wheel: plan, do, check, act, repeated so quality rises with each turn."],
+  ["Check sheet","A historical record (tally) of problem occurrences that starts the analysis."],
+  ["Run chart","A plot of a process variable over time to reveal trends, shifts or cycles."],
+  ["Histogram","A frequency distribution in bar form; reveals skew or two peaks."],
+  ["Pareto chart","Problems in a bar graph by relative frequency in descending order; the 80/20 rule."],
+  ["Cause-and-effect analysis","A fishbone (Ishikawa) chart used to discover the root cause of a quality problem."],
+  ["Scatter diagram","A plot of two variables to test whether they are related."],
+  ["Control chart","A chart with limits used to monitor whether a process stays in control."],
+  ["Benchmarking","Comparing one's performance with best-in-class firms and learning how they achieve it."],
+  ["ISO 9001","An international standard certifying a quality management system that ensures consistent output: 'say what you do, do what you say.'"],
+  ["Process capability index","Measures the ability of a process to meet specifications: Cp = (USL − LSL)/6σ; Cpk uses the nearer limit."],
+  ["Six Sigma","A rigorous, data-driven methodology to eliminate defects, aiming at 3.4 errors per million encounters."],
+  ["DMAIC","Define, Measure, Analyze, Improve, Control: the Six Sigma cycle for existing processes."],
+  ["Lean Service","A process-improvement philosophy based on eliminating non-value-added activities."],
+  ["Value-stream mapping","Separates value-adding from non-value-adding activities; efficiency = value-added time ÷ throughput time."],
+  ["Muda","Japanese for waste, e.g., excessive patient waiting or poor information exchange."],
+  ["Data envelopment analysis","A linear-programming method that rates each service unit's efficiency against all others using multiple inputs and outputs."],
+  ["Efficiency reference set","The efficient peers, with weights, against which an inefficient unit is compared in DEA."],
+  ["Seven-Step Method","Joiner Associates' structured method: define, study, analyze, implement, check, standardize, plan the future."]
+];
+
+/* ---------- Quiz ---------- */
+const LO_NAMES = {1:"Quality tools",2:"Improvement programs",3:"Leading improvement (PDCA)",4:"Process capability",5:"Six Sigma",6:"Lean service",7:"Data envelopment analysis"};
+const Q = [
+ [3,"The four steps of Deming's wheel, in order, are:",["Define, measure, analyze, control","Plan, do, check, act","Plan, act, check, do","Check, plan, do, act"],1,"PDCA; quality rises with each turn."],
+ [3,"Which is NOT one of the three foundations of Deming's teaching?",["Customer satisfaction","Management by facts","Respect for people","Management by objectives and quotas"],3,"Deming opposed numerical quotas."],
+ [3,"In the PDCA cycle, standardizing a successful change and training staff happens in:",["Plan","Do","Check","Act"],3,"Act: standardize, communicate, train, celebrate."],
+ [3,"During the brainstorming of possible causes (Table 7.1, step 6), the team should:",["Evaluate each idea immediately","Allow no arguing, criticism or evaluation","Vote on each idea","Let the manager choose"],1,"Generation first, evaluation later with data."],
+ [3,"Which is NOT a criterion for selecting a solution in step 7?",["Focuses on the root cause","Prevents recurrence","Cost-effective and timely","Proposed by the most senior member"],3,"The other three are the textbook criteria."],
+ [3,"Why must performance measures be developed before changes (step 4)?",["To satisfy auditors","The effect of a change can only be verified with before-and-after measures","To set bonuses","To replace the flowchart"],1,"Baseline data validate the solution."],
+ [3,"The Mega Bytes team avoided defining its problem as 'too few servers' because:",["Servers were cheap","That frames a solution as the problem; the real problem was customers waiting too long","Management forbade it","The data were missing"],1,"A key lesson of the Seven-Step Method."],
+ [1,"Which tool orders problems by frequency to focus effort on the largest?",["Run chart","Pareto chart","Scatter diagram","Flowchart"],1,"The 80/20 rule."],
+ [1,"In Midway's check sheet, which problem had the highest annual total?",["Lost luggage","Departure delay","Mechanical","Overbooked"],1,"84 departure delays vs. 44 lost luggage."],
+ [1,"A bimodal histogram of departure delays most likely suggests:",["A single stable cause","Two underlying distributions, e.g., a seasonal weather effect","Data entry errors only","A perfect process"],1,"Two peaks hint at two conditions."],
+ [1,"In flowcharting conventions, a diamond represents:",["A start or end point","An activity","A decision point","A delay"],2,"Ovals start/end, rectangles activities."],
+ [1,"Midway confirmed late passengers as the root cause of delays with a:",["Histogram","Scatter diagram","Control chart","Check sheet"],1,"Late passengers plotted against delays formed a tight trend."],
+ [1,"About what share of Midway's departure delays did the top four causes explain?",["53%","68%","88%","100%"],2,"Late passengers, pushback, fuel and weight-and-balance: 88.3%."],
+ [1,"Midway's solution to late passengers was to:",["Add more gates","Advertise on-time departures and refuse late passengers","Hire more agents","Delay all flights by 10 minutes"],1,"Late arrivals then dropped sharply."],
+ [1,"Which tool is used after a fix to check that the process stays stable?",["Pareto chart","Control chart","Fishbone","Check sheet"],1,"Control charts monitor the improved process."],
+ [2,"The first step of benchmarking is to:",["Visit a famous firm","Select a critical process that needs improvement","Hire consultants","Copy a competitor's prices"],1,"Then identify a firm that excels in that process."],
+ [2,"Manufacturers studying race-car pit stops to cut changeover time illustrates:",["ISO certification","Benchmarking outside one's industry","Six Sigma belts","Value-stream mapping"],1,"Going outside one's field avoids proprietary barriers."],
+ [2,"According to Deming, management is responsible for about what share of quality problems?",["15%","50%","85%","100%"],2,"So management must lead changes in the system."],
+ [2,"'Eliminate numerical goals and slogans for the workforce' is one of Deming's points because:",["Slogans are expensive","Most necessary changes are outside workers' control, so slogans cause resentment","Workers ignore posters","Goals are illegal"],1,"Point 10."],
+ [2,"Which statement about ISO 9001 is correct?",["It certifies the quality of the service itself","It prescribes specific practices","It certifies a quality management system ensuring consistency","ISO issues the certificates"],2,"'Say what you do, and do what you say.'"],
+ [2,"The three components ISO 9001 requires businesses to implement are:",["Plan, do, check","Planning, control, documentation","Define, measure, control","Sort, set, shine"],1,"Activities affecting quality are planned, controlled and documented."],
+ [2,"Why does ISO 9001 assume the status of a 'qualifier'?",["It guarantees excellence","Its global adoption makes it a de facto requirement for doing business","It is legally required everywhere","It wins customers on price"],1,"Firms certify even if they doubt the quality benefits."],
+ [4,"Cp is calculated as:",["(USL − LSL) / 3σ","(USL − LSL) / 6σ","(μ − LSL) / 6σ","6σ / (USL − LSL)"],1,"Used when the mean is centered."],
+ [4,"What Cp value is considered acceptable for Six Sigma?",["≥ 1.0","≥ 1.33","≥ 2.0","≥ 6.0"],2,"Six standard deviations fit within each half-tolerance."],
+ [4,"Arrivals must be within ±15 minutes. What σ meets the Six Sigma objective?",["15","5","2.5","1.5"],2,"σ = 15/6 = 2.5."],
+ [4,"With LSL −15, USL +15, σ = 2.5 and the mean shifted to +1, Cpk is:",["2.00","1.87","2.13","1.00"],1,"min[(15−1)/7.5, (1+15)/7.5] = 1.87."],
+ [4,"When is Cpk used instead of Cp?",["When the mean is not centered between the limits","When there is only one limit","When σ is unknown","Always for services"],0,"Cpk uses the nearer specification limit."],
+ [4,"If Cp = 2.0 but Cpk = 1.2, the best first improvement is to:",["Reduce variation","Re-center the process mean","Widen the specification limits","Stop measuring"],1,"The spread is already narrow enough; the mean is off-center."],
+ [5,"The Six Sigma target error rate is about:",["1 per hundred","1 per thousand","3.4 per million","Zero"],2,"Six standard deviations: probability 0.0000034 in the tail."],
+ [5,"A courier delivering 99.9% correctly out of a million packages a day makes how many errors daily?",["10","100","1,000","10,000"],2,"Reporting errors is more motivating than percent success."],
+ [5,"Why can services find Six Sigma especially hard?",["They have no data","Many errors are customer-induced, so customer input quality must also improve","They can't use statistics","They lack belts"],1,"Perhaps half of a courier's errors are customer-induced."],
+ [5,"DMAIC stands for:",["Design, Make, Assess, Improve, Check","Define, Measure, Analyze, Improve, Control","Define, Manage, Act, Inspect, Correct","Do, Measure, Act, Implement, Control"],1,"Table 7.3."],
+ [5,"In Six Sigma's hierarchy, who typically leads projects full time?",["Executive","Champion","Black belt","Project member"],2,"Green belts work part time; master black belts coach."],
+ [5,"Big Tex: μ = 15.8, σ = 0.5, LSL = 15.2. Z at the lower limit is:",["−0.6","−1.2","−1.6","−2.5"],1,"(15.2 − 15.8)/0.5 = −1.2, so 11.51% are underweight."],
+ [5,"Applying all three Big Tex options (σ 0.4, μ 16, specs 15–17) reduces underweight burgers to about:",["11.5%","5.5%","0.62%","0%"],2,"Z = (15 − 16)/0.4 = −2.5."],
+ [5,"Which Big Tex option changes expectations rather than the process?",["Decrease variation","Center the process","Increase (widen) specifications","Sample four burgers per hour"],2,"It negotiates the limits with the consumer group."],
+ [5,"Big Tex's X̄-chart (n = 4, X̄ = 16, R̄ = 2, A₂ = 0.729) has an upper control limit of about:",["16.8","17.5","18.0","19.6"],1,"16 + 0.729 × 2 = 17.5."],
+ [6,"Lean Service originates from:",["Motorola","The Toyota Production System","ISO","Deming's 14 points"],1,"Waste elimination, continuous flow and demand pull."],
+ [6,"In lean thinking, waste is:",["Any activity that costs money","Any activity the customer is not willing to pay for","Only physical scrap","Overtime"],1,"Principle 3: eliminate waste."],
+ [6,"Overall efficiency in value-stream mapping equals:",["Throughput time ÷ value-added time","Value-added time ÷ throughput time","Non-value-added ÷ value-added","Output ÷ labor"],1,"Example 7.2: 95/140 = 68%."],
+ [6,"In Example 7.2, the online application raises overall efficiency from 68% to:",["72%","80%","90%","100%"],0,"65 value-added ÷ 90 throughput."],
+ [6,"Wendy's kitchens facing the car park so cooks start grilling as cars arrive illustrates:",["Line balancing","A pull system","Better housekeeping","Vendor management"],1,"Customer demand pulls production."],
+ [6,"After COVID-19, the textbook suggests hospitals should:",["Abandon lean entirely","Apply different levels of lean to different supplies, e.g., not to PPE","Keep zero inventory of everything","Stop blueprinting"],1,"Critical items need buffers; bed linen can stay lean."],
+ [6,"'Muda' means:",["Continuous improvement","Waste","Pull","Standard work"],1,"Japanese for waste."],
+ [7,"Why are simple ratios like cost per teller transaction inadequate for comparing branches?",["They are hard to compute","They ignore the mix of outputs and inputs","They use money","They are always biased upward"],1,"DEA handles multiple inputs and outputs explicitly."],
+ [7,"In DEA, a unit with an efficiency rating of 1.0 is:",["Perfect in absolute terms","Relatively efficient compared with the other units","Profitable","Inefficient"],1,"Efficiency is relative to the comparison group."],
+ [7,"The DEA sample-size rule of thumb is:",["K ≥ N + M","K ≥ 2(N + M)","K ≥ 10","K ≥ N × M"],1,"K units, N inputs, M outputs."],
+ [7,"In Burger Palace, which units form the efficient frontier?",["S1, S3, S6","S2, S4, S5","S1, S2, S3","All six"],0,"S2, S4 and S5 are enveloped by the frontier."],
+ [7,"Burger Palace S4 (E = 0.889) has reference set S3 (0.7778) and S6 (0.2222). Its excess labor compared with composite C is:",["0.7 hour","2 hours","11.1 hours","0"],0,"C uses 0.7778×4 + 0.2222×10 = 5.3 hours vs. S4's 6."],
+ [7,"In the DEA strategic matrix, efficient but unprofitable units are:",["Stars","Underperforming potential stars","Candidates for divestiture","Problem branches"],2,"Often limited by poor location."],
+ [7,"The weights λ in an inefficient unit's reference set are:",["Input prices","Shadow prices of the efficient units' constraints","Profit margins","Random numbers"],1,"They appear as opportunity costs in the LP output."]
+];
+
+function renderActivity(el){
+  const key = el.dataset.activity, cfg = ACT[key];
+  const st = {done:0, right:0, total:cfg.items.length};
+  const itemsEl = $("[data-items]", el);
+  itemsEl.innerHTML = cfg.items.map((it,i)=>`<div class="item" data-i="${i}"><p class="q">${it[0]}</p><div class="opts">${cfg.opts.map(o=>`<button data-o="${esc(o)}">${o}</button>`).join("")}</div><p class="fb" hidden></p></div>`).join("");
+  const upd = ()=>{ $("[data-score]",el).textContent = `${st.right} correct · ${st.done}/${st.total} answered`; };
+  upd();
+  $$(".item", itemsEl).forEach(item=>{
+    const it = cfg.items[+item.dataset.i];
+    $$("button", item).forEach(b=>b.addEventListener("click",()=>{
+      const ok = b.dataset.o===it[1];
+      $$("button", item).forEach(x=>{ x.disabled=true; if(x.dataset.o===it[1]) x.classList.add("right"); });
+      if(!ok) b.classList.add("wrong");
+      item.classList.add(ok?"done-ok":"done-bad");
+      const fb = $(".fb", item); fb.hidden=false; fb.innerHTML = (ok?"<b style='color:var(--good)'>Correct.</b> ":"<b style='color:var(--bad)'>Not quite.</b> ")+it[2];
+      st.done++; if(ok) st.right++; upd();
+    }));
+  });
+}
+$$("[data-activity]").forEach(renderActivity);
+let fcOrder = TERMS.map((_,i)=>i), fcI = 0;
+function renderFc(){ const t = TERMS[fcOrder[fcI]]; $("#fc").classList.remove("flip"); $("#fcTerm").textContent=t[0]; $("#fcDef").textContent=t[1]; $("#fcCount").textContent=`${fcI+1} / ${TERMS.length}`; }
+$("#fc").addEventListener("click",()=>$("#fc").classList.toggle("flip"));
+$("#fcPrev").addEventListener("click",()=>{ fcI=(fcI-1+TERMS.length)%TERMS.length; renderFc(); });
+$("#fcNext").addEventListener("click",()=>{ fcI=(fcI+1)%TERMS.length; renderFc(); });
+$("#fcShuffle").addEventListener("click",()=>{ fcOrder=shuffle(fcOrder); fcI=0; renderFc(); });
+renderFc();
+const quizEl = $("#quiz");
+let run = null;
+function setup(){
+  const best = store.get(KEY+"_best");
+  quizEl.innerHTML = `<div class="qz-setup">
+    <p>Questions are drawn from all ${Object.keys(LO_NAMES).length} learning objectives, including Indonesian applications. You get feedback after each answer and a breakdown by objective at the end.</p>
+    <div><p class="eyebrow" style="margin-bottom:6px">Length</p><div class="seg" id="qzLen">
+      <button data-n="10" aria-pressed="true">Quick · 10 questions</button><button data-n="20" aria-pressed="false">Standard · 20</button><button data-n="${Q.length}" aria-pressed="false">Full · all ${Q.length}</button></div></div>
+    <div><p class="eyebrow" style="margin-bottom:6px">Focus</p><div class="seg" id="qzLo"><button data-lo="0" aria-pressed="true">All objectives</button>${Object.keys(LO_NAMES).map(k=>`<button data-lo="${k}" aria-pressed="false">LO${k}</button>`).join("")}</div></div>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><button class="btn" id="qzStart">Start self-test</button>${best!=null?`<span class="muted mono" style="font-size:.82rem">Your best on this device: ${best}%</span>`:""}</div>
+  </div>`;
+  let n=10, lo=0;
+  $$("#qzLen button").forEach(b=>b.addEventListener("click",()=>{ $$("#qzLen button").forEach(x=>x.setAttribute("aria-pressed",x===b)); n=+b.dataset.n; }));
+  $$("#qzLo button").forEach(b=>b.addEventListener("click",()=>{ $$("#qzLo button").forEach(x=>x.setAttribute("aria-pressed",x===b)); lo=+b.dataset.lo; }));
+  $("#qzStart").addEventListener("click",()=>{
+    let pool = Q.map((q,i)=>i).filter(i=>!lo||Q[i][0]===lo);
+    pool = shuffle(pool).slice(0, Math.min(n,pool.length));
+    run = {qs: pool.map(i=>{ const q=Q[i]; const order=shuffle(q[2].map((_,j)=>j)); return {lo:q[0], text:q[1], opts:order.map(j=>q[2][j]), ans:order.indexOf(q[3]), exp:q[4]}; }), i:0, picks:[]};
+    showQ();
+  });
+}
+function showQ(){
+  const r=run, q=r.qs[r.i], picked=r.picks[r.i];
+  quizEl.innerHTML = `<div class="qz-top"><span class="eyebrow">Question ${r.i+1} of ${r.qs.length} · LO${q.lo} ${LO_NAMES[q.lo]}</span><span class="mono muted" style="font-size:.8rem">${r.picks.filter((p,k)=>p===r.qs[k].ans).length} correct so far</span></div>
+    <div class="qz-prog"><i style="width:${(r.i)/r.qs.length*100}%"></i></div>
+    <p class="qz-q">${q.text}</p>
+    <div class="qz-opts">${q.opts.map((o,j)=>`<button data-j="${j}"><span class="k">${"ABCD"[j]}</span><span>${o}</span></button>`).join("")}</div>
+    <div id="qzExp"></div>
+    <div class="qz-nav"><button class="btn ghost" id="qzQuit">Quit</button><button class="btn" id="qzNext" ${picked==null?"disabled":""}>${r.i===r.qs.length-1?"See results":"Next question"}</button></div>`;
+  const lock = (j)=>{
+    $$(".qz-opts button").forEach(b=>{ b.disabled=true; const k=+b.dataset.j; if(k===q.ans) b.classList.add("right"); else if(k===j) b.classList.add("wrong"); });
+    const ok = j===q.ans;
+    $("#qzExp").innerHTML = `<div class="qz-exp ${ok?"ok":"no"}"><b>${ok?"Correct.":"Not quite. The answer is "+"ABCD"[q.ans]+"."}</b>${q.exp}</div>`;
+    $("#qzNext").disabled=false;
+  };
+  if(picked!=null) lock(picked);
+  $$(".qz-opts button").forEach(b=>b.addEventListener("click",()=>{ const j=+b.dataset.j; r.picks[r.i]=j; lock(j); $("#qzNext").focus(); }));
+  $("#qzNext").addEventListener("click",()=>{ if(r.i<r.qs.length-1){ r.i++; showQ(); } else results(); });
+  $("#qzQuit").addEventListener("click",setup);
+}
+function results(){
+  const r=run; const right=r.qs.filter((q,k)=>r.picks[k]===q.ans).length; const pct=Math.round(right/r.qs.length*100);
+  const best=store.get(KEY+"_best"); if(best==null||pct>best) store.set(KEY+"_best",pct);
+  const by={}; r.qs.forEach((q,k)=>{ by[q.lo]=by[q.lo]||{r:0,t:0}; by[q.lo].t++; if(r.picks[k]===q.ans) by[q.lo].r++; });
+  const verdict = pct>=85?"Strong grasp of the chapter.":pct>=65?"Good foundation. Review the objectives below 70%.":"Revisit the units for the weaker objectives, then try again.";
+  const unitFor = UNIT_FOR;
+  quizEl.innerHTML = `<div class="res-big"><span class="pct" style="color:${pct>=65?"var(--good)":"var(--bad)"}">${pct}%</span><span>${right} of ${r.qs.length} correct. ${verdict}</span></div>
+    <div><p class="eyebrow" style="margin-bottom:8px">By learning objective</p><div class="lo-bars">${Object.keys(by).sort().map(k=>{const v=by[k],p=Math.round(v.r/v.t*100);return `<div class="lo-row"><span><b class="mono">LO${k}</b> ${LO_NAMES[k]}${p<70?` · <a href="#${unitFor[k]}" style="color:var(--accent)">review</a>`:""}</span><span class="b"><i style="width:${p}%;background:${p>=70?"var(--good)":"var(--bad)"}"></i></span><span class="v">${v.r}/${v.t}</span></div>`;}).join("")}</div></div>
+    <div><p class="eyebrow" style="margin-bottom:8px">Review your answers</p><div class="review">${r.qs.map((q,k)=>{const ok=r.picks[k]===q.ans;return `<details ${ok?"":"open"}><summary><span class="mk ${ok?"ok":"no"}">${ok?"✓":"✗"}</span>${q.text}</summary><p><b>Your answer:</b> ${q.opts[r.picks[k]]}${ok?"":`<br><b>Correct:</b> ${q.opts[q.ans]}`}</p><p class="muted">${q.exp}</p></details>`;}).join("")}</div></div>
+    <div class="qz-nav"><button class="btn ghost" id="qzNew">Change settings</button><button class="btn" id="qzAgain">Retake with new questions</button></div>`;
+  $("#qzNew").addEventListener("click",setup);
+  $("#qzAgain").addEventListener("click",()=>{ setup(); $("#qzStart").click(); });
+  quizEl.scrollIntoView({block:"start"});
+}
+setup();
+
+/* ---------- Progress & nav ---------- */
+const units = $$("[data-unit]").map(s=>s.id);
+const seen = new Set(store.get(KEY+"_seen")||[]);
+function refreshProgress(){
+  const n = units.filter(u=>seen.has(u)).length;
+  $("#meterTxt").textContent = `${n} / ${units.length} units`;
+  $("#meterBar").style.width = (n/units.length*100)+"%";
+  $$("#tocList a").forEach(a=>a.classList.toggle("seen", seen.has(a.getAttribute("href").slice(1))));
+  store.set(KEY+"_seen",[...seen]);
+}
+if("IntersectionObserver" in window){
+  const io = new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ const id=e.target.id; $$("#tocList a").forEach(a=>a.classList.toggle("here", a.getAttribute("href")==="#"+id)); } }); },{rootMargin:"-40% 0px -55% 0px"});
+  $$("section.unit").forEach(s=>io.observe(s));
+  $$("[data-unit]").forEach(s=>{ const end=document.createElement("span"); end.style.cssText="display:block;height:1px"; end.dataset.for=s.id; s.appendChild(end); });
+  const endObs = new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ seen.add(e.target.dataset.for); refreshProgress(); endObs.unobserve(e.target);} }); });
+  $$("[data-for]").forEach(el=>endObs.observe(el));
+}
+refreshProgress();
+})();
+</script>
+</body>
+</html>
