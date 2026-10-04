@@ -152,13 +152,18 @@
   }
   .bio .sub small { display: inline; font-weight: 400; color: var(--muted); font-size: .8rem; margin: 0; }
   .bio .sub span { margin-left: auto; color: var(--muted); }
+  .inst { text-decoration: none; }
+  .inst:hover { border-bottom-color: var(--its-blue); }
+  a.its, footer a { color: var(--its-blue); text-decoration: underline; text-decoration-color: var(--its-gold); text-underline-offset: 3px; }
+  a.its:hover, footer a:hover { text-decoration-thickness: 2px; }
+  .links .bio .body a.its { display: inline; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; transform: none; font-size: inherit; font-weight: 600; }
   a:focus-visible { outline: 3px solid var(--its-gold); outline-offset: 2px; }
   footer { margin-top: 40px; color: var(--muted); font-size: .8rem; }
 
   @media (prefers-color-scheme: dark) {
     :root { --bg: #0b1424; --card: #131f35; --text: #e8edf5; --muted: #9aa6b8; --border: #22324f; }
     .socials a, .links .ic { color: #8fb4ff; }
-    .inst { color: #8fb4ff; }
+    .inst, a.its, footer a { color: #8fb4ff; }
     .links .ic { background: rgba(143, 180, 255, .1); }
   }
 </style>
@@ -172,7 +177,7 @@
 
     <h1>Dr Imam Baihaqi</h1>
     <p class="role">Vice Rector of Human Resources, Organization<br>&amp; Information System Technology</p>
-    <span class="inst">Institut Teknologi Sepuluh Nopember</span>
+    <a class="inst" href="https://www.its.ac.id" target="_blank" rel="noopener">Institut Teknologi Sepuluh Nopember</a>
 
     <nav class="socials" aria-label="Social profiles">
       <a href="mailto:ibaihaqi@its.ac.id" aria-label="Email">
@@ -198,8 +203,8 @@
             <span class="chev" aria-hidden="true">›</span>
           </summary>
           <div class="body">
-            <p>Dr Imam Baihaqi is Vice Rector of Human Resources, Organization &amp; Information System Technology at Institut Teknologi Sepuluh Nopember (ITS) and an Associate Professor of Operations and Supply Chain Management in the Department of Business Management.</p>
-            <p>He holds a PhD in Operations and Supply Chain Management from Monash University, an MSc in Information Management from Lancaster University, and a BEng in Industrial Engineering from ITS. He has taught at Monash University&rsquo;s Sunway Campus in Malaysia and held an invited position at National Yunlin University of Science and Technology in Taiwan.</p>
+            <p>Dr Imam Baihaqi is Vice Rector of Human Resources, Organization &amp; Information System Technology at <a class="its" href="https://www.its.ac.id" target="_blank" rel="noopener">Institut Teknologi Sepuluh Nopember (ITS)</a> and an Associate Professor of Operations and Supply Chain Management in the Department of Business Management.</p>
+            <p>He holds a PhD in Operations and Supply Chain Management from Monash University, an MSc in Information Management from Lancaster University, and a BEng in Industrial Engineering from <a class="its" href="https://www.its.ac.id" target="_blank" rel="noopener">ITS</a>. He has taught at Monash University&rsquo;s Sunway Campus in Malaysia and held an invited position at National Yunlin University of Science and Technology in Taiwan.</p>
             <p>His research uses field surveys and case studies to study operations &amp; supply chain management in Indonesia, covering digital traceability, halal supply chains, IoT adoption, and frugal innovation.</p>
           </div>
         </details>
@@ -235,7 +240,7 @@
       </li>
     </ul>
 
-    <footer>© <span id="y">2026</span> Imam Baihaqi · Surabaya, Indonesia</footer>
+    <footer>© <span id="y">2026</span> Imam Baihaqi · Vibe coded with <a href="https://claude.ai" target="_blank" rel="noopener">Claude.ai</a> · Surabaya, Indonesia</footer>
   </main>
   <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
 </body>
