@@ -1,0 +1,1426 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Capacity Planning and Queuing Models</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky chapter rail on the left (chip bar on phones) + one reading column of study units with textbook concepts, green Indonesian-example boxes and hands-on labs, ending in flashcards and a scored self-test. */
+:root{
+  --bg:#F2F4F8; --surface:#FFFFFF; --sunk:#E9EDF4; --ink:#15203A; --muted:#566079; --line:#D6DCE7;
+  --accent:#2B57C9; --accent-ink:#FFFFFF; --accent-soft:#E2E9FA;
+  --gold:#B57A00; --gold-soft:#FAF0D4;
+  --good:#1B7F53; --good-soft:#DDF3E8; --bad:#B73A33; --bad-soft:#F9E1DF;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0E1420; --surface:#161F31; --sunk:#1C2740; --ink:#E5E9F2; --muted:#9BA6BC; --line:#2A3551;
+  --accent:#7E9EF3; --accent-ink:#0E1420; --accent-soft:#1F2C50;
+  --gold:#E6B54B; --gold-soft:#3A2E10;
+  --good:#4FC48C; --good-soft:#12342A; --bad:#F07C72; --bad-soft:#3C1B19; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0E1420; --surface:#161F31; --sunk:#1C2740; --ink:#E5E9F2; --muted:#9BA6BC; --line:#2A3551;
+  --accent:#7E9EF3; --accent-ink:#0E1420; --accent-soft:#1F2C50;
+  --gold:#E6B54B; --gold-soft:#3A2E10;
+  --good:#4FC48C; --good-soft:#12342A; --bad:#F07C72; --bad-soft:#3C1B19; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6}
+h1,h2,h3,h4{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+h2{font-size:clamp(1.6rem,3.2vw,2.1rem);font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.2rem;font-weight:700;margin-top:.4rem}
+p{margin:0}
+.mono{font-family:var(--f-mono)}
+.eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+/* Top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1180px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px;min-width:0}
+.brand .ch{font-family:var(--f-mono);font-size:.8rem;background:var(--ink);color:var(--bg);padding:2px 8px;border-radius:4px}
+.brand b{font-family:var(--f-display);font-size:1.05rem}
+.meter{margin-left:auto;display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+.meter .bar{width:140px;height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.meter .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .4s}
+
+/* Shell */
+.shell{max-width:1180px;margin:0 auto;padding-inline:16px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:40px}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);align-self:start;padding-block:28px}
+.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.toc a{display:flex;gap:10px;align-items:center;padding:7px 10px;border-radius:8px;color:var(--muted);text-decoration:none;font-size:.92rem;line-height:1.3}
+.toc a .n{font-family:var(--f-mono);font-size:.74rem;width:1.6em;flex:none}
+.toc a .dot{margin-left:auto;width:8px;height:8px;border-radius:50%;border:1.5px solid var(--line);flex:none}
+.toc a.seen .dot{background:var(--accent);border-color:var(--accent)}
+.toc a.here{background:var(--surface);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.toc .lo-note{margin-top:18px;font-size:.8rem;color:var(--muted)}
+main{padding-block:28px 80px;min-width:0}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:0}
+  .top-in{flex-wrap:nowrap}
+  .brand b{font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .toc{position:static;background:var(--bg);padding-block:8px;border-bottom:1px solid var(--line);margin-inline:-16px;padding-inline:16px}
+  .toc ol{flex-direction:row;overflow-x:auto;gap:6px;scrollbar-width:none}
+  .toc a{white-space:nowrap;background:var(--surface);box-shadow:0 0 0 1px var(--line);padding:6px 10px}
+  .toc a .dot{display:none}
+  .toc .lo-note{display:none}
+  .meter .bar{width:80px}
+}
+
+/* Sections */
+section.unit{padding-block:36px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:18px;scroll-margin-top:80px}
+section.unit:first-child{padding-top:8px}
+.unit-head{display:flex;flex-direction:column;gap:8px}
+.lo-tags{display:flex;gap:6px;flex-wrap:wrap}
+.lo{font-family:var(--f-mono);font-size:.72rem;padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:500}
+.lead{font-size:1.08rem;max-width:66ch;color:var(--ink)}
+.prose{max-width:68ch;display:flex;flex-direction:column;gap:12px}
+.prose p{color:var(--ink)}
+.muted{color:var(--muted)}
+.callout{background:var(--gold-soft);border-radius:var(--r);padding:14px 16px;max-width:70ch}
+.callout .eyebrow{color:var(--gold)}
+.fig{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+
+/* Hero */
+.hero{padding-block:8px 34px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px;align-items:center}
+.hero h1{font-size:clamp(2.2rem,5.5vw,3.6rem);font-weight:800;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .sub{margin-top:14px;font-size:1.08rem;max-width:56ch;color:var(--muted)}
+.hero .cta{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:8px;padding:10px 16px;font-weight:600;background:var(--accent);color:var(--accent-ink);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn.ghost{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.journey{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.journey ol{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column}
+.journey li{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-top:1px dashed var(--line);font-size:.92rem}
+.journey li:first-child{border-top:0}
+.journey .pip{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);justify-self:center}
+.journey .md{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+@media (max-width:760px){.hero{grid-template-columns:minmax(0,1fr)}}
+
+.objectives{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.objectives li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:flex;gap:12px;font-size:.94rem}
+.objectives .num{font-family:var(--f-mono);color:var(--accent);font-weight:500;flex:none}
+.objectives{padding:0;margin:0}
+@media (max-width:640px){.objectives{grid-template-columns:minmax(0,1fr)}}
+
+/* Generic panels */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.grid3,.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.grid2,.grid3,.grid4{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card h4{font-size:1rem}
+.card p{font-size:.93rem}
+.card .tag{font-family:var(--f-mono);font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+/* Tabs / segmented */
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;font-size:.9rem;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* Tech modes */
+.modes{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:18px;align-items:start}
+.mode-list{display:flex;flex-direction:column;gap:6px}
+.mode-list button{display:flex;gap:12px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px}
+.mode-list button .L{font-family:var(--f-display);font-weight:800;font-size:1.3rem;width:28px;color:var(--accent)}
+.mode-list button small{display:block;color:var(--muted);font-size:.78rem}
+.mode-list button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.mode-view{display:flex;flex-direction:column;gap:12px}
+.mode-view svg{width:100%;max-width:420px;height:auto}
+.mode-view .ex{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:.8rem;padding:3px 9px;border-radius:99px;background:var(--sunk);color:var(--ink)}
+@media (max-width:700px){.modes{grid-template-columns:minmax(0,1fr)}}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-weight:500;font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--sunk)}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+.ctrl th.hl, .ctrl td.hl{background:var(--accent-soft)}
+
+/* Activity */
+.activity{background:var(--surface);border:1.5px dashed var(--accent);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.activity-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.activity-head .eyebrow{color:var(--accent)}
+.activity-head .score{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.items{display:flex;flex-direction:column;gap:10px}
+.item{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+.item .q{font-size:.95rem}
+.item .opts{display:flex;flex-wrap:wrap;gap:6px}
+.item .opts button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 10px;font-size:.84rem}
+.item .opts button:hover:not(:disabled){border-color:var(--accent)}
+.item .opts button.right{background:var(--good-soft);border-color:var(--good);color:var(--good);font-weight:600}
+.item .opts button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.item .fb{font-size:.86rem;color:var(--muted)}
+.item.done-ok{border-color:var(--good)}
+.item.done-bad{border-color:var(--bad)}
+
+/* Triad */
+.triad{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:center}
+.triad svg{width:100%;max-width:440px;height:auto;justify-self:center}
+.triad .node{cursor:pointer}
+.triad .node rect{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.triad .node.on rect{stroke:var(--accent);stroke-width:2.5;fill:var(--accent-soft)}
+.triad .node text{fill:var(--ink);font-family:var(--f-display);font-weight:700;font-size:15px}
+.triad .edge line{stroke:var(--muted);stroke-width:2}
+.triad .edge.on line{stroke:var(--accent);stroke-width:3.5}
+.triad .edge text{fill:var(--muted);font-family:var(--f-mono);font-size:12px}
+.triad .edge.on text{fill:var(--accent);font-weight:500}
+.triad .edge{cursor:pointer}
+.triad .hit{stroke:transparent;stroke-width:22}
+@media (max-width:760px){.triad{grid-template-columns:minmax(0,1fr)}}
+
+/* Chain */
+.chain{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.chain button{flex:1 1 120px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;text-align:left;font-size:.86rem;line-height:1.3;position:relative;min-width:0}
+.chain button .s{font-family:var(--f-mono);font-size:.7rem;color:var(--muted);display:block;margin-bottom:4px}
+.chain button.zone-in{border-top:4px solid var(--gold)}
+.chain button.zone-out{border-top:4px solid var(--accent)}
+.chain button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chain button[aria-pressed="true"] .s{color:var(--bg)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:4px;vertical-align:middle;margin-right:6px}
+
+/* Flashcards */
+.fc-wrap{display:flex;flex-direction:column;gap:12px;align-items:center}
+.fc{width:min(100%,560px);aspect-ratio:16/9;max-width:100%;perspective:1200px;border:0;background:none;padding:0}
+.fc-in{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.fc.flip .fc-in{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:22px;text-align:center;border:1px solid var(--line)}
+.fc-front{background:var(--surface)}
+.fc-front b{font-family:var(--f-display);font-size:clamp(1.4rem,4vw,2rem)}
+.fc-back{background:var(--ink);color:var(--bg);transform:rotateY(180deg);font-size:1rem}
+.fc-face small{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;opacity:.7;position:absolute;top:14px;left:16px}
+.fc-ctrl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+.fc-ctrl .count{font-family:var(--f-mono);font-size:.82rem;color:var(--muted);min-width:60px;text-align:center}
+
+/* Quiz */
+.quiz{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.qz-setup{display:flex;flex-direction:column;gap:14px}
+.qz-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.qz-prog{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.qz-prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.qz-q{font-family:var(--f-display);font-size:1.25rem;font-weight:700}
+.qz-opts{display:flex;flex-direction:column;gap:8px}
+.qz-opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.qz-opts button .k{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);flex:none;padding-top:2px}
+.qz-opts button:hover:not(:disabled){border-color:var(--accent)}
+.qz-opts button.right{border-color:var(--good);background:var(--good-soft)}
+.qz-opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.qz-exp{border-radius:10px;padding:12px 14px;font-size:.93rem}
+.qz-exp.ok{background:var(--good-soft)}
+.qz-exp.no{background:var(--bad-soft)}
+.qz-exp b{display:block;margin-bottom:2px}
+.qz-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.res-big{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.res-big .pct{font-family:var(--f-display);font-weight:800;font-size:3.4rem;line-height:1}
+.lo-bars{display:flex;flex-direction:column;gap:8px}
+.lo-row{display:grid;grid-template-columns:minmax(0,1fr) 120px 48px;gap:10px;align-items:center;font-size:.86rem}
+.lo-row .b{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.lo-row .b i{display:block;height:100%}
+.lo-row .v{font-family:var(--f-mono);font-size:.78rem;text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:520px){.lo-row{grid-template-columns:minmax(0,1fr) 70px 42px}}
+.review{display:flex;flex-direction:column;gap:8px}
+.review details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.review summary{cursor:pointer;font-size:.92rem}
+.review .mk{font-family:var(--f-mono);font-weight:600;margin-right:6px}
+.review .mk.ok{color:var(--good)} .review .mk.no{color:var(--bad)}
+.review p{font-size:.88rem;margin-top:6px}
+
+.case{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px}
+@media (max-width:760px){.case{grid-template-columns:minmax(0,1fr)}}
+.case ol, .prose ol, .prose ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.dialog{display:flex;flex-direction:column;gap:8px}
+.line{padding:10px 12px;border-radius:10px;font-size:.92rem;max-width:88%}
+.line.c{background:var(--sunk);align-self:flex-start}
+.line.e{background:var(--accent-soft);align-self:flex-end}
+.line b{font-family:var(--f-mono);font-size:.7rem;display:block;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+footer{padding-block:24px;font-size:.8rem;color:var(--muted)}
+
+/* Chapter 5 additions */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.vs b{font-family:var(--f-display)}
+.vs ul{margin:6px 0 0;padding-left:1.1em;font-size:.88rem;display:flex;flex-direction:column;gap:2px}
+.grid5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.grid5{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:460px){.grid5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.sym{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
+.sym svg{width:90px;height:50px}
+.sym svg ellipse,.sym svg rect,.sym svg polygon{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.sym svg line{stroke:var(--accent);stroke-width:2.5}
+.sym svg polygon.fillink{fill:var(--accent);stroke:none}
+.sym b{font-size:.92rem}
+.sym span{font-size:.78rem;color:var(--muted)}
+.typo tbody tr{cursor:pointer}
+.typo tbody tr:hover td{background:var(--sunk)}
+.typo tbody tr.on td{background:var(--accent-soft)}
+.frame{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+.fcol{flex:1 1 150px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.farrow{align-self:center;font-size:1.4rem;color:var(--muted)}
+.fbox{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;font-weight:600;font-size:.9rem;text-align:left}
+button.fbox:hover{border-color:var(--accent)}
+button.fbox[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.fbox.static{background:var(--sunk)}
+.fbox.small{font-size:.84rem}
+.fbox span{font-weight:400;font-size:.78rem;color:var(--muted)}
+.fbox.good{border-color:var(--good);background:var(--good-soft)}
+.fbox.bad{border-color:var(--bad);background:var(--bad-soft)}
+@media (max-width:760px){.farrow{transform:rotate(90deg);align-self:flex-start}.fcol{flex-basis:100%}}
+
+.pfd{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px}
+.pfd svg{min-width:680px;width:100%;height:auto;display:block}
+.pfd text{font-family:var(--f-body);fill:var(--ink)}
+.pfd .ct{font-family:var(--f-mono);font-size:12px;fill:var(--muted)}
+.pfd .box{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.pfd .box.bn{fill:var(--bad-soft);stroke:var(--bad);stroke-width:2.5}
+.pfd .term{fill:var(--sunk);stroke:var(--muted);stroke-width:1.5}
+.pfd .wait{fill:var(--gold-soft);stroke:var(--gold);stroke-width:1.5}
+.pfd .ln{stroke:var(--muted);stroke-width:1.6;fill:none}
+.pfd .ln.crit{stroke:var(--ink);stroke-width:2.6}
+.pfd .ah{fill:var(--muted)}
+
+.lab{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:16px;align-items:start}
+@media (max-width:820px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab-in,.lab-out{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.inrow{display:grid;grid-template-columns:minmax(0,1fr) 80px 60px;gap:8px;align-items:center;font-size:.92rem}
+.inrow input,.inrow select,.lb-row select{font:inherit;font-family:var(--f-mono);font-size:.9rem;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
+.check{display:flex;gap:8px;align-items:center;font-size:.9rem}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi .l{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.kpi .v{font-family:var(--f-display);font-weight:700;font-size:1.35rem;font-variant-numeric:tabular-nums}
+.kpi .w{font-size:.78rem;color:var(--muted);font-family:var(--f-mono)}
+.kpi.bn{border-color:var(--bad);background:var(--bad-soft)}
+.gantt-wrap{overflow-x:auto}
+.gantt-wrap svg{min-width:640px;width:100%;height:auto;display:block}
+.gantt-wrap text{font-family:var(--f-mono);font-size:11px;fill:var(--muted)}
+.gantt-wrap .lbl{font-family:var(--f-body);font-size:12px;fill:var(--ink)}
+.gantt-wrap .grid{stroke:var(--line);stroke-width:1}
+.gantt-wrap .bar-t{font-family:var(--f-mono);font-size:11px;fill:var(--accent-ink);font-weight:500}
+
+.lb-row{display:grid;grid-template-columns:28px minmax(0,1fr) 52px 104px;gap:8px;align-items:center;font-size:.88rem;padding:6px 0;border-top:1px dashed var(--line)}
+.lb-row:first-child{border-top:0}
+.lb-row .t{font-family:var(--f-mono);text-align:right;color:var(--muted)}
+.lb-row .id{font-family:var(--f-mono);font-weight:500;color:var(--accent)}
+.job{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.job + .job{margin-top:8px}
+.job.bn{border-color:var(--bad);background:var(--bad-soft)}
+.job .nm{font-weight:600;font-size:.92rem}
+.job .meta{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);grid-column:1/-1}
+.step{display:inline-flex;align-items:center;gap:6px}
+.step button{width:28px;height:28px;border-radius:7px;border:1px solid var(--line);background:var(--surface);font-weight:600}
+.step span{font-family:var(--f-mono);min-width:1.5em;text-align:center}
+.ratebar{grid-column:1/-1;height:6px;background:var(--sunk);border-radius:99px;position:relative;overflow:visible}
+.ratebar i{display:block;height:100%;border-radius:99px;background:var(--accent)}
+.ratebar b{position:absolute;top:-4px;width:2px;height:14px;background:var(--ink)}
+.verdict{border-radius:10px;padding:12px 14px;font-size:.92rem;margin-top:10px}
+.verdict.ok{background:var(--good-soft)}
+.verdict.no{background:var(--gold-soft)}
+.grid-lay{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-width:360px}
+.grid-lay button{aspect-ratio:1/1;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px}
+.grid-lay button b{font-family:var(--f-display);font-size:1.6rem;line-height:1}
+.grid-lay button span{font-size:.7rem;color:var(--muted);text-align:center;line-height:1.2}
+.grid-lay button.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px var(--accent-soft)}
+.mx td,.mx th{text-align:center;font-family:var(--f-mono);font-variant-numeric:tabular-nums;padding:6px 8px}
+.mx td:first-child,.mx th:first-child{text-align:left}
+.mx td.far{background:var(--bad-soft);color:var(--bad);font-weight:600}
+.mx td.near{color:var(--good)}
+.pairs{font-family:var(--f-mono);font-size:.84rem;display:flex;flex-direction:column;gap:3px}
+.bigscore{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.bigscore .n{font-family:var(--f-display);font-weight:800;font-size:2.6rem;line-height:1;font-variant-numeric:tabular-nums}
+.formula td:last-child{font-family:var(--f-mono);font-size:.82rem}
+
+.brand{flex:1 1 auto}
+.brand .ch{white-space:nowrap;flex:none}
+.meter{flex:none}
+#meterTxt{white-space:nowrap}
+@media (max-width:520px){#meterTxt{display:none}}
+
+/* Chapter 6 additions */
+.slider-row{display:grid;grid-template-columns:110px minmax(0,1fr) 36px;gap:10px;align-items:center;font-size:.9rem}
+.slider-row input[type=range]{width:100%;accent-color:var(--accent)}
+.slider-row output{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+.meterline{position:relative;height:44px;margin-top:6px}
+.meterline .track{position:absolute;left:0;right:0;top:18px;height:8px;border-radius:99px;background:linear-gradient(90deg,var(--bad-soft),var(--sunk) 50%,var(--good-soft))}
+.meterline .pin{position:absolute;top:10px;width:3px;height:24px;background:var(--ink);border-radius:2px;transition:left .2s}
+.meterline .lab{position:absolute;top:0;font-family:var(--f-mono);font-size:.68rem;color:var(--muted);transform:translateX(-50%)}
+.verdict-big{font-family:var(--f-display);font-weight:700;font-size:1.3rem}
+
+.gapsvg{width:100%;height:auto;max-width:640px;display:block;margin:0 auto}
+.gapsvg .bx{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.gapsvg .bx.cust{fill:var(--accent-soft);stroke:var(--accent)}
+.gapsvg text{font-family:var(--f-body);fill:var(--ink);font-size:12.5px}
+.gapsvg .sep{stroke:var(--muted);stroke-dasharray:6 5;stroke-width:1.2}
+.gapsvg .sepl{font-family:var(--f-mono);font-size:10.5px;fill:var(--muted)}
+.gapsvg .ar{stroke:var(--muted);stroke-width:1.5;fill:none}
+.gapsvg .gap{cursor:pointer}
+.gapsvg .gap circle{fill:var(--gold-soft);stroke:var(--gold);stroke-width:2}
+.gapsvg .gap text{font-family:var(--f-mono);font-weight:600;font-size:12px}
+.gapsvg .gap.on circle{fill:var(--gold);stroke:var(--gold)}
+.gapsvg .gap.on text{fill:var(--bg)}
+.gapsvg .gl{stroke:var(--gold);stroke-width:2;stroke-dasharray:3 3}
+
+.sq-table{width:100%}
+.sq-row{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) minmax(0,1fr) 54px;gap:10px;align-items:center;padding:8px 0;border-top:1px dashed var(--line);font-size:.88rem}
+.sq-row:first-child{border-top:0}
+.sq-row.h{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.sq-row .dim{font-family:var(--f-mono);font-size:.68rem;color:var(--accent);display:block}
+.sq-row input[type=range]{width:100%;accent-color:var(--accent)}
+.sq-row .g{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+@media (max-width:620px){.sq-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 44px}.sq-row .st{grid-column:1/-1}.sq-row.h .st{display:none}}
+.chartbox svg{width:100%;height:auto;display:block}
+.chartbox text{font-family:var(--f-mono);font-size:11px;fill:var(--muted)}
+.chartbox .lbl{font-family:var(--f-body);font-size:12px;fill:var(--ink)}
+.chartbox .axis{stroke:var(--line)}
+.chartbox .grid{stroke:var(--line);stroke-width:1;opacity:.6}
+
+.hoq-wrap{overflow-x:auto}
+.hoq{border-collapse:separate;border-spacing:3px;min-width:560px;font-size:.86rem}
+.hoq th,.hoq td{border:0;padding:6px 8px;background:transparent}
+.hoq thead th{font-family:var(--f-body);text-transform:none;letter-spacing:0;font-size:.82rem;color:var(--ink);background:var(--sunk);border-radius:8px;text-align:center;vertical-align:bottom}
+.hoq td.rel select,.hoq td.imp select{font:inherit;font-family:var(--f-mono);border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--ink);padding:4px 6px;width:100%}
+.hoq td.rel{text-align:center;border-radius:8px}
+.hoq td.rel.v9{background:var(--accent-soft)}
+.hoq td.rel.v5,.hoq td.rel.v3{background:color-mix(in srgb,var(--accent-soft) 50%,transparent)}
+.hoq td.imp{background:var(--gold-soft);border-radius:8px}
+.hoq tfoot td{font-family:var(--f-mono);font-weight:600;text-align:center;background:var(--sunk);border-radius:8px;font-variant-numeric:tabular-nums}
+.hoq tfoot td.top{background:var(--good-soft);color:var(--good)}
+.hoq tfoot tr.rank td{font-weight:400;background:transparent;color:var(--muted)}
+.roof{display:flex;gap:8px;flex-wrap:wrap;font-size:.84rem}
+.roof span{background:var(--sunk);border-radius:99px;padding:3px 10px}
+
+.sorter{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:620px){.sorter{grid-template-columns:minmax(0,1fr)}}
+.ladder{display:flex;flex-direction:column-reverse;gap:6px;max-width:520px}
+.ladder div{border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:var(--surface);font-size:.9rem;display:flex;justify-content:space-between;gap:10px}
+.ladder div span{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.iceberg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:760px){.iceberg{grid-template-columns:minmax(0,1fr)}}
+.dots{display:flex;flex-wrap:wrap;gap:3px;max-width:100%}
+.dots i{width:9px;height:9px;border-radius:2px;background:var(--sunk);display:block}
+.dots i.c{background:var(--accent)}
+.dots i.s{background:var(--bad)}
+.dots i.k{background:var(--gold)}
+.legend2{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.legend2 b{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.phase{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:700px){.phase{grid-template-columns:minmax(0,1fr)}}
+.phase button{text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:4px}
+.phase button .s{font-family:var(--f-mono);font-size:.7rem;color:var(--muted)}
+.phase button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.gcheck{display:flex;flex-direction:column;gap:8px}
+.gcheck label{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);cursor:pointer}
+.gcheck input{width:18px;height:18px;accent-color:var(--accent);margin-top:2px;flex:none}
+.data-grid{overflow-x:auto}
+.data-grid table{min-width:420px}
+.data-grid input{width:58px;font:inherit;font-family:var(--f-mono);font-size:.85rem;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);text-align:right}
+.data-grid td,.data-grid th{text-align:center;padding:6px}
+.data-grid td:first-child,.data-grid th:first-child{text-align:left}
+.data-grid tr.calc td{font-family:var(--f-mono);font-variant-numeric:tabular-nums;background:var(--sunk)}
+.data-grid tr.calc td.out{color:var(--bad);font-weight:600}
+.flag{display:inline-block;font-family:var(--f-mono);font-size:.72rem;padding:2px 8px;border-radius:99px}
+.flag.ok{background:var(--good-soft);color:var(--good)}
+.flag.no{background:var(--bad-soft);color:var(--bad)}
+.inline-inputs{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:.9rem}
+.inline-inputs input,.inline-inputs select{font:inherit;font-family:var(--f-mono);font-size:.88rem;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:110px}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-family:var(--f-mono);font-size:.76rem;padding:6px 9px;border-radius:6px;z-index:50;white-space:nowrap}
+
+/* Chapter 3 additions */
+.home{font-family:var(--f-mono);font-size:.78rem;text-decoration:none;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:3px 8px;white-space:nowrap;flex:none}
+.home:hover{color:var(--ink);border-color:var(--ink)}
+.id-box{background:color-mix(in srgb,var(--good-soft) 70%,var(--surface));border:1px solid color-mix(in srgb,var(--good) 35%,transparent);border-radius:12px;padding:14px 16px;max-width:none;display:flex;flex-direction:column;gap:6px}
+.id-box .eyebrow{color:var(--good)}
+.id-box .eyebrow::before{content:"ID · ";font-weight:600}
+.id-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.id-grid .card{border-top:3px solid var(--good)}
+.qa{border-left:3px solid var(--gold);padding:4px 0 4px 12px;font-size:.92rem;color:var(--muted)}
+.qa b{color:var(--ink)}
+
+/* NSD cycle */
+.cycle{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center}
+@media (max-width:760px){.cycle{grid-template-columns:minmax(0,1fr)}}
+.cycle svg{width:100%;max-width:420px;height:auto;justify-self:center}
+.cycle .st{cursor:pointer}
+.cycle .st path{fill:var(--accent-soft);stroke:var(--surface);stroke-width:4}
+.cycle .st.on path{fill:var(--accent)}
+.cycle .st text{font-family:var(--f-display);font-weight:700;font-size:14px;fill:var(--ink)}
+.cycle .st.on text{fill:var(--accent-ink)}
+.cycle .core circle{fill:var(--gold-soft);stroke:var(--gold);stroke-width:2}
+.cycle .core text{font-family:var(--f-mono);font-size:11.5px;fill:var(--ink)}
+.cycle .ring{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 4}
+.cycle .ringt{font-family:var(--f-mono);font-size:10.5px;fill:var(--muted)}
+
+/* Blueprint */
+.bp-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.bp{display:grid;grid-template-columns:150px repeat(7,minmax(118px,1fr));min-width:1000px;font-size:.82rem}
+.bp .lane{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:10px;background:var(--sunk);display:flex;align-items:center}
+.bp .cell{padding:8px;border-left:1px solid var(--line);display:flex;align-items:center;justify-content:center;text-align:center;min-height:62px;position:relative}
+.bp .cell span{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px;line-height:1.25;width:100%}
+.bp .cell.ev span{background:transparent;border-style:dashed;color:var(--muted)}
+.bp .cell.ca span{background:var(--accent-soft);border-color:var(--accent);font-weight:600}
+.bp .cell.empty span{visibility:hidden}
+.bp .cell.col-on span{outline:2px solid var(--gold);outline-offset:1px}
+.bp .fail{position:absolute;top:2px;right:4px;width:20px;height:20px;border-radius:50%;background:var(--bad);color:#fff;font-family:var(--f-mono);font-size:.7rem;display:grid;place-items:center;font-weight:600}
+.bp .divider{grid-column:1/-1;height:0;border-top:2px dashed var(--muted);position:relative}
+.bp .divider.dot{border-top-style:dotted;border-top-color:var(--bad)}
+.bp .divider b{position:absolute;right:8px;top:-9px;background:var(--surface);padding:0 6px;font-family:var(--f-mono);font-size:.66rem;font-weight:500;color:var(--muted)}
+.bp .divider.dot b{color:var(--bad)}
+.bp .colhead{padding:8px;border-left:1px solid var(--line);font-family:var(--f-mono);font-size:.7rem;color:var(--muted);text-align:center;cursor:pointer;background:var(--sunk)}
+.bp .colhead[aria-pressed="true"]{background:var(--gold-soft);color:var(--ink)}
+.bp-hide-fail .fail{display:none}
+
+/* Position map */
+.posmap svg{width:100%;max-width:440px;height:auto;display:block;margin:0 auto}
+.posmap text{font-family:var(--f-mono);font-size:11px;fill:var(--muted)}
+.posmap .ql{font-family:var(--f-body);font-size:12px;fill:var(--ink)}
+.opt-row{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;padding:10px 0;border-top:1px dashed var(--line)}
+.opt-row:first-child{border-top:0}
+.opt-row b{font-size:.9rem}
+.opt-row .seg button{font-size:.8rem;padding:6px 10px;text-align:left}
+
+/* Taxonomy */
+.tax-wrap{overflow-x:auto}
+.tax{border-collapse:separate;border-spacing:4px;min-width:760px;font-size:.82rem}
+.tax th{background:var(--sunk);border-radius:8px;text-align:center;font-size:.68rem}
+.tax td{border:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px;vertical-align:top;cursor:pointer}
+.tax td.rh{cursor:default;background:var(--sunk);font-family:var(--f-mono);font-size:.7rem;color:var(--muted);font-weight:500}
+.tax td:not(.rh):hover{border-color:var(--accent)}
+.tax td.on{background:var(--accent-soft);border-color:var(--accent)}
+.tax td .bk{display:block;color:var(--muted)}
+.tax td .idn{display:block;margin-top:4px;color:var(--good);font-weight:600}
+
+/* Hash chain */
+.chain3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:820px){.chain3{grid-template-columns:minmax(0,1fr)}}
+.blk{border:2px solid var(--good);background:var(--surface);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.blk.bad{border-color:var(--bad);background:var(--bad-soft)}
+.blk label{font-family:var(--f-mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.blk textarea{font:inherit;font-size:.86rem;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--bg);color:var(--ink);resize:vertical;min-height:52px;width:100%}
+.blk code{font-family:var(--f-mono);font-size:.7rem;word-break:break-all;background:var(--sunk);border-radius:6px;padding:4px 6px;display:block}
+.blk .st{font-family:var(--f-mono);font-size:.74rem;font-weight:600}
+
+/* Channel matrix */
+.chan{display:flex;gap:6px;flex-wrap:wrap}
+.chan button{flex:1 1 120px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;text-align:left;font-size:.84rem;line-height:1.3}
+.chan button small{display:block;font-family:var(--f-mono);font-size:.68rem;color:var(--muted);margin-bottom:3px}
+.chan button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chan button[aria-pressed="true"] small{color:var(--bg)}
+.twobar{display:grid;grid-template-columns:150px minmax(0,1fr) 46px;gap:10px;align-items:center;font-size:.88rem}
+.twobar .t{height:12px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.twobar .t i{display:block;height:100%;border-radius:99px;transition:width .3s}
+.twobar .v{font-family:var(--f-mono);font-size:.78rem;text-align:right}
+
+.paradox{display:grid;grid-template-columns:110px minmax(0,1fr) 110px;gap:10px;align-items:center;font-size:.86rem;padding:4px 0}
+.paradox span:first-child{text-align:right;color:var(--good)}
+.paradox span:last-child{color:var(--bad)}
+.paradox input{width:100%;accent-color:var(--accent)}
+@media (max-width:520px){.paradox{grid-template-columns:80px minmax(0,1fr) 80px;font-size:.78rem}}
+.home{font-family:var(--f-body);font-size:.88rem;font-weight:600;text-decoration:none;color:var(--accent-ink);background:var(--accent);border:0;border-radius:8px;padding:7px 14px;white-space:nowrap;flex:none;box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.home:hover{filter:brightness(1.08);color:var(--accent-ink)}
+.home:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+@media (max-width:520px){.home{font-size:.8rem;padding:6px 10px}}
+footer{display:flex;flex-direction:column;gap:8px}
+.dept-foot{border-top:1px solid var(--line);padding-top:14px}
+.dept-foot a{color:var(--ink);font-weight:600;text-decoration:none;letter-spacing:.02em}
+.dept-foot a span{color:var(--muted);margin:0 4px}
+.dept-foot a:hover{color:var(--accent);text-decoration:underline}
+/* Chapter 1 & 2 additions */
+.quad{display:grid;grid-template-columns:28px minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto auto;gap:8px;align-items:stretch}
+.quad .ax{font-family:var(--f-mono);font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;justify-content:center;text-align:center}
+.quad .ax.v{writing-mode:vertical-rl;transform:rotate(180deg)}
+.quad .cell{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;min-height:120px;min-width:0;transition:background .2s,border-color .2s}
+.quad .cell h4{font-size:.98rem}
+.quad .cell p{font-size:.84rem;color:var(--muted)}
+.quad .cell.on{border-color:var(--accent);background:var(--accent-soft)}
+.quad .cell .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto}
+.quad .cell .chips span{font-size:.75rem;padding:2px 8px;border-radius:99px;background:var(--good-soft);color:var(--ink);border:1px solid color-mix(in srgb,var(--good) 35%,transparent)}
+.quad .cell .chips span.bad{background:var(--bad-soft);border-color:color-mix(in srgb,var(--bad) 35%,transparent)}
+.placer{display:flex;flex-direction:column;gap:10px}
+.placer .pq{font-weight:600}
+.placer .pbtn{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.placer .pbtn button{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px;font-size:.86rem;text-align:left}
+.placer .pbtn button:hover{border-color:var(--accent)}
+.stagebar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.stagebar button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 8px;text-align:left;display:flex;flex-direction:column;gap:2px;min-width:0}
+.stagebar button b{font-family:var(--f-display);font-size:.95rem}
+.stagebar button small{font-family:var(--f-mono);font-size:.68rem;color:var(--muted);text-transform:uppercase}
+.stagebar button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stagebar button[aria-pressed="true"] small{color:var(--bg);opacity:.75}
+.stagebar.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.stagebar button b{overflow-wrap:anywhere}
+@media (max-width:640px){.stagebar,.stagebar.four{grid-template-columns:repeat(2,minmax(0,1fr))}.placer .pbtn{grid-template-columns:minmax(0,1fr)}}
+.empbar{display:grid;grid-template-columns:120px minmax(0,1fr) 48px;gap:8px;align-items:center;font-size:.85rem}
+.empbar .bars{display:flex;height:18px;border-radius:4px;overflow:hidden;background:var(--sunk)}
+.empbar .bars i{display:block;height:100%}
+.empbar.idn{font-weight:700}
+.empbar.idn .nm::after{content:" ●";color:var(--good)}
+.empbar .v{font-family:var(--f-mono);font-size:.78rem;text-align:right;color:var(--muted)}
+.c-agri{background:#C59A3B}.c-ind{background:#7C8AA5}.c-svc{background:var(--accent)}
+.fp-list details{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:10px 14px}
+.fp-list details+details{margin-top:6px}
+.fp-list summary{cursor:pointer;font-weight:600;font-size:.93rem}
+.fp-list summary .n{font-family:var(--f-mono);color:var(--accent);margin-right:8px}
+.fp-list details p{font-size:.9rem;margin-top:6px}
+.onion{display:flex;justify-content:center}
+.onion svg{width:100%;max-width:360px;height:auto}
+.onion text{font-family:var(--f-body);font-size:12px;fill:var(--ink)}
+.force-row{display:grid;grid-template-columns:150px minmax(0,1fr) 30px;gap:10px;align-items:center;font-size:.88rem}
+.force-row input[type=range]{width:100%;accent-color:var(--accent)}
+.force-row output{font-family:var(--f-mono);text-align:right}
+.pillrow{display:flex;gap:6px;flex-wrap:wrap}
+.lvl{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+.lvl .lr{display:grid;grid-template-columns:130px repeat(4,minmax(0,1fr));gap:6px;align-items:stretch}
+.lvl .lr>span{font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;color:var(--muted);display:flex;align-items:center}
+.lvl .lr button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 8px;font-size:.78rem;text-align:left;line-height:1.3}
+.lvl .lr button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);font-weight:600}
+.lvl .hd{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;color:var(--muted);text-align:center}
+@media (max-width:760px){.lvl .lr{grid-template-columns:minmax(0,1fr)}.lvl .hd{display:none}.lvl .lr>span{margin-top:8px}}
+.placer .pbtn button.right{border-color:var(--good);background:var(--good-soft)}
+.placer .pbtn button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.placer .pbtn button:disabled{cursor:default}
+.placer .fb{font-size:.9rem}
+.lab.stack{grid-template-columns:minmax(0,1fr)!important}
+.slider-row{grid-template-columns:110px minmax(0,1fr) 54px}
+.slider-row output{font-size:.85rem}
+.quad .cell h4{overflow-wrap:anywhere}
+@media (max-width:520px){.slider-row{grid-template-columns:92px minmax(0,1fr) 50px}}
+.credit{font-size:.85rem;color:var(--muted)}
+.credit a{color:var(--accent);font-weight:600;text-decoration:none}
+.credit a:hover{text-decoration:underline}
+
+.kpis.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:640px){.kpis.four{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <a class="home" href="../" aria-label="Back to the course home page">← Back to Home</a>
+  <div class="brand"><span class="ch">CH 13</span><b>Capacity Planning and Queuing Models</b></div>
+  <div class="meter" aria-label="Study progress"><span id="meterTxt">0 / 7 units</span><span class="bar"><i id="meterBar"></i></span></div>
+</div></header>
+
+<div class="shell">
+<nav class="toc" aria-label="Chapter sections">
+  <ol id="tocList">
+    <li><a href="#overview"><span class="n">00</span>Overview</a></li>
+    <li><a href="#strategic"><span class="n">01</span>Capacity planning &amp; its strategic role<span class="dot"></span></a></li>
+    <li><a href="#models"><span class="n">02</span>A/B/C notation &amp; Little's Law<span class="dot"></span></a></li>
+    <li><a href="#mm1"><span class="n">03</span>Single-server models<span class="dot"></span></a></li>
+    <li><a href="#mmc"><span class="n">04</span>Multiple servers &amp; pooling<span class="dot"></span></a></li>
+    <li><a href="#variability"><span class="n">05</span>Service variability &amp; self-service<span class="dot"></span></a></li>
+    <li><a href="#criteria"><span class="n">06</span>Capacity planning criteria<span class="dot"></span></a></li>
+    <li><a href="#terms"><span class="n">07</span>Key terms &amp; cases<span class="dot"></span></a></li>
+    <li><a href="#selftest"><span class="n">✓</span>Self-test</a></li>
+  </ol>
+  <p class="lo-note">Based on Bordoloi, Fitzsimmons &amp; Fitzsimmons, <i>Service Management</i> (McGraw Hill, 2022), Chapter 13. Green "ID" boxes add Indonesian examples.</p>
+</nav>
+
+<main>
+<!-- OVERVIEW -->
+<section class="unit" id="overview" style="border-bottom:0;padding-top:0">
+  <div class="hero">
+    <div>
+      <p class="eyebrow">Service Management · Chapter 13</p>
+      <h1>Planning with averages <em>guarantees</em> a queue.</h1>
+      <p class="sub">Capacity planning trades the cost of service against the cost of customer waiting. Queuing models predict the waiting for each level of capacity from just two numbers, the arrival rate λ and the service rate μ. This module covers the A/B/C notation, Little's Law, the M/M/1, M/M/c, M/G/1, M/G/∞ and finite-queue models, pooling, and four criteria for choosing capacity.</p>
+      <div class="cta"><a class="btn" href="#strategic">Start studying</a><a class="btn ghost" href="#mm1">Open the queue calculator</a></div>
+    </div>
+    <div class="journey">
+      <p class="eyebrow">Xerox and the Model 9200</p>
+      <p style="margin-top:8px;font-size:.93rem">When a print shop's Xerox 9200 broke down, the shop lost income. Xerox used queuing analysis to balance customers' waiting cost against its own service cost and replaced solo technical representatives with mini teams: the optimum was <b>three representatives per team</b>.</p>
+      <div class="id-box" style="margin-top:12px"><p class="eyebrow">Capacity at its limit</p><p style="font-size:.88rem">In July 2021, during the Delta wave, hospital bed occupancy across Java rose above 90%, and patients waited in tents, corridors and cars. When λ approaches capacity, waiting does not rise gently; it explodes. This chapter shows why.</p></div>
+    </div>
+  </div>
+  <h3>Learning objectives</h3>
+  <ul class="objectives">
+    <li><span class="num">LO1</span>Discuss the strategic role of capacity planning.</li>
+    <li><span class="num">LO2</span>Describe a queuing model using the A/B/C notation.</li>
+    <li><span class="num">LO3</span>Use queuing models to calculate system performance measures.</li>
+    <li><span class="num">LO4</span>Describe the relationships between queuing system characteristics.</li>
+    <li><span class="num">LO5</span>Use queuing models and various decision criteria for capacity planning.</li>
+  </ul>
+</section>
+
+<!-- 1 STRATEGIC -->
+<section class="unit" id="strategic" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 01</p><h2>Capacity planning and its strategic role</h2><div class="lo-tags"><span class="lo">LO1</span></div></div>
+  <p class="lead"><b>Capacity</b> is the ability to deliver service over a time period, set by facilities, equipment and labor. <b>Capacity planning</b> determines the types and amounts of these resources needed to carry out the strategic business plan. Horizons range from decades (build a resort hotel) to hours (staff the lunch rush).</p>
+  <div class="grid2">
+    <div class="card"><span class="tag">Figure 13.1 · The economic trade-off</span><p>More capacity raises the <b>cost of service</b> and lowers the <b>cost of waiting</b>. If both can be priced, the best capacity minimizes their sum. Ambulances are seldom busy more than 30% of the time, because waiting costs lives; post offices accept long lines, because waiting is not critical and customers have few alternatives.</p></div>
+    <div class="card"><span class="tag">Why services find it hard</span><p>Services are open systems: arrivals and service times fluctuate, so idle capacity is a reality. Capacity is measured by <b>inputs</b> (rooms, seats) rather than outputs. And customers take part, so congestion changes quality: a full plane annoys passengers, but a crowded nightclub attracts them.</p></div>
+  </div>
+  <div class="grid3" style="margin-top:12px">
+    <div class="card"><span class="tag">Preemptive capacity</span><p>A 500-room luxury hotel feasible at 60% occupancy can pre-empt rivals in a market that supports only one; we seldom see both a Ritz-Carlton and a Four Seasons in a midsized city.</p></div>
+    <div class="card"><span class="tag">Short-term capacity</span><p>Understaffing the lunch hour sends customers who see the queue to competitors: they balk or renege.</p></div>
+    <div class="card"><span class="tag">Build ahead of demand</span><p>Capacity comes in discrete, irreversible chunks (another aircraft, a hotel), so firms often build ahead. AT&amp;T learned with the iPhone that a successful launch without network capacity creates hostile customers.</p></div>
+  </div>
+  <h3>Example 13.1 · Cookies and Cream, the naive approach</h3>
+  <div class="grid2">
+    <div class="prose"><p>Peak demand: <b>50 customers an hour</b>, each ordering a sundae, six baked-to-order cookies and a soft drink, and staying <b>20 minutes</b> at a table. A sheet holds 12 cookies and bakes in 10 minutes; a server needs <b>6 minutes</b> per order.</p>
+      <ul><li>Chairs (Little's Law, L = λW): 50 × 20/60 = <b>16.7</b></li><li>Cookie sheets: (50 × 6) ÷ (12 × 6 cycles an hour) = <b>4.17</b></li><li>Servers: (50 × 6 min) ÷ 60 min = <b>5.0</b></li></ul>
+      <p>These are only the values of ρ = λ/μ. Planning at the average leaves no slack for variability, so it is <b>infeasible</b>: queues would grow without limit. Example 13.7 (Unit 06) redoes this with a queuing model.</p></div>
+    <div class="id-box"><p class="eyebrow">Discrete capacity in Indonesia</p><p style="font-size:.92rem">A commuter-rail operator adds whole trainsets, an airport adds a terminal, a hospital adds a ward: capacity arrives in lumps, years after the decision. In between, the system runs either crowded or half empty. The naive calculation (passengers ÷ seats per train) tells you the minimum; the queuing models in this chapter tell you how much more you need for acceptable waiting.</p></div>
+  </div>
+</section>
+
+<!-- 2 MODELS -->
+<section class="unit" id="models" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 02</p><h2>A/B/C notation, steady state and Little's Law</h2><div class="lo-tags"><span class="lo">LO2</span><span class="lo">LO4</span></div></div>
+  <p class="lead">Parallel-server queuing models are classified as <b>A/B/C</b>: A = distribution of time between arrivals, B = distribution of service times, C = number of parallel servers.</p>
+  <div class="grid2">
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Symbol</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>M</td><td style="font-weight:400">Exponential times (Markovian), i.e., Poisson rate</td></tr>
+        <tr><td>D</td><td style="font-weight:400">Deterministic (constant) times</td></tr>
+        <tr><td>E<sub>k</sub></td><td style="font-weight:400">Erlang with shape k (k = 1 is exponential; k = ∞ is deterministic)</td></tr>
+        <tr><td>G</td><td style="font-weight:400">General distribution with a known mean and variance</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Figure 13.2 · Model</th><th>Equations</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>I. M/M/1</td><td style="font-weight:400">Standard single server</td><td style="font-weight:400">Boat ramp</td></tr>
+        <tr><td>II. M/M/c</td><td style="font-weight:400">Standard multiple servers</td><td style="font-weight:400">Secretarial pool</td></tr>
+        <tr><td>III. M/G/1</td><td style="font-weight:400">Any service-time distribution</td><td style="font-weight:400">ATM (M/D/1)</td></tr>
+        <tr><td>IV. M/G/∞</td><td style="font-weight:400">Self-service</td><td style="font-weight:400">Supermarket shopping</td></tr>
+        <tr><td>V. M/M/1 finite</td><td style="font-weight:400">At most N in the system</td><td style="font-weight:400">Ramp with 2 trailer spaces</td></tr>
+        <tr><td>VI. M/M/c finite</td><td style="font-weight:400">N ≥ c; N = c means no queue</td><td style="font-weight:400">Parking lot</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="grid2" style="margin-top:14px">
+    <div class="card"><span class="tag">Transient vs. steady state</span><p>At opening time (or on a sale day) the queue depends on starting conditions: a <b>transient state</b>. Given time, the system settles into statistical equilibrium, a <b>steady state</b>. All the Appendix D equations assume steady state, which real services, with λ changing hourly, seldom reach. The models still serve long-range planning; when their assumptions fail, use simulation (chapter supplement).</p></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Symbol</th><th>Definition</th></tr></thead>
+      <tbody>
+        <tr><td>λ, μ</td><td style="font-weight:400">Mean arrival rate; mean service rate per busy server</td></tr>
+        <tr><td>ρ = λ/μ</td><td style="font-weight:400">Mean number of customers in service</td></tr>
+        <tr><td>c, N</td><td style="font-weight:400">Number of servers; maximum number allowed in the system</td></tr>
+        <tr><td>P<sub>n</sub></td><td style="font-weight:400">Probability of exactly n customers in the system</td></tr>
+        <tr><td>L<sub>s</sub>, L<sub>q</sub>, L<sub>b</sub></td><td style="font-weight:400">Mean number in system, in queue, in queue of a busy system</td></tr>
+        <tr><td>W<sub>s</sub>, W<sub>q</sub>, W<sub>b</sub></td><td style="font-weight:400">Mean time in system, in queue, in queue of a busy system</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <h3>Relationships that hold in every model</h3>
+  <div class="grid4">
+    <div class="card"><span class="tag">(1)</span><p class="mono">L<sub>s</sub> = L<sub>q</sub> + ρ</p><p>In system = in queue + in service.</p></div>
+    <div class="card"><span class="tag">(2)</span><p class="mono">W<sub>s</sub> = W<sub>q</sub> + 1/μ</p><p>Time in system = wait + service.</p></div>
+    <div class="card"><span class="tag">(3)–(4) Little's Law</span><p class="mono">L<sub>s</sub> = λW<sub>s</sub><br>L<sub>q</sub> = λW<sub>q</sub></p><p>Holds for queue and system.</p></div>
+    <div class="card"><span class="tag">(5)–(6) Busy system</span><p class="mono">L<sub>b</sub> = L<sub>q</sub>/P(n ≥ c)<br>W<sub>b</sub> = W<sub>q</sub>/P(n ≥ c)</p><p>Conditional on having to wait.</p></div>
+  </div>
+  <p class="muted" style="font-size:.86rem;margin-top:8px">For a finite queue, use the <b>effective</b> arrival rate λ(1 − P<sub>N</sub>) in these relationships. Knowing one characteristic (say, a measured W<sub>q</sub>) lets you derive all the others.</p>
+  <div class="lab stack">
+    <div class="lab-in">
+      <div class="activity-head"><p class="eyebrow">Try it · Little's Law, L = λW</p><div class="seg" id="llSet"></div></div>
+      <p class="muted" style="font-size:.84rem" id="llNote"></p>
+      <div class="grid3">
+        <label style="display:flex;flex-direction:column;gap:4px;font-size:.85rem">L · customers in line<span id="llLw"></span></label>
+        <label style="display:flex;flex-direction:column;gap:4px;font-size:.85rem">λ · arrivals per minute<span id="llRw"></span></label>
+        <label style="display:flex;flex-direction:column;gap:4px;font-size:.85rem">W · minutes in line<span id="llWw"></span></label>
+      </div>
+      <div><p class="eyebrow" style="margin:8px 0 4px">Solve for</p><div class="seg" id="llSolve"><button data-v="L" aria-pressed="false">L</button><button data-v="R" aria-pressed="false">λ</button><button data-v="W" aria-pressed="true">W</button></div></div>
+    </div>
+    <div class="lab-out" id="llOut" aria-live="polite"></div>
+  </div>
+  <div class="activity" data-activity="notation">
+    <div class="activity-head"><p class="eyebrow">Practice · Which queuing model fits?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+</section>
+
+<!-- 3 MM1 -->
+<section class="unit" id="mm1" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 03</p><h2>Single-server models: M/M/1 and the finite queue</h2><div class="lo-tags"><span class="lo">LO3</span></div></div>
+  <p class="lead">The standard M/M/1 assumes: (1) an infinite, independent calling population (no appointments); (2) Poisson arrivals; (3) one line with no length limit, no balking or reneging; (4) FCFS; (5) one server with exponential service times. Every mean has the denominator (μ − λ), so <b>μ must exceed λ</b>: capacity must exceed demand.</p>
+  <div class="grid2">
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>M/M/1 (Appendix D, model I)</th><th>Example 13.3 · Boat ramp, λ = 6, μ = 10</th></tr></thead>
+      <tbody>
+        <tr><td>P<sub>0</sub> = 1 − ρ</td><td style="font-weight:400">0.4: ramp idle 40% of the time</td></tr>
+        <tr><td>P(n ≥ k) = ρ<sup>k</sup></td><td style="font-weight:400">P(arrival waits) = 0.6</td></tr>
+        <tr><td>P<sub>n</sub> = (1 − ρ)ρ<sup>n</sup></td><td style="font-weight:400">Table 13.1: P(n ≤ 4) = 0.92</td></tr>
+        <tr><td>L<sub>s</sub> = λ/(μ − λ)</td><td style="font-weight:400">1.5 boats</td></tr>
+        <tr><td>L<sub>q</sub> = ρλ/(μ − λ)</td><td style="font-weight:400">0.9 boat</td></tr>
+        <tr><td>W<sub>s</sub> = 1/(μ − λ)</td><td style="font-weight:400">0.25 h = 15 min</td></tr>
+        <tr><td>W<sub>q</sub> = ρ/(μ − λ)</td><td style="font-weight:400">0.15 h = 9 min</td></tr>
+        <tr><td>W<sub>b</sub> = 1/(μ − λ)</td><td style="font-weight:400">Wait of those who wait</td></tr>
+      </tbody>
+    </table></div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="card"><span class="tag">Internally consistent</span><p>15 min in the system = 9 min waiting + 6 min launching. 1.5 boats in the system = 0.9 in queue + 0.6 being launched (not 1.0: the ramp is busy only 60% of the time).</p></div>
+      <div class="card"><span class="tag">Sizing a waiting area</span><p>How many trailer spaces make sure an arrival finds room 90% of the time? Accumulate P<sub>n</sub> until it passes 0.90: n ≤ 4 occurs 92% of the time, so provide room for <b>four</b> (one launching, three waiting).</p></div>
+      <div class="card"><span class="tag">Finite queue M/M/1 (model V)</span><p>At most N in the system; an arrival who finds N leaves. ρ may now exceed 1. P<sub>0</sub> = (1 − ρ)/(1 − ρ<sup>N+1</sup>), P<sub>n</sub> = P<sub>0</sub>ρ<sup>n</sup>. Boat ramp with room for two trailers (N = 3): P<sub>3</sub> = 0.10, so 6 × 0.10 = <b>0.6 boaters an hour</b> go elsewhere, and L<sub>s</sub> falls to 0.9.</p></div>
+    </div>
+  </div>
+  <div class="lab stack">
+    <div class="lab-in">
+      <div class="activity-head"><p class="eyebrow">Try it · Queue calculator (all six models)</p></div>
+      <div class="seg" id="qcModel" style="margin-bottom:8px"></div>
+      <div class="seg" id="qcSet"></div>
+      <p class="muted" style="font-size:.84rem;margin-top:6px" id="qcNote"></p>
+      <div style="display:flex;flex-wrap:wrap;gap:14px" id="qcIn"></div>
+    </div>
+    <div class="lab-out" id="qcOut" aria-live="polite"></div>
+    <div class="grid2">
+      <div class="lab-out"><p class="eyebrow">Probability of n customers in the system</p><div class="chartbox" id="qcChart"></div></div>
+      <div class="lab-out" id="qcSize"></div>
+    </div>
+  </div>
+  <div class="id-box"><p class="eyebrow">One ATM on campus</p><p style="font-size:.92rem">An ATM in a faculty lobby is close to M/M/1 at lunchtime. With an illustrative 40 users an hour at about 1.2 minutes each (μ = 50), it is busy 80% of the time and the average wait is about 4.8 minutes. Push λ to 45 and the wait almost doubles, to about 10.8 minutes. Try it in the calculator: the denominator (μ − λ) is why "just a few more users" hurts so much.</p></div>
+</section>
+
+<!-- 4 MMC -->
+<section class="unit" id="mmc" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 04</p><h2>Multiple servers, superservers and pooling</h2><div class="lo-tags"><span class="lo">LO3</span><span class="lo">LO4</span></div></div>
+  <p class="lead">The standard <b>M/M/c</b> has c identical servers fed by one queue; the head of the line goes to the first free server. Steady state needs ρ = λ/μ &lt; c, i.e., the <b>utilization factor λ/cμ &lt; 1</b>. Because the equations are tedious, the book reads L<sub>q</sub> from Appendix C; the labs here compute it exactly.</p>
+  <div class="lab stack">
+    <div class="lab-in">
+      <div class="activity-head"><p class="eyebrow">Try it · Figure 13.5, congestion vs. utilization</p></div>
+      <div class="slider-row"><span>Utilization λ/cμ</span><input type="range" id="ucU" min="0.05" max="0.97" step="0.01" value="0.8"><output></output></div>
+    </div>
+    <div class="grid2">
+      <div class="lab-out"><div class="chartbox" id="ucChart"></div></div>
+      <div class="lab-out" id="ucOut" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:4px">
+    <div class="card"><span class="tag">Table 13.2 · Doubling capacity two ways</span><p>From a single server at utilization 0.8 (L<sub>s</sub> = 4.0, L<sub>q</sub> = 3.2): add a <b>second server</b> → L<sub>s</sub> = 0.95, L<sub>q</sub> = 0.15; or make one <b>superserver</b> twice as fast → L<sub>s</sub> = 0.67, L<sub>q</sub> = 0.27. The superserver wins on time in the <b>system</b>; parallel servers win on time in the <b>queue</b>. Since customers feel the wait before service most (Chapter 12), reducing W<sub>q</sub> is usually advisable, though a 1970s university chose one big mainframe for turnaround time.</p><p class="muted" style="font-size:.82rem">The book calls the cut from L<sub>s</sub> = 4 to about 1 a "400 percent reduction"; strictly it is a 76% reduction (a fourfold drop).</p></div>
+    <div class="card"><span class="tag">Example 13.4 · The secretarial pool</span><p>Four departmental secretaries, μ = 4 jobs an hour each. Arrivals: 3 an hour for accounting, 2 for the others. Separate M/M/1 queues: accounting waits W<sub>s</sub> = 1/(4 − 3) = <b>60 min</b>, the others 1/(4 − 2) = <b>30 min</b>. Pool them (M/M/4, λ = 9, ρ = 2.25): L<sub>q</sub> = 0.31, L<sub>s</sub> = 2.56, W<sub>s</sub> = 2.56/9 = <b>17 min</b> for everyone, with no extra staff.</p></div>
+  </div>
+  <div class="lab stack">
+    <div class="lab-in">
+      <div class="activity-head"><p class="eyebrow">Try it · Separate queues vs. one pooled queue</p><div class="seg" id="plSet"></div></div>
+      <p class="muted" style="font-size:.84rem" id="plNote"></p>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end"><div><p class="eyebrow" style="margin-bottom:4px">Arrival rate per server's own queue (per hour)</p><div id="plIn" style="display:flex;gap:6px;flex-wrap:wrap"></div></div><label style="display:flex;flex-direction:column;gap:4px;font-size:.85rem">μ per server / hour<span id="plMw"></span></label></div>
+    </div>
+    <div class="grid2">
+      <div class="lab-out"><div class="chartbox" id="plChart"></div></div>
+      <div class="lab-out" id="plOut" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="prose"><p><b>Why pooling works:</b> congestion comes from variation. With separate queues, one server can have a line while another sits idle. A single queue never lets a server go idle while someone waits. The same idea explains single lines in banks and post offices (McDonald's dropped it, fearing a long single line would make customers balk).</p><p><b>Caution:</b> if customers must <b>travel</b> to the pooled facility, add travel time. Emergency services are usually <b>dispersed</b> to cut response time.</p></div>
+    <div class="id-box"><p class="eyebrow">Pool the calls, disperse the ambulances</p><p style="font-size:.92rem">Surabaya's Command Center 112 pools emergency calls from the whole city into one center with many call-takers: a pooled M/M/c. The ambulances and fire units it dispatches stay spread across the city, because travel time dominates their response. A Kelurahan or Samsat office that replaces one line per counter with a numbered single queue is pooling too.</p></div>
+  </div>
+</section>
+
+<!-- 5 VARIABILITY -->
+<section class="unit" id="variability" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 05</p><h2>Service variability (M/G/1) and self-service (M/G/∞)</h2><div class="lo-tags"><span class="lo">LO3</span><span class="lo">LO4</span></div></div>
+  <div class="grid2">
+    <div class="card"><span class="tag">M/G/1 (model III)</span><p class="mono" style="font-size:1rem">L<sub>q</sub> = [ρ² + λ²V(t)] / [2(1 − ρ)], &nbsp;ρ = λE(t) &lt; 1</p><p>Any service-time distribution with mean E(t) and variance V(t). The waiting line grows directly with V(t). Put V(t) = 1/μ² (exponential) and you get M/M/1's L<sub>q</sub> = ρ²/(1 − ρ). Put V(t) = 0 (constant, <b>M/D/1</b>) and L<sub>q</sub> = ρ²/[2(1 − ρ)]: <b>exactly half</b>.</p><p>So half the congestion in an M/M/1 comes from service-time variation and half from arrival variation. Limited fast-food menus cut the first; appointments and reservations cut the second.</p></div>
+    <div class="card"><span class="tag">M/G/∞ self-service (model IV)</span><p class="mono" style="font-size:1rem">P<sub>n</sub> = e<sup>−ρ</sup>ρ<sup>n</sup>/n!, &nbsp;L<sub>s</sub> = ρ</p><p>With unlimited servers (or customers who serve themselves), no one waits; the number in the system is Poisson with mean ρ, for any service distribution. It also approximates systems where waiting is rare, such as sizing an ambulance fleet so that the chance a call finds none free is very small.</p><p><b>Example 13.5, supermarket:</b> 30 shoppers an hour shop for 20 min (M/G/∞: L<sub>s</sub> = 10), then queue for 3 registers at 5 min each (M/M/3, ρ = 2.5: L<sub>q</sub> = 3.5, L<sub>s</sub> = 6). Total: <b>16 shoppers</b> in the store, <b>32 minutes</b> each.</p></div>
+  </div>
+  <div class="lab stack">
+    <div class="lab-in">
+      <div class="activity-head"><p class="eyebrow">Try it · How much does service-time variability cost?</p><div class="seg" id="svSet"></div></div>
+      <p class="muted" style="font-size:.84rem" id="svNote"></p>
+      <div class="grid2">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="slider-row"><span>Arrivals per hour λ</span><input type="range" id="svL" min="1" max="60" step="1"><output></output></div>
+          <div class="slider-row"><span>Mean service (min)</span><input type="range" id="svE" min="0.5" max="15" step="0.5"><output></output></div>
+        </div>
+        <div class="slider-row"><span>Service CV = σ / mean</span><input type="range" id="svC" min="0" max="2" step="0.05"><output></output></div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="lab-out"><div class="chartbox" id="svChart"></div></div>
+      <div class="lab-out" id="svOut" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="id-box"><p class="eyebrow">Cutting service variability</p><p style="font-size:.92rem">Cashless toll cards, a standard document checklist posted at a Samsat counter, a <i>warung</i> that sells only three dishes at lunch: each makes service time more predictable, which the M/G/1 formula rewards directly with a shorter queue at the same average speed.</p></div>
+</section>
+
+<!-- 6 CRITERIA -->
+<section class="unit" id="criteria" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 06</p><h2>Capacity planning criteria</h2><div class="lo-tags"><span class="lo">LO5</span></div></div>
+  <p class="lead">In the long run, capacity must exceed demand. If it doesn't, the system adjusts in uncontrolled ways: customers renege, potential customers stay away, and servers speed up, first becoming curt and then cutting service features. Rational planning picks capacity with one of four criteria.</p>
+  <div class="grid4">
+    <div class="card"><span class="tag">1 · Average waiting time</span><p>Keep the mean wait under a target (e.g., 5 minutes, the clock-face increment people notice). <b>Ex. 13.6 drive-in bank:</b> 30 an hour, 3-min transactions, separate lanes; with 3 tellers W<sub>b</sub> = 1/(20 − 10) = 6 min; 4 tellers → 4.8 min.</p></div>
+    <div class="card"><span class="tag">2 · Probability of excessive waiting</span><p>P% of customers wait less than T. Ambulances: 95% of urban calls under 10 minutes. <b>Ex. 13.8 gas station:</b> 24 cars an hour, 5 min each; a free pump 95% of the time needs <b>6 pumps</b> (P(n ≥ 6) = 0.02).</p></div>
+    <div class="card"><span class="tag">3 · Minimum total cost</span><p>TC = C<sub>s</sub>c + C<sub>w</sub>L<sub>s</sub> (or L<sub>q</sub>), for captive customers whose wait is a wage. <b>Ex. 13.9 workstations:</b> 8 requests an hour, 15 min each, $10 rent, $30 engineer: <b>4 workstations</b>, $45.1 an hour.</p></div>
+    <div class="card"><span class="tag">4 · Sales lost to a small waiting area</span><p>A finite queue loses λP<sub>N</sub> customers per hour. <b>Ex. 13.10 parking lot:</b> 6 spaces, 10 cars an hour, 1-hour stays: P<sub>6</sub> = 0.48, so <b>4.8 cars an hour</b> find it full.</p></div>
+  </div>
+  <p class="muted" style="font-size:.84rem;margin-top:8px">Table 13.5 prints P(n ≥ 4) = 0.27 for four pumps; the M/M/c formula gives 0.17. The decision (six pumps) is unaffected. Linear waiting costs are a simplification: long waits anger customers out of proportion and can lose them for good.</p>
+  <div class="lab stack">
+    <div class="lab-in">
+      <div class="activity-head"><p class="eyebrow">Try it · How many servers? Choose a criterion</p><div class="seg" id="crSet"></div></div>
+      <div class="seg" id="crMode" style="margin-top:8px"><button data-v="wait" aria-pressed="true">Average wait</button><button data-v="prob" aria-pressed="false">P(wait)</button><button data-v="cost" aria-pressed="false">Total cost</button><button data-v="lost" aria-pressed="false">Lost sales</button></div>
+      <p class="muted" style="font-size:.84rem;margin-top:6px" id="crNote"></p>
+      <div style="display:flex;flex-wrap:wrap;gap:14px" id="crIn"></div>
+    </div>
+    <div class="grid2">
+      <div class="lab-out"><div class="tbl-wrap"><table id="crTbl"></table></div></div>
+      <div class="lab-out" id="crOut" aria-live="polite"></div>
+    </div>
+  </div>
+  <h3>Example 13.7 · Cookies and Cream, with queuing</h3>
+  <div class="prose"><p>Target: an average wait of 1 minute for each resource, so by Little's Law L<sub>q</sub> ≤ λW<sub>q</sub> = 50 × 1/60 = 0.833. Table 13.4 needs <b>22 chairs, 6 cookie sheets and 7 servers</b>, against 16.7, 4.17 and 5 from the naive analysis. For queues to be feasible, the number of servers must exceed ρ.</p></div>
+  <div class="lab stack">
+    <div class="lab-in">
+      <div class="activity-head"><p class="eyebrow">Try it · Naive vs. queuing capacity for Cookies and Cream</p></div>
+      <div class="grid2">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="slider-row"><span>Customers per hour</span><input type="range" id="ccL" min="10" max="150" step="1" value="50"><output></output></div>
+          <div class="slider-row"><span>Minutes at a table</span><input type="range" id="ccT" min="5" max="60" step="1" value="20"><output></output></div>
+          <div class="slider-row"><span>Cookies per order</span><input type="range" id="ccK" min="1" max="12" step="1" value="6"><output></output></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="slider-row"><span>Baking minutes</span><input type="range" id="ccB" min="4" max="20" step="1" value="10"><output></output></div>
+          <div class="slider-row"><span>Server minutes / order</span><input type="range" id="ccS" min="1" max="15" step="0.5" value="6"><output></output></div>
+          <div class="slider-row"><span>Target wait (min)</span><input type="range" id="ccW" min="0.25" max="5" step="0.25" value="1"><output></output></div>
+        </div>
+      </div>
+    </div>
+    <div class="lab-out"><div class="tbl-wrap"><table id="ccTbl"></table></div><p class="muted" style="font-size:.82rem;margin-top:6px" id="ccNote"></p></div>
+  </div>
+  <div class="activity" data-activity="criteria">
+    <div class="activity-head"><p class="eyebrow">Practice · Which capacity planning criterion fits?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+  <div class="activity" data-activity="relations">
+    <div class="activity-head"><p class="eyebrow">Practice · What happens to congestion?</p><span class="score" data-score></span></div>
+    <div class="items" data-items></div>
+  </div>
+  <div class="id-box"><p class="eyebrow">Which criterion would you use?</p><p style="font-size:.92rem"><b>An SPBU</b> on a busy road: probability of waiting (cars that queue onto the road are a hazard and drive on). <b>A hospital pharmacy</b> for outpatients: average wait, with a published service standard. <b>A firm's internal IT help desk</b>: total cost, since the waiting employees are on the payroll. <b>A mall car park</b>: lost sales, because drivers who see the FULL sign shop elsewhere.</p></div>
+  <div class="callout"><p class="eyebrow">Service benchmark · Don't guesstimate, simulate!</p><p style="font-size:.92rem">AT&amp;T uses simulation beyond queuing models: a business simulation for its Strategy Execution Initiative, with employee teams competing on cross-selling and web capabilities, and quarterly hands-on disaster-recovery drills in the US, UK and Germany that rebuild damaged network infrastructure in trailers.</p></div>
+</section>
+
+<!-- 7 TERMS -->
+<section class="unit" id="terms" data-unit>
+  <div class="unit-head"><p class="eyebrow">Unit 07</p><h2>Key terms and cases</h2></div>
+  <div class="fc-wrap">
+    <button class="fc" id="fc" aria-label="Flashcard, click to flip"><div class="fc-in">
+      <div class="fc-face fc-front"><small>Term</small><b id="fcTerm"></b><span class="muted" style="margin-top:10px;font-size:.85rem">Click to reveal</span></div>
+      <div class="fc-face fc-back"><small>Definition</small><p id="fcDef"></p></div>
+    </div></button>
+    <div class="fc-ctrl"><button class="btn ghost" id="fcPrev" aria-label="Previous card">←</button><span class="count" id="fcCount"></span><button class="btn ghost" id="fcNext" aria-label="Next card">→</button><button class="btn ghost" id="fcShuffle">Shuffle</button></div>
+  </div>
+  <div class="case">
+    <div class="panel prose">
+      <p class="eyebrow">Case 13.1 · Houston Port Authority</p>
+      <p>A dockworker crew unloads wheat hopper cars in 30 minutes on average ($50 an hour), 12 cars arrive per 8-hour shift, and the railroad charges $15 an hour demurrage. Options: add a second crew (two cars at once), or install a $400,000 pneumatic system that handles a constant 3 cars an hour with one $15-an-hour operator. With a 10% discount rate and a 10-year horizon, what do you recommend? <i>Hint: crews are M/M/1 or M/M/2; the pneumatic system is M/D/1.</i></p>
+    </div>
+    <div class="panel prose">
+      <p class="eyebrow">Case 13.2 · Freedom Express</p>
+      <p>Planes arrive at Reagan National at 20 an hour; the tower lands 60 an hour in clear weather and 30 in bad weather (Poisson). Fuel costs $2.80 a gallon at 20 gallons a minute. How much extra fuel does bad weather cost? How much reserve covers the stack 19 times in 20? Should FreeEx divert to Dulles (combined 40 an hour for two airports at 30 each, $200 bus per diverted flight)?</p>
+    </div>
+  </div>
+  <div class="case">
+    <div class="panel prose">
+      <p class="eyebrow">Case 13.3 · Renaissance Clinic (A)</p>
+      <p>30 patients an hour see a receptionist (μ = 40); two-thirds go to a nurse clinician (μ = 30), 15% of whom also see the physician (μ = 15); the rest go straight to the physician. Treat each station as an independent M/M/1 to estimate waits, time in system for each path, and idle time; then assess adding a second doctor and a priority rule based on entry time.</p>
+    </div>
+    <div class="panel prose">
+      <p class="eyebrow">Topics for discussion</p>
+      <ol>
+        <li>How can one determine the economic cost of keeping customers waiting?</li>
+        <li>Beyond using averages, what else is wrong with the naive Example 13.1? (Think bottlenecks, Chapter 5.)</li>
+        <li>For a finite queue, the arrival rate can exceed capacity. Explain with an example.</li>
+        <li>What are the disadvantages of pooling service resources?</li>
+        <li>How could the M/G/∞ model size an emergency vehicle fleet?</li>
+      </ol>
+    </div>
+  </div>
+  <div class="panel prose">
+    <p class="eyebrow">Solved problems · Sunset Airlines</p>
+    <p><b>1.</b> One clerk, 3 min per passenger (μ = 20), λ = 15. (a) P<sub>0</sub> = 0.25. (b) Room for 3 including the one served: P(n ≥ 4) = 0.75⁴ = <b>0.316</b>. (c) Add a clerk when W<sub>q</sub> reaches 17 min: λ/(400 − 20λ) = 17/60 → <b>λ = 17</b>. &nbsp;<b>2.</b> λ = 20, waiting $15/h, clerks $10/h. (a) Two separate lines: 2[10 + 15(0.5)] = <b>$35</b>. (b) One clerk + constant 3-min machine (M/D/1, L<sub>q</sub> = 0.25): <b>$21.25</b>. (c) One queue, two clerks (L<sub>q</sub> = 0.333): <b>$25</b>. All are presets in the labs.</p>
+  </div>
+</section>
+
+<!-- SELF TEST -->
+<section class="unit" id="selftest" style="border-bottom:0">
+  <div class="unit-head"><p class="eyebrow">Self-test</p><h2>Check your understanding</h2></div>
+  <div class="quiz" id="quiz"></div>
+</section>
+
+<footer><p class="dept-foot"><a href="https://www.its.ac.id/mb" target="_blank" rel="noopener">Department of Business Management <span>|</span> INSTITUT TEKNOLOGI SEPULUH NOPEMBER</a></p><p class="credit">Developed by <a href="https://its.id/baihaqi" target="_blank" rel="noopener">Imam Baihaqi</a>, assisted by Claude.ai</p><p>Study aid based on Chapter 13, "Capacity Planning and Queuing Models," in Bordoloi, Fitzsimmons &amp; Fitzsimmons, <i>Service Management: Operations, Strategy, Information Technology</i> (McGraw Hill, 2022). Indonesian examples are added for discussion and are not from the textbook; lab data marked illustrative are invented for practice. Read the chapter for the full text, figures and cases.</p></footer>
+</main>
+</div>
+
+<script>
+(function(){
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const KEY = "ch13";
+const UNIT_FOR = {1:"strategic",2:"models",3:"mm1",4:"mmc",5:"criteria"};
+const numIn = (v,attrs,w) => `<input type="number" value="${v}" ${attrs} style="width:${w||58}px;font:inherit;font-family:var(--f-mono);font-size:.85rem;padding:3px 5px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)">`;
+const sliderOut = ids => ids.forEach(id=>{ const e=$("#"+id); if(e&&e.nextElementSibling) e.nextElementSibling.textContent=e.value; });
+function segWire(id,cb){ $$("#"+id+" button").forEach(b=>b.addEventListener("click",()=>{ $$("#"+id+" button").forEach(x=>x.setAttribute("aria-pressed",x===b)); cb(b.dataset.v); })); }
+function segSet(id,v){ $$("#"+id+" button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.v===v)); }
+function presetBar(id,obj,cur,cb){ $("#"+id).innerHTML=Object.keys(obj).map(k=>`<button data-k="${esc(k)}" aria-pressed="${k===cur}">${esc(k)}</button>`).join(""); $$("#"+id+" button").forEach(b=>b.addEventListener("click",()=>cb(b.dataset.k))); }
+const field = (label,id,v,attrs,w) => `<label style="display:flex;flex-direction:column;gap:4px;font-size:.85rem">${label}${numIn(v,`id="${id}" ${attrs}`,w||80)}</label>`;
+const f2 = v => v===null||v===undefined||!isFinite(v) ? "—" : (Math.abs(v)>=100?v.toFixed(0):Math.abs(v)>=10?v.toFixed(1):v.toFixed(Math.abs(v)<0.01&&v!==0?4:3));
+const mins = h => h===null||h===undefined||!isFinite(h) ? "—" : (h*60).toFixed(h*60<10?2:1)+" min";
+
+/* ---------- Queuing models (Appendix D) ---------- */
+function mmc(l,m,c){ const r=l/m; if(r>=c) return null; let sum=0,t=1; const tn=[1]; for(let n=1;n<=c;n++){ t*=r/n; tn.push(t); } for(let n=0;n<c;n++) sum+=tn[n]; const tc=tn[c], u=r/c;
+  const P0=1/(sum+tc/(1-u)), Pw=tc*P0/(1-u), Lq=Pw*u/(1-u), Ls=Lq+r, Wq=Lq/l, Ws=Wq+1/m;
+  const Pn=n=> n<c ? tn[n]*P0 : tc*Math.pow(u,n-c)*P0;
+  return {r,u,P0,Pw,Lq,Ls,Wq,Ws,Lb:Pw>0?Lq/Pw:0,Wb:1/(c*m-l),Pn,leff:l,lost:0}; }
+function mg1(l,E,V){ const r=l*E; if(r>=1) return null; const Lq=(r*r+l*l*V)/(2*(1-r)), Ls=Lq+r, Wq=Lq/l, Ws=Wq+E; return {r,u:r,P0:1-r,Pw:r,Lq,Ls,Wq,Ws,Lb:Lq/r,Wb:Wq/r,Pn:null,leff:l,lost:0}; }
+function mmcN(l,m,c,N){ const r=l/m; const w=[1]; for(let n=1;n<=N;n++) w.push(n<=c ? w[n-1]*r/n : w[n-1]*r/c); const S=w.reduce((a,b)=>a+b,0); const P=w.map(x=>x/S);
+  const Ls=P.reduce((a,p,n)=>a+n*p,0), Lq=P.reduce((a,p,n)=>a+Math.max(0,n-c)*p,0), PN=P[N], leff=l*(1-PN), Pw=P.slice(c).reduce((a,b)=>a+b,0);
+  return {r,u:leff/(c*m),P0:P[0],Pw,Lq,Ls,Wq:leff>0?Lq/leff:0,Ws:leff>0?Ls/leff:0,Lb:Pw>0?Lq/Pw:0,Wb:null,Pn:n=>n<=N?P[n]:0,leff,lost:l*PN,PN,N}; }
+function mginf(l,m){ const r=l/m; return {r,u:null,P0:Math.exp(-r),Pw:0,Lq:0,Ls:r,Wq:0,Ws:1/m,Lb:0,Wb:0,Pn:n=>{ let p=Math.exp(-r); for(let i=1;i<=n;i++) p*=r/i; return p; },leff:l,lost:0}; }
+
+/* ---------- Practice activities ---------- */
+const ACT = {
+  notation:{ opts:["M/M/1","M/M/c","M/D/1","M/G/1","M/G/∞","Finite M/M/c"], items:[
+    ["One boat ramp; Poisson arrivals; exponential launch times.","M/M/1","Example 13.3."],
+    ["Four secretaries pooled to serve one queue of requests.","M/M/c","Example 13.4: M/M/4."],
+    ["An automatic car wash with a fixed 4-minute cycle; random arrivals.","M/D/1","D = deterministic (constant) service time."],
+    ["Shoppers picking items off supermarket shelves.","M/G/∞","Self-service: no one waits for a server."],
+    ["A 6-space parking lot that turns cars away when full.","Finite M/M/c","No-queue case, N = c (Example 13.10)."],
+    ["One doctor whose consultation times are roughly normal, with a known mean and variance.","M/G/1","G = any general distribution."],
+    ["Three ATMs in a lobby served from one line.","M/M/c","Multiple identical servers, single queue."],
+    ["A ticket machine with a constant 3-minute transaction.","M/D/1","Solved Problem 2b."],
+    ["Sizing an ambulance fleet so that a call almost never finds all units busy.","M/G/∞","Used as an approximation when waiting is rare."],
+    ["One muffler mechanic; Poisson arrivals; exponential installation times.","M/M/1","Exercise 13.1."]
+  ]},
+  criteria:{ opts:["Average waiting time","Probability of excessive waiting","Minimum total cost","Lost sales (waiting area)"], items:[
+    ["Urban ambulances must reach 95% of calls within 10 minutes.","Probability of excessive waiting","A service-level guideline."],
+    ["A drive-in bank wants customers to wait no more than 5 minutes on average.","Average waiting time","Example 13.6."],
+    ["A company's in-house copy center is used only by its own staff.","Minimum total cost","Employee waiting is a wage cost."],
+    ["Drivers who see a restaurant's car park full drive on to a competitor.","Lost sales (waiting area)","Finite queue: λP<sub>N</sub> customers lost."],
+    ["A phone company must answer 89% of calls within 10 seconds.","Probability of excessive waiting","Public Utilities Commission criterion."],
+    ["Xerox balances customers' downtime cost against the cost of repair teams.","Minimum total cost","Three representatives per team minimized the total."],
+    ["A restaurant owner wants a 5-minute average wait so diners buy drinks at the bar.","Average waiting time","A target mean wait."],
+    ["A bank driveway holds three cars; more block the street.","Lost sales (waiting area)","Exercise 13.7c: size of the waiting area."],
+    ["A self-service gas station wants a free pump for 95% of arrivals.","Probability of excessive waiting","Example 13.8: six pumps."]
+  ]},
+  relations:{ opts:["Increases","Decreases","No change"], items:[
+    ["One server: utilization rises from 0.8 to 0.9. What happens to L<sub>q</sub>?","Increases","From 3.2 to 8.1: congestion explodes near full utilization."],
+    ["Service-time variance falls to zero (M/M/1 → M/D/1). L<sub>q</sub>?","Decreases","It halves."],
+    ["Four separate secretaries are pooled into one queue. Average turnaround?","Decreases","30–60 min → 17 min."],
+    ["Two parallel servers are replaced by one superserver of the same total capacity. L<sub>q</sub>?","Increases","Table 13.2: 0.15 → 0.27."],
+    ["Same change: two servers → one superserver. L<sub>s</sub>?","Decreases","Table 13.2: 0.95 → 0.67."],
+    ["In an M/M/1, both λ and μ double. L<sub>s</sub>?","No change","ρ is unchanged, so L<sub>s</sub> = ρ/(1 − ρ) is unchanged."],
+    ["In an M/M/1, both λ and μ double. W<sub>s</sub>?","Decreases","W<sub>s</sub> = 1/(μ − λ) halves (Little's Law)."],
+    ["The waiting area is limited to N instead of unlimited. L<sub>s</sub>?","Decreases","Boat ramp: 1.5 → 0.9, because arrivals are turned away."],
+    ["More shoppers arrive in an M/G/∞ self-service system. W<sub>q</sub>?","No change","No one ever waits; only L<sub>s</sub> = ρ grows."]
+  ]}
+};
+
+/* ---------- Little's Law ---------- */
+const LL = {
+  "TSA line (Ex. 13.2)":{L:18,R:2,W:9,s:"W",note:"18 travelers ahead; 2 join per minute. W = L/λ = 9 minutes: you reach your gate around 10:39."},
+  "Cookies & Cream chairs (Ex. 13.1)":{L:16.67,R:0.8333,W:20,s:"L",note:"50 customers an hour = 0.833 a minute, each staying 20 minutes: L = 16.7 diners seated on average."},
+  "Samsat waiting room (illustrative)":{L:60,R:1.5,W:40,s:"W",note:"Illustrative: you count 60 people waiting and the screen calls about 1.5 numbers a minute."}
+};
+let llK="TSA line (Ex. 13.2)", llS="W";
+$("#llLw").innerHTML=numIn(18,'id="llL" min="0" step="any"',100); $("#llRw").innerHTML=numIn(2,'id="llR" min="0.001" step="any"',100); $("#llWw").innerHTML=numIn(9,'id="llW" min="0" step="any"',100);
+function llLoad(k){ llK=k; const o=LL[k]; $("#llL").value=o.L; $("#llR").value=o.R; $("#llW").value=o.W; llS=o.s; segSet("llSolve",llS); $("#llNote").textContent=o.note; presetBar("llSet",LL,llK,llLoad); llRender(); }
+function llRender(){
+  ["llL","llR","llW"].forEach(id=>{ const e=$("#"+id); const on=id==="ll"+llS; e.disabled=on; e.style.opacity=on?.6:1; });
+  let L=+$("#llL").value, R=+$("#llR").value, W=+$("#llW").value;
+  if(llS==="W"&&R>0){ W=L/R; $("#llW").value=+W.toFixed(3); } else if(llS==="L"){ L=R*W; $("#llL").value=+L.toFixed(3); } else if(llS==="R"&&W>0){ R=L/W; $("#llR").value=+R.toFixed(4); }
+  $("#llOut").innerHTML=`<div class="bigscore"><span class="n">${llS==="W"?W.toFixed(1)+" min":llS==="L"?L.toFixed(1):R.toFixed(3)+"/min"}</span><span class="muted">${llS==="W"?"expected time in line":llS==="L"?"customers in line on average":"arrival (and service) rate"}</span></div><p class="mono" style="font-size:.9rem;margin-top:6px">L = λ × W → ${L.toFixed(2)} = ${R.toFixed(3)} × ${W.toFixed(2)}</p><p class="muted" style="font-size:.84rem">Little's Law needs no assumptions about distributions, only a stable system. In a steady line, the rate people join equals the rate they leave, so it also tells you the service rate.</p>`;
+}
+segWire("llSolve",v=>{ llS=v; llRender(); }); ["llL","llR","llW"].forEach(id=>$("#"+id).addEventListener("input",llRender));
+llLoad(llK);
+
+/* ---------- Queue calculator ---------- */
+const QM = {mm1:"M/M/1",mm1n:"M/M/1 finite",mmc:"M/M/c",mmcn:"M/M/c finite",mg1:"M/G/1",mginf:"M/G/∞"};
+const QC = {
+  "Boat ramp (Ex. 13.3)":{m:"mm1",l:6,u:10,note:"λ = 6 boats an hour, 6-minute launches (μ = 10). Book: L<sub>s</sub> 1.5, L<sub>q</sub> 0.9, W<sub>s</sub> 15 min, W<sub>q</sub> 9 min; room for 4 trailers covers 92%."},
+  "Ramp, room for 2 trailers":{m:"mm1n",l:6,u:10,N:3,note:"N = 3 (one launching, two waiting). Book: P<sub>3</sub> = 0.10, 0.6 boaters an hour lost, L<sub>s</sub> = 0.9."},
+  "Sunset check-in (Solved 1)":{m:"mm1",l:15,u:20,note:"Book: P<sub>0</sub> = 0.25; with room for 3, P(n ≥ 4) = 0.75⁴ = 0.316 (set coverage to 68%: n ≤ 3 holds only 68.4% of the time). Raise λ to 17 to reach W<sub>q</sub> = 17 min."},
+  "Campus ATM (illustrative)":{m:"mm1",l:40,u:50,note:"Illustrative lunch-hour ATM: 40 users an hour, 1.2 minutes each. Try λ = 45."},
+  "Secretarial pool (Ex. 13.4)":{m:"mmc",l:9,u:4,c:4,note:"Book: L<sub>q</sub> = 0.31, L<sub>s</sub> = 2.56, W<sub>s</sub> = 0.28 h ≈ 17 min."},
+  "Supermarket checkout (Ex. 13.5)":{m:"mmc",l:30,u:12,c:3,note:"Book: L<sub>q</sub> = 3.5, L<sub>s</sub> = 6, 12 minutes checking out."},
+  "Supermarket shopping (Ex. 13.5)":{m:"mginf",l:30,u:3,note:"Self-service shopping, 20 minutes each: L<sub>s</sub> = ρ = 10 shoppers, nobody waits."},
+  "Ticket machine, M/D/1 (Solved 2b)":{m:"mg1",l:10,u:20,sd:0,note:"Constant 3-minute service, λ = 10: L<sub>q</sub> = 0.25 (an exponential server would give 0.5)."},
+  "Parking lot (Ex. 13.10)":{m:"mmcn",l:10,u:1,c:6,N:6,note:"6 spaces (N = c), 10 cars an hour, 1-hour stays. Book: P<sub>0</sub> = 0.000349, P<sub>6</sub> = 0.48: 4.8 cars an hour find it full."}
+};
+let qc={m:"mm1",l:6,u:10,c:2,N:5,sd:3,cov:90}, qcK="Boat ramp (Ex. 13.3)";
+function qcLoad(k){ qcK=k; const o=QC[k]; qc=Object.assign(qc,{c:2,N:5,sd:60/o.u},o); if(o.m==="mm1n") qc.c=1; $("#qcNote").innerHTML=o.note; presetBar("qcSet",QC,qcK,qcLoad); qcModelBar(); qcInputs(); }
+function qcModelBar(){ $("#qcModel").innerHTML=Object.entries(QM).map(([k,v])=>`<button data-v="${k}" aria-pressed="${k===qc.m}">${v}</button>`).join(""); $$("#qcModel button").forEach(b=>b.addEventListener("click",()=>{ qc.m=b.dataset.v; if(qc.m==="mmcn"&&qc.N<qc.c) qc.N=qc.c; qcModelBar(); qcInputs(); })); }
+function qcInputs(){
+  const m=qc.m; let h=field("λ arrivals / hour","qcL",qc.l,'min="0.01" step="any"')+field("μ per server / hour","qcU",qc.u,'min="0.01" step="any"');
+  if(m==="mmc"||m==="mmcn") h+=field("c servers","qcC",qc.c,'min="1" step="1"',70);
+  if(m==="mm1n"||m==="mmcn") h+=field("N max in system","qcN",qc.N,'min="1" step="1"',70);
+  if(m==="mg1") h+=field("σ of service (min)","qcSd",+qc.sd.toFixed(3),'min="0" step="any"');
+  $("#qcIn").innerHTML=h;
+  $$("#qcIn input").forEach(e=>e.addEventListener("input",()=>{ const v=+e.value; if(e.id==="qcL") qc.l=v; if(e.id==="qcU") qc.u=v; if(e.id==="qcC") qc.c=Math.max(1,Math.round(v)); if(e.id==="qcN") qc.N=Math.max(1,Math.round(v)); if(e.id==="qcSd") qc.sd=Math.max(0,v); qcRender(); }));
+  qcRender();
+}
+function qcCompute(){ const {m,l,u}=qc; if(!(l>0&&u>0)) return null; const c=m==="mm1"||m==="mm1n"||m==="mg1"?1:qc.c;
+  if(m==="mm1") return [mmc(l,u,1),1]; if(m==="mmc") return [mmc(l,u,c),c]; if(m==="mg1") return [mg1(l,1/u,(qc.sd/60)**2),1];
+  if(m==="mginf") return [mginf(l,u),Infinity]; const N=Math.max(qc.N,c); return [mmcN(l,u,c,N),c]; }
+function qcRender(){
+  const res=qcCompute(); const o=res&&res[0], c=res?res[1]:1;
+  if(!o){ $("#qcOut").innerHTML=`<div class="verdict no"><b>No steady state:</b> ρ = λ/μ = ${(qc.l/qc.u).toFixed(2)} is not below c = ${qc.m==="mmc"?qc.c:1}. The queue grows without limit; add servers, speed up service, or cap the queue (finite model).</div>`; $("#qcChart").innerHTML=""; $("#qcSize").innerHTML=""; return; }
+  const fin=qc.m==="mm1n"||qc.m==="mmcn", inf=qc.m==="mginf";
+  const k=(l,v,w)=>`<div class="kpi"><span class="l">${l}</span><span class="v">${v}</span><span class="w">${w||""}</span></div>`;
+  let h=`<div class="kpis four">`+
+    k("ρ = λ/μ",f2(o.r),inf?"mean number shopping":`utilization ${(100*o.u).toFixed(1)}%`)+
+    k("P<sub>0</sub> system empty",f2(o.P0),inf?"":`idle ${(100*o.P0).toFixed(1)}% of time`)+
+    k(inf?"P(wait)":"P(n ≥ c)",inf?"0":f2(o.Pw),inf?"never":"an arrival must wait")+
+    k("L<sub>q</sub> in queue",f2(o.Lq),fin?"":`L<sub>b</sub> = ${f2(o.Lb)} if busy`)+
+    k("L<sub>s</sub> in system",f2(o.Ls),`= L<sub>q</sub> + ${fin?"λ<sub>eff</sub>/μ":"ρ"}`)+
+    k("W<sub>q</sub> in queue",mins(o.Wq),(!fin&&!inf)?`W<sub>b</sub> = ${mins(o.Wb)}`:"")+
+    k("W<sub>s</sub> in system",mins(o.Ws),`= W<sub>q</sub> + 1/μ (${mins(1/qc.u)})`)+
+    (fin?k("Lost customers",f2(o.lost)+"/h",`P<sub>N</sub> = ${f2(o.PN)}; λ<sub>eff</sub> = ${f2(o.leff)}`):k("Little's Law","L = λW",`${f2(o.Ls)} = ${f2(qc.l)} × ${f2(o.Ws)} h`))+`</div>`;
+  if(qc.m==="mg1"){ const mm=mmc(qc.l,qc.u,1); h+=`<p class="muted" style="font-size:.84rem;margin-top:6px">With exponential service (σ = mean = ${(60/qc.u).toFixed(2)} min) L<sub>q</sub> would be ${mm?f2(mm.Lq):"—"}; with constant service (σ = 0), ${f2(mg1(qc.l,1/qc.u,0)?.Lq)}.</p>`; }
+  $("#qcOut").innerHTML=h;
+  if(!o.Pn){ $("#qcChart").innerHTML=`<p class="muted" style="font-size:.88rem">M/G/1 has no closed-form P<sub>n</sub> in Appendix D; only the averages above.</p>`; $("#qcSize").innerHTML=""; return; }
+  let nmax=0, cum=0; const ps=[]; while(nmax<60){ const p=o.Pn(nmax); ps.push(p); cum+=p; if((fin&&nmax>=o.N)||(!fin&&cum>0.997&&nmax>=4)) break; nmax++; }
+  const W=420,H=200,L=36,R=34,B=26,T=10, pk=Math.max(...ps), X=i=>L+(W-L-R)*(i+0.5)/ps.length, bw=Math.max(2,(W-L-R)/ps.length*0.7), Y=v=>T+(H-T-B)*(1-v/pk), Yc=v=>T+(H-T-B)*(1-v);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Probability of n in system">`;
+  [0,pk/2,pk].forEach(v=>{ s+=`<line class="grid" x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${L-6}" y="${Y(v)+4}" text-anchor="end">${v.toFixed(2)}</text>`; });
+  [0,0.5,1].forEach(v=>{ s+=`<text x="${W-R+4}" y="${Yc(v)+4}" style="fill:var(--gold)">${v}</text>`; });
+  const lab=Math.ceil(ps.length/14); let cc=0; const cpts=[];
+  ps.forEach((p,i)=>{ cc+=p; cpts.push(`${X(i)},${Yc(cc)}`); s+=`<rect x="${X(i)-bw/2}" y="${Y(p)}" width="${bw}" height="${Y(0)-Y(p)}" fill="${i>=c&&isFinite(c)?"var(--gold)":"var(--accent)"}" opacity=".75"><title>n=${i}: P=${p.toFixed(4)}, cumulative ${cc.toFixed(4)}</title></rect>`; if(i%lab===0) s+=`<text x="${X(i)}" y="${H-8}" text-anchor="middle">${i}</text>`; });
+  s+=`<polyline fill="none" stroke="var(--gold)" stroke-width="2" points="${cpts.join(" ")}"/></svg><div class="legend"><span><i style="background:var(--accent)"></i>n ≤ c (no queue)</span><span><i style="background:var(--gold)"></i>queue forms / cumulative</span></div>`;
+  $("#qcChart").innerHTML=s;
+  const target=qc.cov/100; let n=0, acc=0; for(;n<400;n++){ acc+=o.Pn(n); if(acc>=target-1e-12) break; }
+  const tail=1-acc+o.Pn(n)-o.Pn(n);
+  $("#qcSize").innerHTML=`<p class="eyebrow">Sizing the waiting area (Table 13.1)</p><div class="slider-row"><span>Cover this % of the time</span><input type="range" id="qcCov" min="50" max="99" step="1" value="${qc.cov}"><output>${qc.cov}</output></div><div class="bigscore" style="margin-top:8px"><span class="n">${n}</span><span class="muted">customers in the system or fewer, ${(100*acc).toFixed(1)}% of the time</span></div><p style="font-size:.9rem">${isFinite(c)?`So provide room for <b>${Math.max(0,n-c)}</b> waiting (plus ${c} in service). An arrival finds more than that ${(100*(1-acc)).toFixed(1)}% of the time.`:"In a self-service system this sizes the facility itself (carts, aisles, seats)."}</p><p class="muted" style="font-size:.82rem">P(n ≥ k) for one server is simply ρ<sup>k</sup>.</p>`;
+  $("#qcCov").addEventListener("input",e=>{ qc.cov=+e.target.value; qcRender(); });
+}
+qcLoad(qcK);
+
+/* ---------- Utilization curves (Figure 13.5) ---------- */
+const UC=[1,2,3,5,10];
+function ucRender(){
+  sliderOut(["ucU"]); const u=+$("#ucU").value;
+  const W=440,H=260,L=34,B=28,T=10,ymax=20, X=v=>L+(W-L-12)*v, Y=v=>T+(H-T-B)*(1-Math.min(v,ymax)/ymax);
+  const cols=["var(--bad)","var(--gold)","var(--accent)","var(--good)","color-mix(in srgb,var(--ink) 60%,var(--surface))","color-mix(in srgb,var(--accent) 45%,var(--surface))"];
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Mean number in system vs utilization">`;
+  [0,5,10,15,20].forEach(v=>{ s+=`<line class="grid" x1="${L}" x2="${W-12}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${L-6}" y="${Y(v)+4}" text-anchor="end">${v}</text>`; });
+  [0,0.2,0.4,0.6,0.8,1].forEach(v=>{ s+=`<text x="${X(v)}" y="${H-10}" text-anchor="middle">${v}</text>`; });
+  UC.forEach((c,i)=>{ const pts=[]; for(let k=0;k<=98;k++){ const x=k/100; const o=mmc(x*c,1,c); if(!o) break; pts.push(`${X(x)},${Y(o.Ls)}`); if(o.Ls>ymax) break; } s+=`<polyline fill="none" stroke="${cols[i]}" stroke-width="2" points="${pts.join(" ")}"/>`; });
+  s+=`<line x1="${X(u)}" x2="${X(u)}" y1="${T}" y2="${Y(0)}" stroke="var(--ink)" stroke-dasharray="4 3"/>`;
+  UC.forEach((c,i)=>{ const o=mmc(u*c,1,c); if(o&&o.Ls<=ymax) s+=`<circle cx="${X(u)}" cy="${Y(o.Ls)}" r="3.5" fill="${cols[i]}"/>`; });
+  s+=`<text x="${L+4}" y="${T+10}">L<tspan dy="3" style="font-size:9px">s</tspan></text><text x="${(L+W)/2}" y="${H}" text-anchor="middle" style="font-size:10px">utilization factor λ/cμ</text></svg><div class="legend">${UC.map((c,i)=>`<span><i style="background:${cols[i]}"></i>c = ${c}</span>`).join("")}</div>`;
+  $("#ucChart").innerHTML=s;
+  const one=mmc(u,1,1), two=mmc(u,1,2), sup=mmc(u,2,1);
+  $("#ucOut").innerHTML=`<div class="tbl-wrap"><table><thead><tr><th>c at λ/cμ = ${u.toFixed(2)}</th><th>L<sub>s</sub></th><th>L<sub>q</sub></th><th>P(wait)</th></tr></thead><tbody>${UC.map(c=>{ const o=mmc(u*c,1,c); return `<tr><td>${c}</td><td style="font-weight:400">${f2(o.Ls)}</td><td style="font-weight:400">${f2(o.Lq)}</td><td style="font-weight:400">${f2(o.Pw)}</td></tr>`; }).join("")}</tbody></table></div>
+  <p class="eyebrow" style="margin-top:12px">Table 13.2 at baseline utilization ${u.toFixed(2)}</p>
+  <div class="tbl-wrap"><table><thead><tr><th></th><th>One server</th><th>Two servers</th><th>Superserver (2μ)</th></tr></thead><tbody>
+  <tr><td>λ/cμ</td><td style="font-weight:400">${u.toFixed(2)}</td><td style="font-weight:400">${(u/2).toFixed(2)}</td><td style="font-weight:400">${(u/2).toFixed(2)}</td></tr>
+  <tr><td>L<sub>s</sub></td><td style="font-weight:400">${f2(one.Ls)}</td><td style="font-weight:400">${f2(two.Ls)}</td><td style="font-weight:${sup.Ls<two.Ls?700:400}">${f2(sup.Ls)}</td></tr>
+  <tr><td>L<sub>q</sub></td><td style="font-weight:400">${f2(one.Lq)}</td><td style="font-weight:${two.Lq<sup.Lq?700:400}">${f2(two.Lq)}</td><td style="font-weight:400">${f2(sup.Lq)}</td></tr></tbody></table></div>
+  <p class="muted" style="font-size:.82rem;margin-top:6px">Move the slider toward 1 and every curve shoots up. Larger systems hold more customers <i>in service</i> (ρ = c × utilization), so their L<sub>s</sub> is higher, but their <b>queue</b> L<sub>q</sub> is far shorter at the same utilization: big systems can run hotter.</p>`;
+}
+$("#ucU").addEventListener("input",ucRender); ucRender();
+
+/* ---------- Pooling ---------- */
+const PL = {
+  "Secretarial pool (Ex. 13.4)":{a:[3,2,2,2],m:4,names:["Accounting","Finance","Marketing","Management"],note:"Each secretary serves 4 jobs an hour (15 minutes each)."},
+  "Sunset, two clerks (Solved 2)":{a:[10,10],m:20,names:["Line 1","Line 2"],note:"20 passengers an hour split over two separate lines, or one line for both clerks. Book: L<sub>q</sub> 0.5 per line vs. 0.333 pooled."},
+  "Community Bank (Ex. 13.9)":{a:[5,5],m:12,names:["Teller 1","Teller 2"],note:"10 cars an hour, 5-minute transactions, two tellers with two remote stations each."},
+  "Kelurahan counters (illustrative)":{a:[6,8,5,9],m:10,names:["ID card","Family card","Certificates","Permits"],note:"Illustrative: four counters, each handling one type of document, 6 minutes per customer."}
+};
+let plK="Secretarial pool (Ex. 13.4)", plA=null, plM=4, plN=null;
+function plLoad(k){ plK=k; const o=PL[k]; plA=o.a.slice(); plM=o.m; plN=o.names; $("#plNote").innerHTML=o.note; presetBar("plSet",PL,plK,plLoad);
+  $("#plIn").innerHTML=plA.map((v,i)=>`<label style="display:flex;flex-direction:column;font-size:.74rem;gap:2px">${esc(plN[i])}${numIn(v,`data-i="${i}" min="0" step="any"`,70)}</label>`).join("");
+  $("#plMw").innerHTML=numIn(plM,'id="plM" min="0.1" step="any"',80);
+  $$("#plIn input").forEach(e=>e.addEventListener("input",()=>{ plA[+e.dataset.i]=Math.max(0,+e.value||0); plRender(); }));
+  $("#plM").addEventListener("input",e=>{ plM=Math.max(0.1,+e.target.value||0.1); plRender(); });
+  plRender(); }
+function plRender(){
+  const c=plA.length, lam=plA.reduce((a,b)=>a+b,0), sep=plA.map(a=>a>0?mmc(a,plM,1):{Ws:0,Wq:0,Lq:0,Ls:0}), pool=mmc(lam,plM,c);
+  const unstable=sep.some(o=>!o);
+  const W=420,H=220,L=40,B=40,T=12, vals=sep.map(o=>o?o.Ws*60:NaN), top=Math.max(...vals.filter(isFinite),pool?pool.Ws*60:0)*1.15||1;
+  const bw=(W-L-10)/c, Y=v=>T+(H-T-B)*(1-Math.min(v,top)/top);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Turnaround time, separate vs pooled">`;
+  [0,top/2,top].forEach(v=>{ s+=`<line class="grid" x1="${L}" x2="${W-10}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${L-6}" y="${Y(v)+4}" text-anchor="end">${v.toFixed(0)}</text>`; });
+  vals.forEach((v,i)=>{ const x=L+bw*i+bw*0.2; s+= isFinite(v)?`<rect x="${x}" y="${Y(v)}" width="${bw*0.6}" height="${Y(0)-Y(v)}" fill="var(--gold)"><title>${esc(plN[i])}: ${v.toFixed(1)} min</title></rect><text x="${x+bw*0.3}" y="${Y(v)-4}" text-anchor="middle">${v.toFixed(0)}</text>`:`<text x="${x+bw*0.3}" y="${Y(top*0.5)}" text-anchor="middle" style="fill:var(--bad)">∞</text>`; s+=`<text x="${x+bw*0.3}" y="${H-24}" text-anchor="middle" style="font-size:10px">${esc(plN[i])}</text>`; });
+  if(pool) s+=`<line x1="${L}" x2="${W-10}" y1="${Y(pool.Ws*60)}" y2="${Y(pool.Ws*60)}" stroke="var(--accent)" stroke-width="2.5"/><text x="${W-12}" y="${Y(pool.Ws*60)-5}" text-anchor="end" style="fill:var(--accent);font-weight:600;paint-order:stroke;stroke:var(--surface);stroke-width:4px">pooled ${(pool.Ws*60).toFixed(1)} min</text>`;
+  s+=`<text x="${L+4}" y="${T+2}">minutes in system (W<tspan dy="3" style="font-size:9px">s</tspan><tspan dy="-3">)</tspan></text></svg><div class="legend"><span><i style="background:var(--gold)"></i>Separate M/M/1 queues</span><span><i style="background:var(--accent)"></i>Pooled M/M/${c}</span></div>`;
+  $("#plChart").innerHTML=s;
+  if(!pool){ $("#plOut").innerHTML=`<div class="verdict no">Total demand ${lam.toFixed(1)}/h is not below total capacity ${(c*plM).toFixed(1)}/h; even pooling cannot reach a steady state.</div>`; return; }
+  const sLq=unstable?Infinity:sep.reduce((a,o)=>a+o.Lq,0), sLs=unstable?Infinity:sep.reduce((a,o)=>a+o.Ls,0), avgWs=unstable?Infinity:sLs/lam;
+  $("#plOut").innerHTML=`<div class="tbl-wrap"><table><thead><tr><th></th><th>Separate queues</th><th>Pooled queue</th></tr></thead><tbody>
+  <tr><td>Average time in system</td><td style="font-weight:400">${mins(avgWs)}</td><td style="font-weight:700;color:var(--good)">${mins(pool.Ws)}</td></tr>
+  <tr><td>Average wait in queue</td><td style="font-weight:400">${mins(unstable?Infinity:sLq/lam)}</td><td style="font-weight:400">${mins(pool.Wq)}</td></tr>
+  <tr><td>Total waiting (L<sub>q</sub>)</td><td style="font-weight:400">${f2(sLq)}</td><td style="font-weight:400">${f2(pool.Lq)}</td></tr>
+  <tr><td>Total in system (L<sub>s</sub>)</td><td style="font-weight:400">${f2(sLs)}</td><td style="font-weight:400">${f2(pool.Ls)}</td></tr></tbody></table></div>
+  <p style="font-size:.88rem;margin-top:8px">${unstable?`At least one separate queue has λ ≥ μ and grows without limit, yet the pooled system copes, because idle servers help the overloaded line.`:`Same people, same total capacity: pooling cuts the average time in the system by <b>${(100*(1-pool.Ws/avgWs)).toFixed(0)}%</b>, and the busiest queue's customers gain most.`}</p>`;
+}
+plLoad(plK);
+
+/* ---------- Service variability (M/G/1) ---------- */
+const SV = {
+  "Last National drive-in (Ex. 13.7)":{l:20,e:2,cv:1,note:"20 an hour, 2-minute exponential service: L<sub>q</sub> = 1.33. Part (b): an ATM with a constant 2 minutes (CV = 0) gives L<sub>s</sub> = 1.33 (L<sub>q</sub> = 0.67)."},
+  "Green Valley runway (Ex. 13.8)":{l:12,e:4,cv:1,note:"12 planes an hour, 4 minutes each: L<sub>q</sub> = 3.2 circling. Radar at a constant 15 an hour (CV = 0): L<sub>q</sub> = 1.6. At $70 an hour per plane, is $100 an hour of radar worth it?"},
+  "Sunset machine (Solved 2b)":{l:10,e:3,cv:0,note:"A ticket machine with a constant 3-minute service and 10 passengers an hour: L<sub>q</sub> = 0.25."}
+};
+let svK="Last National drive-in (Ex. 13.7)";
+function svLoad(k){ svK=k; const o=SV[k]; $("#svL").value=o.l; $("#svE").value=o.e; $("#svC").value=o.cv; $("#svNote").innerHTML=o.note; presetBar("svSet",SV,svK,svLoad); svRender(); }
+function svRender(){
+  sliderOut(["svL","svE","svC"]);
+  const l=+$("#svL").value, E=(+$("#svE").value)/60, cv=+$("#svC").value, rho=l*E;
+  if(rho>=1){ $("#svChart").innerHTML=""; $("#svOut").innerHTML=`<div class="verdict no">ρ = λ × mean service = ${rho.toFixed(2)} ≥ 1: no steady state, whatever the variability.</div>`; return; }
+  const Lq=c=>mg1(l,E,(c*E)**2).Lq, W=420,H=220,L=40,B=28,T=10, top=Lq(2)*1.05, X=c=>L+(W-L-12)*c/2, Y=v=>T+(H-T-B)*(1-v/top);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Queue length vs service variability">`;
+  [0,top/2,top].forEach(v=>{ s+=`<line class="grid" x1="${L}" x2="${W-12}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${L-6}" y="${Y(v)+4}" text-anchor="end">${v.toFixed(1)}</text>`; });
+  [0,0.5,1,1.5,2].forEach(v=>{ s+=`<text x="${X(v)}" y="${H-10}" text-anchor="middle">${v}</text>`; });
+  const pts=[]; for(let i=0;i<=40;i++){ const c=i/20; pts.push(`${X(c)},${Y(Lq(c))}`); }
+  s+=`<polyline fill="none" stroke="var(--accent)" stroke-width="2.5" points="${pts.join(" ")}"/>`;
+  [[0,"M/D/1"],[1,"M/M/1"]].forEach(([c,nm])=>{ s+=`<circle cx="${X(c)}" cy="${Y(Lq(c))}" r="4" fill="var(--surface)" stroke="var(--ink)"/><text x="${X(c)+6}" y="${Y(Lq(c))-6}">${nm}</text>`; });
+  s+=`<circle cx="${X(cv)}" cy="${Y(Lq(cv))}" r="6" fill="var(--gold)"/><text x="${L+4}" y="${T+10}">L<tspan dy="3" style="font-size:9px">q</tspan></text><text x="${(L+W)/2}" y="${H}" text-anchor="middle" style="font-size:10px">coefficient of variation of service time</text></svg>`;
+  $("#svChart").innerHTML=s;
+  const o=mg1(l,E,(cv*E)**2), d=mg1(l,E,0), m=mg1(l,E,E*E);
+  $("#svOut").innerHTML=`<div class="kpis"><div class="kpi"><span class="l">ρ</span><span class="v">${rho.toFixed(2)}</span><span class="w">server busy</span></div><div class="kpi"><span class="l">L<sub>q</sub> now</span><span class="v">${f2(o.Lq)}</span><span class="w">L<sub>s</sub> = ${f2(o.Ls)}</span></div><div class="kpi"><span class="l">W<sub>q</sub> now</span><span class="v">${mins(o.Wq)}</span><span class="w">W<sub>s</sub> = ${mins(o.Ws)}</span></div><div class="kpi"><span class="l">M/D/1 ÷ M/M/1</span><span class="v">${(d.Lq/m.Lq).toFixed(2)}</span><span class="w">${f2(d.Lq)} vs ${f2(m.Lq)}</span></div></div><p style="font-size:.88rem;margin-top:8px">Average speed is the same at every point on the curve; only the <b>spread</b> of service times changes. Removing all service variability halves the queue; the other half comes from random arrivals, which only appointments or reservations can tame.</p>`;
+}
+["svL","svE","svC"].forEach(id=>$("#"+id).addEventListener("input",svRender)); svLoad(svK);
+
+/* ---------- Capacity criteria ---------- */
+const CR = {
+  "Drive-in bank (Ex. 13.6)":{mode:"wait",l:30,u:20,target:5,lanes:"sep",meas:"Wb",note:"Separate lanes (no jockeying), λ split evenly; criterion: those who wait wait ≤ 5 min on average."},
+  "Gas station (Ex. 13.8)":{mode:"prob",l:24,u:12,alpha:5,note:"24 cars an hour, 5 minutes each; a free pump at least 95% of the time."},
+  "Workstations (Ex. 13.9)":{mode:"cost",l:8,u:4,cs:10,cw:30,lt:"Lq",note:"$10 an hour per workstation, $30 an hour per idle engineer; waiting counted in queue only (engineers are productive while using the workstation)."},
+  "Last National (Ex. 13.7d)":{mode:"cost",l:30,u:30,cs:10,cw:5,lt:"Ls",note:"30 an hour, 2-minute service, $10 per teller, $5 an hour per customer in the system, single queue via pneumatic tubes."},
+  "Parking lot (Ex. 13.10)":{mode:"lost",l:10,u:1,k:0,share:90,note:"Each space is a server and there is no queue (N = c). How many spaces to serve 90% of the 10 cars an hour?"},
+  "SPBU (illustrative)":{mode:"prob",l:60,u:12,alpha:10,note:"Illustrative: 60 motorists an hour at peak, 5 minutes per fill; a free pump for 90% of arrivals."}
+};
+let cr={mode:"wait",l:30,u:20,target:5,lanes:"sep",meas:"Wb",alpha:5,cs:10,cw:30,lt:"Lq",k:0,share:90}, crK="Drive-in bank (Ex. 13.6)";
+function crLoad(k){ crK=k; Object.assign(cr,CR[k]); $("#crNote").textContent=CR[k].note; presetBar("crSet",CR,crK,crLoad); segSet("crMode",cr.mode); crInputs(); }
+function crInputs(){
+  let h=field("λ per hour","crL",cr.l,'min="0.1" step="any"',75)+field("μ per server / hour","crU",cr.u,'min="0.1" step="any"',75);
+  if(cr.mode==="wait") h+=field("Target wait (min)","crT",cr.target,'min="0.1" step="any"',70)+`<div><p class="eyebrow" style="margin-bottom:4px">Lanes</p><div class="seg" id="crLanes"><button data-v="sep" aria-pressed="${cr.lanes==="sep"}">Separate</button><button data-v="single" aria-pressed="${cr.lanes==="single"}">Single queue</button></div></div><div><p class="eyebrow" style="margin-bottom:4px">Measure</p><div class="seg" id="crMeas"><button data-v="Wb" aria-pressed="${cr.meas==="Wb"}">W<sub>b</sub> (those who wait)</button><button data-v="Wq" aria-pressed="${cr.meas==="Wq"}">W<sub>q</sub> (all)</button></div></div>`;
+  if(cr.mode==="prob") h+=field("Max % who wait","crA",cr.alpha,'min="0.1" max="99" step="any"',70);
+  if(cr.mode==="cost") h+=field("C<sub>s</sub> per server/h","crCs",cr.cs,'min="0" step="any"',75)+field("C<sub>w</sub> per customer/h","crCw",cr.cw,'min="0" step="any"',75)+`<div><p class="eyebrow" style="margin-bottom:4px">Waiting counted</p><div class="seg" id="crLt"><button data-v="Lq" aria-pressed="${cr.lt==="Lq"}">In queue (L<sub>q</sub>)</button><button data-v="Ls" aria-pressed="${cr.lt==="Ls"}">In system (L<sub>s</sub>)</button></div></div>`;
+  if(cr.mode==="lost") h+=field("Extra waiting spaces","crK",cr.k,'min="0" step="1"',70)+field("Serve at least %","crSh",cr.share,'min="1" max="99.9" step="any"',70);
+  $("#crIn").innerHTML=h;
+  const bind=(id,key,fn)=>{ const e=$("#"+id); if(e) e.addEventListener("input",()=>{ cr[key]=fn?fn(+e.value):+e.value; crRender(); }); };
+  bind("crL","l"); bind("crU","u"); bind("crT","target"); bind("crA","alpha"); bind("crCs","cs"); bind("crCw","cw"); bind("crK","k",v=>Math.max(0,Math.round(v))); bind("crSh","share");
+  if($("#crLanes")) segWire("crLanes",v=>{ cr.lanes=v; crRender(); }); if($("#crMeas")) segWire("crMeas",v=>{ cr.meas=v; crRender(); }); if($("#crLt")) segWire("crLt",v=>{ cr.lt=v; crRender(); });
+  crRender();
+}
+function crRender(){
+  const {l,u}=cr; if(!(l>0&&u>0)) return; const rho=l/u, rows=[]; let ans=null, best=Infinity;
+  if(cr.mode==="lost"){
+    for(let c=1;c<=Math.max(200,Math.ceil(rho*3));c++){ const o=mmcN(l,u,c,c+cr.k); const served=100*(1-o.PN); rows.push({c,o,served}); if(ans===null&&served>=cr.share-1e-9){ ans=c; } if(ans!==null&&c>=ans+3) break; }
+  } else {
+    const c0=Math.floor(rho)+1;
+    for(let c=c0;c<=c0+12;c++){ let o, v;
+      if(cr.mode==="wait"){ if(cr.lanes==="sep"){ const lc=l/c; o=mmc(lc,u,1); v= cr.meas==="Wb"? o.Wb*60 : o.Wq*60; } else { o=mmc(l,u,c); v= cr.meas==="Wb"? o.Wb*60 : o.Wq*60; } if(ans===null&&v<=cr.target+1e-9) ans=c; }
+      if(cr.mode==="prob"){ o=mmc(l,u,c); v=100*o.Pw; if(ans===null&&v<=cr.alpha+1e-9) ans=c; }
+      if(cr.mode==="cost"){ o=mmc(l,u,c); const L=cr.lt==="Lq"?o.Lq:o.Ls; v=cr.cs*c+cr.cw*L; o.L=L; if(v<best-1e-9){ best=v; ans=c; } }
+      rows.push({c,o,v}); if(ans!==null&&c>=ans+3&&cr.mode!=="cost") break; if(cr.mode==="cost"&&c>=ans+3) break; }
+  }
+  const show = cr.mode==="lost" ? rows.filter(r=>r.c>=Math.max(1,(ans||rows.length)-4)) : rows;
+  const hl=r=>r.c===ans?' style="background:var(--good-soft)"':'';
+  let head, body;
+  if(cr.mode==="wait"){ const lbl=cr.meas==="Wb"?"W<sub>b</sub>":"W<sub>q</sub>"; head=`<tr><th>c</th><th>λ per ${cr.lanes==="sep"?"lane":"system"}</th><th>Utilization</th><th>${lbl} (min)</th></tr>`; body=show.map(r=>`<tr${hl(r)}><td>${r.c}</td><td style="font-weight:400">${(cr.lanes==="sep"?l/r.c:l).toFixed(2)}</td><td style="font-weight:400">${(100*rho/r.c).toFixed(0)}%</td><td>${r.v.toFixed(2)}</td></tr>`).join(""); }
+  if(cr.mode==="prob"){ head=`<tr><th>c</th><th>P<sub>0</sub></th><th>P(n ≥ c)</th></tr>`; body=show.map(r=>`<tr${hl(r)}><td>${r.c}</td><td style="font-weight:400">${r.o.P0.toFixed(3)}</td><td>${(r.v/100).toFixed(3)}</td></tr>`).join(""); }
+  if(cr.mode==="cost"){ head=`<tr><th>c</th><th>${cr.lt==="Lq"?"L<sub>q</sub>":"L<sub>s</sub>"}</th><th>C<sub>s</sub>c</th><th>C<sub>w</sub>L</th><th>TC</th></tr>`; body=show.map(r=>`<tr${hl(r)}><td>${r.c}</td><td style="font-weight:400">${r.o.L.toFixed(3)}</td><td style="font-weight:400">${(cr.cs*r.c).toFixed(1)}</td><td style="font-weight:400">${(cr.cw*r.o.L).toFixed(2)}</td><td>${r.v.toFixed(2)}</td></tr>`).join(""); }
+  if(cr.mode==="lost"){ head=`<tr><th>c spaces</th><th>P<sub>N</sub> full</th><th>Lost / h</th><th>Served</th></tr>`; body=show.map(r=>`<tr${hl(r)}><td>${r.c}</td><td style="font-weight:400">${r.o.PN.toFixed(3)}</td><td style="font-weight:400">${r.o.lost.toFixed(2)}</td><td>${r.served.toFixed(1)}%</td></tr>`).join(""); }
+  $("#crTbl").innerHTML=`<thead>${head}</thead><tbody>${body}</tbody>`;
+  const nm={wait:`average wait ≤ ${cr.target} min`,prob:`no more than ${cr.alpha}% wait`,cost:"minimum total cost",lost:`serve at least ${cr.share}% of arrivals`}[cr.mode];
+  const unit=cr.mode==="lost"?"spaces":"servers";
+  $("#crOut").innerHTML= ans===null?`<div class="verdict no">No capacity in the range meets the criterion. Relax the target.</div>`:`<div class="bigscore"><span class="n">${ans}</span><span class="muted">${unit} (${nm})</span></div><p style="font-size:.9rem">Naive capacity ρ = λ/μ = <b>${rho.toFixed(2)}</b>. ${cr.mode==="lost"?`With ${ans} spaces, ${(rows.find(r=>r.c===ans).o.lost).toFixed(2)} arrivals an hour still find the system full.`:`The queuing answer needs ${(ans-rho).toFixed(2)} ${unit} more than the average load, because of variability.`}</p>${cr.mode==="cost"?`<p class="muted" style="font-size:.84rem">The total-cost curve is convex: service cost rises linearly with c, waiting cost falls steeply at first, then flattens.</p>`:""}${cr.mode==="prob"&&crK.startsWith("Gas")?`<p class="muted" style="font-size:.82rem">Table 13.5 prints 0.27 for four pumps; the formula gives 0.17.</p>`:""}`;
+}
+segWire("crMode",v=>{ cr.mode=v; $("#crNote").textContent="Criterion changed: inputs below now apply to this criterion."; crInputs(); });
+crLoad(crK);
+
+/* ---------- Cookies & Cream ---------- */
+function ccRender(){
+  sliderOut(["ccL","ccT","ccK","ccB","ccS","ccW"]);
+  const l=+$("#ccL").value, T=+$("#ccT").value, K=+$("#ccK").value, Bk=+$("#ccB").value, S=+$("#ccS").value, Wt=+$("#ccW").value, target=l*Wt/60;
+  const res=[["Chairs",60/T,`60 ÷ ${T} min at table`],["Cookie sheets",(60/Bk)*(12/K),`(60 ÷ ${Bk}) × (12 ÷ ${K}) orders per sheet`],["Servers",60/S,`60 ÷ ${S} min per order`]].map(([nm,mu,how])=>{ const rho=l/mu; let c=Math.floor(rho)+1, o=mmc(l,mu,c); while(o.Lq>target+1e-12){ c++; o=mmc(l,mu,c); } return {nm,mu,how,rho,c,o}; });
+  $("#ccTbl").innerHTML=`<thead><tr><th>Resource</th><th>μ (customers / h)</th><th>Naive ρ = λ/μ</th><th>Queuing: needed for L<sub>q</sub> ≤ ${target.toFixed(3)}</th><th>L<sub>q</sub> at that level</th></tr></thead><tbody>${res.map(r=>`<tr><td>${r.nm}</td><td style="font-weight:400">${r.mu.toFixed(2)}<br><span class="muted" style="font-size:.75rem">${r.how}</span></td><td style="font-weight:400">${r.rho.toFixed(2)}</td><td style="color:var(--good)">${r.c}</td><td style="font-weight:400">${r.o.Lq.toFixed(3)}</td></tr>`).join("")}</tbody>`;
+  const def=l===50&&T===20&&K===6&&Bk===10&&S===6&&Wt===1;
+  $("#ccNote").innerHTML=`Target L<sub>q</sub> = λW<sub>q</sub> = ${l} × ${Wt}/60 = ${target.toFixed(3)}. ${def?"Table 13.4 prints L<sub>q</sub> = 0.582 for 22 chairs; the exact M/M/c formula gives 0.484. With 21 chairs it is 0.892, above the target, so 22 is right either way.":"The naive column is what you would buy if variability did not exist."}`;
+}
+["ccL","ccT","ccK","ccB","ccS","ccW"].forEach(id=>$("#"+id).addEventListener("input",ccRender)); ccRender();
+
+/* ---------- Flashcards ---------- */
+const TERMS = [
+  ["Capacity","The ability to deliver service over a time period, determined by facilities, equipment and labor."],
+  ["Capacity planning","Determining the types and amounts of resources required to implement the strategic business plan."],
+  ["A/B/C notation","Classification of parallel-server queuing models: A = arrival distribution, B = service-time distribution, C = number of servers."],
+  ["M / D / G / E_k","Exponential (Poisson); deterministic; general; Erlang with shape k."],
+  ["Steady state","System characteristics no longer depend on time; statistical equilibrium."],
+  ["Transient state (warm-up period)","Operating characteristics depend on time and on starting conditions."],
+  ["Finite queue","A queue limited physically (e.g., a fixed number of parking spaces); arrivals beyond N are lost."],
+  ["Little's Law","L = λW: average number = arrival rate × average time, for the system or the queue."],
+  ["Utilization factor","λ/cμ; must be below 1 for a steady state in an infinite-queue model."],
+  ["Effective arrival rate","λ(1 − P_N): the rate of customers actually admitted to a finite-queue system."],
+  ["Superserver","Consolidating capacity into one faster server: lower time in system, but longer queue than parallel servers."],
+  ["Pooling","Gathering independent servers into one facility with a single queue, so no server idles while customers wait."],
+  ["M/D/1","Constant service times: L_q is half that of M/M/1 at the same ρ."],
+  ["Self-service model (M/G/∞)","No waiting; the number in the system is Poisson with mean ρ."],
+  ["Total cost criterion","TC = C_s·c + C_w·L (L_s or L_q), minimized over c."]
+];
+
+/* ---------- Quiz ---------- */
+const LO_NAMES = {1:"Strategic capacity planning",2:"A/B/C notation",3:"Performance measures",4:"Relationships among characteristics",5:"Capacity planning criteria"};
+const Q = [
+ [1,"Figure 13.1 shows that as service capacity increases:",["Both service and waiting costs rise","Service cost rises and waiting cost falls","Both fall","Waiting cost rises"],1,"The optimum minimizes their sum."],
+ [1,"Why is an emergency ambulance seldom busy more than about 30% of the time?",["Poor planning","The implicit cost of waiting is exorbitant (lives)","Ambulances are cheap","Demand is constant"],1,"Low utilization buys immediate response."],
+ [1,"Service capacity is usually measured in terms of:",["Outputs, such as guest nights","Inputs, such as hotel rooms","Revenue","Customer satisfaction"],1,"Services cannot control demand, so inputs are measured."],
+ [1,"Why might only one luxury hotel be built in a midsized city?",["Zoning","Capacity comes in economically feasible sizes; a large hotel can pre-empt rivals in a limited market","Luxury hotels are illegal","Low demand for budget motels"],1,"The preemptive role of capacity."],
+ [1,"Xerox's queuing analysis for the Model 9200 recommended:",["One representative per territory","Mini teams of three representatives","Ten-person teams","Outsourcing repairs"],1,"Minimizing customer waiting and service cost."],
+ [1,"The naive Cookies and Cream analysis (16.7 chairs, 5 servers) is infeasible because it:",["Ignores costs","Plans at the average load ρ, leaving no capacity for variability","Uses Little's Law","Overestimates demand"],1,"Servers must exceed ρ."],
+ [2,"In A/B/C notation, the C stands for:",["Cost","The number of parallel servers","The calling population","Capacity of the queue"],1,"A = arrivals, B = service times."],
+ [2,"M/M/1 denotes:",["Multiple servers","Poisson arrivals, exponential service, one server","Constant service","A finite queue"],1,"M = Markovian (exponential)."],
+ [2,"In queuing notation, D means:",["Discrete","Deterministic (constant) times","Dynamic discipline","Distributed servers"],1,"For example, M/D/1."],
+ [2,"An Erlang distribution with k = 1 is equivalent to:",["Constant","Exponential","Normal","Uniform"],1,"k = ∞ gives deterministic."],
+ [2,"The queuing equations in Appendix D assume:",["A transient state","A steady state","No customers","Constant arrivals"],1,"Statistical equilibrium."],
+ [2,"A parking lot with no space to wait can be modeled as:",["M/M/1","A finite-queue M/M/c with N = c","M/G/∞","M/D/1"],1,"Each space is a server."],
+ [2,"When analytical model assumptions are clearly violated, the chapter recommends:",["Ignoring them","Computer simulation","Doubling capacity","Using averages"],1,"See the chapter supplement."],
+ [3,"Boat ramp: λ = 6, μ = 10 per hour. L<sub>s</sub> is:",["0.6","0.9","1.5","2.5"],2,"λ/(μ − λ) = 6/4."],
+ [3,"Boat ramp: λ = 6, μ = 10. W<sub>q</sub> is:",["6 min","9 min","15 min","24 min"],1,"ρ/(μ − λ) = 0.6/4 h."],
+ [3,"In the boat ramp, why is the mean number being launched 0.6, not 1?",["Rounding","The ramp is busy only 60% of the time","Two boats launch at once","Lq is wrong"],1,"Mean number in service = ρ."],
+ [3,"For an M/M/1 system, the probability that an arrival must wait is:",["1 − ρ","ρ","ρ²","1/μ"],1,"P(n ≥ 1) = ρ."],
+ [3,"Sunset Airlines: λ = 15, μ = 20, room for 3 including the one being served. The waiting area is inadequate about:",["10%","25%","32%","56%"],2,"P(n ≥ 4) = 0.75⁴ = 0.316."],
+ [3,"The secretarial pool (λ = 9, μ = 4, c = 4) gives a turnaround time of about:",["9 min","17 min","30 min","60 min"],1,"L<sub>s</sub> = 2.56; W<sub>s</sub> = 2.56/9 h."],
+ [3,"Supermarket: 30 shoppers an hour shop for 20 minutes (self-service). Mean number shopping:",["3","6","10","30"],2,"M/G/∞: L<sub>s</sub> = ρ = 30 × 1/3."],
+ [3,"Boat ramp with room for only two waiting trailers (N = 3): P<sub>3</sub> = 0.10. Boaters lost per hour:",["0.1","0.6","1.0","3"],1,"λP<sub>N</sub> = 6 × 0.10."],
+ [3,"Parking lot: 6 spaces, λ = 10 an hour, 1-hour stays. About how many cars an hour find it full?",["0.5","2.4","4.8","10"],2,"P<sub>6</sub> = 0.48."],
+ [3,"With an ATM of constant 3-minute service and λ = 10 an hour, L<sub>q</sub> is:",["0.125","0.25","0.5","1.0"],1,"M/D/1: ρ²/[2(1 − ρ)] = 0.25/1."],
+ [4,"Which relationship is Little's Law?",["L<sub>s</sub> = L<sub>q</sub> + ρ","L = λW","W<sub>s</sub> = W<sub>q</sub> + 1/μ","ρ = λ/μ"],1,"It holds for queue and system."],
+ [4,"18 travelers are ahead of you and 2 join each minute. Expected wait:",["2 min","9 min","18 min","36 min"],1,"W = L/λ = 18/2."],
+ [4,"For a finite-queue system, Little's Law must use:",["λ","The effective arrival rate λ(1 − P<sub>N</sub>)","μ","cμ"],1,"Only admitted customers count."],
+ [4,"Compared with two parallel servers of the same total capacity, one superserver gives:",["Lower L<sub>s</sub> and lower L<sub>q</sub>","Lower L<sub>s</sub> but higher L<sub>q</sub>","Higher L<sub>s</sub> and lower L<sub>q</sub>","The same results"],1,"Table 13.2: 0.67 vs 0.95; 0.27 vs 0.15."],
+ [4,"Pooling the four departmental secretaries reduces turnaround because:",["Secretaries work faster","No secretary sits idle while work waits in another queue","Fewer requests arrive","Service times become constant"],1,"Congestion comes from variation."],
+ [4,"Compared with M/M/1 at the same ρ, the M/D/1 queue length is:",["The same","Half","Double","Zero"],1,"Service variability explains half the congestion."],
+ [4,"The remaining half of M/M/1 congestion, after removing service variability, comes from:",["Server laziness","Variability in arrivals","Queue discipline","The calling population size"],1,"Reduce it with appointments or reservations."],
+ [4,"Why are emergency ambulances usually dispersed rather than pooled at one site?",["Cost","Travel time to the customer must be added to waiting time","Regulations","Pooling never works"],1,"Response time matters most."],
+ [4,"In an M/M/c system, steady state requires:",["λ < μ","λ/cμ < 1","c > λ","μ > c"],1,"ρ must be less than c."],
+ [5,"Drive-in bank, separate lanes: λ = 30, μ = 20 per teller. With 3 tellers, W<sub>b</sub> is:",["3 min","4.8 min","6 min","10 min"],2,"1/(20 − 10) h."],
+ [5,"How many drive-in tellers meet a 5-minute W<sub>b</sub> criterion in Example 13.6?",["3","4","5","6"],1,"4 tellers: 1/(20 − 7.5) h = 4.8 min."],
+ [5,"Gas station: λ = 24, 5-minute fills. Pumps needed so at least 95% find a free pump:",["3","4","5","6"],3,"P(n ≥ 6) = 0.02; P(n ≥ 5) = 0.06."],
+ [5,"Workstation rental (λ = 8, μ = 4, $10 rent, $30 engineer): the minimum-cost number is:",["3","4","5","6"],1,"TC ≈ $45.1 per hour."],
+ [5,"Why does Example 13.9 count L<sub>q</sub> rather than L<sub>s</sub>?",["L<sub>s</sub> is unknown","Engineers are productive while using the workstation","L<sub>q</sub> is larger","The book makes an error"],1,"Only time in queue is wasted."],
+ [5,"The minimum total cost criterion is most appropriate when:",["Customers are external and anonymous","Customers and servers belong to the same organization","Waiting is life-threatening","There is no waiting area"],1,"E.g., a captive copy center or secretarial pool."],
+ [5,"A probability-of-excessive-waiting criterion is typical for:",["Public services such as ambulances and telephone service","Internal copy centers","Parking lots","Restaurants promoting bar sales"],0,"Service levels where waiting cost is hard to price."],
+ [5,"For Cookies and Cream, the queuing analysis requires about:",["17 chairs, 5 sheets, 5 servers","22 chairs, 6 sheets, 7 servers","30 chairs, 10 sheets, 10 servers","16.7 chairs, 4.17 sheets, 5 servers"],1,"Table 13.4."],
+ [5,"Why is the linear waiting-cost assumption in TC = C<sub>s</sub>c + C<sub>w</sub>L suspect?",["Waiting costs are always zero","Longer waits anger customers disproportionately and can lose them for good","Servers are paid hourly","Little's Law fails"],1,"It is used because a better cost function is hard to estimate."]
+];
+
+function renderActivity(el){
+  const key = el.dataset.activity, cfg = ACT[key];
+  const st = {done:0, right:0, total:cfg.items.length};
+  const itemsEl = $("[data-items]", el);
+  itemsEl.innerHTML = cfg.items.map((it,i)=>`<div class="item" data-i="${i}"><p class="q">${it[0]}</p><div class="opts">${cfg.opts.map(o=>`<button data-o="${esc(o)}">${o}</button>`).join("")}</div><p class="fb" hidden></p></div>`).join("");
+  const upd = ()=>{ $("[data-score]",el).textContent = `${st.right} correct · ${st.done}/${st.total} answered`; };
+  upd();
+  $$(".item", itemsEl).forEach(item=>{
+    const it = cfg.items[+item.dataset.i];
+    $$("button", item).forEach(b=>b.addEventListener("click",()=>{
+      const ok = b.dataset.o===it[1];
+      $$("button", item).forEach(x=>{ x.disabled=true; if(x.dataset.o===it[1]) x.classList.add("right"); });
+      if(!ok) b.classList.add("wrong");
+      item.classList.add(ok?"done-ok":"done-bad");
+      const fb = $(".fb", item); fb.hidden=false; fb.innerHTML = (ok?"<b style='color:var(--good)'>Correct.</b> ":"<b style='color:var(--bad)'>Not quite.</b> ")+it[2];
+      st.done++; if(ok) st.right++; upd();
+    }));
+  });
+}
+$$("[data-activity]").forEach(renderActivity);
+let fcOrder = TERMS.map((_,i)=>i), fcI = 0;
+function renderFc(){ const t = TERMS[fcOrder[fcI]]; $("#fc").classList.remove("flip"); $("#fcTerm").textContent=t[0]; $("#fcDef").textContent=t[1]; $("#fcCount").textContent=`${fcI+1} / ${TERMS.length}`; }
+$("#fc").addEventListener("click",()=>$("#fc").classList.toggle("flip"));
+$("#fcPrev").addEventListener("click",()=>{ fcI=(fcI-1+TERMS.length)%TERMS.length; renderFc(); });
+$("#fcNext").addEventListener("click",()=>{ fcI=(fcI+1)%TERMS.length; renderFc(); });
+$("#fcShuffle").addEventListener("click",()=>{ fcOrder=shuffle(fcOrder); fcI=0; renderFc(); });
+renderFc();
+const quizEl = $("#quiz");
+let run = null;
+function setup(){
+  const best = store.get(KEY+"_best");
+  quizEl.innerHTML = `<div class="qz-setup">
+    <p>Questions are drawn from all ${Object.keys(LO_NAMES).length} learning objectives, including Indonesian applications. You get feedback after each answer and a breakdown by objective at the end.</p>
+    <div><p class="eyebrow" style="margin-bottom:6px">Length</p><div class="seg" id="qzLen">
+      <button data-n="10" aria-pressed="true">Quick · 10 questions</button><button data-n="20" aria-pressed="false">Standard · 20</button><button data-n="${Q.length}" aria-pressed="false">Full · all ${Q.length}</button></div></div>
+    <div><p class="eyebrow" style="margin-bottom:6px">Focus</p><div class="seg" id="qzLo"><button data-lo="0" aria-pressed="true">All objectives</button>${Object.keys(LO_NAMES).map(k=>`<button data-lo="${k}" aria-pressed="false">LO${k}</button>`).join("")}</div></div>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><button class="btn" id="qzStart">Start self-test</button>${best!=null?`<span class="muted mono" style="font-size:.82rem">Your best on this device: ${best}%</span>`:""}</div>
+  </div>`;
+  let n=10, lo=0;
+  $$("#qzLen button").forEach(b=>b.addEventListener("click",()=>{ $$("#qzLen button").forEach(x=>x.setAttribute("aria-pressed",x===b)); n=+b.dataset.n; }));
+  $$("#qzLo button").forEach(b=>b.addEventListener("click",()=>{ $$("#qzLo button").forEach(x=>x.setAttribute("aria-pressed",x===b)); lo=+b.dataset.lo; }));
+  $("#qzStart").addEventListener("click",()=>{
+    let pool = Q.map((q,i)=>i).filter(i=>!lo||Q[i][0]===lo);
+    pool = shuffle(pool).slice(0, Math.min(n,pool.length));
+    run = {qs: pool.map(i=>{ const q=Q[i]; const order=shuffle(q[2].map((_,j)=>j)); return {lo:q[0], text:q[1], opts:order.map(j=>q[2][j]), ans:order.indexOf(q[3]), exp:q[4]}; }), i:0, picks:[]};
+    showQ();
+  });
+}
+function showQ(){
+  const r=run, q=r.qs[r.i], picked=r.picks[r.i];
+  quizEl.innerHTML = `<div class="qz-top"><span class="eyebrow">Question ${r.i+1} of ${r.qs.length} · LO${q.lo} ${LO_NAMES[q.lo]}</span><span class="mono muted" style="font-size:.8rem">${r.picks.filter((p,k)=>p===r.qs[k].ans).length} correct so far</span></div>
+    <div class="qz-prog"><i style="width:${(r.i)/r.qs.length*100}%"></i></div>
+    <p class="qz-q">${q.text}</p>
+    <div class="qz-opts">${q.opts.map((o,j)=>`<button data-j="${j}"><span class="k">${"ABCD"[j]}</span><span>${o}</span></button>`).join("")}</div>
+    <div id="qzExp"></div>
+    <div class="qz-nav"><button class="btn ghost" id="qzQuit">Quit</button><button class="btn" id="qzNext" ${picked==null?"disabled":""}>${r.i===r.qs.length-1?"See results":"Next question"}</button></div>`;
+  const lock = (j)=>{
+    $$(".qz-opts button").forEach(b=>{ b.disabled=true; const k=+b.dataset.j; if(k===q.ans) b.classList.add("right"); else if(k===j) b.classList.add("wrong"); });
+    const ok = j===q.ans;
+    $("#qzExp").innerHTML = `<div class="qz-exp ${ok?"ok":"no"}"><b>${ok?"Correct.":"Not quite. The answer is "+"ABCD"[q.ans]+"."}</b>${q.exp}</div>`;
+    $("#qzNext").disabled=false;
+  };
+  if(picked!=null) lock(picked);
+  $$(".qz-opts button").forEach(b=>b.addEventListener("click",()=>{ const j=+b.dataset.j; r.picks[r.i]=j; lock(j); $("#qzNext").focus(); }));
+  $("#qzNext").addEventListener("click",()=>{ if(r.i<r.qs.length-1){ r.i++; showQ(); } else results(); });
+  $("#qzQuit").addEventListener("click",setup);
+}
+function results(){
+  const r=run; const right=r.qs.filter((q,k)=>r.picks[k]===q.ans).length; const pct=Math.round(right/r.qs.length*100);
+  const best=store.get(KEY+"_best"); if(best==null||pct>best) store.set(KEY+"_best",pct);
+  const by={}; r.qs.forEach((q,k)=>{ by[q.lo]=by[q.lo]||{r:0,t:0}; by[q.lo].t++; if(r.picks[k]===q.ans) by[q.lo].r++; });
+  const verdict = pct>=85?"Strong grasp of the chapter.":pct>=65?"Good foundation. Review the objectives below 70%.":"Revisit the units for the weaker objectives, then try again.";
+  const unitFor = UNIT_FOR;
+  quizEl.innerHTML = `<div class="res-big"><span class="pct" style="color:${pct>=65?"var(--good)":"var(--bad)"}">${pct}%</span><span>${right} of ${r.qs.length} correct. ${verdict}</span></div>
+    <div><p class="eyebrow" style="margin-bottom:8px">By learning objective</p><div class="lo-bars">${Object.keys(by).sort().map(k=>{const v=by[k],p=Math.round(v.r/v.t*100);return `<div class="lo-row"><span><b class="mono">LO${k}</b> ${LO_NAMES[k]}${p<70?` · <a href="#${unitFor[k]}" style="color:var(--accent)">review</a>`:""}</span><span class="b"><i style="width:${p}%;background:${p>=70?"var(--good)":"var(--bad)"}"></i></span><span class="v">${v.r}/${v.t}</span></div>`;}).join("")}</div></div>
+    <div><p class="eyebrow" style="margin-bottom:8px">Review your answers</p><div class="review">${r.qs.map((q,k)=>{const ok=r.picks[k]===q.ans;return `<details ${ok?"":"open"}><summary><span class="mk ${ok?"ok":"no"}">${ok?"✓":"✗"}</span>${q.text}</summary><p><b>Your answer:</b> ${q.opts[r.picks[k]]}${ok?"":`<br><b>Correct:</b> ${q.opts[q.ans]}`}</p><p class="muted">${q.exp}</p></details>`;}).join("")}</div></div>
+    <div class="qz-nav"><button class="btn ghost" id="qzNew">Change settings</button><button class="btn" id="qzAgain">Retake with new questions</button></div>`;
+  $("#qzNew").addEventListener("click",setup);
+  $("#qzAgain").addEventListener("click",()=>{ setup(); $("#qzStart").click(); });
+  quizEl.scrollIntoView({block:"start"});
+}
+setup();
+
+/* ---------- Progress & nav ---------- */
+const units = $$("[data-unit]").map(s=>s.id);
+const seen = new Set(store.get(KEY+"_seen")||[]);
+function refreshProgress(){
+  const n = units.filter(u=>seen.has(u)).length;
+  $("#meterTxt").textContent = `${n} / ${units.length} units`;
+  $("#meterBar").style.width = (n/units.length*100)+"%";
+  $$("#tocList a").forEach(a=>a.classList.toggle("seen", seen.has(a.getAttribute("href").slice(1))));
+  store.set(KEY+"_seen",[...seen]);
+}
+if("IntersectionObserver" in window){
+  const io = new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ const id=e.target.id; $$("#tocList a").forEach(a=>a.classList.toggle("here", a.getAttribute("href")==="#"+id)); } }); },{rootMargin:"-40% 0px -55% 0px"});
+  $$("section.unit").forEach(s=>io.observe(s));
+  $$("[data-unit]").forEach(s=>{ const end=document.createElement("span"); end.style.cssText="display:block;height:1px"; end.dataset.for=s.id; s.appendChild(end); });
+  const endObs = new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ seen.add(e.target.dataset.for); refreshProgress(); endObs.unobserve(e.target);} }); });
+  $$("[data-for]").forEach(el=>endObs.observe(el));
+}
+refreshProgress();
+})();
+</script>
+</body>
+</html>
