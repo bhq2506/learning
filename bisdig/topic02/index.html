@@ -332,14 +332,26 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
 .dvps span{display:flex;justify-content:space-between}
 .dvps input{accent-color:var(--navy);width:100%}
 #dvpRadar{width:100%;max-width:300px;justify-self:center}
+
+/* logo ITS & tombol beranda */
+.top .logo{display:flex;align-items:center;flex:none;line-height:0}
+.top .logo img{height:44px;width:auto;display:block}
+.top .logo .mk{display:none}
+@media (max-width:640px){.top .logo .full{display:none}.top .logo .mk{display:block;height:34px}}
+.homebtn{flex:none;display:inline-flex;align-items:center;gap:6px;background:#FFC72C;color:#013880;font-weight:800;font-size:.82rem;line-height:1;text-decoration:none;padding:9px 13px;border-radius:9px;box-shadow:0 0 0 2px rgba(255,255,255,.28);white-space:nowrap}
+.homebtn:hover{background:#FFD65C}
+.homebtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+@media (max-width:560px){.homebtn .t{display:none}.homebtn{padding:9px 11px;font-size:.95rem}}
 </style>
 </head>
 <body>
 
 <header class="top">
   <button class="iconbtn menubtn" id="menuBtn" aria-label="Buka menu" aria-expanded="false">☰</button>
-  <div class="brand"><b>Topik 02 · Konsep Bisnis Digital</b><small><a href="../" style="color:inherit">← Pengantar Bisnis Digital (DG234101) · ITS</a></small></div>
+  <a class="logo" href="../" aria-label="Beranda mata kuliah Pengantar Bisnis Digital, ITS"><img class="full" src="../assets/its-logo-white.png" alt="Institut Teknologi Sepuluh Nopember" width="77" height="44"><img class="mk" src="../assets/its-mark-white.png" alt="ITS" width="23" height="34"></a>
+  <div class="brand"><b>Topik 02 · Konsep Bisnis Digital</b><small>Pengantar Bisnis Digital (DG234101) · ITS</small></div>
   <div class="prog" title="Kemajuan belajar"><span class="lbl" id="progLbl">0%</span><span class="bar"><i id="progBar"></i></span></div>
+  <a class="homebtn" href="../" title="Kembali ke beranda mata kuliah"><span aria-hidden="true">⌂</span><span class="t">Beranda</span></a>
   <button class="iconbtn" id="themeBtn" aria-label="Ganti tema terang/gelap">◐</button>
 </header>
 

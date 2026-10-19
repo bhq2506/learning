@@ -180,17 +180,28 @@ footer{background:var(--navy);color:#fff;padding:28px 0;font-size:.84rem}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) footer{background:#0E1A36}}
 footer a{color:#fff}
 footer p{margin:.3em 0;opacity:.88}
+
+/* logo ITS */
+.top .logo{display:flex;align-items:center;flex:none;line-height:0}
+.top .logo img{height:44px;width:auto;display:block}
+.top .logo .mk{display:none}
+.top .sep{width:1px;height:26px;background:rgba(255,255,255,.35);flex:none}
+@media (max-width:520px){.top .logo .full{display:none}.top .logo .mk{display:block;height:34px}}
+.herologo{display:block;height:70px;width:auto;margin-bottom:18px}
 </style>
 </head>
 <body>
 
 <header class="top"><div class="wrap">
+  <a class="logo" href="https://www.its.ac.id" target="_blank" rel="noopener" aria-label="Situs resmi ITS"><img class="full" src="assets/its-logo-white.png" alt="Institut Teknologi Sepuluh Nopember" width="77" height="44"><img class="mk" src="assets/its-mark-white.png" alt="ITS" width="23" height="34"></a>
+  <span class="sep" aria-hidden="true"></span>
   <b>Pengantar Bisnis Digital</b>
   <nav aria-label="Navigasi halaman"><a href="#tentang">Tentang</a><a href="#capaian">Capaian</a><a href="#materi">Materi</a><a href="#cara">Cara belajar</a><a href="#penilaian">Penilaian</a><a href="#referensi">Referensi</a></nav>
   <button class="iconbtn" id="themeBtn" aria-label="Ganti tema terang/gelap">◐</button>
 </div></header>
 
 <div class="hero"><div class="wrap">
+  <img class="herologo" src="assets/its-logo-white.png" alt="Institut Teknologi Sepuluh Nopember" width="122" height="70">
   <div class="kick">S1 Bisnis Digital · Departemen Manajemen Bisnis · ITS</div>
   <h1>Pengantar Bisnis Digital</h1>
   <div class="en">Introduction to Digital Business</div>
