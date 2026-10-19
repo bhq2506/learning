@@ -1,0 +1,1487 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Topik 02 · Konsep Bisnis Digital</title>
+<meta name="description" content="Web-app belajar mandiri Pengantar Bisnis Digital (DG234101) ITS — Topik 02: Konsep Bisnis Digital & E-commerce, berbasis Chaffey et al. (2019) Bab 1.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#F3F5FA; --surface:#FFFFFF; --sunk:#E8ECF5; --ink:#0F1B33; --muted:#56627A; --line:#D5DCEA;
+  --navy:#013880; --navy-ink:#FFFFFF; --navy-soft:#E1E9F7;
+  --gold:#B07A00; --gold-bg:#FFC72C; --gold-soft:#FFF4D4;
+  --good:#17784E; --good-soft:#DCF2E6; --bad:#B4372F; --bad-soft:#F9E2DF;
+  --dig:#5B3FB0; --dig-soft:#ECE7FA;
+  --idn:#B4372F; --idn-soft:#FBEAE8;
+  --f:"Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  --r:12px;
+  --shadow:0 1px 2px rgba(15,27,51,.06), 0 4px 16px rgba(15,27,51,.05);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.65}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:var(--navy)}
+h1,h2,h3,h4{line-height:1.2;margin:0 0 .5em;letter-spacing:-.01em}
+h2{font-size:clamp(1.45rem,1.1rem + 1.3vw,1.95rem);font-weight:800}
+h3{font-size:1.12rem;font-weight:700;margin-top:1.6em}
+p{margin:0 0 1em}
+em{font-style:italic}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold-bg);outline-offset:2px;border-radius:6px}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;padding-top:max(10px,env(safe-area-inset-top))}
+:root[data-theme="dark"] .top{background:#0E1A36}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .top{background:#0E1A36}}
+.top .brand{display:flex;flex-direction:column;line-height:1.2;min-width:0;flex:1}
+.top .brand b{font-size:.95rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .brand small{font-size:.72rem;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog{display:flex;align-items:center;gap:8px;font-size:.78rem;white-space:nowrap}
+.prog .bar{width:110px;height:8px;border-radius:99px;background:rgba(255,255,255,.22);overflow:hidden}
+.prog .bar i{display:block;height:100%;background:#FFC72C;border-radius:99px;width:0;transition:width .4s}
+.iconbtn{background:rgba(255,255,255,.12);border:0;border-radius:8px;width:34px;height:34px;display:grid;place-items:center;color:#fff;flex:none}
+.iconbtn:hover{background:rgba(255,255,255,.22)}
+.menubtn{display:none}
+@media (max-width:899px){.menubtn{display:grid}.prog .bar{width:64px}}
+@media (max-width:420px){.prog .lbl{display:none}}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1200px;margin:0 auto}
+@media (max-width:899px){.shell{grid-template-columns:minmax(0,1fr)}}
+nav.side{position:sticky;top:54px;align-self:start;height:calc(100vh - 54px);overflow:auto;padding:20px 12px 40px 16px;border-right:1px solid var(--line)}
+@media (max-width:899px){
+  nav.side{position:fixed;inset:54px 0 0 0;height:auto;background:var(--bg);z-index:15;border:0;transform:translateX(-100%);transition:transform .25s;padding:16px}
+  nav.side.open{transform:none}
+}
+.side .grp{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 8px 6px}
+.side .grp:first-child{margin-top:0}
+.side a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;text-decoration:none;color:var(--ink);font-size:.9rem;font-weight:500;line-height:1.3}
+.side a:hover{background:var(--sunk)}
+.side a.on{background:var(--navy-soft);color:var(--navy);font-weight:700}
+.side a .n{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk);color:var(--muted);border:1.5px solid var(--line)}
+.side a.done .n{background:var(--good);border-color:var(--good);color:#fff}
+.side a.on .n{border-color:var(--navy)}
+.side a .n.ico{font-size:.8rem}
+
+main{padding:28px 16px 80px;min-width:0}
+@media (min-width:900px){main{padding:36px 40px 100px}}
+.view{max-width:760px;margin:0 auto;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tag{display:inline-block;font-family:var(--mono);font-size:.7rem;font-weight:500;letter-spacing:0;text-transform:none;padding:2px 8px;border-radius:99px;background:var(--sunk);color:var(--muted)}
+.lead{font-size:1.05rem;color:var(--muted)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:18px 0;box-shadow:var(--shadow)}
+.card h3:first-child,.card h4:first-child{margin-top:0}
+
+/* reading box */
+.read{border:2px solid var(--navy);background:var(--navy-soft);border-radius:var(--r);padding:16px 18px;margin:20px 0}
+.read .hd{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.read .pg{font-family:var(--mono);font-size:.82rem;background:var(--navy);color:var(--navy-ink);padding:2px 9px;border-radius:6px}
+.read ul{margin:.3em 0 .8em;padding-left:1.2em}
+.read li{margin:.2em 0}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--line);cursor:pointer;font-weight:600;font-size:.92rem}
+.chk input{width:20px;height:20px;accent-color:var(--good);margin:1px 0 0;flex:none}
+
+/* callouts */
+.co{border-left:4px solid var(--dig);background:var(--dig-soft);padding:12px 16px;border-radius:0 10px 10px 0;margin:16px 0;font-size:.95rem}
+.co b.t{color:var(--dig)}
+.co.idn{border-color:var(--idn);background:var(--idn-soft)}
+.co.idn b.t{color:var(--idn)}
+.co.book{border-color:var(--gold);background:var(--gold-soft)}
+.co.book b.t{color:var(--gold)}
+.co p:last-child{margin:0}
+
+/* tables */
+.tw{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--sunk);font-weight:700;font-size:.8rem;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+
+.terms{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.terms span{font-size:.78rem;padding:3px 10px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-style:italic}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:.92rem;background:var(--navy);color:var(--navy-ink);text-decoration:none}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn.gold{background:var(--gold-bg);color:#1b1400}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:36px;padding-top:20px;border-top:1px solid var(--line)}
+
+/* quiz */
+.qwrap{position:relative}
+.qwrap.locked .qbody{filter:blur(3px);pointer-events:none;user-select:none;opacity:.6}
+.lockmsg{display:none;position:absolute;inset:0;z-index:2;align-items:center;justify-content:center;text-align:center;padding:16px}
+.qwrap.locked .lockmsg{display:flex}
+.lockmsg div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px;max-width:380px;box-shadow:0 6px 30px rgba(0,0,0,.12);font-size:.92rem}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0;background:var(--surface)}
+.q .qt{font-weight:600;margin-bottom:10px}
+.q .kind{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:5px;margin-bottom:6px;background:var(--sunk);color:var(--muted)}
+.q .kind.rb{background:var(--gold-soft);color:var(--gold)}
+.opts{display:grid;gap:7px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;padding:9px 12px;border-radius:9px;border:1.5px solid var(--line);background:var(--bg);font-size:.92rem;line-height:1.45}
+.opt:hover:not([disabled]){border-color:var(--navy)}
+.opt .L{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk)}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.ok .L{background:var(--good);color:#fff}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)}
+.opt.no .L{background:var(--bad);color:#fff}
+.opt.sel{border-color:var(--navy);background:var(--navy-soft)}
+.opt[disabled]{cursor:default}
+.fb{margin-top:10px;font-size:.88rem;padding:9px 12px;border-radius:8px}
+.fb.ok{background:var(--good-soft);color:var(--ink)}
+.fb.no{background:var(--bad-soft);color:var(--ink)}
+.fb b{margin-right:4px}
+.retry{margin-top:8px;font-size:.82rem;background:none;border:0;color:var(--navy);font-weight:700;padding:0;text-decoration:underline}
+
+/* classify widget */
+.cls .it{padding:12px 0;border-bottom:1px dashed var(--line)}
+.cls .it:last-child{border-bottom:0}
+.cls .it p{margin:0 0 8px;font-size:.93rem;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--line);background:var(--bg);border-radius:99px;padding:5px 12px;font-size:.8rem;font-weight:600}
+.chip:hover:not([disabled]){border-color:var(--navy)}
+.chip.ok{background:var(--good);border-color:var(--good);color:#fff}
+.chip.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.chip[disabled]{cursor:default}
+.cls .why{font-size:.84rem;color:var(--muted);margin-top:6px}
+.score{font-size:.85rem;font-weight:700;color:var(--muted)}
+
+/* simulator */
+.sim svg{width:100%;height:auto;display:block}
+.sim .ctl{display:grid;gap:10px;margin-top:10px}
+.sim input[type=range]{width:100%;accent-color:var(--navy)}
+.sim .out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.sim .out div{background:var(--sunk);border-radius:9px;padding:8px 10px;font-size:.78rem;color:var(--muted)}
+.sim .out b{display:block;font-size:1.05rem;color:var(--ink)}
+.state{font-weight:800;padding:8px 12px;border-radius:9px;text-align:center}
+.state.sh{background:var(--bad-soft);color:var(--bad)}
+.state.su{background:var(--gold-soft);color:var(--gold)}
+.state.eq{background:var(--good-soft);color:var(--good)}
+.tog{display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600}
+.tog input{width:18px;height:18px;accent-color:var(--dig)}
+
+/* calc */
+.calc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.calc{grid-template-columns:minmax(0,1fr)}}
+.calc label{font-size:.8rem;font-weight:600;color:var(--muted);display:grid;gap:4px}
+.calc input{font:inherit;font-size:.95rem;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.res{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--sunk);font-size:.92rem}
+.res big{font-size:1.4rem;font-weight:800;display:block}
+
+/* case */
+details.ans{margin-top:10px;border-radius:10px;border:1px dashed var(--gold);background:var(--gold-soft)}
+details.ans summary{cursor:pointer;padding:10px 14px;font-weight:700;color:var(--gold);font-size:.9rem}
+details.ans>div{padding:0 14px 12px;font-size:.92rem}
+details.ans.lock summary{color:var(--muted);cursor:not-allowed}
+textarea{font:inherit;font-size:.92rem;width:100%;min-height:92px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+textarea:focus{border-color:var(--navy);outline:none}
+.cq{margin:18px 0}
+.cq>b{display:block;margin-bottom:6px;font-size:.95rem}
+.hint{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+/* flashcards */
+.fc{perspective:1200px;margin:16px 0}
+.fc .inner{position:relative;min-height:230px;transition:transform .5s;transform-style:preserve-3d;cursor:pointer}
+.fc.flip .inner{transform:rotateY(180deg)}
+.fc .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;padding:24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border:1px solid var(--line);box-shadow:var(--shadow)}
+.fc .front{background:var(--navy);color:#fff}
+:root[data-theme="dark"] .fc .front{background:#1C2B4D;color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fc .front{background:#1C2B4D;color:var(--ink)}}
+.fc .front b{font-size:1.5rem;font-style:italic}
+.fc .back{background:var(--surface);transform:rotateY(180deg);font-size:1.02rem}
+.fc small{opacity:.7;font-size:.75rem;margin-top:10px}
+
+/* final */
+.big{font-size:2.6rem;font-weight:800;line-height:1}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--gold-bg);color:#1b1400;font-weight:800;padding:6px 14px;border-radius:99px}
+
+/* home */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+@media (max-width:620px){.steps{grid-template-columns:minmax(0,1fr)}}
+.steps div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.steps>div>b{display:block;font-size:1rem;margin-bottom:2px}
+.steps span{font-size:.85rem;color:var(--muted)}
+.steps i{font-style:normal;font-size:1.4rem}
+.plan td:nth-child(3){font-family:var(--mono);font-size:.8rem;white-space:nowrap}
+.plan .st{font-size:.75rem;font-weight:700;white-space:nowrap}
+.st.y{color:var(--good)}.st.n{color:var(--muted)}
+.hero{background:linear-gradient(135deg,#013880 0%,#0a4fa8 100%);color:#fff;border-radius:16px;padding:24px 22px;margin-bottom:20px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(1.6rem,1.2rem + 1.8vw,2.3rem);font-weight:800;margin:4px 0 8px}
+.hero p{opacity:.92;margin:0;max-width:56ch}
+.hero .eyebrow{color:#FFC72C}
+.hero::after{content:"";position:absolute;right:-40px;bottom:-60px;width:220px;height:220px;border-radius:50%;border:28px solid rgba(255,199,44,.18)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:.88rem;font-weight:600;z-index:40;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.foot{font-size:.78rem;color:var(--muted);margin-top:40px}
+ol.ref li{margin:.4em 0;font-size:.9rem}
+/* self-test (pola serviceman) */
+.quiz{scroll-margin-top:70px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow)}
+.qz-setup{display:flex;flex-direction:column;gap:14px}
+.qz-setup p{margin:0}
+.qz-lbl{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;font-size:.88rem;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.qz-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.qz-top .qz-lbl{margin:0}
+.qz-prog{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.qz-prog i{display:block;height:100%;background:var(--navy);width:0;transition:width .3s}
+.qz-q{font-size:1.18rem;font-weight:700;margin:0;line-height:1.4}
+.qz-opts{display:flex;flex-direction:column;gap:8px}
+.qz-opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;font-size:.95rem;line-height:1.45}
+.qz-opts button .k{font-family:var(--mono);font-size:.8rem;color:var(--muted);flex:none;padding-top:2px}
+.qz-opts button:hover:not(:disabled){border-color:var(--navy)}
+.qz-opts button:disabled{cursor:default}
+.qz-opts button.right{border-color:var(--good);background:var(--good-soft)}
+.qz-opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.qz-exp{border-radius:10px;padding:12px 14px;font-size:.93rem}
+.qz-exp.ok{background:var(--good-soft)}.qz-exp.no{background:var(--bad-soft)}
+.qz-exp b{display:block;margin-bottom:2px}
+.qz-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.res-big{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.res-big .pct{font-weight:800;font-size:3.4rem;line-height:1}
+.lo-bars{display:flex;flex-direction:column;gap:8px}
+.lo-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 44px;gap:10px;align-items:center;font-size:.86rem}
+@media (max-width:520px){.lo-row{grid-template-columns:minmax(0,1fr) 70px 40px}}
+.lo-row .b{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.lo-row .b i{display:block;height:100%}
+.lo-row .v{font-family:var(--mono);font-size:.78rem;text-align:right}
+.review{display:flex;flex-direction:column;gap:8px}
+.review details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.review summary{cursor:pointer;font-size:.92rem}
+.review .mk{font-family:var(--mono);font-weight:700;margin-right:6px}
+.review .mk.ok{color:var(--good)}.review .mk.no{color:var(--bad)}
+.review p{font-size:.88rem;margin:6px 0 0}
+.muted{color:var(--muted)}
+/* umpan balik studi kasus */
+.btn.sm{padding:7px 12px;font-size:.84rem}
+.fbk{margin-top:8px}
+.fbres{margin-top:10px}
+.gbox{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px}
+.ghead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.meter{display:flex;gap:4px}
+.meter i{width:22px;height:10px;border-radius:3px;background:var(--sunk)}
+.meter i.on{background:var(--navy)}
+.glv{font-weight:800}
+.gnote{font-size:.72rem;color:var(--muted);margin-left:auto}
+.crit{list-style:none;padding:0;margin:6px 0;display:grid;gap:5px}
+.crit li{font-size:.86rem;display:flex;gap:8px;align-items:flex-start}
+.crit li .m{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:.7rem;font-weight:800;margin-top:2px}
+.crit li.y .m{background:var(--good);color:#fff}
+.crit li.n .m{background:var(--sunk);color:var(--muted);border:1.5px dashed var(--muted)}
+.crit li.n span.h{color:var(--muted)}
+.gwarn{font-size:.84rem;background:var(--gold-soft);border-radius:8px;padding:8px 10px;margin-top:8px}
+.selfc{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.selfc label{display:flex;gap:8px;align-items:flex-start;font-size:.88rem;margin:6px 0;cursor:pointer}
+.selfc input{width:18px;height:18px;accent-color:var(--navy);flex:none;margin-top:2px}
+.stale{font-size:.8rem;color:var(--gold);font-weight:700;margin-top:6px}
+.csum{font-family:var(--mono);font-size:.75rem;font-weight:500;background:var(--sunk);color:var(--muted);padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle}
+
+/* widget topik 2 */
+.zpool{display:grid;gap:8px;margin:10px 0}
+.zcard{text-align:left;border:1.5px dashed var(--navy);background:var(--navy-soft);border-radius:10px;padding:10px 12px;font-size:.9rem}
+.zcard:hover{background:var(--surface)}
+.zseq{padding-left:1.4em;margin:8px 0;display:grid;gap:6px}
+.zseq li{font-size:.9rem;padding:8px 10px;border-radius:9px}
+.zseq li.ok{background:var(--good-soft)}.zseq li.no{background:var(--bad-soft)}
+.zseq li b{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+.dbframe{border:2px solid var(--navy);border-radius:14px;padding:26px 12px 12px;position:relative}
+.dblbl{position:absolute;top:-11px;left:14px;background:var(--surface);padding:0 8px;font-size:.72rem;font-weight:800;letter-spacing:.1em;color:var(--navy)}
+.dbrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:560px){.dbrow{grid-template-columns:minmax(0,1fr)}}
+.dbz{border-radius:10px;padding:12px;text-align:left;border:2px solid transparent;display:flex;flex-direction:column;gap:4px}
+.dbz b{font-size:.92rem}.dbz span{font-size:.78rem;color:var(--muted)}
+.dbz.ec{background:var(--gold-soft)}.dbz.in{background:var(--sunk)}
+.dbz.on{border-color:var(--navy)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:middle}
+.dot.ec{background:var(--gold-bg)}.dot.in{background:var(--sunk);border:1px solid var(--line)}
+.dbinfo{margin-top:10px;font-size:.92rem}
+.calc select,.calc input[type=text],.dvpname input{font:inherit;font-size:.9rem;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.dvpname{display:grid;gap:4px;font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:10px}
+.dvpgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center}
+@media (max-width:620px){.dvpgrid{grid-template-columns:minmax(0,1fr)}}
+.dvps{display:grid;gap:2px;font-size:.84rem;font-weight:600;margin-bottom:6px}
+.dvps span{display:flex;justify-content:space-between}
+.dvps input{accent-color:var(--navy);width:100%}
+#dvpRadar{width:100%;max-width:300px;justify-self:center}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <button class="iconbtn menubtn" id="menuBtn" aria-label="Buka menu" aria-expanded="false">☰</button>
+  <div class="brand"><b>Topik 02 · Konsep Bisnis Digital</b><small>Pengantar Bisnis Digital (DG234101) · ITS</small></div>
+  <div class="prog" title="Kemajuan belajar"><span class="lbl" id="progLbl">0%</span><span class="bar"><i id="progBar"></i></span></div>
+  <button class="iconbtn" id="themeBtn" aria-label="Ganti tema terang/gelap">◐</button>
+</header>
+
+<div class="shell">
+<nav class="side" id="side" aria-label="Navigasi materi"></nav>
+<main id="main">
+
+<!-- ================= HOME ================= -->
+<section class="view" data-view="home">
+  <div class="hero">
+    <div class="eyebrow">Minggu 2 · Belajar Mandiri</div>
+    <h1>Konsep Bisnis Digital &amp; E-commerce</h1>
+    <p>Apa beda <em>digital business</em> dan <em>e-commerce</em>? Mengapa kedai kopi bisa disebut bisnis digital, sementara toko online belum tentu? Topik ini memberi Anda bahasa yang tepat untuk membedah ruang lingkup bisnis digital.</p>
+  </div>
+
+  <div class="card">
+    <h3>🎯 Sub-CPMK 2 <span class="tag">CPMK1 · CPL-a</span></h3>
+    <p style="margin:0">Mahasiswa mampu menjelaskan konsep dan skop bisnis digital serta perbedaannya dengan e-commerce.</p>
+  </div>
+
+  <h3>Cara memakai aplikasi ini</h3>
+  <p>Aplikasi ini <b>bukan pengganti buku</b>. Ringkasan di sini sengaja dibuat padat; definisi lengkap, gambar, dan mini case ada di buku. Setiap unit mengikuti tiga langkah:</p>
+  <div class="steps">
+    <div><i>📖</i><b>1. Baca</b><span>Buka subbab Chaffey yang ditunjuk. Cari jawaban atas "pertanyaan pemandu".</span></div>
+    <div><i>✅</i><b>2. Cek</b><span>Centang "sudah membaca" untuk membuka soal. Soal berlabel <span style="font-weight:700">Cek Bacaan</span> hanya bisa dijawab dari buku.</span></div>
+    <div><i>🧩</i><b>3. Terapkan</b><span>Kerjakan latihan interaktif dan studi kasus dengan contoh bisnis Indonesia.</span></div>
+  </div>
+  <p class="hint">Kemajuan Anda tersimpan otomatis di peramban ini (bukan di server). Gunakan menu <b>Catatan &amp; Referensi</b> untuk menyalin atau mengunduh semua jawaban Anda.</p>
+
+  <h3>Rencana belajar (± 3–4 jam)</h3>
+  <div class="tw"><table class="plan">
+    <thead><tr><th>#</th><th>Unit</th><th>Chaffey Bab 1</th><th>Status</th></tr></thead>
+    <tbody id="planBody"></tbody>
+  </table></div>
+  <p class="hint">Bacaan utama: Chaffey, D., Hemphill, T., &amp; Edmundson-Bird, D. (2019). <em>Digital Business and E-Commerce Management</em> (7th ed.). Pearson. Bab 1: <em>Introduction to digital business</em>. Karena edisi digital buku ini tidak selalu memiliki nomor halaman yang sama, rujukan memakai <b>nama subbab</b> serta nomor <b>Gambar, Tabel, dan Mini Case</b>.</p>
+
+  <h3>🔥 Pemanasan (5 menit)</h3>
+  <div class="card">
+    <p>Ingat pembelian penting terakhir Anda (ponsel, laptop, sepatu). Sebelum membeli, apa saja yang Anda lakukan secara daring? Tuliskan urutannya. Anda akan memakainya di Unit 2.</p>
+    <div class="cq"><b>Urutan langkah sebelum saya membeli</b><textarea data-note="warm_know" placeholder="1. Melihat … 2. …"></textarea></div>
+    <div class="cq"><b>Menurut saya, apa beda "bisnis digital" dan "e-commerce"? (tebakan awal)</b><textarea data-note="warm_want" placeholder="Tulis tebakan Anda; bandingkan lagi setelah Unit 3."></textarea></div>
+  </div>
+  <div class="pager"><span></span><a class="btn" href="#u1">Mulai Unit 1 →</a></div>
+</section>
+
+<!-- ================= UNIT 1 ================= -->
+<section class="view" data-view="u1" data-unit="1">
+  <div class="eyebrow">Unit 1 <span class="tag">LO 1</span><span class="tag">± 20 menit</span></div>
+  <h2>Transformasi Digital dan Teknologi Disruptif</h2>
+  <div class="read" data-read="1">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 1 · Introduction</span></div>
+    <p style="margin:0 0 4px">Subbab <em>Introduction</em> (Gambar 1.1, Tabel 1.1, Activity 1.1) dan paragraf awal <em>The impact of digital communications on traditional businesses</em>. Cari jawaban:</p>
+    <ul>
+      <li>Apa beda <em>Internet</em>, <em>World Wide Web</em>, dan <em>mobile communications</em>?</li>
+      <li>Bagaimana Danneels (2004) mendefinisikan teknologi disruptif? Mengapa Chaffey menyebutnya definisi terbaik?</li>
+      <li>Apa yang ingin ditunjukkan Gambar 1.1 (Google sekitar 1998)?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="1"> Saya sudah membaca subbab Introduction</label>
+  </div>
+
+  <h3>Internet, Web, dan teknologi disruptif</h3>
+  <p>Sejak situs web pertama dibuat Tim Berners-Lee pada 1991, organisasi terus beradaptasi. Chaffey membedakan tiga istilah dasar: <b>Internet</b> (jaringan fisik yang menghubungkan komputer di seluruh dunia), <b>World Wide Web</b> (cara paling umum mempublikasikan informasi di Internet melalui peramban), dan <b><em>mobile communications</em></b> (proses bisnis dan komunikasi melalui perangkat bergerak).</p>
+  <p>Teknologi seperti ini disebut <b><em>disruptive digital technologies</em></b>. Definisi klasik Danneels (2004): teknologi yang <b>mengubah dasar persaingan dengan mengubah ukuran kinerja</b> yang dipakai perusahaan untuk bersaing.</p>
+  <div class="co"><b class="t">💡 Contoh.</b> Dalam layanan taksi, ukuran persaingan bergeser dari "mudah dicegat di jalan" menjadi "cepat dipesan lewat aplikasi, harga jelas di depan, ada rating pengemudi". Perusahaan taksi yang unggul di ukuran lama tiba-tiba kalah di ukuran baru.</div>
+
+  <h3>Transformasi digital</h3>
+  <p><b><em>Digital transformation</em></b> dalam bisnis terjadi ketika ada <b>perubahan signifikan pada proses, struktur, dan sistem organisasi</b> yang dilakukan untuk meningkatkan kinerja melalui teknologi digital. Kata kuncinya adalah perubahan organisasi, bukan sekadar membeli teknologi.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Periode</th><th>Global (Chaffey, Tabel 1.1)</th><th>Indonesia</th></tr></thead>
+    <tbody>
+      <tr><td>1994–1999</td><td>Amazon, eBay, Google, Alibaba</td><td>Kaskus (1999)</td></tr>
+      <tr><td>2004–2006</td><td>Facebook, YouTube, Spotify</td><td>Era warnet dan awal media sosial</td></tr>
+      <tr><td>2009–2012</td><td>Foursquare, Pinterest</td><td>Tokopedia (2009), Bukalapak dan Gojek (2010), Traveloka (2012)</td></tr>
+      <tr><td>2013–2016</td><td>Slack, Apple Watch, Pokémon Go</td><td>Aplikasi Gojek (2015), Shopee masuk Indonesia (2015)</td></tr>
+      <tr><td>2016–kini</td><td>IBM Watson, AI dan <em>machine learning</em></td><td>QRIS (2019), merger GoTo (2021), AI generatif, <em>social commerce</em></td></tr>
+    </tbody>
+  </table></div>
+  <div class="co"><b class="t">💡 Konteks digital.</b> Banyak inovasi bukan teknologi baru, melainkan <b>model bisnis baru</b> yang memanfaatkan teknologi yang sudah ada. Gojek berawal dari layanan pemesanan ojek melalui <em>call center</em> sebelum aplikasinya diluncurkan.</div>
+
+  <div class="card">
+    <h4>✍️ Refleksi singkat</h4>
+    <p class="hint">Pilih satu bisnis Indonesia (selain Gojek/Grab) yang mengganggu pasar tradisional. Ukuran kinerja apa yang berubah karena kehadirannya?</p>
+    <textarea data-note="u1_reflect" placeholder="Bisnis: … Pasar lama: … Ukuran kinerja lama → baru: …"></textarea>
+  </div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u1"></div>
+  <div class="pager"><a class="btn ghost" href="#home">← Beranda</a><a class="btn" href="#u2">Unit 2 →</a></div>
+</section>
+
+<!-- ================= UNIT 2 ================= -->
+<section class="view" data-view="u2" data-unit="2">
+  <div class="eyebrow">Unit 2 <span class="tag">LO 1</span><span class="tag">± 25 menit</span></div>
+  <h2>Inbound Marketing, Media Sosial, dan Mobile Commerce</h2>
+  <div class="read" data-read="2">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 1 · Inbound, Social, Mobile</span></div>
+    <p style="margin:0 0 4px">Subbab <em>Inbound marketing</em>, <em>Social media marketing</em>, dan <em>Mobile commerce</em> (Gambar 1.2, Gambar 1.3, Mini Case Study 1.1). Cari jawaban:</p>
+    <ul>
+      <li>Mengapa inbound marketing disebut mekanisme <em>pull</em>? Apa kelebihan dan kelemahannya?</li>
+      <li>Apa enam kategori media sosial menurut Weinberg (2010)?</li>
+      <li>Apa yang ditunjukkan Mini Case Study 1.1 tentang pencarian lokal di Google?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="2"> Saya sudah membaca ketiga subbab tersebut</label>
+  </div>
+
+  <h3>Inbound marketing dan Zero Moment of Truth</h3>
+  <p>Dalam <b><em>inbound marketing</em></b>, pelangganlah yang aktif mencari informasi melalui mesin pencari, konten, dan media sosial: mekanisme <b><em>pull</em></b>, bukan <em>push</em>. Google menyebut momen riset sebelum membeli ini <b><em>Zero Moment of Truth</em> (ZMOT)</b> (Lecinski, 2012): konsumen mencari, membaca ulasan, membandingkan harga, dan melihat komentar di media sosial sebelum mendatangi penjual.</p>
+  <p>Kelebihannya: pemborosan pemasaran berkurang karena calon pembeli sudah punya kebutuhan (<em>self-selecting</em>). Kelemahannya: pemasar punya <b>kontrol lebih kecil</b> dan lebih sulit menciptakan kesadaran serta permintaan baru.</p>
+
+  <div class="card" id="zmot">
+    <h4>🧩 Latihan: susun perjalanan pembeli</h4>
+    <p class="hint">Ketuk langkah-langkah di bawah sesuai urutan yang benar (dari stimulus sampai setelah membeli).</p>
+    <div class="zpool" id="zPool"></div>
+    <ol class="zseq" id="zSeq"></ol>
+    <div id="zFb"></div>
+    <button class="retry" id="zReset">Ulangi</button>
+  </div>
+
+  <h3>Media sosial</h3>
+  <p>Chaffey (mengikuti Weinberg, 2010) membagi kehadiran sosial ke dalam enam kategori: <em>social networking</em>, <em>social knowledge</em>, <em>social sharing</em>, <em>social news</em>, <em>social streaming</em>, dan <em>company user-generated content and community</em>.</p>
+  <div class="card cls" data-widget="social"><h4>🧩 Latihan: kategori media sosial</h4></div>
+  <div class="co idn"><b class="t">🇮🇩 Konteks Indonesia.</b> WhatsApp adalah contoh <em>dark social</em> yang disebut Chaffey: rekomendasi yang dibagikan lewat grup percakapan sulit dilacak sumbernya oleh alat analitik, padahal sangat memengaruhi keputusan beli.</div>
+
+  <h3>Mobile commerce</h3>
+  <p><b><em>Mobile commerce</em></b> adalah transaksi dan komunikasi daring melalui perangkat bergerak. <b><em>Mobile business</em></b> lebih luas: model bisnis yang memanfaatkan mobilitas sehingga karyawan dan pemangku kepentingan tidak terikat lokasi. Prediksi Mary Meeker (2008) bahwa penggunaan web mobile akan melampaui desktop pada 2014 terbukti benar.</p>
+  <div class="co"><b class="t">💡 Konteks digital.</b> Indonesia adalah pasar <em>mobile-first</em>: banyak pengguna mengenal Internet pertama kali melalui ponsel. Desain layanan digital di Indonesia harus dimulai dari layar ponsel.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u2"></div>
+  <div class="pager"><a class="btn ghost" href="#u1">← Unit 1</a><a class="btn" href="#u3">Unit 3 →</a></div>
+</section>
+
+<!-- ================= UNIT 3 ================= -->
+<section class="view" data-view="u3" data-unit="3">
+  <div class="eyebrow">Unit 3 <span class="tag">LO 1 · inti minggu ini</span><span class="tag">± 35 menit</span></div>
+  <h2>E-commerce vs Digital Business</h2>
+  <div class="read" data-read="3">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 1 · E-commerce &amp; digital business defined</span></div>
+    <p style="margin:0 0 4px">Subbab <em>What is the difference between a digital business and an e-commerce business?</em>, <em>E-commerce defined</em>, <em>Digital business defined</em>, dan <em>Intranets and extranets</em> (Gambar 1.4–1.6, Debate 1.1, Mini Case Study 1.2). Cari jawaban:</p>
+    <ul>
+      <li>Mengapa Chaffey (mengutip Mougayar) berkata label tidak terlalu penting, tetapi tetap berguna?</li>
+      <li>Apa empat perspektif e-commerce menurut Kalakota dan Whinston (1997)?</li>
+      <li>Siapa yang pertama mencetuskan istilah <em>e-business</em>, dan kapan?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="3"> Saya sudah membaca keempat subbab tersebut</label>
+  </div>
+
+  <h3>E-commerce</h3>
+  <p>E-commerce sering dipahami sebatas jual-beli daring, tetapi Chaffey mendefinisikannya sebagai <b>semua pertukaran informasi yang dimediasi secara elektronik antara organisasi dan pemangku kepentingan eksternalnya</b>. Layanan pelanggan daring dan permintaan informasi produk juga termasuk, walaupun tidak ada uang yang berpindah.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Perspektif (Kalakota &amp; Whinston)</th><th>Makna</th><th>Contoh</th></tr></thead>
+    <tbody>
+      <tr><td>Komunikasi</td><td>Penyampaian informasi, produk, layanan, atau pembayaran secara elektronik</td><td>E-tiket kereta dikirim ke email; pembayaran QRIS</td></tr>
+      <tr><td>Proses bisnis</td><td>Otomatisasi transaksi dan alur kerja</td><td>Pesanan otomatis membuat label kirim di sistem kurir</td></tr>
+      <tr><td>Layanan</td><td>Menekan biaya sekaligus mempercepat dan meningkatkan kualitas layanan</td><td>Chatbot bank menjawab pertanyaan saldo 24 jam</td></tr>
+      <tr><td>Daring</td><td>Jual-beli produk dan informasi secara online</td><td>Membeli sepatu di marketplace</td></tr>
+    </tbody>
+  </table></div>
+  <p><b><em>Buy-side e-commerce</em></b>: transaksi dengan <b>pemasok</b> untuk memperoleh sumber daya. <b><em>Sell-side e-commerce</em></b>: transaksi dengan <b>pelanggan</b>. <b><em>Social media commerce</em></b> adalah bagian e-commerce yang mendorong partisipasi pelanggan: rating, ulasan, berbagi, membeli bersama.</p>
+
+  <h3>Digital business</h3>
+  <p><b><em>Digital business</em></b> adalah cara organisasi menerapkan teknologi dan media digital untuk meningkatkan daya saing <b>melalui optimalisasi proses internal</b> dengan kanal pemasaran dan pasokan, baik online maupun tradisional. Istilah ini mirip <em>e-business</em> (IBM, 1997): transformasi proses bisnis kunci menggunakan teknologi Internet. Jadi, <b>e-commerce adalah bagian dari digital business</b>.</p>
+
+  <div class="card">
+    <h4>🗺️ Peta interaktif: di mana batas e-commerce? <span class="hint">(adaptasi Gambar 1.4)</span></h4>
+    <div class="dbmap" id="dbMap">
+      <div class="dbframe"><span class="dblbl">DIGITAL BUSINESS</span>
+        <div class="dbrow">
+          <button class="dbz ec" data-z="buy"><b>Buy-side e-commerce</b><span>Organisasi ↔ pemasok</span></button>
+          <button class="dbz in" data-z="int"><b>Proses internal</b><span>R&amp;D, produksi, SDM, keuangan, logistik</span></button>
+          <button class="dbz ec" data-z="sell"><b>Sell-side e-commerce</b><span>Organisasi ↔ pelanggan</span></button>
+        </div>
+      </div>
+      <p class="hint" style="margin:8px 0 0"><span class="dot ec"></span> e-commerce (pertukaran dengan pihak eksternal) &nbsp; <span class="dot in"></span> hanya digital business. Ketuk tiap kotak.</p>
+      <div class="dbinfo" id="dbInfo"></div>
+    </div>
+  </div>
+
+  <div class="card cls" data-widget="side"><h4>🧩 Latihan: buy-side, sell-side, atau proses internal?</h4></div>
+
+  <h3>Intranet dan extranet</h3>
+  <p><b>Intranet</b>: jaringan privat di dalam satu organisasi yang memakai standar Internet. Kini fungsinya banyak digantikan <em>enterprise social media software</em> seperti Slack (Mini Case Study 1.2) atau Microsoft Teams. <b>Extranet</b>: perluasan akses kepada pihak eksternal tertentu (pelanggan, pemasok, mitra) dengan otentikasi.</p>
+  <div class="co idn"><b class="t">🇮🇩 Contoh dekat.</b> Layanan internal myITS untuk tenaga kependidikan berfungsi seperti intranet. myITS Classroom bisa dilihat sebagai extranet: hanya diakses mahasiswa dan dosen yang terotentikasi, bukan publik.</div>
+  <div class="co"><b class="t">🤔 Debate 1.1.</b> "Digital business hanyalah label baru; tidak ada bedanya dengan peran IT tradisional." Setuju? Petunjuk: bedakan IT sebagai fungsi pendukung dan teknologi digital sebagai pembentuk model bisnis. Anda akan memakai debat ini di Studi Kasus 3.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u3"></div>
+  <div class="pager"><a class="btn ghost" href="#u2">← Unit 2</a><a class="btn" href="#u4">Unit 4 →</a></div>
+</section>
+
+<!-- ================= UNIT 4 ================= -->
+<section class="view" data-view="u4" data-unit="4">
+  <div class="eyebrow">Unit 4 <span class="tag">LO 1</span><span class="tag">± 30 menit</span></div>
+  <h2>Kehadiran Digital dan Media: Paid, Owned, Earned</h2>
+  <div class="read" data-read="4">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 1 · Sell-side &amp; reaching audiences</span></div>
+    <p style="margin:0 0 4px">Subbab <em>Different types of sell-side e-commerce</em>, <em>Digital marketing</em>, dan <em>Options for organisations to reach a digital audience</em> (Gambar 1.7, Gambar 1.8, Mini Case Study 1.3). Cari jawaban:</p>
+    <ul>
+      <li>Apa lima tipe kehadiran digital untuk sell-side? Untuk produk apa <em>brand-building site</em> biasanya dipakai?</li>
+      <li>Mengapa ketiga jenis media (paid, owned, earned) di Gambar 1.7 digambarkan beririsan?</li>
+      <li>Bagaimana Spotify dan Dropbox memasarkan diri lewat produknya sendiri (Mini Case Study 1.3)?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="4"> Saya sudah membaca ketiga subbab tersebut</label>
+  </div>
+
+  <h3>Lima tipe kehadiran digital (sell-side)</h3>
+  <p>Tidak semua produk cocok dijual online, sehingga tujuan kehadiran digital berbeda-beda. Satu organisasi bisa menggabungkan beberapa tipe dengan penekanan berbeda.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Tipe</th><th>Tujuan utama</th><th>Contoh</th></tr></thead>
+    <tbody>
+      <tr><td>1. <em>Transactional e-commerce</em></td><td>Menjual produk secara online</td><td>Situs ritel, aplikasi maskapai, perbankan online</td></tr>
+      <tr><td>2. <em>Services-oriented relationship-building</em></td><td>Memberi informasi dan menghasilkan <em>lead</em> untuk penjualan offline</td><td>Pengembang properti, konsultan, laman penerimaan mahasiswa baru</td></tr>
+      <tr><td>3. <em>Brand-building</em></td><td>Pengalaman merek; khas untuk produk FMCG murah bervolume tinggi</td><td>Situs merek mi instan atau teh dalam kemasan</td></tr>
+      <tr><td>4. <em>Publisher / media</em></td><td>Berita, informasi, hiburan; pendapatan dari iklan, komisi, data</td><td>Portal berita nasional</td></tr>
+      <tr><td>5. <em>Social network</em></td><td>Interaksi antar-pengguna; pendapatan utama dari iklan</td><td>Instagram, TikTok, LinkedIn</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="presence"><h4>🧩 Latihan: tipe kehadiran digital utama</h4></div>
+
+  <h3>Paid, owned, dan earned media</h3>
+  <ul>
+    <li><b><em>Paid media</em></b>: media yang dibeli, seperti iklan pencarian, iklan display, afiliasi, juga iklan TV dan cetak.</li>
+    <li><b><em>Owned media</em></b>: media milik merek, seperti website, aplikasi, daftar email, akun media sosial.</li>
+    <li><b><em>Earned media</em></b>: publisitas dan percakapan yang diperoleh, seperti ulasan, liputan, <em>word-of-mouth</em>, advokasi pelanggan.</li>
+  </ul>
+  <p>Ketiganya beririsan, dan irisan itu menuntut integrasi kampanye. Karena itu Chaffey menegaskan setiap organisasi kini harus berpikir seperti <b>penerbit multikanal</b>.</p>
+  <div class="card cls" data-widget="pom"><h4>🧩 Latihan: paid, owned, atau earned?</h4></div>
+
+  <h3>Enam kanal media digital (Chaffey &amp; Smith)</h3>
+  <p>(1) <em>Search engine marketing</em> (SEO dan PPC), (2) <em>digital PR</em>, (3) <em>digital partnerships</em> (afiliasi, situs pembanding harga, sponsorship, co-branding), (4) <em>interactive advertising</em>, (5) <em>opt-in email marketing</em>, (6) <em>social media marketing</em>, yang menuntut partisipasi dalam percakapan, bukan sekadar menyiarkan pesan.</p>
+  <div class="co"><b class="t">💡 Produk sebagai alat pemasaran.</b> Mini Case Study 1.3 menunjukkan startup bisa tumbuh lewat <em>virality</em> produknya sendiri dengan model <b>freemium</b>. Di Indonesia, pola serupa terlihat pada program "ajak teman dapat saldo atau voucher" di dompet digital dan aplikasi transportasi.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u4"></div>
+  <div class="pager"><a class="btn ghost" href="#u3">← Unit 3</a><a class="btn" href="#u5">Unit 5 →</a></div>
+</section>
+
+<!-- ================= UNIT 5 ================= -->
+<section class="view" data-view="u5" data-unit="5">
+  <div class="eyebrow">Unit 5 <span class="tag">LO 1</span><span class="tag">± 25 menit</span></div>
+  <h2>Model Transaksi, Web 2.0, dan Rantai Nilai</h2>
+  <div class="read" data-read="5">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 1 · Transaction models</span></div>
+    <p style="margin:0 0 4px">Subbab <em>The social internet and user-generated content</em>, <em>Supply chain management</em>, <em>Business or consumer models of e-commerce transactions</em>, dan <em>Dot Gov defined</em> (Gambar 1.9–1.11, Mini Case Study 1.4). Cari jawaban:</p>
+    <ul>
+      <li>Dari mana sebagian besar pendapatan Google, padahal layanannya gratis bagi konsumen?</li>
+      <li>Bagaimana Gumtree dan Craigslist mempertahankan karakter C2C? Dari mana pendapatan utama Craigslist?</li>
+      <li>Apa tiga cakupan Dot Gov?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="5"> Saya sudah membaca keempat subbab tersebut</label>
+  </div>
+
+  <h3>Model transaksi</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Model</th><th>Pengertian</th><th>Contoh Indonesia</th></tr></thead>
+    <tbody>
+      <tr><td>B2C</td><td>Organisasi menjual ke konsumen</td><td>Aplikasi maskapai, situs merek lokal</td></tr>
+      <tr><td>B2B</td><td>Transaksi antar-organisasi</td><td>Platform grosir untuk warung, layanan cloud, iklan digital untuk bisnis</td></tr>
+      <tr><td>C2C</td><td>Konsumen menawarkan kepada konsumen lain</td><td>OLX, Carousell, preloved di media sosial</td></tr>
+      <tr><td>C2B</td><td>Konsumen mendekati bisnis dengan penawaran</td><td>Kreator menawarkan jasa endorse; freelancer menawarkan jasa desain</td></tr>
+      <tr><td>Dot Gov (G2C/G2B/B2G)</td><td>Teknologi digital untuk layanan publik</td><td>Pelaporan pajak online, perizinan OSS, e-Katalog LKPP</td></tr>
+    </tbody>
+  </table></div>
+  <p>Banyak perusahaan bermain di lebih dari satu model. Layanan Google gratis bagi konsumen, tetapi pendapatannya terutama dari iklan yang dibeli bisnis. Marketplace di Indonesia menampung penjual perorangan sekaligus toko resmi merek. Chaffey juga menyebut <b>E2E</b> (<em>employee-to-employee</em>) melalui intranet.</p>
+  <div class="card cls" data-widget="model"><h4>🧩 Latihan: tentukan model transaksinya</h4></div>
+
+  <h3>Web 2.0, multichannel, dan omnichannel</h3>
+  <p><b>Web 2.0</b> merujuk pada layanan web yang mendorong partisipasi: konten buatan pengguna (UGC), rating, komunitas, dan pertukaran data antarsitus. Istilahnya jarang dipakai lagi, tetapi prinsipnya kini menjadi standar. <b><em>Multichannel marketing</em></b> menggabungkan kanal digital dan tradisional di berbagai tahap pembelian; <b><em>omnichannel</em></b> menekankan peran media sosial dan mobile dalam membentuk keputusan beli. Seluruh perjalanan ini disebut <b><em>customer journey</em></b>.</p>
+
+  <h3>Rantai pasok dan rantai nilai</h3>
+  <p>Buy-side dan sell-side e-commerce adalah dua sisi <b><em>supply chain management</em></b>. <b><em>Value chain</em></b> menganalisis aktivitas yang menambah nilai, internal maupun oleh mitra. Di era digital, perusahaan mengelola banyak rantai nilai yang saling terhubung: <b><em>value network</em></b>. Topik ini dibahas mendalam di Minggu 7.</p>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u5"></div>
+  <div class="pager"><a class="btn ghost" href="#u4">← Unit 4</a><a class="btn" href="#u6">Unit 6 →</a></div>
+</section>
+
+<!-- ================= UNIT 6 ================= -->
+<section class="view" data-view="u6" data-unit="6">
+  <div class="eyebrow">Unit 6 <span class="tag">LO 2</span><span class="tag">± 25 menit</span></div>
+  <h2>Peluang dan Pendorong Adopsi Bisnis Digital</h2>
+  <div class="read" data-read="6">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 1 · Opportunities &amp; drivers</span></div>
+    <p style="margin:0 0 4px">Subbab <em>Digital business opportunities</em> (Box 1.1) dan <em>Drivers of digital technology adoption</em> (Tabel 1.2, Tabel 1.3). Cari jawaban:</p>
+    <ul>
+      <li>Apa tiga karakteristik informasi menurut Evans dan Wurster (1997)? Apa yang membatasi <em>richness</em>?</li>
+      <li>Apa beda pendorong efisiensi dan pendorong daya saing (DTI, 2000)?</li>
+      <li>Menurut riset Doherty dkk. (Tabel 1.3), dua faktor apa yang paling berkaitan dengan tingkat adopsi Internet oleh peritel?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="6"> Saya sudah membaca kedua subbab tersebut</label>
+  </div>
+
+  <h3>Reach, richness, affiliation</h3>
+  <ul>
+    <li><b><em>Reach</em></b>: jumlah pelanggan yang dapat dijangkau dan luasnya ragam produk yang ditawarkan.</li>
+    <li><b><em>Richness</em></b>: kedalaman informasi (detail produk, harga, ketersediaan, interaktivitas, personalisasi). Dibatasi oleh <em>bandwidth</em>, akurasi, dan keamanan.</li>
+    <li><b><em>Affiliation</em></b>: efektivitas jejaring dengan mitra.</li>
+  </ul>
+  <div class="card cls" data-widget="rra"><h4>🧩 Latihan: reach, richness, atau affiliation?</h4></div>
+
+  <h3>Soft lock-in</h3>
+  <p>Pelanggan atau pemasok tetap memakai layanan digital karena bernilai bagi mereka dan karena ada <b>biaya beralih</b>: waktu belajar, data tersimpan, atau integrasi sistem. Contoh: riwayat pesanan, alamat tersimpan, poin loyalitas, saldo dompet digital. Namun, pengalaman buruk tetap membuat pelanggan pindah.</p>
+
+  <h3>Pendorong adopsi dan manfaat</h3>
+  <p>Dua jalur utama penciptaan nilai: <b>pendapatan naik</b> (jangkauan lebih luas, loyalitas) dan <b>biaya turun</b> (layanan elektronik). DTI (2000) membagi pendorong menjadi:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Pendorong biaya/efisiensi</th><th>Pendorong daya saing</th></tr></thead>
+    <tbody>
+      <tr><td style="font-weight:500">Pasokan diperoleh lebih cepat</td><td>Permintaan pelanggan</td></tr>
+      <tr><td style="font-weight:500">Pengiriman barang lebih cepat</td><td>Ragam dan kualitas layanan meningkat</td></tr>
+      <tr><td style="font-weight:500">Biaya penjualan dan pembelian turun</td><td>Menghindari kehilangan pangsa pasar ke pesaing yang sudah digital</td></tr>
+      <tr><td style="font-weight:500">Biaya operasional turun</td><td></td></tr>
+    </tbody>
+  </table></div>
+  <p>Manfaat dibedakan menjadi <b><em>tangible</em></b> (dapat diukur dengan uang: penjualan naik, biaya pemasaran, rantai pasok, dan administrasi turun) dan <b><em>intangible</em></b> (sulit dikuantifikasi: citra perusahaan, penguatan merek, komunikasi lebih responsif, pengembangan produk lebih cepat, umpan balik pelanggan).</p>
+  <div class="card cls" data-widget="benefit"><h4>🧩 Latihan: manfaat tangible atau intangible?</h4></div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u6"></div>
+  <div class="pager"><a class="btn ghost" href="#u5">← Unit 5</a><a class="btn" href="#u7">Unit 7 →</a></div>
+</section>
+
+<!-- ================= UNIT 7 ================= -->
+<section class="view" data-view="u7" data-unit="7">
+  <div class="eyebrow">Unit 7 <span class="tag">LO 2 · 3</span><span class="tag">± 35 menit</span></div>
+  <h2>Hambatan, Stage Model, dan Six Cs</h2>
+  <div class="read" data-read="7">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 1 · Barriers, capabilities, Six Cs</span></div>
+    <p style="margin:0 0 4px">Subbab <em>Barriers to the adoption of technology by digital business stakeholders</em>, <em>Evaluating an organisation's digital business capabilities</em> (Gambar 1.12, Debate 1.2), <em>Drivers of consumer technology adoption</em>, dan <em>Barriers to consumer digital adoption</em>. Cari jawaban:</p>
+    <ul>
+      <li>Apa pertanyaan Andy Grove (Intel) tentang dampak Internet bagi setiap organisasi?</li>
+      <li>Bagaimana easyJet mendorong pelanggan beralih ke pemesanan online pada akhir 1990-an?</li>
+      <li>Apa lima hambatan adopsi oleh konsumen (Booz Allen Hamilton, 2002)?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="7"> Saya sudah membaca keempat subbab tersebut</label>
+  </div>
+
+  <h3>Risiko bagi organisasi</h3>
+  <p>Risiko strategis utama adalah <b>salah mengambil keputusan investasi digital</b>, karena eksekusi buruk atau pendekatan yang tidak sesuai. Dampak Internet berbeda per industri dan berubah dari waktu ke waktu. Risiko praktis yang merusak pengalaman pelanggan antara lain: situs <em>down</em> saat lonjakan trafik, peretasan, pesan pemasaran tanpa izin (berisiko melanggar UU 27/2022 tentang Pelindungan Data Pribadi), masalah pemenuhan pesanan, dan pertanyaan pelanggan yang tidak terjawab.</p>
+
+  <h3>Stage model kapabilitas digital</h3>
+  <p>Kemampuan digital organisasi bisa dinilai dengan <b><em>stage model</em></b> (Gambar 1.12): makin tinggi tahapnya, makin kompleks teknologi dan makin banyak proses yang didigitalkan. Tahap tertinggi mencakup <em>social commerce</em>.</p>
+  <div class="card" id="stageTool">
+    <h4>🧮 Penilai tahap kapabilitas digital (adaptasi untuk UMKM)</h4>
+    <p class="hint">Pikirkan satu UMKM yang Anda kenal (usaha keluarga, kantin, toko langganan). Pilih tahap yang paling menggambarkan kondisinya saat ini.</p>
+    <div class="calc">
+      <label>Nama usaha<input type="text" id="stName" placeholder="mis. Warung Bu Sri"></label>
+      <span></span>
+      <label>Sisi penjualan (sell-side)<select id="stSell"></select></label>
+      <label>Sisi pembelian (buy-side)<select id="stBuy"></select></label>
+    </div>
+    <div class="res" id="stRes"></div>
+  </div>
+
+  <h3>Proposisi nilai digital: Six Cs</h3>
+  <p>Agar pelanggan mau memakai layanan digital, organisasi perlu <b><em>digital value proposition</em> (DVP)</b>: pernyataan manfaat layanan digital yang memperkuat proposisi inti dan membedakannya dari kanal non-digital maupun pesaing. Kerangka <b>Six Cs</b>: <em>Content</em>, <em>Customisation</em>, <em>Community</em>, <em>Convenience</em>, <em>Choice</em>, <em>Cost reduction</em>. Kerangka serupa: 7Cs dari Rayport &amp; Jaworski (2003).</p>
+  <div class="card cls" data-widget="sixc"><h4>🧩 Latihan: C yang mana?</h4></div>
+
+  <div class="card" id="dvp">
+    <h4>📊 Audit Six Cs sebuah layanan digital</h4>
+    <p class="hint">Pilih satu aplikasi yang sering Anda pakai. Nilai kekuatannya pada setiap C (0 = tidak ada, 5 = sangat kuat), lalu baca analisisnya.</p>
+    <label class="dvpname">Layanan yang dinilai<input type="text" id="dvpName" placeholder="mis. aplikasi pesan-antar makanan"></label>
+    <div class="dvpgrid">
+      <div id="dvpSliders"></div>
+      <svg viewBox="0 0 260 240" id="dvpRadar" role="img" aria-label="Diagram radar Six Cs"></svg>
+    </div>
+    <div class="res" id="dvpRes"></div>
+  </div>
+  <div class="co"><b class="t">🤔 Berpikir kritis.</b> Jika semua marketplace menawarkan gratis ongkir (<em>cost reduction</em>), keunggulan itu tidak lagi membedakan. C mana yang lebih sulit ditiru? Umumnya <em>customisation</em> dan <em>community</em>, karena keduanya bergantung pada data dan basis pengguna yang terakumulasi dari waktu ke waktu.</div>
+
+  <h3>Hambatan adopsi oleh konsumen</h3>
+  <p>Booz Allen Hamilton (2002) mencatat lima hambatan yang masih relevan: <b>tidak ada manfaat yang dirasakan</b>, <b>kurangnya kepercayaan</b>, <b>masalah keamanan</b>, <b>kurangnya keterampilan</b>, dan <b>biaya</b>.</p>
+  <div class="card cls" data-widget="barrier"><h4>🧩 Latihan: hambatan konsumen yang mana?</h4></div>
+  <div class="co idn"><b class="t">🇮🇩 Konteks Indonesia.</b> Hambatan kepercayaan menjelaskan mengapa COD (bayar di tempat) sempat sangat populer: konsumen ingin melihat barang sebelum membayar, mirip escrow Alipay di Minggu 1. Hambatan keterampilan dan biaya terlihat pada kesenjangan literasi digital dan kualitas jaringan antara kota besar dan daerah 3T.</div>
+  <div class="co"><b class="t">🤔 Debate 1.2.</b> "Rendahnya adopsi digital di UMKM terutama disebabkan sikap negatif pemiliknya terhadap manfaat teknologi." Apakah ini adil untuk UMKM Indonesia? Faktor apa yang mungkin lebih menentukan: modal, keterampilan, ukuran pasar, atau jenis produk?</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u7"></div>
+  <div class="pager"><a class="btn ghost" href="#u6">← Unit 6</a><a class="btn" href="#cases">Studi Kasus →</a></div>
+</section>
+
+<!-- ================= CASES ================= -->
+<section class="view" data-view="cases">
+  <div class="eyebrow">Penerapan <span class="tag">± 70 menit</span></div>
+  <h2>Studi Kasus</h2>
+  <p class="lead">Alur setiap pertanyaan: <b>tulis jawaban → minta umpan balik aplikasi → nilai diri dengan checklist → buka arah jawaban</b>.</p>
+  <div class="co book"><b class="t">ℹ️ Tentang umpan balik otomatis.</b> Aplikasi memeriksa apakah konsep kunci dan penalaran ("karena", "sehingga") muncul dalam jawaban Anda. Aplikasi <b>tidak</b> bisa menilai apakah argumen Anda benar atau tajam. Skor 0–4 ini hanya umpan balik belajar, <b>bukan nilai</b>. Menempel daftar kata kunci mungkin menaikkan skor, tetapi tidak membuat Anda lebih paham. Checklist penilaian diri justru menilai bagian yang tidak bisa diukur mesin.</div>
+  <div id="caseList"></div>
+  <div class="pager"><a class="btn ghost" href="#u7">← Unit 7</a><a class="btn" href="#final">Kuis Akhir →</a></div>
+</section>
+
+<!-- ================= FINAL ================= -->
+<section class="view" data-view="final">
+  <div class="eyebrow">Self-test</div>
+  <h2>Kuis Akhir: Uji Pemahaman</h2>
+  <div class="quiz" id="finalBox"></div>
+</section>
+
+<!-- ================= FLASH ================= -->
+<section class="view" data-view="cards">
+  <div class="eyebrow">Penguatan</div>
+  <h2>Flashcard Istilah Kunci</h2>
+  <p class="lead">Ketuk kartu untuk membalik. Tandai yang sudah Anda kuasai; sisanya akan muncul lagi.</p>
+  <div class="row" style="justify-content:space-between"><span class="score" id="fcCount"></span><button class="btn ghost" id="fcShuffle" style="padding:6px 12px">⤮ Acak</button></div>
+  <div class="fc" id="fc" tabindex="0" role="button" aria-label="Balik kartu"><div class="inner"><div class="face front"><b id="fcF"></b><small>ketuk untuk membalik</small></div><div class="face back"><div id="fcB"></div></div></div></div>
+  <div class="row" style="justify-content:center">
+    <button class="btn ghost" id="fcPrev">←</button>
+    <button class="btn gold" id="fcKnow">✓ Sudah hafal</button>
+    <button class="btn ghost" id="fcNext">→</button>
+  </div>
+  <p class="hint" style="text-align:center;margin-top:10px"><button class="retry" id="fcReset">Ulang semua kartu</button></p>
+</section>
+
+<!-- ================= NOTES & REFS ================= -->
+<section class="view" data-view="notes">
+  <div class="eyebrow">Rangkuman</div>
+  <h2>Catatan Saya &amp; Referensi</h2>
+  <div class="card">
+    <h3>📝 Semua jawaban Anda</h3>
+    <p class="hint">Gabungan jawaban pemanasan, refleksi, audit Six Cs, dan studi kasus. Salin atau unduh untuk dikumpulkan di MyITS Classroom bila diminta dosen.</p>
+    <div class="cq"><b>Nama &amp; NRP</b><textarea data-note="identity" style="min-height:44px" placeholder="Nama — NRP"></textarea></div>
+    <div class="row"><button class="btn" id="copyNotes">📋 Salin</button><button class="btn ghost" id="dlNotes">⬇ Unduh .txt</button><button class="btn ghost" id="resetAll" style="border-color:var(--bad);color:var(--bad)">Hapus semua kemajuan</button></div>
+    <pre id="notesPrev" style="white-space:pre-wrap;font-family:var(--f);font-size:.85rem;background:var(--sunk);padding:12px;border-radius:10px;margin-top:14px;max-height:300px;overflow:auto"></pre>
+  </div>
+
+  <h3>🧩 Ringkasan</h3>
+  <ul>
+    <li><b>E-commerce</b> adalah semua pertukaran yang dimediasi secara elektronik dengan pihak eksternal: buy-side (pemasok) dan sell-side (pelanggan). <b>Digital business</b> lebih luas: mencakup e-commerce dan transformasi proses internal.</li>
+    <li>Kehadiran digital punya tujuan berbeda (transaksi, relasi, merek, media, jejaring sosial) dan didukung kombinasi media paid, owned, dan earned.</li>
+    <li>Model transaksi meliputi B2C, B2B, C2C, C2B, dan Dot Gov. Satu perusahaan sering menjalankan beberapa model sekaligus.</li>
+    <li>Pendorong utama adopsi adalah pendapatan naik dan biaya turun. Peluangnya terletak pada <em>reach</em>, <em>richness</em>, dan <em>affiliation</em>.</li>
+    <li>Hambatan konsumen: manfaat tidak dirasakan, kepercayaan, keamanan, keterampilan, dan biaya. Proposisi nilai digital (Six Cs) adalah jawaban terhadap hambatan tersebut.</li>
+  </ul>
+  <div class="co book"><b class="t">➡️ Minggu 3: Analisis Peluang Bisnis Digital &amp; E-commerce.</b> Bacaan: Chaffey et al. (2019), Bab 2; Wade dkk. (2021); BDC. Pertanyaan pemantik: jika Anda membuat Business Model Canvas untuk Uber atau Gojek, siapa saja "pelanggan"-nya? (Case Study 1.1 tentang Uber di Bab 1 akan dipakai di Minggu 3.)</div>
+
+  <h3>📚 Bacaan lanjutan (opsional, dianjurkan)</h3>
+  <ol class="ref">
+    <li>Chaffey et al. (2019), Bab 1, Case Study 1.1 <em>The Uber business model</em>. Baca sekarang sebagai persiapan Minggu 3.</li>
+    <li>Kerjakan Activity 1.1 dan Activity 1.3 di Bab 1 dengan contoh bisnis Indonesia.</li>
+    <li>DataReportal / We Are Social. <em>Digital 2025: Indonesia</em>. Bandingkan statistik penggunaan media sosial dan mobile di Indonesia dengan data global. <a href="https://datareportal.com/" target="_blank" rel="noopener">datareportal.com</a></li>
+  </ol>
+
+  <h3>Referensi</h3>
+  <ol class="ref">
+    <li>Chaffey, D., Hemphill, T., &amp; Edmundson-Bird, D. (2019). <em>Digital business and e-commerce management</em> (7th ed.). Pearson. Bab 1: <em>Introduction to digital business</em>, termasuk Case Study 1.2 (Amazon).</li>
+    <li>Danneels, E. (2004). Disruptive technology reconsidered: A critique and research agenda. <em>Journal of Product Innovation Management, 21</em>(4), 246–258.</li>
+    <li>Evans, P., &amp; Wurster, T. S. (1997). Strategy and the new economics of information. <em>Harvard Business Review, 75</em>(5), 70–82.</li>
+    <li>Kalakota, R., &amp; Whinston, A. (1997). <em>Electronic commerce: A manager's guide</em>. Addison-Wesley.</li>
+    <li>Lecinski, J. (2012). <em>Winning the zero moment of truth</em>. Google.</li>
+    <li>The Jakarta Post. (2021, 29 Desember). Kopi Kenangan hits unicorn status with $96m in Series C funding.</li>
+    <li>Undang-Undang No. 27 Tahun 2022 tentang Pelindungan Data Pribadi.</li>
+  </ol>
+  <p class="foot">Materi ini adalah ringkasan dan adaptasi untuk keperluan pembelajaran Pengantar Bisnis Digital (DG234101), Departemen Manajemen Bisnis ITS. Mahasiswa tetap wajib membaca bab asli pada buku acuan. Pengembang mata kuliah: Imam Baihaqi, Ph.D.</p>
+</section>
+
+</main>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+/* ---------------- storage (safe) ---------------- */
+var KEY="bisdig-t02-v1", S={read:{},q:{},done:{},cls:{},notes:{},final:null,known:{},cs:{}};
+try{var raw=localStorage.getItem(KEY); if(raw){var o=JSON.parse(raw); for(var k in o) S[k]=o[k];}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} updateProgress();}
+try{var th=localStorage.getItem("bisdig-theme"); if(th) document.documentElement.setAttribute("data-theme",th);}catch(e){}
+
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove("on")},1800)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=a[i];a[i]=a[j];a[j]=x;}return a}
+var rp=function(n){return "Rp"+Math.round(n).toLocaleString("id-ID")};
+/* ---------------- units meta ---------------- */
+var UNITS=[
+ {id:"u1",t:"Transformasi Digital & Disrupsi",pg:"Introduction · Tabel 1.1"},
+ {id:"u2",t:"Inbound, Media Sosial & Mobile",pg:"Gbr 1.2–1.3 · MC 1.1"},
+ {id:"u3",t:"E-commerce vs Digital Business",pg:"Gbr 1.4–1.6 · MC 1.2"},
+ {id:"u4",t:"Kehadiran Digital & Media",pg:"Gbr 1.7–1.8 · MC 1.3"},
+ {id:"u5",t:"Model Transaksi & Rantai Nilai",pg:"Gbr 1.9–1.11 · MC 1.4"},
+ {id:"u6",t:"Peluang & Pendorong Adopsi",pg:"Box 1.1 · Tabel 1.2–1.3"},
+ {id:"u7",t:"Hambatan, Stage Model & Six Cs",pg:"Gbr 1.12 · Six Cs"}
+];
+
+/* ---------------- unit quizzes ---------------- */
+var QZ={
+u1:[
+ {k:"c",q:"Menurut Danneels (2004), teknologi disruptif adalah teknologi yang…",o:["Selalu lebih murah daripada teknologi lama","Mengubah dasar persaingan dengan mengubah ukuran kinerja yang dipakai perusahaan untuk bersaing","Diciptakan oleh perusahaan rintisan","Menggantikan seluruh tenaga kerja manusia"],a:1,e:"Definisi Danneels berfokus pada perubahan ukuran kinerja (performance metrics) yang menjadi dasar pilihan pelanggan."},
+ {k:"c",q:"Menurut Chaffey, transformasi digital dalam bisnis terjadi ketika…",o:["Perusahaan membeli perangkat lunak baru","Ada perubahan signifikan pada proses, struktur, dan sistem organisasi melalui teknologi digital untuk meningkatkan kinerja","Perusahaan membuat akun media sosial","Brosur cetak dipindahkan ke website"],a:1,e:"Kata kuncinya perubahan organisasi (proses, struktur, sistem), bukan sekadar pembelian teknologi."},
+ {k:"r",pg:"Gambar 1.1",q:"Gambar 1.1 menampilkan Google sekitar tahun 1998. Poin apa yang ingin ditunjukkan Chaffey?",o:["Desain sederhana selalu lebih baik","Inovasi yang terus-menerus: dari mesin pencari sederhana menjadi banyak layanan seperti email, iklan PPC, analitik, dan AI","Google adalah mesin pencari pertama di dunia","Pentingnya logo dalam membangun merek"],a:1,e:"Chaffey memakai Google sebagai contoh inovasi tanpa henti: dari halaman pencarian 1998 menjadi ekosistem layanan."}
+],
+u2:[
+ {k:"c",q:"Inbound marketing disebut mekanisme 'pull' karena…",o:["Perusahaan mengirim pesan massal ke semua orang","Pelanggan yang aktif mencari informasi melalui pencarian, konten, dan media sosial","Iklan ditarik dari TV","Harga ditarik turun"],a:1,e:"Pelanggan memulai kontak dengan menemukan kehadiran digital organisasi."},
+ {k:"c",q:"Kelemahan inbound marketing menurut Chaffey adalah…",o:["Pemborosan pemasaran meningkat","Pemasar punya kontrol lebih kecil dan lebih sulit menciptakan kesadaran serta permintaan baru","Tidak bisa diukur","Hanya cocok untuk B2B"],a:1,e:"Karena calon pembeli menyeleksi diri, pemasar kurang bisa 'mendorong' pesan untuk membangun permintaan baru."},
+ {k:"r",pg:"Mini Case Study 1.1",q:"Dalam Mini Case Study 1.1, pencarian 'Chinese restaurants' di ponsel menampilkan restoran terdekat walaupun tidak menyebut lokasi. Mengapa?",o:["Pengguna mengatur filter lokasi secara manual","Google memakai lokasi dan konteks perangkat mobile untuk menebak maksud pengguna","Restoran membayar iklan lokal","Hasilnya acak"],a:1,e:"Konteks mobile dan lokasi membuat Google menyimpulkan pengguna mencari restoran terdekat, dan ulasan lokal muncul tinggi di hasil."}
+],
+u3:[
+ {k:"c",q:"Menurut Chaffey, hubungan e-commerce dan digital business adalah…",o:["Keduanya identik","E-commerce lebih luas dari digital business","E-commerce adalah bagian dari digital business","Keduanya tidak berhubungan"],a:2,e:"Digital business mencakup buy-side dan sell-side e-commerce serta seluruh proses internal."},
+ {k:"c",q:"Pelanggan bertanya stok produk melalui chat lalu membayar dengan transfer bank. Menurut definisi Chaffey, ini…",o:["Bukan e-commerce karena tidak ada keranjang belanja","E-commerce, karena pertukaran informasinya dimediasi secara elektronik","Hanya digital marketing","Dot Gov"],a:1,e:"E-commerce adalah semua pertukaran informasi yang dimediasi secara elektronik dengan pihak eksternal, tidak harus lewat keranjang belanja."},
+ {k:"r",pg:"subbab Digital business defined",q:"Siapa yang pertama kali mencetuskan istilah e-business, dan kapan?",o:["Amazon, 1994","IBM, 1997","Google, 1998","Tim Berners-Lee, 1991"],a:1,e:"IBM (1997): e-business adalah transformasi proses bisnis kunci menggunakan teknologi Internet."}
+],
+u4:[
+ {k:"c",q:"Video ulasan dari food vlogger yang tidak dibayar termasuk…",o:["Paid media","Owned media","Earned media","Brochureware"],a:2,e:"Publisitas dan rekomendasi yang diperoleh, bukan dibeli, termasuk earned media."},
+ {k:"c",q:"Website merek teh dalam kemasan yang berisi resep, kampanye, dan cerita merek tanpa fitur pembelian paling tepat disebut…",o:["Transactional e-commerce site","Brand-building site","Publisher site","Social network site"],a:1,e:"Brand-building site khas untuk produk FMCG murah bervolume tinggi: tujuannya pengalaman merek, bukan transaksi."},
+ {k:"r",pg:"Mini Case Study 1.3",q:"Menurut Mini Case Study 1.3, bagaimana Dropbox memperoleh banyak pengguna baru?",o:["Iklan TV besar-besaran","Memberi tambahan 250MB untuk setiap teman yang diajak bergabung, di atas paket gratis 2GB","Menurunkan harga paket premium","Bekerja sama dengan operator seluler"],a:1,e:"Model freemium dengan insentif referral membuat produk itu sendiri menjadi alat pemasaran (viral)."}
+],
+u5:[
+ {k:"c",q:"Seorang mahasiswa menjual laptop bekasnya kepada mahasiswa lain lewat OLX. Model transaksinya…",o:["B2C","B2B","C2C","C2B"],a:2,e:"Konsumen bertransaksi dengan konsumen lain."},
+ {k:"r",pg:"subbab Business or consumer models",q:"Menurut Chaffey, pendapatan Google sebagian besar berasal dari…",o:["Penjualan ponsel","Layanan iklan B2B (AdWords)","Langganan konsumen","Penjualan data ke pemerintah"],a:1,e:"Layanan B2C Google gratis, tetapi ditopang transaksi B2B berupa iklan."},
+ {k:"r",pg:"Mini Case Study 1.4",q:"Menurut Mini Case Study 1.4, sumber pendapatan utama Craigslist adalah…",o:["Komisi penjualan barang","Iklan lowongan kerja","Langganan premium","Iklan banner"],a:1,e:"Sebagian besar pendapatan Craigslist datang dari job listings; iklan barang umumnya gratis."}
+],
+u6:[
+ {k:"c",q:"Konsumen enggan pindah aplikasi karena poin loyalitas, alamat tersimpan, dan riwayat pesanannya ada di aplikasi tersebut. Fenomena ini disebut…",o:["Reach","Soft lock-in","ZMOT","Disintermediasi"],a:1,e:"Soft lock-in terjadi karena layanan bernilai dan ada biaya beralih yang dirasakan pelanggan."},
+ {k:"c",q:"Manakah manfaat intangible dari digital business?",o:["Biaya cetak brosur turun","Persediaan berkurang","Citra merek meningkat","Penjualan dari pelanggan baru"],a:2,e:"Citra dan penguatan merek sulit dikuantifikasi dalam uang; opsi lainnya tangible."},
+ {k:"r",pg:"Box 1.1",q:"Dalam Box 1.1, Evans dan Wurster mencatat bahwa richness informasi dibatasi oleh…",o:["Jumlah pesaing","Bandwidth, akurasi atau keandalan informasi, dan keamanan","Harga perangkat","Regulasi pemerintah"],a:1,e:"Kedalaman informasi bergantung pada kapasitas transmisi, keandalan, dan keamanan."}
+],
+u7:[
+ {k:"c",q:"Fitur 'rekomendasi untuk Anda' berdasarkan riwayat belanja mencerminkan C yang mana dalam Six Cs?",o:["Content","Community","Customisation","Choice"],a:2,e:"Personalisasi konten dan penawaran adalah customisation."},
+ {k:"r",pg:"subbab Drivers of consumer technology adoption",q:"Untuk mendorong pelanggan beralih dari pemesanan telepon ke pemesanan online pada akhir 1990-an, easyJet…",o:["Menghapus layanan telepon","Memberi diskon £2.50 untuk pemesanan online","Memberi kursi gratis","Menaikkan harga tiket telepon dua kali lipat"],a:1,e:"Contoh cost reduction: selisih harga sederhana untuk mendorong perubahan perilaku."},
+ {k:"r",pg:"subbab Barriers to the adoption",q:"Andy Grove (Intel) mengajak setiap organisasi bertanya apakah Internet bagi mereka adalah…",o:["Peluang atau ancaman","'Badai berkekuatan sepuluh kali lipat' atau hanya 'sedikit angin'","Biaya atau investasi","Tren sementara atau permanen"],a:1,e:"Dampak Internet berbeda per industri dan berubah dari waktu ke waktu, sehingga respons harus sepadan."}
+]};
+
+/* ---------------- classify widgets ---------------- */
+var CL={
+social:{o:["Social networking","Social knowledge","Social sharing","Social news","Social streaming","Company UGC & community"],it:[
+ ["Facebook untuk konsumen, LinkedIn untuk audiens bisnis.","Social networking","Fokus pada mendengarkan pelanggan dan berbagi konten yang menarik."],
+ ["Quora dan Reddit: menjawab masalah audiens.","Social knowledge","Jejaring informasional; bantu audiens memecahkan masalah."],
+ ["Situs social bookmarking seperti Delicious.","Social sharing","Berguna untuk memahami konten yang paling menarik dalam satu kategori."],
+ ["X (Twitter) untuk kabar terkini.","Social news","Chaffey menyebut Twitter sebagai contoh paling dikenal."],
+ ["YouTube dan Spotify: berbagi foto, video, dan audio.","Social streaming","Situs media kaya dan streaming."],
+ ["Kolom ulasan dan forum pelanggan di situs merek sendiri.","Company UGC & community","Ruang sosial milik perusahaan, berbeda dari platform independen."]
+]},
+side:{o:["Buy-side e-commerce","Sell-side e-commerce","Proses internal"],it:[
+ ["Rumah sakit membeli obat dari distributor melalui portal pengadaan online.","Buy-side e-commerce","Transaksi organisasi dengan pemasoknya."],
+ ["Bank menjawab pertanyaan nasabah lewat chatbot 24 jam.","Sell-side e-commerce","Pertukaran informasi dengan pelanggan, walau tanpa transaksi uang."],
+ ["Sistem absensi dan penggajian karyawan berbasis aplikasi.","Proses internal","Ini digital business, tetapi bukan e-commerce: tidak ada pihak eksternal."],
+ ["Restoran memesan bahan baku lewat aplikasi B2B grosir.","Buy-side e-commerce","Pengadaan sumber daya dari pemasok."],
+ ["Brand fesyen lokal berjualan lewat live shopping.","Sell-side e-commerce","Penjualan kepada pelanggan."],
+ ["Dasbor analitik produksi untuk manajer pabrik.","Proses internal","Optimalisasi proses di dalam organisasi."],
+ ["Pelanggan bertanya stok lewat DM, lalu membayar transfer.","Sell-side e-commerce","Pertukaran informasi dengan pelanggan dimediasi secara elektronik."]
+]},
+presence:{o:["Transactional","Relationship-building","Brand-building","Publisher/media","Social network"],it:[
+ ["Aplikasi maskapai untuk membeli tiket dan check-in.","Transactional","Kontribusi utamanya penjualan online."],
+ ["Website pengembang properti dengan formulir 'hubungi marketing'.","Relationship-building","Produk tidak cocok dibeli online; tujuannya lead untuk penjualan offline."],
+ ["Website merek mi instan berisi resep dan kampanye.","Brand-building","Khas produk FMCG murah bervolume tinggi."],
+ ["Portal berita nasional yang dibiayai iklan.","Publisher/media","Pendapatan dari iklan, komisi, dan data."],
+ ["TikTok.","Social network","Interaksi antar-pengguna, didanai iklan."]
+]},
+pom:{o:["Paid","Owned","Earned"],it:[
+ ["Iklan berbayar di hasil pencarian Google.","Paid","Media yang dibeli."],
+ ["Katalog WhatsApp Business dan akun Instagram milik UMKM.","Owned","Media yang dimiliki merek."],
+ ["Video ulasan food vlogger yang tidak dibayar.","Earned","Publisitas yang diperoleh."],
+ ["Daftar email pelanggan yang memberi izin.","Owned","Aset milik merek."],
+ ["Komisi afiliasi untuk kreator yang menjual produk Anda.","Paid","Investasi untuk membeli jangkauan atau konversi."],
+ ["Pelanggan mengunggah ulang foto produk Anda di story-nya.","Earned","Word-of-mouth dari pelanggan."]
+]},
+model:{o:["B2C","B2B","C2C","C2B","Dot Gov"],it:[
+ ["Mahasiswa menjual laptop bekas ke mahasiswa lain lewat OLX.","C2C","Konsumen ke konsumen."],
+ ["Penyedia cloud menjual layanan server ke startup.","B2B","Antar-organisasi."],
+ ["Freelancer desain menawarkan jasa ke sebuah brand lewat portofolio online.","C2B","Konsumen/individu mendekati bisnis dengan penawaran."],
+ ["Warga mengurus perizinan usaha melalui OSS.","Dot Gov","Layanan digital pemerintah."],
+ ["Merek sepatu lokal menjual lewat website resminya.","B2C","Organisasi ke konsumen."],
+ ["Pengadaan barang instansi melalui e-Katalog LKPP.","Dot Gov","Pengadaan pemerintah (B2G) termasuk cakupan Dot Gov."]
+]},
+rra:{o:["Reach","Richness","Affiliation"],it:[
+ ["UMKM batik Pekalongan menjual ke seluruh Indonesia lewat marketplace.","Reach","Jumlah pelanggan yang terjangkau bertambah."],
+ ["Halaman produk dengan foto 360°, video, ulasan, dan stok real time.","Richness","Kedalaman dan kebaruan informasi."],
+ ["Aplikasi perjalanan terhubung ke maskapai, hotel, asuransi, dan dompet digital.","Affiliation","Kekuatan jejaring mitra."],
+ ["Toko daring menambah 5.000 jenis produk baru dari pemasok mitra.","Reach","Reach juga berarti luasnya ragam produk yang ditawarkan."],
+ ["Konfigurator online untuk merakit laptop sesuai kebutuhan.","Richness","Interaktivitas dan kustomisasi informasi."]
+]},
+benefit:{o:["Tangible","Intangible"],it:[
+ ["Biaya cetak dan distribusi brosur turun.","Tangible","Penghematan biaya dapat diukur."],
+ ["Citra perusahaan sebagai merek modern.","Intangible","Sulit dikuantifikasi."],
+ ["Tingkat persediaan berkurang berkat pemesanan otomatis.","Tangible","Penghematan rantai pasok."],
+ ["Umpan balik pelanggan tentang produk lebih cepat diterima.","Intangible","Bernilai, tetapi sulit diubah ke angka uang."],
+ ["Penjualan baru dari pelanggan luar kota.","Tangible","Pendapatan tambahan dapat diukur."],
+ ["Siklus pengembangan produk lebih cepat.","Intangible","Chaffey memasukkannya ke manfaat intangible (Tabel 1.2)."]
+]},
+sixc:{o:["Content","Customisation","Community","Convenience","Choice","Cost reduction"],it:[
+ ["Tutorial pemakaian, spesifikasi lengkap, dan foto pembeli di halaman produk.","Content","Informasi kaya untuk mendukung keputusan."],
+ ["Promo personal berdasarkan riwayat belanja.","Customisation","Personalisasi massal."],
+ ["Grup pengguna dan forum diskusi antar-pelanggan.","Community","Ruang diskusi antar-konsumen."],
+ ["Memesan makanan pukul 23.00 dari tempat tidur.","Convenience","Tersedia 24/7."],
+ ["Ribuan penjual untuk satu jenis produk.","Choice","Pilihan produk dan pemasok lebih luas."],
+ ["Diskon khusus pembelian lewat aplikasi.","Cost reduction","Persepsi harga lebih murah secara online."]
+]},
+barrier:{o:["Tidak ada manfaat dirasakan","Kurang kepercayaan","Masalah keamanan","Kurang keterampilan","Biaya"],it:[
+ ["Pembeli memilih COD karena takut barang tidak sesuai.","Kurang kepercayaan","Ragu pada penjual yang tidak dikenal."],
+ ["Nenek tidak tahu cara memindai QRIS.","Kurang keterampilan","Literasi digital."],
+ ["Pengguna takut data kartunya bocor setelah berita peretasan.","Masalah keamanan","Kekhawatiran keamanan data."],
+ ["Paket data mahal dan sinyal lemah di daerah 3T.","Biaya","Biaya akses dan perangkat."],
+ ["Pedagang pasar merasa pelanggannya sudah cukup tanpa aplikasi.","Tidak ada manfaat dirasakan","Tidak melihat nilai tambah."]
+]}
+};
+
+/* ---------------- cases ---------------- */
+var CASES=[
+ {id:"c1",t:"Studi Kasus 1 — Amazon: bisnis digital terbesar di dunia?",src:"Chaffey et al., Bab 1, Case Study 1.2",
+  body:"<p>Amazon didirikan Jeff Bezos pada 1994 (awalnya bernama Cadabra) dan memulai bisnis dengan menjual buku dari garasinya. Pada 2015, pendapatannya mencapai US$107 miliar. Misinya: menjadi perusahaan paling berorientasi pelanggan di dunia, tempat siapa pun bisa membeli apa pun.</p><p>Chaffey menguraikan empat sumber pendapatan: <b>ritel</b> (sumber terbesar); <b>platform</b>, yaitu Amazon Web Services (dipakai Dropbox dan Airbnb) dan Marketplace untuk penjual lain; <b>konten</b> (penjualan atau sewa konten digital); dan <b>langganan</b> (Amazon Prime). Risikonya antara lain persaingan ritel, kompleksitas ekspansi global, peramalan persediaan saat lonjakan musiman, keamanan data, penjual pihak ketiga yang menjual barang palsu, dan regulasi yang terus berubah, misalnya untuk pengiriman dengan drone.</p>",
+  qs:[
+   ["Petakan aktivitas Amazon ke buy-side e-commerce, sell-side e-commerce, dan proses internal. Mengapa Amazon lebih tepat disebut digital business daripada sekadar 'toko online'?","Buy-side: pengadaan barang dari pemasok dan penerbit. Sell-side: toko ritel, aplikasi, Prime. Internal: gudang dan pemenuhan pesanan, sistem rekomendasi, AWS yang awalnya dibangun untuk kebutuhan sendiri. Amazon mendigitalkan seluruh rantai nilainya, bukan hanya etalase."],
+   ["Model transaksi apa saja (B2C, B2B, C2C) yang dijalankan Amazon? Beri contoh masing-masing.","B2C (ritel Amazon, Prime), B2B (AWS untuk perusahaan, layanan iklan untuk merek), C2C atau B2C pihak ketiga (Marketplace untuk penjual perorangan dan toko)."],
+   ["Gunakan Six Cs untuk menjelaskan proposisi nilai digital Amazon. C mana yang paling sulit ditiru, dan mengapa?","Content (ulasan sangat banyak), Customisation (rekomendasi), Community (ulasan, Goodreads), Convenience (1-click, Prime), Choice (Marketplace), Cost (harga kompetitif). Customisation paling sulit ditiru karena bergantung pada data perilaku jutaan pelanggan."],
+   ["Bagaimana Amazon menciptakan soft lock-in?","Prime (biaya langganan sudah dibayar sehingga pelanggan cenderung belanja di Amazon), riwayat dan daftar belanja, perangkat Kindle dan Echo, integrasi AWS bagi klien bisnis."],
+   ["Penjual barang palsu di Marketplace adalah risiko reputasi. Mengapa risiko ini muncul justru karena model platform?","Platform memperluas choice dengan cepat tanpa Amazon memegang stok, tetapi kontrol kualitas berpindah ke ribuan penjual. Makin besar skala, makin sulit diawasi, padahal merek yang dilihat konsumen tetap Amazon."]
+  ]},
+ {id:"c2",t:"Studi Kasus 2 — Kopi Kenangan: kedai kopi sebagai bisnis digital",src:"Disusun dari pemberitaan publik (The Jakarta Post, 2021)",
+  body:"<p>Kopi Kenangan didirikan di Jakarta pada 2017 dengan konsep <em>grab-and-go</em>: kopi susu kekinian dengan harga terjangkau, gerai kecil, dan antrean cepat. Pada Desember 2021, perusahaan ini menjadi unicorn (valuasi lebih dari US$1 miliar) setelah memperoleh pendanaan Seri C sebesar US$96 juta, pencapaian yang jarang untuk bisnis ritel makanan dan minuman.</p><p>Pelanggan dapat membeli melalui tiga jalur: langsung di gerai, aplikasi milik sendiri (pesan lalu ambil, pesan-antar, poin dan voucher), dan platform pesan-antar pihak ketiga. Di balik layar, bisnis seperti ini bergantung pada sistem kasir terpusat, pengelolaan stok bahan baku untuk ratusan gerai, dan data transaksi untuk menentukan menu serta lokasi gerai baru.</p>",
+  qs:[
+   ["Apakah Kopi Kenangan sebuah e-commerce company, sebuah digital business, atau bukan keduanya? Gunakan definisi Chaffey.","Digital business. E-commerce hanya sebagian (sell-side: aplikasi dan pesan-antar), tetapi teknologi digital juga menopang proses internal seperti persediaan, kasir, dan keputusan lokasi gerai."],
+   ["Klasifikasikan aplikasi milik sendiri dan platform pesan-antar pihak ketiga dalam kerangka owned / paid / earned. Apa untung-rugi masing-masing bagi perusahaan?","Aplikasi sendiri = owned (data pelanggan dimiliki, tanpa komisi, tetapi butuh biaya pengembangan dan promosi agar diunduh). Platform pihak ketiga lebih mirip kemitraan berbayar (jangkauan luas, tetapi ada komisi dan data dipegang platform). Ulasan dan unggahan pelanggan = earned."],
+   ["Identifikasi minimal tiga proses internal yang dapat ditingkatkan dengan teknologi digital pada jaringan ratusan gerai.","Peramalan permintaan dan pengisian ulang stok, penjadwalan karyawan, analisis penjualan per gerai untuk keputusan menu dan lokasi, pengadaan bahan baku dengan pemasok (buy-side), sistem kasir dan keuangan terpusat."],
+   ["Mengapa perusahaan mendorong pelanggan memesan lewat aplikasinya sendiri daripada lewat platform pihak ketiga? Kaitkan dengan soft lock-in dan data pelanggan.","Margin lebih baik (tanpa komisi), data perilaku pelanggan untuk personalisasi (customisation), dan poin atau voucher yang menciptakan biaya beralih. Risikonya: pelanggan malas mengunduh aplikasi tambahan."]
+  ]},
+ {id:"c3",t:"Studi Kasus 3 — Diskusi kelas: e-commerce atau digital business?",src:"Bahan diskusi kelas",noans:true,
+  body:"<p>Kelas akan berdiskusi tentang ruang lingkup bisnis digital vs e-commerce. Siapkan jawaban untuk tiga tugas berikut.</p><p><b>Organisasi untuk Tugas 1:</b> (1) bank BUMN dengan aplikasi mobile banking; (2) marketplace nasional; (3) platform pengadaan pemerintah e-Katalog LKPP; (4) produsen makanan kemasan yang tidak berjualan online; (5) ITS sebagai perguruan tinggi.</p><p><b>Pernyataan untuk Tugas 2 (pilih satu):</b> (a) \"Digital business hanyalah label baru untuk IT\" (Debate 1.1); (b) \"Produsen makanan kemasan yang tidak berjualan online bukan bisnis digital\"; (c) \"Bagi UMKM Indonesia, berjualan lewat WhatsApp sudah cukup; website sendiri tidak diperlukan.\"</p>",
+  qs:[
+   ["Tugas 1 — Klasifikasi: untuk setiap organisasi, tentukan (a) lingkup yang terlihat publik: e-commerce, digital business, atau keduanya; (b) model transaksinya; (c) satu proses internal yang sudah atau seharusnya didigitalkan.",""],
+   ["Tugas 2 — Posisi argumen: pilih satu pernyataan, nyatakan setuju atau tidak setuju, dan dukung dengan konsep Chaffey serta minimal satu contoh nyata.",""],
+   ["Tugas 3 — Pembanding: pilih satu organisasi lain (bebas). Tentukan tahap kapabilitas digitalnya di sisi sell-side dan buy-side (stage model), beserta alasannya.",""]
+  ]}
+];
+
+/* ---------------- self-test bank: [unit, soal, opsi, idx benar, penjelasan] ---------------- */
+var LO_NAMES={1:"Transformasi digital & disrupsi",2:"Inbound, media sosial & mobile",3:"E-commerce vs digital business",4:"Kehadiran digital & media",5:"Model transaksi & rantai nilai",6:"Peluang & pendorong adopsi",7:"Hambatan, stage model & Six Cs"};
+var FINAL=[
+ [1,"Gojek berawal dari layanan pemesanan ojek melalui call center sebelum aplikasinya diluncurkan. Pelajaran yang paling tepat adalah…",["Teknologi baru selalu menjadi sumber inovasi","Banyak inovasi digital berupa model bisnis baru yang memanfaatkan teknologi yang sudah ada","Call center lebih unggul dari aplikasi","Inovasi hanya bisa dilakukan perusahaan besar"],1,"Inovasi sering terletak pada model bisnis, bukan pada penemuan teknologi."],
+ [1,"Ukuran persaingan taksi bergeser dari 'mudah dicegat di jalan' menjadi 'harga jelas di aplikasi dan rating pengemudi'. Ini contoh…",["Inbound marketing","Teknologi disruptif menurut Danneels","Soft lock-in","Brochureware"],1,"Teknologi disruptif mengubah ukuran kinerja yang menjadi dasar persaingan."],
+ [1,"Menurut Chaffey, perbedaan Internet dan World Wide Web adalah…",["Keduanya istilah yang sama","Internet adalah jaringan fisik; WWW adalah cara paling umum mempublikasikan informasi di Internet melalui peramban","WWW lebih tua dari Internet","Internet hanya untuk email"],1,"Internet = infrastruktur jaringan; Web = lapisan publikasi yang diakses lewat peramban."],
+ [1,"Sebuah perusahaan membeli sistem ERP mahal, tetapi proses, struktur, dan cara kerjanya tetap sama. Menurut definisi Chaffey, ini…",["Sudah transformasi digital","Belum transformasi digital, karena tidak ada perubahan signifikan pada proses, struktur, dan sistem organisasi","E-commerce","Disrupsi pasar"],1,"Transformasi digital menuntut perubahan organisasi, bukan sekadar pembelian teknologi."],
+ [1,"Situs web pertama dibuat oleh…",["Jeff Bezos pada 1994","Tim Berners-Lee pada 1991","Larry Page pada 1998","IBM pada 1997"],1,"Chaffey membuka Bab 1 dengan situs pertama di info.cern.ch oleh Tim Berners-Lee (1991)."],
+ [2,"Zero Moment of Truth (ZMOT) adalah…",["Saat konsumen pertama kali melihat produk di rak","Riset konsumen secara daring (mencari, membaca ulasan, membandingkan harga) sebelum mendatangi penjual","Saat produk dikirim","Saat konsumen menulis ulasan"],1,"ZMOT (Lecinski/Google, 2012) adalah momen riset multikanal sebelum membeli."],
+ [2,"Quora dan Reddit termasuk kategori media sosial…",["Social networking","Social knowledge","Social streaming","Social news"],1,"Jejaring informasional tempat organisasi bisa membantu memecahkan masalah audiens."],
+ [2,"Perbedaan mobile commerce dan mobile business menurut Chaffey adalah…",["Tidak ada bedanya","M-commerce adalah transaksi dan komunikasi melalui perangkat mobile; m-business adalah model bisnis yang membebaskan karyawan dan pemangku kepentingan dari lokasi tetap","M-business hanya untuk aplikasi","M-commerce lebih luas dari m-business"],1,"M-business lebih luas: mencakup cara organisasi bekerja, bukan hanya transaksi."],
+ [2,"Keunggulan utama inbound marketing adalah…",["Pemasar punya kontrol penuh atas pesan","Pemborosan pemasaran berkurang karena calon pembeli sudah punya kebutuhan","Mudah menciptakan permintaan untuk produk yang belum dikenal","Tidak butuh konten"],1,"Calon pembeli bersifat proaktif dan menyeleksi diri."],
+ [2,"Ulasan dan rating produk di situs perusahaan sendiri termasuk kategori…",["Social news","Company user-generated content & community","Social sharing","Paid media"],1,"Ruang sosial milik perusahaan, terintegrasi dengan konten produk."],
+ [3,"Sebuah rumah sakit membeli obat dari distributor melalui portal pengadaan online. Ini contoh…",["Sell-side e-commerce","Buy-side e-commerce","C2C","Earned media"],1,"Transaksi antara organisasi dan pemasoknya adalah buy-side."],
+ [3,"Portal yang hanya dapat diakses vendor terdaftar untuk melihat status tagihannya disebut…",["Intranet","Extranet","Internet","Web 2.0"],1,"Extranet memperluas akses kepada pihak eksternal tertentu."],
+ [3,"Sistem absensi dan penggajian internal karyawan berbasis aplikasi termasuk…",["Sell-side e-commerce","Buy-side e-commerce","Digital business (proses internal), bukan e-commerce","Dot Gov"],2,"Tidak ada pihak eksternal, sehingga bukan e-commerce, tetapi tetap bagian digital business."],
+ [3,"Chatbot bank yang menjawab pertanyaan saldo 24 jam, sehingga biaya turun sekaligus layanan lebih cepat, mencerminkan perspektif e-commerce…",["Komunikasi","Proses bisnis","Layanan","Daring"],2,"Perspektif layanan (Kalakota & Whinston): menekan biaya sekaligus meningkatkan kecepatan dan kualitas layanan."],
+ [3,"Social media commerce adalah…",["Iklan di media sosial","Bagian e-commerce yang mendorong partisipasi pelanggan: rating, ulasan, berbagi, membeli bersama","Media sosial milik pemerintah","Penjualan akun media sosial"],1,"Partisipasi bisa terjadi di situs toko maupun platform pihak ketiga."],
+ [4,"Situs pengembang properti yang menampilkan informasi proyek dan formulir 'hubungi marketing' tanpa transaksi online paling tepat disebut…",["Transactional e-commerce","Services-oriented relationship-building","Brand-building","Social network"],1,"Tujuannya menghasilkan lead untuk penjualan offline."],
+ [4,"Akun Instagram dan katalog WhatsApp Business milik sebuah UMKM termasuk…",["Paid media","Owned media","Earned media","Interactive advertising"],1,"Media yang dimiliki dan dikelola merek sendiri."],
+ [4,"Iklan teks berbayar per klik di halaman hasil pencarian termasuk kanal…",["Digital PR","Search engine marketing (PPC)","Opt-in email","Digital partnerships"],1,"PPC adalah teknik search engine marketing berbayar; SEO adalah yang organik."],
+ [4,"Mengapa Chaffey menyebut setiap organisasi kini harus menjadi 'penerbit multikanal'?",["Karena wajib memiliki koran","Karena media milik sendiri adalah alternatif investasi dari media lain, dan kontennya bisa dibagikan lintas paid dan earned","Karena iklan TV dilarang","Karena konten tidak lagi penting"],1,"Owned media berfungsi seperti media; irisan paid–owned–earned menuntut integrasi."],
+ [4,"Situs pembanding harga dan program afiliasi termasuk kanal…",["Digital partnerships","Interactive advertising","Social media marketing","Digital PR"],0,"Kemitraan jangka panjang di situs pihak ketiga: afiliasi, agregator, sponsorship, co-branding."],
+ [5,"Kreator konten menawarkan jasa endorse kepada sebuah brand. Model transaksinya…",["B2C","B2B","C2C","C2B"],3,"Individu mendekati bisnis dengan penawaran."],
+ [5,"Pelaporan pajak online dan perizinan usaha melalui OSS termasuk…",["C2C","Dot Gov","B2C","E2E"],1,"Penerapan teknologi digital pada layanan pemerintah untuk warga dan bisnis."],
+ [5,"Karakteristik utama Web 2.0 adalah…",["Situs statis tanpa interaksi","Partisipasi pengguna, konten buatan pengguna, rating, dan pertukaran data antarsitus","Hanya bisa diakses dari desktop","Iklan dilarang"],1,"Prinsip Web 2.0 kini menjadi standar layanan digital."],
+ [5,"Buy-side dan sell-side e-commerce adalah dua sisi dari…",["Digital PR","Supply chain management","Social media marketing","Dot Gov"],1,"SCM mengoordinasikan aktivitas pasokan dari pemasok hingga pelanggan."],
+ [5,"Marketplace menampung penjual perorangan sekaligus toko resmi merek. Artinya…",["Marketplace hanya C2C","Satu platform bisa menjalankan C2C dan B2C sekaligus","Marketplace adalah Dot Gov","Marketplace hanya B2B"],1,"Banyak perusahaan bermain di lebih dari satu model transaksi."],
+ [6,"UMKM batik Pekalongan dapat menjual ke seluruh Indonesia lewat marketplace. Ini contoh…",["Reach","Richness","Affiliation","Soft lock-in"],0,"Jumlah pelanggan yang dapat dijangkau bertambah."],
+ [6,"Halaman produk dengan foto 360°, ulasan pembeli, dan stok real time mencerminkan…",["Reach","Richness","Affiliation","Choice"],1,"Kedalaman, interaktivitas, dan kebaruan informasi."],
+ [6,"Aplikasi perjalanan yang terhubung ke maskapai, hotel, asuransi, dan dompet digital mencerminkan…",["Reach","Richness","Affiliation","Brochureware"],2,"Efektivitas jejaring dengan mitra."],
+ [6,"Manakah yang termasuk pendorong daya saing, bukan pendorong efisiensi (DTI, 2000)?",["Pasokan diperoleh lebih cepat","Biaya operasional turun","Permintaan pelanggan","Pengiriman barang lebih cepat"],2,"Pendorong daya saing: permintaan pelanggan, ragam dan kualitas layanan, menghindari kehilangan pangsa pasar."],
+ [6,"Menurut riset Doherty dkk. (Tabel 1.3), dua faktor yang paling berkaitan dengan adopsi Internet oleh peritel adalah…",["Ukuran perusahaan dan usia pemilik","Pelanggan sasaran adalah pengguna Internet, dan adanya strategi Internet","Lokasi dan modal","Jumlah karyawan dan pesaing"],1,"Perusahaan tanpa strategi digital yang koheren cenderung berhenti di tingkat adopsi rendah."],
+ [7,"Manakah yang BUKAN salah satu dari lima hambatan konsumen menurut Chaffey?",["Kurangnya kepercayaan","Masalah keamanan","Terlalu banyak pilihan produk","Biaya"],2,"Lima hambatan: tidak ada manfaat dirasakan, kepercayaan, keamanan, keterampilan, biaya."],
+ [7,"Popularitas COD (bayar di tempat) di Indonesia paling mencerminkan hambatan…",["Kurangnya keterampilan","Kurangnya kepercayaan","Tidak ada manfaat","Biaya"],1,"Konsumen ingin melihat barang sebelum membayar."],
+ [7,"Jika semua marketplace menawarkan gratis ongkir, C mana yang paling sulit ditiru pesaing?",["Cost reduction","Choice","Customisation","Convenience"],2,"Customisation bergantung pada data perilaku yang terakumulasi dari waktu ke waktu."],
+ [7,"Digital value proposition (DVP) adalah…",["Harga termurah di pasar","Pernyataan manfaat layanan digital yang memperkuat proposisi inti dan membedakannya dari kanal non-digital dan pesaing","Anggaran iklan digital","Logo baru untuk aplikasi"],1,"DVP menjawab: mengapa pelanggan harus memakai layanan digital kita?"],
+ [7,"Situs yang sekadar memindahkan brosur cetak ke web tanpa memanfaatkan kelebihan medium digital disebut…",["Brochureware","Extranet","Widget","Mashup"],0,"Tahap awal kehadiran digital yang statis."],
+ [7,"Risiko strategis utama dalam bisnis digital menurut Chaffey adalah…",["Logo yang kurang menarik","Salah mengambil keputusan investasi digital karena eksekusi buruk atau pendekatan yang tidak sesuai","Terlalu banyak pelanggan","Kurang akun media sosial"],1,"Risiko praktis (situs down, peretasan) juga penting, tetapi risiko strategisnya adalah keputusan investasi yang keliru."]
+];
+
+/* ---------------- rubrik umpan balik studi kasus ---------------- */
+var RUB={
+ c1_0:{need:4,cr:[
+  ["Buy-side","buy-side|buy side|pemasok|pengadaan|supplier|penerbit|pembelian dari","Aktivitas Amazon dengan pemasoknya belum dipetakan."],
+  ["Sell-side","sell-side|sell side|pelanggan|toko|ritel|prime|aplikasi|penjualan","Aktivitas Amazon dengan pelanggan belum dipetakan."],
+  ["Proses internal","internal|gudang|fulfil|pemenuhan|rekomendasi|logistik|aws|persediaan|inventori|algoritma","Apa yang terjadi di dalam Amazon, di luar transaksi dengan pihak eksternal?"],
+  ["Kesimpulan: digital business","digital business|bisnis digital|seluruh proses|rantai nilai|bukan sekadar|lebih dari|bukan hanya","Jelaskan mengapa Amazon lebih dari sekadar toko online."]],
+  self:["Setiap kategori saya isi dengan contoh aktivitas Amazon yang spesifik","Saya menjelaskan alasan, bukan hanya mengulang definisi"]},
+ c1_1:{need:4,cr:[
+  ["B2C","b2c|ke konsumen|business-to-consumer","Model penjualan ke konsumen belum disebut."],
+  ["B2B","b2b|aws|perusahaan|business-to-business|iklan untuk","Siapa pelanggan bisnis Amazon?"],
+  ["C2C / penjual pihak ketiga","c2c|marketplace|penjual perorangan|pihak ketiga|bekas|second|consumer-to-consumer","Bagaimana individu berjualan di platform Amazon?"],
+  ["Contoh spesifik","aws|prime|marketplace|kindle|ritel|associates|audible|echo","Dukung setiap model dengan contoh layanan Amazon."]],
+  self:["Saya memberi contoh untuk setiap model, bukan hanya menyebut singkatannya"]},
+ c1_2:{need:5,cr:[
+  ["Content","content|konten|ulasan|informasi produk|review","Bagaimana informasi produk Amazon membantu keputusan?"],
+  ["Customisation","custom|personal|rekomendasi","Bagaimana Amazon mempersonalisasi pengalaman?"],
+  ["Community","community|komunitas|goodreads|forum|diskusi","Di mana pelanggan Amazon berinteraksi satu sama lain?"],
+  ["Convenience","convenien|kemudahan|mudah|1-click|one-click|cepat|24|pengiriman","Bagaimana Amazon memudahkan pembelian?"],
+  ["Choice","choice|pilihan|ragam|beragam|apa pun","Seberapa luas pilihan produknya?"],
+  ["Cost reduction","cost|harga|murah|biaya|hemat","Bagaimana dengan persepsi harga?"],
+  ["C yang paling sulit ditiru","paling sulit|sulit ditiru|tidak mudah ditiru|sukar ditiru","Pertanyaan meminta Anda menentukan C yang paling sulit ditiru."]],
+  self:["Saya menjelaskan mengapa C yang saya pilih paling sulit ditiru","Setiap C saya kaitkan dengan fitur Amazon yang nyata"]},
+ c1_3:{need:3,cr:[
+  ["Prime / langganan","prime|langganan|berlangganan|subscription","Apa peran program langganan Amazon?"],
+  ["Biaya beralih","beralih|switching|biaya pindah|enggan pindah|lock|sulit pindah","Jelaskan biaya beralih yang dirasakan pelanggan."],
+  ["Data & riwayat","riwayat|data|alamat|daftar|wishlist|rekomendasi|tersimpan","Apa yang 'tertinggal' jika pelanggan pindah platform?"],
+  ["Ekosistem perangkat/layanan","kindle|echo|alexa|perangkat|ekosistem|aws|integrasi","Bagaimana perangkat dan layanan lain mengikat pelanggan?"]],
+  self:["Saya membedakan lock-in karena nilai layanan dan karena biaya beralih"]},
+ c1_4:{need:3,cr:[
+  ["Model platform","platform|marketplace|pihak ketiga|penjual lain","Kaitkan risiko dengan karakteristik model platform."],
+  ["Kontrol kualitas","kontrol|kualitas|mengawasi|awasi|pengawasan|verifikasi|kurasi","Siapa yang mengendalikan kualitas barang di marketplace?"],
+  ["Skala","skala|jutaan|ribuan|banyak penjual|besar","Mengapa makin sulit diawasi saat platform membesar?"],
+  ["Dampak reputasi","reputasi|merek|kepercayaan|trust|citra|nama amazon","Siapa yang menanggung dampak di mata konsumen?"]],
+  self:["Saya menjelaskan trade-off: platform memperluas choice tetapi mengurangi kontrol"]},
+ c2_0:{need:3,cr:[
+  ["Kesimpulan: digital business","digital business|bisnis digital","Ambil posisi: e-commerce, digital business, atau bukan keduanya?"],
+  ["Bagian e-commerce","e-commerce|sell-side|aplikasi|pesan-antar|online|daring","Bagian mana dari Kopi Kenangan yang merupakan e-commerce?"],
+  ["Proses internal","internal|stok|persediaan|kasir|data|lokasi|menu|pos\\b","Bagaimana teknologi digital menopang operasi internal?"],
+  ["Rujukan definisi","definisi|chaffey|pihak eksternal|dimediasi|optimalisasi","Gunakan definisi Chaffey secara eksplisit."]],
+  self:["Saya memakai definisi Chaffey, bukan pemahaman sehari-hari"]},
+ c2_1:{need:4,cr:[
+  ["Owned","owned|milik sendiri|aplikasi sendiri|dimiliki","Klasifikasikan aplikasi milik Kopi Kenangan."],
+  ["Paid / kemitraan","paid|berbayar|komisi|kemitraan|partner|pihak ketiga|dibayar","Klasifikasikan platform pesan-antar pihak ketiga."],
+  ["Earned","earned|ulasan|unggahan|review|mulut ke mulut|word of mouth|rekomendasi pelanggan","Apa contoh earned media dalam kasus ini?"],
+  ["Untung-rugi","untung|rugi|kelebihan|kekurangan|namun|tetapi|biaya|komisi|risiko","Jelaskan untung-rugi masing-masing kanal."]],
+  self:["Saya membahas untung dan rugi untuk kedua kanal, bukan hanya satu"]},
+ c2_2:{need:3,cr:[
+  ["Persediaan & pengadaan","stok|persediaan|inventori|bahan baku|pengadaan|pemasok|restock","Bagaimana dengan pengelolaan bahan baku?"],
+  ["SDM","karyawan|jadwal|shift|sdm|pelatihan|barista|absensi","Bagaimana dengan pengelolaan karyawan di ratusan gerai?"],
+  ["Analisis & keputusan","analisis|data penjualan|lokasi|gerai baru|menu|peramalan|forecast|prediksi","Bagaimana data dipakai untuk keputusan bisnis?"],
+  ["Kasir & keuangan","kasir|pos\\b|keuangan|akuntansi|pembayaran|laporan","Bagaimana dengan transaksi dan pelaporan keuangan?"]],
+  self:["Setiap proses yang saya sebut disertai cara teknologi digital meningkatkannya"]},
+ c2_3:{need:3,cr:[
+  ["Margin / komisi","margin|komisi|biaya|untung|laba","Apa dampak finansial pesanan lewat pihak ketiga?"],
+  ["Data pelanggan","data|perilaku|personal|custom|profil","Siapa yang memegang data pelanggan di masing-masing kanal?"],
+  ["Soft lock-in","lock|poin|voucher|loyal|beralih|switching|member","Bagaimana aplikasi sendiri menciptakan biaya beralih?"],
+  ["Risiko/kelemahan","unduh|download|malas|repot|risiko|namun|tetapi|kendala","Apa kelemahan strategi ini?"]],
+  self:["Saya mempertimbangkan sudut pandang pelanggan, bukan hanya perusahaan"]},
+ c3_0:{need:6,cr:[
+  ["Bank BUMN","bank|mobile banking|m-banking","Organisasi 1 (bank) belum diklasifikasi."],
+  ["Marketplace","marketplace","Organisasi 2 (marketplace) belum diklasifikasi."],
+  ["e-Katalog LKPP","lkpp|katalog|pengadaan pemerintah","Organisasi 3 (e-Katalog LKPP) belum diklasifikasi."],
+  ["Produsen makanan kemasan","makanan|kemasan|produsen","Organisasi 4 belum diklasifikasi."],
+  ["ITS","\\bits\\b|perguruan tinggi|kampus|universitas","Organisasi 5 (ITS) belum diklasifikasi."],
+  ["Lingkup (a)","e-commerce|digital business|keduanya|bisnis digital","Tentukan lingkup tiap organisasi."],
+  ["Model transaksi (b)","b2c|b2b|c2c|c2b|g2b|b2g|g2c|dot gov","Tentukan model transaksi tiap organisasi."],
+  ["Proses internal (c)","internal|proses|sistem","Sebutkan satu proses internal untuk tiap organisasi."]],
+  self:["Saya mengisi ketiga aspek (a, b, c) untuk kelima organisasi","Klasifikasi saya konsisten dengan definisi Chaffey"]},
+ c3_1:{need:4,cr:[
+  ["Posisi yang jelas","setuju|tidak setuju|menolak|sependapat|tidak sependapat|keliru|benar","Nyatakan posisi Anda dengan tegas."],
+  ["Pernyataan yang dipilih","label|teknologi informasi|\\bit\\b|makanan kemasan|whatsapp|website","Sebutkan pernyataan mana yang Anda pilih."],
+  ["Contoh nyata","contoh|misalnya|seperti|sebagai contoh|contohnya","Tugas mewajibkan minimal satu contoh nyata."],
+  ["Konsep Chaffey","digital business|e-commerce|proses internal|owned|stage|buy-side|sell-side|soft lock-in|six cs|reach|richness","Dukung argumen dengan konsep dari Bab 1."]],
+  self:["Saya mempertimbangkan argumen pihak yang berlawanan","Contoh saya relevan dengan konteks Indonesia"]},
+ c3_2:{need:3,cr:[
+  ["Organisasi yang dipilih","organisasi|perusahaan|umkm|toko|brand|usaha|startup","Sebutkan organisasi pembanding Anda."],
+  ["Tahap kapabilitas","tahap|stage|level|kematangan|tingkat","Tentukan tahap stage model-nya."],
+  ["Sell-side & buy-side","sell-side|buy-side|sell side|buy side|pemasok|pelanggan","Bedakan tahap di sisi penjualan dan pembelian."]],
+  self:["Saya memberi bukti konkret mengapa organisasi itu berada di tahap tersebut"]}
+};
+var CONN=["karena","sehingga","akibatnya","oleh karena itu","maka","sebab","menyebabkan","artinya","dengan demikian","namun","tetapi","sedangkan","jika","agar","membuat","berdampak","because","therefore"];
+var LV=["Belum terlihat","Perlu diperkuat","Cukup","Baik","Sangat baik"];
+
+/* ---------------- glossary ---------------- */
+var GLOSS=[
+ ["Disruptive technology","Teknologi yang mengubah dasar persaingan dengan mengubah ukuran kinerja yang dipakai untuk bersaing"],
+ ["Digital transformation","Perubahan signifikan pada proses, struktur, dan sistem organisasi melalui teknologi digital"],
+ ["Inbound marketing","Pelanggan aktif mencari dan menemukan merek melalui konten, pencarian, dan media sosial"],
+ ["ZMOT","Zero Moment of Truth: riset konsumen secara daring sebelum mendatangi penjual"],
+ ["Mobile commerce / business","Transaksi via perangkat mobile / model bisnis yang membebaskan orang dari lokasi tetap"],
+ ["E-commerce","Semua pertukaran informasi yang dimediasi secara elektronik antara organisasi dan pihak eksternal"],
+ ["Buy-side / Sell-side","E-commerce dengan pemasok / dengan pelanggan"],
+ ["Digital business","Penerapan teknologi digital untuk meningkatkan daya saing melalui optimalisasi proses internal dan kanal eksternal"],
+ ["Social media commerce","Bagian e-commerce yang mendorong partisipasi pelanggan: ulasan, rating, berbagi"],
+ ["Intranet / Extranet","Jaringan privat internal / yang diperluas ke pihak eksternal tertentu"],
+ ["Paid / Owned / Earned media","Media yang dibeli / dimiliki / diperoleh"],
+ ["SEO / PPC","Optimasi hasil pencarian organik / iklan pencarian berbayar per klik"],
+ ["Freemium","Model dengan versi gratis dan versi berbayar"],
+ ["Brochureware","Situs yang sekadar memindahkan brosur cetak ke web"],
+ ["B2C, B2B, C2C, C2B","Model transaksi berdasarkan siapa bertransaksi dengan siapa"],
+ ["Dot Gov","Penerapan teknologi digital pada layanan pemerintah"],
+ ["Web 2.0","Layanan web yang mendorong partisipasi, UGC, rating, dan pertukaran data"],
+ ["Omnichannel","Pengalaman pelanggan yang terintegrasi lintas kanal digital dan fisik"],
+ ["Customer journey","Perjalanan konsumen melintasi berbagai media dari mencari hingga purnajual"],
+ ["Value network","Jejaring mitra yang membentuk rantai nilai eksternal organisasi"],
+ ["Reach / Richness / Affiliation","Jangkauan / kedalaman informasi / kekuatan jejaring mitra (Evans & Wurster)"],
+ ["Soft lock-in","Pelanggan bertahan karena layanan bernilai dan ada biaya beralih"],
+ ["Tangible / Intangible benefit","Manfaat yang dapat diukur dengan uang / yang sulit dikuantifikasi"],
+ ["Stage model","Model tahapan untuk menilai kematangan kapabilitas digital"],
+ ["Digital value proposition","Pernyataan manfaat layanan digital yang membedakan dari kanal lain dan pesaing"],
+ ["Six Cs","Content, Customisation, Community, Convenience, Choice, Cost reduction"]
+];
+
+/* ================= render: sidebar & plan ================= */
+var NAV=[["grp","Mulai"],["home","Beranda","⌂"],["grp","Chaffey Bab 1 · Konsep"],["u1"],["u2"],["u3"],["u4"],["u5"],["grp","Chaffey Bab 1 · Peluang & Hambatan"],["u6"],["u7"],["grp","Penerapan & Evaluasi"],["cases","Studi Kasus","📂"],["final","Kuis Akhir","🏁"],["cards","Flashcard","🃏"],["notes","Catatan & Referensi","📝"]];
+function renderSide(){
+  var h="";
+  NAV.forEach(function(n){
+    if(n[0]==="grp"){h+='<div class="grp">'+n[1]+'</div>';return}
+    var u=UNITS.filter(function(x){return x.id===n[0]})[0];
+    if(u){var i=UNITS.indexOf(u)+1;h+='<a href="#'+u.id+'" data-nav="'+u.id+'" class="'+(S.done[u.id]?"done":"")+'"><span class="n">'+(S.done[u.id]?"✓":i)+'</span>'+u.t+'</a>'}
+    else{var dn=(n[0]==="final"&&S.final&&S.final.best>=80)||(n[0]==="cases"&&casesDone()); h+='<a href="#'+n[0]+'" data-nav="'+n[0]+'" class="'+(dn?"done":"")+'"><span class="n ico">'+(dn?"✓":n[2])+'</span>'+n[1]+'</a>'}
+  });
+  $("#side").innerHTML=h; markNav();
+  var pb="";UNITS.forEach(function(u,i){pb+='<tr><td>'+(i+1)+'</td><td><a href="#'+u.id+'">'+u.t+'</a></td><td>'+u.pg+'</td><td class="st '+(S.done[u.id]?"y":"n")+'">'+(S.done[u.id]?"✓ selesai":(S.read[i+1]?"dibaca":"—"))+'</td></tr>'});
+  pb+='<tr><td>'+(UNITS.length+1)+'</td><td><a href="#cases">Studi kasus (3)</a></td><td>—</td><td class="st '+(casesDone()?"y":"n")+'">'+(casesDone()?"✓ selesai":"—")+'</td></tr>';
+  pb+='<tr><td>'+(UNITS.length+2)+'</td><td><a href="#final">Kuis akhir</a></td><td>—</td><td class="st '+(S.final&&S.final.best>=80?"y":"n")+'">'+(S.final?("terbaik "+S.final.best+"%"):"—")+'</td></tr>';
+  $("#planBody").innerHTML=pb;
+}
+function casesDone(){var n=0;CASES.forEach(function(c){c.qs.forEach(function(q,i){if((S.notes[c.id+"_"+i]||"").trim().length>=40)n++})});var t=0;CASES.forEach(function(c){t+=c.qs.length});return n>=t}
+function updateProgress(){
+  var tot=UNITS.length+2,d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  if(casesDone())d++; if(S.final&&S.final.best>=80)d++;
+  var p=Math.round(d/tot*100);$("#progBar").style.width=p+"%";$("#progLbl").textContent=p+"%";
+}
+
+/* ================= quizzes ================= */
+function seededOrder(key,n){var h=2166136261;for(var c=0;c<key.length;c++){h^=key.charCodeAt(c);h=Math.imul(h,16777619)}var a=[];for(var i=0;i<n;i++)a.push(i);for(var k=n-1;k>0;k--){h=Math.imul(h^(h>>>15),2246822507)>>>0;var r=h%(k+1),x=a[k];a[k]=a[r];a[r]=x}return a}
+function renderQuiz(box,uid){
+  var qs=QZ[uid], h='<div class="lockmsg"><div>🔒 <b>Soal terkunci.</b><br>Baca subbab buku yang ditunjuk, lalu centang "Saya sudah membaca" di atas.</div></div><div class="qbody">';
+  qs.forEach(function(q,i){
+    h+='<div class="q" data-qi="'+i+'"><span class="kind '+(q.k==="r"?"rb":"")+'">'+(q.k==="r"?"📖 Cek bacaan · "+q.pg:"Konsep")+'</span><div class="qt">'+(i+1)+'. '+esc(q.q)+'</div><div class="opts">';
+    seededOrder(uid+"_"+i,q.o.length).forEach(function(j,pos){h+='<button class="opt" data-j="'+j+'"><span class="L">'+"ABCD"[pos]+'</span><span>'+esc(q.o[j])+'</span></button>'});
+    h+='</div><div class="fbx"></div></div>';
+  });
+  h+='<div class="score" id="sc_'+uid+'"></div></div>';
+  box.innerHTML=h;
+  $$(".q",box).forEach(function(qe){
+    var i=+qe.dataset.qi;
+    $$(".opt",qe).forEach(function(b){b.addEventListener("click",function(){answer(uid,i,+b.dataset.j,qe)})});
+    var prev=S.q[uid+"_"+i]; if(prev!=null) paint(uid,i,prev,qe);
+  });
+  lockState(box,uid); scoreUnit(uid);
+}
+function answer(uid,i,j,qe){S.q[uid+"_"+i]=j;paint(uid,i,j,qe);scoreUnit(uid);save();}
+function paint(uid,i,j,qe){
+  var q=QZ[uid][i],ok=j===q.a;
+  $$(".opt",qe).forEach(function(b){var k=+b.dataset.j;b.disabled=true;b.classList.remove("ok","no");if(k===j)b.classList.add(ok?"ok":"no");if(ok&&k===q.a)b.classList.add("ok")});
+  var fb=$(".fbx",qe);
+  fb.innerHTML='<div class="fb '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat.")+'</b>'+(ok?esc(q.e):(q.k==="r"?"Buka kembali Chaffey Bab 1, "+q.pg+", dan cari bagian yang relevan.":"Baca ulang ringkasan di atas, lalu coba lagi."))+'</div>'+(ok?"":'<button class="retry">Coba lagi</button>');
+  var r=$(".retry",fb); if(r) r.addEventListener("click",function(){delete S.q[uid+"_"+i];save();$$(".opt",qe).forEach(function(b){b.disabled=false;b.classList.remove("ok","no")});fb.innerHTML="";scoreUnit(uid)});
+}
+function scoreUnit(uid){
+  var qs=QZ[uid],c=0;qs.forEach(function(q,i){if(S.q[uid+"_"+i]===q.a)c++});
+  var el=$("#sc_"+uid); if(el) el.textContent=c+" / "+qs.length+" benar"+(c===qs.length?" · Unit selesai ✓":"");
+  var was=!!S.done[uid]; S.done[uid]=c===qs.length;
+  if(S.done[uid]&&!was){toast("Unit selesai! 🎉");} if(was!==S.done[uid]){save();renderSide();}
+}
+function lockState(box,uid){var n=+uid.slice(1);box.classList.toggle("locked",!S.read[n])}
+
+/* ================= classify ================= */
+function renderClassify(el){
+  var key=el.dataset.widget,w=CL[key],h='';
+  w.it.forEach(function(it,i){
+    h+='<div class="it" data-i="'+i+'"><p>'+esc(it[0])+'</p><div class="chips">';
+    w.o.forEach(function(o){h+='<button class="chip" data-o="'+esc(o)+'">'+esc(o)+'</button>'});
+    h+='</div><div class="why"></div></div>';
+  });
+  h+='<div class="score" style="margin-top:10px"></div>';
+  el.insertAdjacentHTML("beforeend",h);
+  $$(".it",el).forEach(function(row){
+    var i=+row.dataset.i;
+    $$(".chip",row).forEach(function(c){c.addEventListener("click",function(){
+      var it=w.it[i],ok=c.dataset.o===it[1];
+      if(ok){S.cls[key+"_"+i]=1;paintCls(row,it,true);save();clsScore(el,key)}
+      else{c.classList.add("no");c.disabled=true;$(".why",row).textContent="Belum tepat. Coba pilihan lain.";}
+    })});
+    if(S.cls[key+"_"+i])paintCls(row,w.it[i],true);
+  });
+  clsScore(el,key);
+}
+function paintCls(row,it,ok){$$(".chip",row).forEach(function(c){c.disabled=true;c.classList.remove("no");if(c.dataset.o===it[1])c.classList.add("ok")});$(".why",row).innerHTML="✓ "+esc(it[2])}
+function clsScore(el,key){var w=CL[key],c=0;w.it.forEach(function(_,i){if(S.cls[key+"_"+i])c++});$(".score",el).textContent=c+" / "+w.it.length+" tepat"}
+
+/* ================= widget topik 2 ================= */
+/* ZMOT ordering */
+var ZSTEPS=[
+ ["Stimulus","Melihat unggahan teman dan iklan tentang ponsel baru."],
+ ["ZMOT","Menonton ulasan di YouTube, membandingkan spesifikasi dan harga di marketplace, bertanya di grup WhatsApp."],
+ ["First Moment of Truth","Mencoba ponsel di toko atau membaca halaman produk, lalu memutuskan membeli."],
+ ["Second Moment of Truth","Memakai ponsel di rumah, lalu menulis ulasan dan membagikan pengalaman."]
+];
+function zmot(){
+  var pool=$("#zPool"),seq=$("#zSeq"),fb=$("#zFb"),picked=[];
+  function draw(){
+    var order=draw.order;
+    pool.innerHTML=order.filter(function(i){return picked.indexOf(i)<0}).map(function(i){return '<button class="zcard" data-i="'+i+'">'+esc(ZSTEPS[i][1])+'</button>'}).join("");
+    seq.innerHTML=picked.map(function(i,k){var ok=i===k;return '<li class="'+(ok?"ok":"no")+'"><b>'+(ok?esc(ZSTEPS[i][0]):"Belum tepat")+'</b> '+esc(ZSTEPS[i][1])+'</li>'}).join("");
+    $$(".zcard",pool).forEach(function(b){b.addEventListener("click",function(){picked.push(+b.dataset.i);draw()})});
+    var allOk=picked.length===4&&picked.every(function(i,k){return i===k});
+    if(picked.length===4){
+      fb.innerHTML=allOk?'<div class="fb ok"><b>Tepat.</b>Stimulus → ZMOT → First Moment of Truth → Second Moment of Truth. Perhatikan lingkarannya: ulasan Anda di tahap terakhir menjadi bahan ZMOT bagi calon pembeli lain. Itulah mengapa earned media sangat kuat.</div>':'<div class="fb no"><b>Belum tepat.</b>Ada langkah yang tertukar. Ingat: ZMOT terjadi <em>sebelum</em> bertemu produk atau penjual. Klik "Ulangi".</div>';
+      if(allOk){S.cls.zmot=1;save()}
+    } else fb.innerHTML="";
+  }
+  draw.order=shuffle([0,1,2,3]);
+  $("#zReset").addEventListener("click",function(){picked=[];draw.order=shuffle([0,1,2,3]);draw()});
+  if(S.cls.zmot){picked=[0,1,2,3]}
+  draw();
+}
+
+/* Digital business map */
+var DBZ={
+ buy:["Buy-side e-commerce","Transaksi untuk memperoleh sumber daya dari pemasok (e-procurement).","Instansi membeli lewat e-Katalog LKPP; sekolah berbelanja lewat SIPLah; restoran memesan bahan baku di platform B2B."],
+ int:["Proses internal (digital business, bukan e-commerce)","Optimalisasi proses di dalam organisasi: R&D, pemasaran, produksi, logistik masuk dan keluar, SDM, keuangan, kolaborasi (intranet).","Sistem akademik dan LMS kampus; e-office; dasbor kinerja; sistem kasir terpusat; analitik risiko kredit di bank."],
+ sell:["Sell-side e-commerce","Transaksi dan pertukaran informasi dengan pelanggan, termasuk layanan purnajual dan permintaan informasi.","Toko online merek lokal; aplikasi maskapai; chatbot layanan nasabah; tanya stok via DM."]
+};
+function dbmap(){
+  $$("#dbMap .dbz").forEach(function(b){b.addEventListener("click",function(){
+    $$("#dbMap .dbz").forEach(function(x){x.classList.toggle("on",x===b)});
+    var z=DBZ[b.dataset.z];$("#dbInfo").innerHTML='<b>'+esc(z[0])+'</b><p style="margin:4px 0">'+esc(z[1])+'</p><p class="hint" style="margin:0"><b>Contoh:</b> '+esc(z[2])+'</p>';
+  })});
+}
+
+/* Stage model tool */
+var STAGES=[
+ ["1. Kehadiran statis","Profil Instagram atau Google Maps; sekadar brochureware","Mencari pemasok lewat mesin pencari"],
+ ["2. Interaksi","Katalog WhatsApp Business; membalas DM dan komentar","Memesan ke pemasok lewat chat atau email"],
+ ["3. Transaksi","Berjualan di marketplace; menerima QRIS","Membeli bahan baku di platform B2B"],
+ ["4. Integrasi","Toko online terhubung ke stok, kurir, dan pembukuan","Pemesanan otomatis saat stok menipis"],
+ ["5. Sosial & data","Live shopping, komunitas pelanggan, personalisasi berbasis data","Berbagi data permintaan dengan pemasok"]
+];
+function stageTool(){
+  var sS=$("#stSell"),sB=$("#stBuy");
+  sS.innerHTML='<option value="0">Belum ada kehadiran digital</option>'+STAGES.map(function(s,i){return '<option value="'+(i+1)+'">'+s[0]+': '+s[1]+'</option>'}).join("");
+  sB.innerHTML='<option value="0">Belum ada (semua manual/tatap muka)</option>'+STAGES.map(function(s,i){return '<option value="'+(i+1)+'">'+s[0]+': '+s[2]+'</option>'}).join("");
+  var st=S.notes.stage?JSON.parse(S.notes.stage):{n:"",s:0,b:0};
+  $("#stName").value=st.n;sS.value=st.s;sB.value=st.b;
+  function upd(){
+    var s=+sS.value,b=+sB.value,n=$("#stName").value.trim()||"Usaha ini";
+    S.notes.stage=JSON.stringify({n:$("#stName").value,s:s,b:b});save();
+    var next=function(v,k){return v>=5?"Sudah di tahap tertinggi; fokus pada optimasi dan pengukuran.":"Langkah berikutnya: "+STAGES[v][k]+"."};
+    var gap=Math.abs(s-b),msg=gap>=2?(s>b?"Sisi penjualan jauh lebih maju daripada sisi pembelian. Lonjakan pesanan online bisa tidak tertangani jika pengadaan dan stok masih manual.":"Sisi pembelian lebih maju daripada penjualan. Ada peluang memperluas jangkauan pelanggan secara digital."):"Kedua sisi relatif seimbang.";
+    $("#stRes").innerHTML='<b>'+esc(n)+'</b>: sell-side tahap <b>'+s+'</b>, buy-side tahap <b>'+b+'</b>.<br>'+msg+'<br><span class="hint">Sell-side: '+next(s,1)+'<br>Buy-side: '+next(b,2)+'</span>';
+  }
+  [sS,sB].forEach(function(e){e.addEventListener("change",upd)});$("#stName").addEventListener("input",upd);upd();
+}
+
+/* Six Cs audit */
+var SIXC=["Content","Customisation","Community","Convenience","Choice","Cost reduction"];
+function dvp(){
+  var st=S.notes.dvp?JSON.parse(S.notes.dvp):{n:"",v:[3,3,3,3,3,3]};
+  $("#dvpName").value=st.n;
+  $("#dvpSliders").innerHTML=SIXC.map(function(c,i){return '<label class="dvps"><span>'+c+' <b id="dvpv'+i+'">'+st.v[i]+'</b></span><input type="range" min="0" max="5" step="1" value="'+st.v[i]+'" data-i="'+i+'"></label>'}).join("");
+  function draw(){
+    var v=$$("#dvpSliders input").map(function(e){return +e.value}),name=$("#dvpName").value;
+    S.notes.dvp=JSON.stringify({n:name,v:v});save();
+    v.forEach(function(x,i){$("#dvpv"+i).textContent=x});
+    var cs=getComputedStyle(document.documentElement),cN=cs.getPropertyValue("--navy").trim(),cL=cs.getPropertyValue("--line").trim(),cM=cs.getPropertyValue("--muted").trim(),cG=cs.getPropertyValue("--gold").trim();
+    var cx=130,cy=118,R=82,pt=function(i,r){var a=-Math.PI/2+i*Math.PI/3;return [cx+r*Math.cos(a),cy+r*Math.sin(a)]},h="";
+    for(var k=1;k<=5;k++){h+='<polygon fill="none" stroke="'+cL+'" stroke-width="1" points="'+[0,1,2,3,4,5].map(function(i){return pt(i,R*k/5).join(",")}).join(" ")+'"/>'}
+    [0,1,2,3,4,5].forEach(function(i){var p=pt(i,R),q=pt(i,R+18);h+='<line x1="'+cx+'" y1="'+cy+'" x2="'+p[0]+'" y2="'+p[1]+'" stroke="'+cL+'"/><text x="'+q[0]+'" y="'+(q[1]+4)+'" font-size="10" text-anchor="middle" fill="'+cM+'">'+SIXC[i].replace(" reduction","")+'</text>'});
+    h+='<polygon fill="'+cN+'" fill-opacity=".22" stroke="'+cN+'" stroke-width="2" points="'+v.map(function(x,i){return pt(i,R*x/5).join(",")}).join(" ")+'"/>';
+    v.forEach(function(x,i){var p=pt(i,R*x/5);h+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.5" fill="'+((i===1||i===2)?cG:cN)+'"/>'});
+    $("#dvpRadar").innerHTML=h;
+    var mx=Math.max.apply(null,v),mn=Math.min.apply(null,v),strong=SIXC.filter(function(_,i){return v[i]===mx}),weak=SIXC.filter(function(_,i){return v[i]===mn});
+    var hard=(v[1]+v[2])/2,easy=(v[4]+v[5])/2,msg;
+    if(mx===mn) msg="Semua C bernilai sama. Coba bedakan: di mana layanan ini benar-benar unggul?";
+    else if(hard>=easy+1) msg="Keunggulan layanan ini bertumpu pada C yang sulit ditiru (customisation dan community). Ini proposisi yang relatif tahan terhadap pesaing.";
+    else if(easy>=hard+1) msg="Keunggulan layanan ini bertumpu pada choice dan cost reduction, yang relatif mudah ditiru pesaing bermodal besar. Pertimbangkan cara membangun customisation atau community.";
+    else msg="Proposisinya cukup berimbang. Tentukan satu atau dua C yang ingin dijadikan pembeda utama.";
+    $("#dvpRes").innerHTML='<b>'+esc(name||"Layanan ini")+'</b>: terkuat di <b>'+strong.join(", ")+'</b> ('+mx+'/5), terlemah di <b>'+weak.join(", ")+'</b> ('+mn+'/5).<br>'+msg+'<br><span class="hint">Titik emas pada diagram = customisation dan community, dua C yang umumnya paling sulit ditiru.</span>';
+  }
+  $$("#dvpSliders input").forEach(function(e){e.addEventListener("input",draw)});$("#dvpName").addEventListener("input",draw);draw();dvp.draw=draw;
+}
+
+/* ================= cases ================= */
+function norm(t){return (t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}
+function grade(id){
+  var r=RUB[id],t=norm(S.notes[id]),words=t.split(/\s+/).filter(Boolean).length;
+  var hits=r.cr.map(function(c){return new RegExp(c[1],"i").test(t)}),h=hits.filter(Boolean).length;
+  var conn=CONN.filter(function(w){return new RegExp("(^|[^a-z])"+w+"([^a-z]|$)").test(t)}).length;
+  var cov=Math.min(h,r.need)/r.need,raw=3*cov+(conn>=2?1:conn===1?.5:0),warn=[];
+  if(words<25){raw=Math.min(raw,2);warn.push("Jawaban terlalu singkat ("+words+" kata). Kembangkan penjelasan Anda.")}
+  if(h>=2&&conn===0&&words/h<7){raw=Math.min(raw,1);warn.push("Jawaban tampak seperti daftar kata kunci. Jelaskan hubungan antarkonsep dengan kalimat utuh.")}
+  else if(conn===0) warn.push("Belum ada penalaran sebab-akibat. Gunakan \"karena\", \"sehingga\", atau \"akibatnya\" untuk menunjukkan alur pikir.");
+  return {lv:Math.max(0,Math.min(4,Math.floor(raw+1e-9))),hits:hits,h:h,conn:conn,words:words,warn:warn,len:(S.notes[id]||"").length};
+}
+function renderGrade(id){
+  var box=$('.fbres[data-for="'+id+'"]'),st=S.cs[id];if(!box)return;
+  if(!st){box.innerHTML="";return}
+  var r=RUB[id],g=grade(id),noans=id.indexOf("c3_")===0;
+  var h='<div class="gbox"><div class="ghead"><span class="meter">'+[0,1,2,3].map(function(k){return '<i class="'+(k<g.lv?"on":"")+'"></i>'}).join("")+'</span><span class="glv">'+g.lv+'/4 · '+LV[g.lv]+'</span><span class="gnote">umpan balik otomatis, bukan nilai</span></div>';
+  h+='<p class="hint" style="margin:0 0 4px">Konsep kunci ('+g.h+' dari '+r.cr.length+' muncul; minimal '+r.need+' untuk cakupan penuh):</p><ul class="crit">';
+  r.cr.forEach(function(c,k){h+='<li class="'+(g.hits[k]?"y":"n")+'"><span class="m">'+(g.hits[k]?"✓":"")+'</span><span><b>'+esc(c[0])+'</b>'+(g.hits[k]?'':' <span class="h">· '+esc(c[2])+'</span>')+'</span></li>'});
+  h+='</ul><ul class="crit"><li class="'+(g.conn>=2?"y":"n")+'"><span class="m">'+(g.conn>=2?"✓":"")+'</span><span><b>Penalaran</b> <span class="h">· '+g.conn+' penghubung sebab-akibat'+(g.conn<2?" (target ≥ 2)":"")+'</span></span></li></ul>';
+  g.warn.forEach(function(w){h+='<div class="gwarn">⚠️ '+esc(w)+'</div>'});
+  if(st.len!==g.len) h+='<div class="stale">✎ Jawaban sudah diubah sejak dinilai. Klik "Nilai ulang" untuk memperbarui.</div>';
+  h+='<div class="selfc"><b style="font-size:.9rem">Penilaian diri: centang yang benar-benar sudah Anda lakukan</b>';
+  r.self.forEach(function(sx,k){h+='<label><input type="checkbox" data-self="'+id+'" data-k="'+k+'" '+(st.self&&st.self[k]?"checked":"")+'> '+esc(sx)+'</label>'});
+  h+=st.selfDone?'<p class="hint" style="margin:6px 0 0">✓ Penilaian diri tersimpan'+(noans?". Bawa jawaban ini ke diskusi kelas.":". Arah jawaban di bawah sudah terbuka.")+'</p>':'<button class="btn sm" data-selfdone="'+id+'" style="margin-top:6px">'+(noans?"Selesai menilai diri":"Selesai, buka arah jawaban")+'</button>';
+  h+='</div></div>';
+  box.innerHTML=h;
+  $$('[data-self]',box).forEach(function(c){c.addEventListener("change",function(){st.self=st.self||[];st.self[+c.dataset.k]=c.checked;save()})});
+  var sd=$('[data-selfdone]',box);if(sd)sd.addEventListener("click",function(){st.selfDone=true;save();renderGrade(id);refreshAnsLocks();updateCaseSums();var d=$('details.ans[data-for="'+id+'"]');if(d){d.open=true}});
+  var gb=$('[data-grade="'+id+'"]');if(gb)gb.textContent="↻ Nilai ulang";
+}
+function updateCaseSums(){
+  CASES.forEach(function(c){var el=$('[data-csum="'+c.id+'"]');if(!el)return;var n=0,tot=0;c.qs.forEach(function(q,i){var id=c.id+"_"+i;if(S.cs[id]){n++;tot+=grade(id).lv}});
+    el.textContent=n?("umpan balik rata-rata "+(tot/n).toFixed(1).replace(".",",")+"/4 · "+n+"/"+c.qs.length+" dinilai"):"belum dinilai"});
+}
+function renderCases(){
+  S.cs=S.cs||{};
+  var h="";
+  CASES.forEach(function(c){
+    h+='<div class="card"><h3>📂 '+c.t+' <span class="csum" data-csum="'+c.id+'"></span></h3><p class="hint" style="margin-top:-6px">Sumber: '+c.src+'</p>'+c.body;
+    h+='<h4 style="margin-top:18px">'+(c.noans?"Tugas persiapan diskusi kelas":"Pertanyaan diskusi")+'</h4>';
+    c.qs.forEach(function(q,i){
+      var id=c.id+"_"+i;
+      h+='<div class="cq"><b>'+(i+1)+'. '+esc(q[0])+'</b><textarea data-note="'+id+'" placeholder="Tulis jawaban Anda dalam kalimat utuh…"></textarea>';
+      h+='<div class="fbk"><button class="btn sm ghost" data-grade="'+id+'">🔍 Minta umpan balik</button><div class="fbres" data-for="'+id+'"></div></div>';
+      if(!c.noans) h+='<details class="ans" data-for="'+id+'"><summary>🔑 Arah jawaban</summary><div>'+esc(q[1])+'</div></details>';
+      h+='</div>';
+    });
+    if(c.noans) h+='<div class="co book"><b class="t">📝 Catatan.</b> Arah jawaban untuk kasus ini sengaja tidak diberikan dan akan dibahas di kelas. Umpan balik otomatis di sini hanya memeriksa kelengkapan struktur jawaban Anda.</div>';
+    h+='</div>';
+  });
+  $("#caseList").innerHTML=h;
+  $$("[data-grade]").forEach(function(b){b.addEventListener("click",function(){
+    var id=b.dataset.grade,len=(S.notes[id]||"").trim().length;
+    if(len<40){toast("Tulis jawaban Anda dulu (min. 40 karakter)");return}
+    var prev=S.cs[id]||{};S.cs[id]={len:(S.notes[id]||"").length,self:prev.self||[],selfDone:prev.selfDone||false};save();renderGrade(id);updateCaseSums();
+  })});
+  $$("details.ans").forEach(function(d){
+    d.addEventListener("click",function(e){if(d.classList.contains("lock")&&!d.open){e.preventDefault();toast("Minta umpan balik dan selesaikan penilaian diri dulu")}});
+  });
+  Object.keys(S.cs).forEach(renderGrade);
+  refreshAnsLocks();updateCaseSums();
+}
+function refreshAnsLocks(){$$("details.ans").forEach(function(d){var st=S.cs&&S.cs[d.dataset.for];d.classList.toggle("lock",!(st&&st.selfDone))})}
+
+/* ================= notes binding ================= */
+function bindNotes(){
+  $$("textarea[data-note]").forEach(function(t){
+    t.value=S.notes[t.dataset.note]||"";
+    t.addEventListener("input",function(){S.notes[t.dataset.note]=t.value;clearTimeout(t._h);t._h=setTimeout(function(){save();refreshAnsLocks();renderSide();notesPreview();if(S.cs&&S.cs[t.dataset.note])renderGrade(t.dataset.note)},350)});
+  });
+}
+function notesText(){
+  var L=["PENGANTAR BISNIS DIGITAL (DG234101) — TOPIK 02","Konsep Bisnis Digital & E-commerce","",(S.notes.identity||"Nama — NRP"),"","== PEMANASAN ==","Urutan langkah sebelum membeli:",S.notes.warm_know||"-","","Tebakan awal beda bisnis digital vs e-commerce:",S.notes.warm_want||"-","","== REFLEKSI UNIT 1 ==",S.notes.u1_reflect||"-",""];
+  try{var st=JSON.parse(S.notes.stage||"null");if(st)L.push("== STAGE MODEL ==",(st.n||"Usaha")+": sell-side tahap "+st.s+", buy-side tahap "+st.b,"")}catch(e){}
+  try{var dv=JSON.parse(S.notes.dvp||"null");if(dv)L.push("== AUDIT SIX CS ==",(dv.n||"Layanan")+": "+SIXC.map(function(c,i){return c+" "+dv.v[i]}).join(", "),"")}catch(e){}
+  CASES.forEach(function(c){L.push("== "+c.t.toUpperCase()+" ==");c.qs.forEach(function(q,i){L.push((i+1)+". "+q[0]);L.push(S.notes[c.id+"_"+i]||"-");if(S.cs&&S.cs[c.id+"_"+i])L.push("[Umpan balik aplikasi: "+grade(c.id+"_"+i).lv+"/4]");L.push("")})});
+  var d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  L.push("== KEMAJUAN ==","Unit selesai: "+d+"/"+UNITS.length,"Kuis akhir (skor terbaik): "+(S.final?S.final.best+"%":"belum"));
+  return L.join("\n");
+}
+function notesPreview(){var p=$("#notesPrev");if(p)p.textContent=notesText()}
+
+/* ================= self-test (pola serviceman ch05) ================= */
+var quizEl=null, run=null;
+function setupQuiz(){
+  quizEl=$("#finalBox");
+  var best=S.final?S.final.best:null;
+  quizEl.innerHTML='<div class="qz-setup"><p>Soal diambil dari ketujuh unit (Chaffey Bab 1). Anda mendapat umpan balik setelah setiap jawaban, dan rincian per unit di akhir. Topik dianggap tuntas bila skor ≥ 80%.</p>'+
+   '<div><p class="qz-lbl">Panjang</p><div class="seg" id="qzLen"><button data-n="10" aria-pressed="true">Cepat · 10 soal</button><button data-n="20" aria-pressed="false">Standar · 20</button><button data-n="'+FINAL.length+'" aria-pressed="false">Lengkap · semua '+FINAL.length+'</button></div></div>'+
+   '<div><p class="qz-lbl">Fokus</p><div class="seg" id="qzLo"><button data-lo="0" aria-pressed="true">Semua unit</button>'+Object.keys(LO_NAMES).map(function(k){return '<button data-lo="'+k+'" aria-pressed="false" title="'+LO_NAMES[k]+'">Unit '+k+'</button>'}).join("")+'</div></div>'+
+   '<div class="row"><button class="btn" id="qzStart">Mulai self-test</button>'+(best!=null?'<span class="muted" style="font-family:var(--mono);font-size:.8rem">Skor terbaik di perangkat ini: '+best+'%</span>':'')+'</div></div>';
+  var n=10, lo=0;
+  $$("#qzLen button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLen button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});n=+b.dataset.n})});
+  $$("#qzLo button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLo button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});lo=+b.dataset.lo})});
+  $("#qzStart").addEventListener("click",function(){
+    var pool=FINAL.map(function(q,i){return i}).filter(function(i){return !lo||FINAL[i][0]===lo});
+    pool=shuffle(pool).slice(0,Math.min(n,pool.length));
+    run={qs:pool.map(function(i){var q=FINAL[i],order=shuffle(q[2].map(function(_,j){return j}));return {lo:q[0],text:q[1],opts:order.map(function(j){return q[2][j]}),ans:order.indexOf(q[3]),exp:q[4]}}),i:0,picks:[]};
+    showQ();
+  });
+}
+function showQ(){
+  var r=run,q=r.qs[r.i],picked=r.picks[r.i],sofar=r.picks.filter(function(p,k){return p===r.qs[k].ans}).length;
+  quizEl.innerHTML='<div class="qz-top"><span class="qz-lbl">Soal '+(r.i+1)+' dari '+r.qs.length+' · Unit '+q.lo+' '+LO_NAMES[q.lo]+'</span><span class="muted" style="font-family:var(--mono);font-size:.8rem">'+sofar+' benar sejauh ini</span></div>'+
+   '<div class="qz-prog"><i style="width:'+(r.i/r.qs.length*100)+'%"></i></div>'+
+   '<p class="qz-q">'+esc(q.text)+'</p>'+
+   '<div class="qz-opts">'+q.opts.map(function(o,j){return '<button data-j="'+j+'"><span class="k">'+"ABCD"[j]+'</span><span>'+esc(o)+'</span></button>'}).join("")+'</div>'+
+   '<div id="qzExp"></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzQuit">Keluar</button><button class="btn" id="qzNext" '+(picked==null?"disabled":"")+'>'+(r.i===r.qs.length-1?"Lihat hasil":"Soal berikutnya")+'</button></div>';
+  function lock(j){
+    $$(".qz-opts button",quizEl).forEach(function(b){b.disabled=true;var k=+b.dataset.j;if(k===q.ans)b.classList.add("right");else if(k===j)b.classList.add("wrong")});
+    var ok=j===q.ans;
+    $("#qzExp").innerHTML='<div class="qz-exp '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat. Jawabannya "+"ABCD"[q.ans]+".")+'</b>'+esc(q.exp)+'</div>';
+    $("#qzNext").disabled=false;
+  }
+  if(picked!=null)lock(picked);
+  $$(".qz-opts button",quizEl).forEach(function(b){b.addEventListener("click",function(){var j=+b.dataset.j;r.picks[r.i]=j;lock(j);$("#qzNext").focus()})});
+  $("#qzNext").addEventListener("click",function(){if(r.i<r.qs.length-1){r.i++;showQ()}else results()});
+  $("#qzQuit").addEventListener("click",setupQuiz);
+}
+function results(){
+  var r=run,right=r.qs.filter(function(q,k){return r.picks[k]===q.ans}).length,pct=Math.round(right/r.qs.length*100);
+  S.final={best:Math.max(pct,S.final?S.final.best:0),n:(S.final?S.final.n:0)+1,last:pct};save();renderSide();
+  var by={};r.qs.forEach(function(q,k){by[q.lo]=by[q.lo]||{r:0,t:0};by[q.lo].t++;if(r.picks[k]===q.ans)by[q.lo].r++});
+  var verdict=pct>=80?"Pemahaman kuat. Topik 02 tuntas.":pct>=65?"Fondasi sudah baik. Tinjau unit di bawah 70%.":"Pelajari ulang unit yang lemah (dan halaman bukunya), lalu coba lagi.";
+  quizEl.innerHTML='<div class="res-big"><span class="pct" style="color:'+(pct>=65?"var(--good)":"var(--bad)")+'">'+pct+'%</span><span>'+right+' dari '+r.qs.length+' benar. '+verdict+'</span></div>'+
+   (pct>=80?'<div><span class="badge">🏅 Topik 02 tuntas</span></div>':'')+
+   '<div><p class="qz-lbl">Per unit</p><div class="lo-bars">'+Object.keys(by).sort().map(function(k){var v=by[k],p=Math.round(v.r/v.t*100);return '<div class="lo-row"><span><b style="font-family:var(--mono)">U'+k+'</b> '+LO_NAMES[k]+(p<70?' · <a href="#u'+k+'">tinjau</a>':'')+'</span><span class="b"><i style="width:'+p+'%;background:'+(p>=70?"var(--good)":"var(--bad)")+'"></i></span><span class="v">'+v.r+'/'+v.t+'</span></div>'}).join("")+'</div></div>'+
+   '<div><p class="qz-lbl">Tinjau jawaban Anda</p><div class="review">'+r.qs.map(function(q,k){var ok=r.picks[k]===q.ans;return '<details '+(ok?"":"open")+'><summary><span class="mk '+(ok?"ok":"no")+'">'+(ok?"✓":"✗")+'</span>'+esc(q.text)+'</summary><p><b>Jawaban Anda:</b> '+esc(q.opts[r.picks[k]])+(ok?'':'<br><b>Jawaban benar:</b> '+esc(q.opts[q.ans]))+'</p><p class="muted">'+esc(q.exp)+'</p></details>'}).join("")+'</div></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzNew">Ubah pengaturan</button><button class="btn" id="qzAgain">Ulangi dengan soal baru</button></div>';
+  $("#qzNew").addEventListener("click",setupQuiz);
+  $("#qzAgain").addEventListener("click",function(){setupQuiz();$("#qzStart").click()});
+  quizEl.scrollIntoView({block:"start"});
+}
+
+/* ================= flashcards ================= */
+var deck=[],di=0;
+function buildDeck(){deck=GLOSS.map(function(g,i){return i}).filter(function(i){return !S.known[i]});if(!deck.length){deck=GLOSS.map(function(g,i){return i})}di=0;showCard()}
+function showCard(){var fc=$("#fc");fc.classList.remove("flip");var g=GLOSS[deck[di]];$("#fcF").textContent=g[0];$("#fcB").textContent=g[1];
+  var k=Object.keys(S.known).length;$("#fcCount").textContent="Kartu "+(di+1)+" / "+deck.length+" · dikuasai "+k+" / "+GLOSS.length}
+function cards(){
+  var fc=$("#fc");function flip(){fc.classList.toggle("flip")}
+  fc.addEventListener("click",flip);fc.addEventListener("keydown",function(e){if(e.key===" "||e.key==="Enter"){e.preventDefault();flip()}});
+  $("#fcNext").addEventListener("click",function(){di=(di+1)%deck.length;showCard()});
+  $("#fcPrev").addEventListener("click",function(){di=(di-1+deck.length)%deck.length;showCard()});
+  $("#fcShuffle").addEventListener("click",function(){deck=shuffle(deck);di=0;showCard()});
+  $("#fcKnow").addEventListener("click",function(){S.known[deck[di]]=1;save();deck.splice(di,1);if(!deck.length){toast("Semua kartu dikuasai! 🎉");buildDeck();return}if(di>=deck.length)di=0;showCard()});
+  $("#fcReset").addEventListener("click",function(){S.known={};save();buildDeck()});
+  buildDeck();
+}
+
+/* ================= routing ================= */
+function markNav(){var v=current();$$(".side a").forEach(function(a){a.classList.toggle("on",a.dataset.nav===v)})}
+function current(){var h=(location.hash||"#home").slice(1);return $('[data-view="'+h+'"]')?h:"home"}
+function route(){
+  var v=current();$$(".view").forEach(function(s){s.hidden=s.dataset.view!==v});
+  markNav();$("#side").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");
+  window.scrollTo(0,0);
+  
+  if(v==="notes")notesPreview();
+  if(v==="u7"&&dvp.draw)dvp.draw();
+  document.title=(v==="home"?"Topik 02":($('[data-view="'+v+'"] h2')||{}).textContent)+" · Konsep Bisnis Digital";
+}
+
+/* ================= init ================= */
+$$("[data-quiz]").forEach(function(b){renderQuiz(b,b.dataset.quiz)});
+$$("[data-widget]").forEach(renderClassify);
+$$("[data-readchk]").forEach(function(c){
+  var n=+c.dataset.readchk;c.checked=!!S.read[n];
+  c.addEventListener("change",function(){S.read[n]=c.checked;save();var b=$('[data-quiz="u'+n+'"]');lockState(b,"u"+n);renderSide();if(c.checked)toast("Soal cek pemahaman terbuka ↓")});
+});
+setupQuiz();renderCases();bindNotes();zmot();dbmap();stageTool();dvp();cards();renderSide();updateProgress();
+window.addEventListener("hashchange",route);route();
+
+$("#menuBtn").addEventListener("click",function(){var o=$("#side").classList.toggle("open");this.setAttribute("aria-expanded",o)});
+$("#themeBtn").addEventListener("click",function(){
+  var r=document.documentElement,cur=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),nx=cur==="dark"?"light":"dark";
+  r.setAttribute("data-theme",nx);try{localStorage.setItem("bisdig-theme",nx)}catch(e){} if(dvp.draw)dvp.draw();
+});
+$("#copyNotes").addEventListener("click",function(){var t=notesText();
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast("Tersalin ke clipboard")},function(){var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("Tersalin")}catch(e){toast("Gagal menyalin")}ta.remove()})});
+$("#dlNotes").addEventListener("click",function(){var b=new Blob([notesText()],{type:"text/plain;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="Topik02_Catatan_"+((S.notes.identity||"mahasiswa").replace(/[^\w]+/g,"_").slice(0,40))+".txt";document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)});
+$("#resetAll").addEventListener("click",function(){
+  if(this.dataset.confirm!=="1"){this.dataset.confirm="1";this.textContent="Klik lagi untuk konfirmasi";var me=this;setTimeout(function(){me.dataset.confirm="";me.textContent="Hapus semua kemajuan"},3000);return}
+  try{localStorage.removeItem(KEY)}catch(e){} location.hash="#home";location.reload();
+});
+})();
+</script>
+</body>
+</html>
