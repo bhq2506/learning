@@ -242,6 +242,45 @@ textarea:focus{border-color:var(--navy);outline:none}
 .toast.on{opacity:1}
 .foot{font-size:.78rem;color:var(--muted);margin-top:40px}
 ol.ref li{margin:.4em 0;font-size:.9rem}
+/* self-test (pola serviceman) */
+.quiz{scroll-margin-top:70px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow)}
+.qz-setup{display:flex;flex-direction:column;gap:14px}
+.qz-setup p{margin:0}
+.qz-lbl{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;font-size:.88rem;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.qz-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.qz-top .qz-lbl{margin:0}
+.qz-prog{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.qz-prog i{display:block;height:100%;background:var(--navy);width:0;transition:width .3s}
+.qz-q{font-size:1.18rem;font-weight:700;margin:0;line-height:1.4}
+.qz-opts{display:flex;flex-direction:column;gap:8px}
+.qz-opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;font-size:.95rem;line-height:1.45}
+.qz-opts button .k{font-family:var(--mono);font-size:.8rem;color:var(--muted);flex:none;padding-top:2px}
+.qz-opts button:hover:not(:disabled){border-color:var(--navy)}
+.qz-opts button:disabled{cursor:default}
+.qz-opts button.right{border-color:var(--good);background:var(--good-soft)}
+.qz-opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.qz-exp{border-radius:10px;padding:12px 14px;font-size:.93rem}
+.qz-exp.ok{background:var(--good-soft)}.qz-exp.no{background:var(--bad-soft)}
+.qz-exp b{display:block;margin-bottom:2px}
+.qz-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.res-big{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.res-big .pct{font-weight:800;font-size:3.4rem;line-height:1}
+.lo-bars{display:flex;flex-direction:column;gap:8px}
+.lo-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 44px;gap:10px;align-items:center;font-size:.86rem}
+@media (max-width:520px){.lo-row{grid-template-columns:minmax(0,1fr) 70px 40px}}
+.lo-row .b{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.lo-row .b i{display:block;height:100%}
+.lo-row .v{font-family:var(--mono);font-size:.78rem;text-align:right}
+.review{display:flex;flex-direction:column;gap:8px}
+.review details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.review summary{cursor:pointer;font-size:.92rem}
+.review .mk{font-family:var(--mono);font-weight:700;margin-right:6px}
+.review .mk.ok{color:var(--good)}.review .mk.no{color:var(--bad)}
+.review p{font-size:.88rem;margin:6px 0 0}
+.muted{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -665,10 +704,9 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
 
 <!-- ================= FINAL ================= -->
 <section class="view" data-view="final">
-  <div class="eyebrow">Evaluasi <span class="tag">12 soal · ± 15 menit</span></div>
-  <h2>Kuis Akhir Topik 01</h2>
-  <p class="lead">Soal dan pilihan diacak setiap kali dimulai. Jawab semua soal, lalu periksa. Target: ≥ 80%.</p>
-  <div id="finalBox"></div>
+  <div class="eyebrow">Self-test</div>
+  <h2>Kuis Akhir: Uji Pemahaman</h2>
+  <div class="quiz" id="finalBox"></div>
 </section>
 
 <!-- ================= FLASH ================= -->
@@ -886,22 +924,49 @@ var CASES=[
   ]}
 ];
 
-/* ---------------- final quiz bank ---------------- */
+/* ---------------- self-test bank: [unit, soal, opsi, idx benar, penjelasan] ---------------- */
+var LO_NAMES={1:"Bisnis & lingkungan eksternal",2:"Faktor produksi & sistem ekonomi",3:"Permintaan–penawaran & persaingan",4:"Indikator ekonomi",5:"Usaha kecil & wirausaha",6:"Memulai usaha",7:"Tren, sukses & gagal",8:"Bentuk kepemilikan"};
+var LO_CODE={1:"1-1",2:"1-2",3:"1-3",4:"1-4",5:"3-1/2",6:"3-3",7:"3-4",8:"3-5/6"};
 var FINAL=[
- {q:"Seorang mahasiswa membuka jasa desain konten khusus untuk UMKM kuliner halal yang belum dilayani agensi besar. Sumber distinctive competence-nya adalah…",o:["Niche di pasar yang sudah ada","First-mover di pasar global","Skala ekonomi","Monopoli alamiah"],a:0,e:"Ia melayani kebutuhan yang belum terlayani di dalam pasar jasa desain yang sudah mapan."},
- {q:"Sebuah platform menurunkan komisi penjual; dua platform pesaing segera mengikuti dalam seminggu. Perilaku ini paling khas pada struktur…",o:["Perfect competition","Monopolistic competition","Oligopoly","Monopoly"],a:2,e:"Pada oligopoli, tindakan satu pihak berdampak langsung pada yang lain sehingga cepat diikuti."},
- {q:"GDP nominal Indonesia naik 7% sementara inflasi 3%. Pertumbuhan riil kira-kira…",o:["10%","7%","4%","3%"],a:2,e:"Pertumbuhan riil ≈ nominal − inflasi = 4%. Itulah mengapa buku membedakan nominal dan real GDP."},
- {q:"Investor yang menyetor dana ke startup berpotensi tumbuh cepat dengan imbalan sebagian kepemilikan disebut…",o:["Bank komersial","Venture capital","Franchisor","Kreditur"],a:1,e:"Modal ventura berinvestasi (bukan meminjamkan) untuk memperoleh kepemilikan."},
- {q:"Kelemahan terbesar korporasi menurut buku adalah…",o:["Unlimited liability","Tidak punya kontinuitas","Double taxation","Sulit menghimpun modal"],a:2,e:"Laba dipajaki di tingkat korporasi lalu dipajaki lagi saat dibagikan sebagai dividen."},
- {q:"Sebuah startup tumbuh pesat, tetapi CAC Rp150.000 sementara CLV hanya Rp90.000. Dari empat penyebab kegagalan menurut buku, ini paling dekat dengan…",o:["Kelalaian","Sistem pengendalian yang lemah","Keberuntungan buruk","Kurangnya permintaan"],a:1,e:"Tidak memantau unit economics adalah bentuk sistem pengendalian yang lemah: masalah tidak terlihat sampai pendanaan berhenti."},
- {q:"Pernyataan mana yang paling tepat tentang ekonomi Indonesia?",o:["Ekonomi pasar murni","Ekonomi terencana","Ekonomi campuran","Ekonomi komunis"],a:2,e:"Negara menguasai cabang produksi penting (Pasal 33 UUD 1945, BUMN), sementara sebagian besar sektor lain digerakkan swasta."},
- {q:"Menurut buku, mengapa usaha kecil sering lebih cepat memanfaatkan peluang baru dibanding perusahaan besar?",o:["Usaha kecil punya modal lebih besar","Perusahaan besar lambat karena banyak lapisan persetujuan dan aset yang dipertaruhkan besar","Usaha kecil dilindungi regulasi","Perusahaan besar dilarang masuk pasar baru"],a:1,e:"Hierarki berlapis dan besarnya aset berisiko membuat organisasi besar berhati-hati, sehingga usaha kecil bisa meraih first-mover advantage."},
- {q:"Kenaikan suku bunga global 2022–2023 membuat banyak startup beralih ke 'path to profitability'. Dimensi lingkungan yang menjadi pemicunya adalah…",o:["Sosiokultural","Ekonomi (dan global)","Teknologi","Domestik"],a:1,e:"Suku bunga dan ketersediaan modal adalah kondisi ekonomi, yang dalam kasus ini ditransmisikan secara global."},
- {q:"Pada harga Rp15.000 per cup, 1.000 cup diminta dan 200 cup ditawarkan. Kondisi ini adalah…",o:["Surplus","Shortage","Equilibrium","Deflasi"],a:1,e:"Jumlah diminta melebihi jumlah ditawarkan: shortage. Penjual kehilangan laba dan mengundang pesaing baru."},
- {q:"Menurut buku, karakteristik wirausaha masa kini dibanding masa lalu adalah…",o:["Lebih mengandalkan intuisi dan keputusan sepihak","Pemimpin berpikiran terbuka yang mengandalkan jejaring, rencana bisnis, dan konsensus","Lebih menghindari risiko","Selalu memulai dari nol"],a:1,e:"Citra bergeser dari 'bos' yang mandiri dan cepat memutuskan, menjadi pemimpin terbuka yang memakai jejaring, rencana, dan konsensus."},
- {q:"Pasar ride-hailing awalnya mudah dimasuki, tetapi kini dikuasai segelintir pemain. Konsep yang paling menjelaskan hal ini adalah…",o:["Hukum penawaran","Network effect","Purchasing power parity","Privatisasi"],a:1,e:"Makin banyak pengguna dan mitra, makin bernilai platform, sehingga pasar cenderung terkonsentrasi (winner-takes-most)."},
- {q:"Usaha baru yang dibeli dari pemilik sebelumnya memiliki keunggulan utama berupa…",o:["Bebas dari kesalahan pemilik lama","Rekam jejak, pelanggan, dan relasi dengan pemasok serta pemberi pinjaman","Tanpa biaya awal","Selalu lebih murah dari franchise"],a:1,e:"Usaha yang sudah berjalan telah membuktikan kemampuannya menarik pelanggan; risikonya lebih terukur."},
- {q:"Manakah contoh information resources sebagai faktor produksi dominan?",o:["Gudang fulfillment yang disewa","Algoritma rekomendasi yang dilatih dari riwayat tontonan pengguna","Gaji tim customer service","Pinjaman bank untuk ekspansi"],a:1,e:"Data perilaku pengguna adalah information resources; gudang = physical, gaji = labor, pinjaman = capital."}
+ [1,"Toko papan selancar di Austria yang terkurung daratan tidak akan bertahan, seefisien apa pun operasinya. Prinsip yang diilustrasikan buku adalah…",["Tanpa permintaan konsumen, bisnis tidak akan bertahan","Efisiensi operasional menentukan profit","Lokasi selalu lebih penting dari produk","Pemerintah harus melindungi usaha kecil"],0,"Konsumen bebas memilih; sebaik apa pun bisnisnya, tanpa permintaan atas produknya ia tidak akan bertahan."],
+ [1,"Menurut buku, peluang bisnis paling besar muncul ketika…",["Ada kebutuhan yang belum dipenuhi, atau dipenuhi secara tidak efisien oleh pemain yang ada","Pemerintah memberi subsidi","Harga bahan baku turun","Pesaing menaikkan harga"],0,"Opportunity: barang/jasa yang dibutuhkan konsumen, terutama jika belum ada yang menyediakan atau penyedianya tidak efisien/tidak lengkap."],
+ [1,"Manakah yang BUKAN dimensi lingkungan eksternal pada Gambar 1.1?",["Lingkungan teknologi","Lingkungan sosiokultural","Budaya perusahaan (corporate culture)","Lingkungan global"],2,"Budaya perusahaan adalah lingkungan internal, dibahas di Bab 5. Enam dimensi eksternal: domestik, global, teknologi, politik-hukum, sosiokultural, ekonomi."],
+ [1,"Sebuah merek diboikot warganet karena iklannya dianggap menyinggung nilai agama. Ini kegagalan membaca lingkungan…",["Teknologi","Sosiokultural","Ekonomi","Global"],1,"Adat, nilai, dan norma masyarakat adalah lingkungan sosiokultural. Buku memberi contoh kasus serupa pada H&M."],
+ [1,"Kenaikan suku bunga global 2022–2023 membuat banyak startup beralih ke 'path to profitability'. Dimensi lingkungan yang menjadi pemicunya adalah…",["Sosiokultural","Ekonomi (dan global)","Teknologi","Domestik"],1,"Suku bunga dan ketersediaan modal adalah kondisi ekonomi, yang dalam kasus ini ditransmisikan secara global."],
+ [2,"Pernyataan mana yang paling tepat tentang ekonomi Indonesia?",["Ekonomi pasar murni","Ekonomi terencana","Ekonomi campuran","Ekonomi komunis"],2,"Negara menguasai cabang produksi penting (Pasal 33 UUD 1945, BUMN), sementara sebagian besar sektor lain digerakkan swasta."],
+ [2,"Manakah contoh information resources sebagai faktor produksi dominan?",["Gudang fulfillment yang disewa","Algoritma rekomendasi yang dilatih dari riwayat tontonan pengguna","Gaji tim customer service","Pinjaman bank untuk ekspansi"],1,"Data perilaku pengguna adalah information resources; gudang = physical, gaji = labor, pinjaman = capital."],
+ [2,"Dasar politik dari ekonomi pasar adalah capitalism, yang dicirikan oleh…",["Kepemilikan negara atas faktor produksi","Kepemilikan pribadi atas faktor produksi dengan profit sebagai insentif","Harga ditetapkan pemerintah","Larangan persaingan"],1,"Capitalism mengizinkan kepemilikan pribadi atas faktor produksi dan mendorong kewirausahaan dengan profit sebagai insentif."],
+ [2,"Pemerintah mengambil alih perusahaan swasta menjadi milik negara. Proses ini disebut…",["Privatization","Nationalization","Acquisition","Spin-off"],1,"Nationalization adalah kebalikan privatization; keduanya menggeser posisi negara di spektrum planned–market."],
+ [3,"Sebuah platform menurunkan komisi penjual; dua platform pesaing segera mengikuti dalam seminggu. Perilaku ini paling khas pada struktur…",["Perfect competition","Monopolistic competition","Oligopoly","Monopoly"],2,"Pada oligopoli, tindakan satu pihak berdampak langsung pada yang lain sehingga cepat diikuti."],
+ [3,"Pada harga Rp15.000 per cup, 1.000 cup diminta dan 200 cup ditawarkan. Kondisi ini adalah…",["Surplus","Shortage","Equilibrium","Deflasi"],1,"Jumlah diminta melebihi jumlah ditawarkan: shortage. Penjual kehilangan laba dan mengundang pesaing baru."],
+ [3,"Pasar ride-hailing awalnya mudah dimasuki, tetapi kini dikuasai segelintir pemain. Konsep yang paling menjelaskan hal ini adalah…",["Hukum penawaran","Network effect","Purchasing power parity","Privatisasi"],1,"Makin banyak pengguna dan mitra, makin bernilai platform, sehingga pasar cenderung terkonsentrasi (winner-takes-most)."],
+ [3,"Manakah yang BUKAN salah satu dari empat elemen private enterprise system?",["Hak milik pribadi","Kebebasan memilih","Penetapan harga oleh pemerintah","Persaingan"],2,"Empat elemennya: hak milik pribadi, kebebasan memilih, profit, dan persaingan."],
+ [4,"GDP nominal naik 7% sementara inflasi 3%. Pertumbuhan riil kira-kira…",["10%","7%","4%","3%"],2,"Pertumbuhan riil ≈ nominal − inflasi = 4%. Itulah mengapa buku membedakan nominal dan real GDP."],
+ [4,"Indonesia mengimpor lebih banyak daripada mengekspor dalam satu tahun. Kondisi ini disebut…",["Trade surplus","Trade deficit","National debt","Deflasi"],1,"Balance of trade negatif disebut trade deficit."],
+ [4,"Nilai produksi pabrik milik perusahaan Jepang di Karawang dihitung dalam…",["GDP Indonesia (dan GNP Jepang)","GNP Indonesia saja","GDP Jepang","Tidak dihitung di mana pun"],0,"GDP berbasis lokasi produksi di dalam negeri; GNP berbasis kepemilikan nasional, di mana pun lokasinya."],
+ [4,"Indikator yang umum dipakai untuk mengukur inflasi adalah…",["GDP per kapita","Consumer Price Index (IHK)","Balance of trade","Tingkat produktivitas"],1,"CPI/IHK mengukur harga sekeranjang barang yang dibeli konsumen."],
+ [4,"'Indeks Big Mac' di buku dipakai untuk mengilustrasikan…",["Inflasi","Purchasing power parity","Produktivitas","Siklus bisnis"],1,"Membandingkan harga produk serupa antarnegara untuk melihat daya beli riil: purchasing power parity."],
+ [5,"Menurut buku, karakteristik wirausaha masa kini dibanding masa lalu adalah…",["Lebih mengandalkan intuisi dan keputusan sepihak","Pemimpin berpikiran terbuka yang mengandalkan jejaring, rencana bisnis, dan konsensus","Lebih menghindari risiko","Selalu memulai dari nol"],1,"Citra bergeser dari 'bos' yang mandiri dan cepat memutuskan, menjadi pemimpin terbuka yang memakai jejaring, rencana, dan konsensus."],
+ [5,"Manakah yang BUKAN kontribusi utama usaha kecil bagi ekonomi menurut buku?",["Penciptaan lapangan kerja","Inovasi","Kontribusi bagi bisnis besar","Menetapkan harga pasar"],3,"Usaha kecil justru punya pengaruh relatif kecil terhadap pasarnya. Tiga kontribusinya: lapangan kerja, inovasi, dan peran bagi bisnis besar."],
+ [5,"Usaha kecil paling banyak ditemukan di sektor…",["Manufaktur","Jasa","Pertambangan","Perbankan"],1,"Jasa paling diminati karena modal awal relatif kecil; manufaktur jarang karena biaya awalnya tinggi."],
+ [5,"Wirausaha yang sejak awal menargetkan usahanya tumbuh menjadi perusahaan besar sering disebut membangun…",["Lifestyle business","New venture atau start-up","Koperasi","Franchise"],1,"Buku membedakan tujuan kemandirian (small business) dan tujuan pertumbuhan (new ventures/start-ups)."],
+ [5,"Sebuah usaha kuliner memiliki hasil penjualan Rp12 miliar per tahun. Menurut PP 7/2021, usaha ini tergolong…",["Mikro","Kecil","Menengah","Besar"],1,"Kecil: hasil penjualan > Rp2 M – Rp15 miliar per tahun."],
+ [6,"Seorang mahasiswa membuka jasa desain konten khusus untuk UMKM kuliner halal yang belum dilayani agensi besar. Sumber distinctive competence-nya adalah…",["Niche di pasar yang sudah ada","First-mover di pasar global","Skala ekonomi","Monopoli alamiah"],0,"Ia melayani kebutuhan yang belum terlayani di dalam pasar jasa desain yang sudah mapan."],
+ [6,"Investor yang menyetor dana ke startup berpotensi tumbuh cepat dengan imbalan sebagian kepemilikan disebut…",["Bank komersial","Venture capital","Franchisor","Kreditur"],1,"Modal ventura berinvestasi (bukan meminjamkan) untuk memperoleh kepemilikan."],
+ [6,"Menurut buku, mengapa usaha kecil sering lebih cepat memanfaatkan peluang baru dibanding perusahaan besar?",["Usaha kecil punya modal lebih besar","Perusahaan besar lambat karena banyak lapisan persetujuan dan aset yang dipertaruhkan besar","Usaha kecil dilindungi regulasi","Perusahaan besar dilarang masuk pasar baru"],1,"Hierarki berlapis dan besarnya aset berisiko membuat organisasi besar berhati-hati, sehingga usaha kecil bisa meraih first-mover advantage."],
+ [6,"Usaha baru yang dibeli dari pemilik sebelumnya memiliki keunggulan utama berupa…",["Bebas dari kesalahan pemilik lama","Rekam jejak, pelanggan, dan relasi dengan pemasok serta pemberi pinjaman","Tanpa biaya awal","Selalu lebih murah dari franchise"],1,"Usaha yang sudah berjalan telah membuktikan kemampuannya menarik pelanggan; risikonya lebih terukur."],
+ [6,"Tiga pertanyaan yang harus dijawab sebuah business plan adalah…",["Siapa pendiri, berapa modal, kapan IPO","Apa tujuan dan sasaran, strategi apa yang dipakai, dan bagaimana strategi diimplementasikan","Berapa harga, berapa biaya, berapa laba","Siapa pesaing, siapa pemasok, siapa pelanggan"],1,"Buku: (1) goals and objectives, (2) strategies, (3) implementation. Peramalan penjualan dan perencanaan keuangan mendukung ketiganya."],
+ [7,"Sebuah startup tumbuh pesat, tetapi CAC Rp150.000 sementara CLV hanya Rp90.000. Dari empat penyebab kegagalan menurut buku, ini paling dekat dengan…",["Kelalaian","Sistem pengendalian yang lemah","Keberuntungan buruk","Kurangnya permintaan"],1,"Tidak memantau unit economics adalah bentuk sistem pengendalian yang lemah: masalah tidak terlihat sampai pendanaan berhenti."],
+ [7,"Menurut buku, tren paling signifikan yang mendorong lahirnya usaha baru adalah…",["Crossover dari bisnis besar","Munculnya e-commerce","Peluang global","Turunnya suku bunga"],1,"Buku menyebut e-commerce sebagai tren paling signifikan karena internet memberi cara berbisnis yang baru, lebih cepat, dan lebih mudah."],
+ [7,"Pemilik toko daring menjalankan usahanya sambil bekerja penuh waktu dan jarang membalas chat pembeli. Ini contoh penyebab kegagalan…",["Inkompetensi manajerial","Kelalaian (neglect)","Sistem pengendalian lemah","Modal tidak cukup"],1,"Neglect: usaha sambilan dengan komitmen waktu terbatas, padahal usaha baru menuntut waktu yang sangat besar."],
+ [7,"Clean Harbors selamat setelah pemerintah AS tiba-tiba mengalokasikan dana besar untuk pembersihan limbah beracun. Faktor sukses yang diilustrasikan adalah…",["Kerja keras","Permintaan pasar","Kompetensi manajerial","Keberuntungan"],3,"Buku memakai kasus Clean Harbors (dan waktu peralihan ke DVD bagi Netflix) sebagai contoh peran keberuntungan."],
+ [7,"Dibanding era 1960–1970-an, tingkat kelangsungan hidup usaha baru kini…",["Lebih buruk: kurang dari 18 bulan","Membaik: lebih dari separuh bertahan minimal 4 tahun","Sama saja","Hampir semua bertahan 10 tahun"],1,"Dulu kurang dari separuh bertahan lebih dari 18 bulan; kini lebih dari separuh bertahan minimal 4 tahun dan sepertiga 10 tahun atau lebih."],
+ [8,"Kelemahan terbesar korporasi menurut buku adalah…",["Unlimited liability","Tidak punya kontinuitas","Double taxation","Sulit menghimpun modal"],2,"Laba dipajaki di tingkat korporasi lalu dipajaki lagi saat dibagikan sebagai dividen."],
+ [8,"Kelebihan utama usaha perseorangan (sole proprietorship) adalah…",["Limited liability","Bebas mengambil keputusan dan mudah dibentuk","Kontinuitas tanpa batas","Mudah menjual saham"],1,"Pemilik tunggal bebas memutuskan dan biaya pendiriannya rendah; kelemahannya unlimited liability dan tidak ada kontinuitas."],
+ [8,"Dalam CV, sekutu komanditer (pasif) adalah pihak yang…",["Menjalankan usaha sehari-hari dan menanggung utang tanpa batas","Hanya menyetor modal, tidak ikut mengelola, dan tanggung jawabnya terbatas","Mewakili pemerintah","Menjadi Dewan Komisaris"],1,"CV setara limited partnership: ada sekutu aktif (pengurus) dan sekutu pasif yang hanya menyetor modal."],
+ [8,"Berbeda dengan model AS di buku, PT di Indonesia memiliki struktur dua lapis yang terdiri atas…",["CEO dan CFO","Direksi dan Dewan Komisaris di bawah RUPS","Board of directors dan officers","Pemegang saham dan karyawan"],1,"Indonesia memisahkan pengurus (Direksi) dan pengawas (Dewan Komisaris); model AS hanya mengenal satu board."],
+ [8,"Sebuah korporasi diambil alih karena calon pembeli menawarkan langsung kepada pemegang saham untuk membeli saham mereka. Mekanisme ini disebut…",["Tender offer","Spin-off","Divestiture","Joint venture"],0,"Tender offer memungkinkan pengambilalihan bahkan tanpa persetujuan manajemen, salah satu kerugian bentuk korporasi."],
+ [8,"Sebuah perusahaan memisahkan unit fintech-nya menjadi perusahaan independen yang berdiri sendiri. Ini disebut…",["Merger","Acquisition","Spin-off","Strategic alliance"],2,"Spin-off memisahkan unit usaha menjadi perusahaan independen; divestiture menjual sebagian unit."]
 ];
 
 /* ---------------- glossary ---------------- */
@@ -1094,31 +1159,57 @@ function notesText(){
 }
 function notesPreview(){var p=$("#notesPrev");if(p)p.textContent=notesText()}
 
-/* ================= final quiz ================= */
-var FQ=null;
-function startFinal(){FQ=shuffle(FINAL).slice(0,12).map(function(q){var idx=shuffle([0,1,2,3]);return {q:q.q,o:idx.map(function(k){return q.o[k]}),a:idx.indexOf(q.a),e:q.e,sel:null}});drawFinal(false)}
-function drawFinal(checked){
-  var h='';
-  if(S.final&&!checked) h+='<p class="score">Skor terbaik Anda: '+S.final.best+'% · percobaan: '+S.final.n+'</p>';
-  FQ.forEach(function(q,i){
-    h+='<div class="q" data-fi="'+i+'"><div class="qt">'+(i+1)+'. '+esc(q.q)+'</div><div class="opts">';
-    q.o.forEach(function(o,j){var c="opt";if(checked){if(j===q.a)c+=" ok";else if(j===q.sel)c+=" no"}else if(q.sel===j)c+=" sel";h+='<button class="'+c+'" data-j="'+j+'" '+(checked?"disabled":"")+'><span class="L">'+"ABCD"[j]+'</span><span>'+esc(o)+'</span></button>'});
-    h+='</div>'+(checked?'<div class="fb '+(q.sel===q.a?"ok":"no")+'"><b>'+(q.sel===q.a?"Tepat.":"Belum tepat.")+'</b>'+esc(q.e)+'</div>':'')+'</div>';
+/* ================= self-test (pola serviceman ch05) ================= */
+var quizEl=null, run=null;
+function setupQuiz(){
+  quizEl=$("#finalBox");
+  var best=S.final?S.final.best:null;
+  quizEl.innerHTML='<div class="qz-setup"><p>Soal diambil dari kedelapan unit (Bab 1 dan Bab 3). Anda mendapat umpan balik setelah setiap jawaban, dan rincian per unit di akhir. Topik dianggap tuntas bila skor ≥ 80%.</p>'+
+   '<div><p class="qz-lbl">Panjang</p><div class="seg" id="qzLen"><button data-n="10" aria-pressed="true">Cepat · 10 soal</button><button data-n="20" aria-pressed="false">Standar · 20</button><button data-n="'+FINAL.length+'" aria-pressed="false">Lengkap · semua '+FINAL.length+'</button></div></div>'+
+   '<div><p class="qz-lbl">Fokus</p><div class="seg" id="qzLo"><button data-lo="0" aria-pressed="true">Semua unit</button>'+Object.keys(LO_NAMES).map(function(k){return '<button data-lo="'+k+'" aria-pressed="false" title="'+LO_NAMES[k]+'">Unit '+k+'</button>'}).join("")+'</div></div>'+
+   '<div class="row"><button class="btn" id="qzStart">Mulai self-test</button>'+(best!=null?'<span class="muted" style="font-family:var(--mono);font-size:.8rem">Skor terbaik di perangkat ini: '+best+'%</span>':'')+'</div></div>';
+  var n=10, lo=0;
+  $$("#qzLen button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLen button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});n=+b.dataset.n})});
+  $$("#qzLo button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLo button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});lo=+b.dataset.lo})});
+  $("#qzStart").addEventListener("click",function(){
+    var pool=FINAL.map(function(q,i){return i}).filter(function(i){return !lo||FINAL[i][0]===lo});
+    pool=shuffle(pool).slice(0,Math.min(n,pool.length));
+    run={qs:pool.map(function(i){var q=FINAL[i],order=shuffle(q[2].map(function(_,j){return j}));return {lo:q[0],text:q[1],opts:order.map(function(j){return q[2][j]}),ans:order.indexOf(q[3]),exp:q[4]}}),i:0,picks:[]};
+    showQ();
   });
-  if(!checked) h+='<div class="row" style="margin-top:16px"><button class="btn" id="fCheck">Periksa jawaban</button><span class="score" id="fLeft"></span></div>';
-  $("#finalBox").innerHTML=h;
-  if(!checked){
-    $$("#finalBox .q").forEach(function(qe){var i=+qe.dataset.fi;$$(".opt",qe).forEach(function(b){b.addEventListener("click",function(){FQ[i].sel=+b.dataset.j;$$(".opt",qe).forEach(function(x){x.classList.toggle("sel",x===b)});left()})})});
-    function left(){var n=FQ.filter(function(q){return q.sel==null}).length;$("#fLeft").textContent=n?n+" soal belum dijawab":"Semua terjawab";$("#fCheck").disabled=!!n}
-    left();
-    $("#fCheck").addEventListener("click",function(){
-      var c=FQ.filter(function(q){return q.sel===q.a}).length,p=Math.round(c/FQ.length*100);
-      S.final={best:Math.max(p,S.final?S.final.best:0),n:(S.final?S.final.n:0)+1,last:p};save();renderSide();
-      drawFinal(true);
-      var top='<div class="card" style="text-align:center"><div class="big">'+p+'%</div><p style="margin:6px 0 10px">'+c+' dari '+FQ.length+' benar</p>'+(p>=80?'<span class="badge">🏅 Topik 01 tuntas</span>':'<p class="hint">Belum mencapai 80%. Tinjau unit terkait soal yang salah, lalu coba lagi.</p>')+'<div class="row" style="justify-content:center;margin-top:12px"><button class="btn ghost" id="fAgain">↻ Coba lagi (soal diacak)</button></div></div>';
-      $("#finalBox").insertAdjacentHTML("afterbegin",top);$("#fAgain").addEventListener("click",startFinal);window.scrollTo({top:0});
-    });
+}
+function showQ(){
+  var r=run,q=r.qs[r.i],picked=r.picks[r.i],sofar=r.picks.filter(function(p,k){return p===r.qs[k].ans}).length;
+  quizEl.innerHTML='<div class="qz-top"><span class="qz-lbl">Soal '+(r.i+1)+' dari '+r.qs.length+' · Unit '+q.lo+' '+LO_NAMES[q.lo]+'</span><span class="muted" style="font-family:var(--mono);font-size:.8rem">'+sofar+' benar sejauh ini</span></div>'+
+   '<div class="qz-prog"><i style="width:'+(r.i/r.qs.length*100)+'%"></i></div>'+
+   '<p class="qz-q">'+esc(q.text)+'</p>'+
+   '<div class="qz-opts">'+q.opts.map(function(o,j){return '<button data-j="'+j+'"><span class="k">'+"ABCD"[j]+'</span><span>'+esc(o)+'</span></button>'}).join("")+'</div>'+
+   '<div id="qzExp"></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzQuit">Keluar</button><button class="btn" id="qzNext" '+(picked==null?"disabled":"")+'>'+(r.i===r.qs.length-1?"Lihat hasil":"Soal berikutnya")+'</button></div>';
+  function lock(j){
+    $$(".qz-opts button",quizEl).forEach(function(b){b.disabled=true;var k=+b.dataset.j;if(k===q.ans)b.classList.add("right");else if(k===j)b.classList.add("wrong")});
+    var ok=j===q.ans;
+    $("#qzExp").innerHTML='<div class="qz-exp '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat. Jawabannya "+"ABCD"[q.ans]+".")+'</b>'+esc(q.exp)+'</div>';
+    $("#qzNext").disabled=false;
   }
+  if(picked!=null)lock(picked);
+  $$(".qz-opts button",quizEl).forEach(function(b){b.addEventListener("click",function(){var j=+b.dataset.j;r.picks[r.i]=j;lock(j);$("#qzNext").focus()})});
+  $("#qzNext").addEventListener("click",function(){if(r.i<r.qs.length-1){r.i++;showQ()}else results()});
+  $("#qzQuit").addEventListener("click",setupQuiz);
+}
+function results(){
+  var r=run,right=r.qs.filter(function(q,k){return r.picks[k]===q.ans}).length,pct=Math.round(right/r.qs.length*100);
+  S.final={best:Math.max(pct,S.final?S.final.best:0),n:(S.final?S.final.n:0)+1,last:pct};save();renderSide();
+  var by={};r.qs.forEach(function(q,k){by[q.lo]=by[q.lo]||{r:0,t:0};by[q.lo].t++;if(r.picks[k]===q.ans)by[q.lo].r++});
+  var verdict=pct>=80?"Pemahaman kuat. Topik 01 tuntas.":pct>=65?"Fondasi sudah baik. Tinjau unit di bawah 70%.":"Pelajari ulang unit yang lemah (dan halaman bukunya), lalu coba lagi.";
+  quizEl.innerHTML='<div class="res-big"><span class="pct" style="color:'+(pct>=65?"var(--good)":"var(--bad)")+'">'+pct+'%</span><span>'+right+' dari '+r.qs.length+' benar. '+verdict+'</span></div>'+
+   (pct>=80?'<div><span class="badge">🏅 Topik 01 tuntas</span></div>':'')+
+   '<div><p class="qz-lbl">Per unit</p><div class="lo-bars">'+Object.keys(by).sort().map(function(k){var v=by[k],p=Math.round(v.r/v.t*100);return '<div class="lo-row"><span><b style="font-family:var(--mono)">U'+k+'</b> '+LO_NAMES[k]+(p<70?' · <a href="#u'+k+'">tinjau</a>':'')+'</span><span class="b"><i style="width:'+p+'%;background:'+(p>=70?"var(--good)":"var(--bad)")+'"></i></span><span class="v">'+v.r+'/'+v.t+'</span></div>'}).join("")+'</div></div>'+
+   '<div><p class="qz-lbl">Tinjau jawaban Anda</p><div class="review">'+r.qs.map(function(q,k){var ok=r.picks[k]===q.ans;return '<details '+(ok?"":"open")+'><summary><span class="mk '+(ok?"ok":"no")+'">'+(ok?"✓":"✗")+'</span>'+esc(q.text)+'</summary><p><b>Jawaban Anda:</b> '+esc(q.opts[r.picks[k]])+(ok?'':'<br><b>Jawaban benar:</b> '+esc(q.opts[q.ans]))+'</p><p class="muted">'+esc(q.exp)+'</p></details>'}).join("")+'</div></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzNew">Ubah pengaturan</button><button class="btn" id="qzAgain">Ulangi dengan soal baru</button></div>';
+  $("#qzNew").addEventListener("click",setupQuiz);
+  $("#qzAgain").addEventListener("click",function(){setupQuiz();$("#qzStart").click()});
+  quizEl.scrollIntoView({block:"start"});
 }
 
 /* ================= flashcards ================= */
@@ -1144,7 +1235,7 @@ function route(){
   var v=current();$$(".view").forEach(function(s){s.hidden=s.dataset.view!==v});
   markNav();$("#side").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");
   window.scrollTo(0,0);
-  if(v==="final"&&!FQ)startFinal();
+  
   if(v==="notes")notesPreview();
   if(v==="u3"&&sim.draw)sim.draw();
   document.title=(v==="home"?"Topik 01":($('[data-view="'+v+'"] h2')||{}).textContent)+" · Pengantar Bisnis & Kewirausahaan";
@@ -1157,7 +1248,7 @@ $$("[data-readchk]").forEach(function(c){
   var n=+c.dataset.readchk;c.checked=!!S.read[n];
   c.addEventListener("change",function(){S.read[n]=c.checked;save();var b=$('[data-quiz="u'+n+'"]');lockState(b,"u"+n);renderSide();if(c.checked)toast("Soal cek pemahaman terbuka ↓")});
 });
-renderCases();bindNotes();sim();calcs();cards();renderSide();updateProgress();
+setupQuiz();renderCases();bindNotes();sim();calcs();cards();renderSide();updateProgress();
 window.addEventListener("hashchange",route);route();
 
 $("#menuBtn").addEventListener("click",function(){var o=$("#side").classList.toggle("open");this.setAttribute("aria-expanded",o)});
