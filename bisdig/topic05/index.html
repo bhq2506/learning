@@ -1,0 +1,1334 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Topik 05 · Analisis Lingkungan Makro Digital</title>
+<meta name="description" content="Web-app belajar mandiri Pengantar Bisnis Digital (DG234101) ITS — Topik 05: Isu Kunci dalam Lingkungan Digital (analisis makro SLEPT/PESTLE), berbasis Chaffey et al. (2019) Bab 4, dengan kasus Indonesia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#F3F5FA; --surface:#FFFFFF; --sunk:#E8ECF5; --ink:#0F1B33; --muted:#56627A; --line:#D5DCEA;
+  --navy:#013880; --navy-ink:#FFFFFF; --navy-soft:#E1E9F7;
+  --gold:#B07A00; --gold-bg:#FFC72C; --gold-soft:#FFF4D4;
+  --good:#17784E; --good-soft:#DCF2E6; --bad:#B4372F; --bad-soft:#F9E2DF;
+  --dig:#5B3FB0; --dig-soft:#ECE7FA;
+  --idn:#B4372F; --idn-soft:#FBEAE8;
+  --f:"Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  --r:12px;
+  --shadow:0 1px 2px rgba(15,27,51,.06), 0 4px 16px rgba(15,27,51,.05);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.65}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:var(--navy)}
+h1,h2,h3,h4{line-height:1.2;margin:0 0 .5em;letter-spacing:-.01em}
+h2{font-size:clamp(1.45rem,1.1rem + 1.3vw,1.95rem);font-weight:800}
+h3{font-size:1.12rem;font-weight:700;margin-top:1.6em}
+p{margin:0 0 1em}
+em{font-style:italic}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold-bg);outline-offset:2px;border-radius:6px}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;padding-top:max(10px,env(safe-area-inset-top))}
+:root[data-theme="dark"] .top{background:#0E1A36}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .top{background:#0E1A36}}
+.top .brand{display:flex;flex-direction:column;line-height:1.2;min-width:0;flex:1}
+.top .brand b{font-size:.95rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .brand small{font-size:.72rem;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog{display:flex;align-items:center;gap:8px;font-size:.78rem;white-space:nowrap}
+.prog .bar{width:110px;height:8px;border-radius:99px;background:rgba(255,255,255,.22);overflow:hidden}
+.prog .bar i{display:block;height:100%;background:#FFC72C;border-radius:99px;width:0;transition:width .4s}
+.iconbtn{background:rgba(255,255,255,.12);border:0;border-radius:8px;width:34px;height:34px;display:grid;place-items:center;color:#fff;flex:none}
+.iconbtn:hover{background:rgba(255,255,255,.22)}
+.menubtn{display:none}
+@media (max-width:899px){.menubtn{display:grid}.prog .bar{width:64px}}
+@media (max-width:420px){.prog .lbl{display:none}}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1200px;margin:0 auto}
+@media (max-width:899px){.shell{grid-template-columns:minmax(0,1fr)}}
+nav.side{position:sticky;top:54px;align-self:start;height:calc(100vh - 54px);overflow:auto;padding:20px 12px 40px 16px;border-right:1px solid var(--line)}
+@media (max-width:899px){
+  nav.side{position:fixed;inset:54px 0 0 0;height:auto;background:var(--bg);z-index:15;border:0;transform:translateX(-100%);transition:transform .25s;padding:16px}
+  nav.side.open{transform:none}
+}
+.side .grp{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 8px 6px}
+.side .grp:first-child{margin-top:0}
+.side a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;text-decoration:none;color:var(--ink);font-size:.9rem;font-weight:500;line-height:1.3}
+.side a:hover{background:var(--sunk)}
+.side a.on{background:var(--navy-soft);color:var(--navy);font-weight:700}
+.side a .n{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk);color:var(--muted);border:1.5px solid var(--line)}
+.side a.done .n{background:var(--good);border-color:var(--good);color:#fff}
+.side a.on .n{border-color:var(--navy)}
+.side a .n.ico{font-size:.8rem}
+
+main{padding:28px 16px 80px;min-width:0}
+@media (min-width:900px){main{padding:36px 40px 100px}}
+.view{max-width:760px;margin:0 auto;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tag{display:inline-block;font-family:var(--mono);font-size:.7rem;font-weight:500;letter-spacing:0;text-transform:none;padding:2px 8px;border-radius:99px;background:var(--sunk);color:var(--muted)}
+.lead{font-size:1.05rem;color:var(--muted)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:18px 0;box-shadow:var(--shadow)}
+.card h3:first-child,.card h4:first-child{margin-top:0}
+
+/* reading box */
+.read{border:2px solid var(--navy);background:var(--navy-soft);border-radius:var(--r);padding:16px 18px;margin:20px 0}
+.read .hd{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.read .pg{font-family:var(--mono);font-size:.82rem;background:var(--navy);color:var(--navy-ink);padding:2px 9px;border-radius:6px}
+.read ul{margin:.3em 0 .8em;padding-left:1.2em}
+.read li{margin:.2em 0}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--line);cursor:pointer;font-weight:600;font-size:.92rem}
+.chk input{width:20px;height:20px;accent-color:var(--good);margin:1px 0 0;flex:none}
+
+/* callouts */
+.co{border-left:4px solid var(--dig);background:var(--dig-soft);padding:12px 16px;border-radius:0 10px 10px 0;margin:16px 0;font-size:.95rem}
+.co b.t{color:var(--dig)}
+.co.idn{border-color:var(--idn);background:var(--idn-soft)}
+.co.idn b.t{color:var(--idn)}
+.co.book{border-color:var(--gold);background:var(--gold-soft)}
+.co.book b.t{color:var(--gold)}
+.co p:last-child{margin:0}
+
+/* tables */
+.tw{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--sunk);font-weight:700;font-size:.8rem;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+
+.terms{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.terms span{font-size:.78rem;padding:3px 10px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-style:italic}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:.92rem;background:var(--navy);color:var(--navy-ink);text-decoration:none}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn.gold{background:var(--gold-bg);color:#1b1400}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:36px;padding-top:20px;border-top:1px solid var(--line)}
+
+/* quiz */
+.qwrap{position:relative}
+.qwrap.locked .qbody{filter:blur(3px);pointer-events:none;user-select:none;opacity:.6}
+.lockmsg{display:none;position:absolute;inset:0;z-index:2;align-items:center;justify-content:center;text-align:center;padding:16px}
+.qwrap.locked .lockmsg{display:flex}
+.lockmsg div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px;max-width:380px;box-shadow:0 6px 30px rgba(0,0,0,.12);font-size:.92rem}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0;background:var(--surface)}
+.q .qt{font-weight:600;margin-bottom:10px}
+.q .kind{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:5px;margin-bottom:6px;background:var(--sunk);color:var(--muted)}
+.q .kind.rb{background:var(--gold-soft);color:var(--gold)}
+.opts{display:grid;gap:7px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;padding:9px 12px;border-radius:9px;border:1.5px solid var(--line);background:var(--bg);font-size:.92rem;line-height:1.45}
+.opt:hover:not([disabled]){border-color:var(--navy)}
+.opt .L{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk)}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.ok .L{background:var(--good);color:#fff}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)}
+.opt.no .L{background:var(--bad);color:#fff}
+.opt.sel{border-color:var(--navy);background:var(--navy-soft)}
+.opt[disabled]{cursor:default}
+.fb{margin-top:10px;font-size:.88rem;padding:9px 12px;border-radius:8px}
+.fb.ok{background:var(--good-soft);color:var(--ink)}
+.fb.no{background:var(--bad-soft);color:var(--ink)}
+.fb b{margin-right:4px}
+.retry{margin-top:8px;font-size:.82rem;background:none;border:0;color:var(--navy);font-weight:700;padding:0;text-decoration:underline}
+
+/* classify widget */
+.cls .it{padding:12px 0;border-bottom:1px dashed var(--line)}
+.cls .it:last-child{border-bottom:0}
+.cls .it p{margin:0 0 8px;font-size:.93rem;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--line);background:var(--bg);border-radius:99px;padding:5px 12px;font-size:.8rem;font-weight:600}
+.chip:hover:not([disabled]){border-color:var(--navy)}
+.chip.ok{background:var(--good);border-color:var(--good);color:#fff}
+.chip.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.chip[disabled]{cursor:default}
+.cls .why{font-size:.84rem;color:var(--muted);margin-top:6px}
+.score{font-size:.85rem;font-weight:700;color:var(--muted)}
+
+/* simulator */
+.sim svg{width:100%;height:auto;display:block}
+.sim .ctl{display:grid;gap:10px;margin-top:10px}
+.sim input[type=range]{width:100%;accent-color:var(--navy)}
+.sim .out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.sim .out div{background:var(--sunk);border-radius:9px;padding:8px 10px;font-size:.78rem;color:var(--muted)}
+.sim .out b{display:block;font-size:1.05rem;color:var(--ink)}
+.state{font-weight:800;padding:8px 12px;border-radius:9px;text-align:center}
+.state.sh{background:var(--bad-soft);color:var(--bad)}
+.state.su{background:var(--gold-soft);color:var(--gold)}
+.state.eq{background:var(--good-soft);color:var(--good)}
+.tog{display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600}
+.tog input{width:18px;height:18px;accent-color:var(--dig)}
+
+/* calc */
+.calc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.calc{grid-template-columns:minmax(0,1fr)}}
+.calc label{font-size:.8rem;font-weight:600;color:var(--muted);display:grid;gap:4px}
+.calc input{font:inherit;font-size:.95rem;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.res{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--sunk);font-size:.92rem}
+.res big{font-size:1.4rem;font-weight:800;display:block}
+
+/* case */
+details.ans{margin-top:10px;border-radius:10px;border:1px dashed var(--gold);background:var(--gold-soft)}
+details.ans summary{cursor:pointer;padding:10px 14px;font-weight:700;color:var(--gold);font-size:.9rem}
+details.ans>div{padding:0 14px 12px;font-size:.92rem}
+details.ans.lock summary{color:var(--muted);cursor:not-allowed}
+textarea{font:inherit;font-size:.92rem;width:100%;min-height:92px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+textarea:focus{border-color:var(--navy);outline:none}
+.cq{margin:18px 0}
+.cq>b{display:block;margin-bottom:6px;font-size:.95rem}
+.hint{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+/* flashcards */
+.fc{perspective:1200px;margin:16px 0}
+.fc .inner{position:relative;min-height:230px;transition:transform .5s;transform-style:preserve-3d;cursor:pointer}
+.fc.flip .inner{transform:rotateY(180deg)}
+.fc .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;padding:24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border:1px solid var(--line);box-shadow:var(--shadow)}
+.fc .front{background:var(--navy);color:#fff}
+:root[data-theme="dark"] .fc .front{background:#1C2B4D;color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fc .front{background:#1C2B4D;color:var(--ink)}}
+.fc .front b{font-size:1.5rem;font-style:italic}
+.fc .back{background:var(--surface);transform:rotateY(180deg);font-size:1.02rem}
+.fc small{opacity:.7;font-size:.75rem;margin-top:10px}
+
+/* final */
+.big{font-size:2.6rem;font-weight:800;line-height:1}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--gold-bg);color:#1b1400;font-weight:800;padding:6px 14px;border-radius:99px}
+
+/* home */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+@media (max-width:620px){.steps{grid-template-columns:minmax(0,1fr)}}
+.steps div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.steps>div>b{display:block;font-size:1rem;margin-bottom:2px}
+.steps span{font-size:.85rem;color:var(--muted)}
+.steps i{font-style:normal;font-size:1.4rem}
+.plan td:nth-child(3){font-family:var(--mono);font-size:.8rem;white-space:nowrap}
+.plan .st{font-size:.75rem;font-weight:700;white-space:nowrap}
+.st.y{color:var(--good)}.st.n{color:var(--muted)}
+.hero{background:linear-gradient(135deg,#013880 0%,#0a4fa8 100%);color:#fff;border-radius:16px;padding:24px 22px;margin-bottom:20px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(1.6rem,1.2rem + 1.8vw,2.3rem);font-weight:800;margin:4px 0 8px}
+.hero p{opacity:.92;margin:0;max-width:56ch}
+.hero .eyebrow{color:#FFC72C}
+.hero::after{content:"";position:absolute;right:-40px;bottom:-60px;width:220px;height:220px;border-radius:50%;border:28px solid rgba(255,199,44,.18)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:.88rem;font-weight:600;z-index:40;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.foot{font-size:.78rem;color:var(--muted);margin-top:40px}
+ol.ref li{margin:.4em 0;font-size:.9rem}
+/* self-test (pola serviceman) */
+.quiz{scroll-margin-top:70px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow)}
+.qz-setup{display:flex;flex-direction:column;gap:14px}
+.qz-setup p{margin:0}
+.qz-lbl{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;font-size:.88rem;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.qz-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.qz-top .qz-lbl{margin:0}
+.qz-prog{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.qz-prog i{display:block;height:100%;background:var(--navy);width:0;transition:width .3s}
+.qz-q{font-size:1.18rem;font-weight:700;margin:0;line-height:1.4}
+.qz-opts{display:flex;flex-direction:column;gap:8px}
+.qz-opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;font-size:.95rem;line-height:1.45}
+.qz-opts button .k{font-family:var(--mono);font-size:.8rem;color:var(--muted);flex:none;padding-top:2px}
+.qz-opts button:hover:not(:disabled){border-color:var(--navy)}
+.qz-opts button:disabled{cursor:default}
+.qz-opts button.right{border-color:var(--good);background:var(--good-soft)}
+.qz-opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.qz-exp{border-radius:10px;padding:12px 14px;font-size:.93rem}
+.qz-exp.ok{background:var(--good-soft)}.qz-exp.no{background:var(--bad-soft)}
+.qz-exp b{display:block;margin-bottom:2px}
+.qz-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.res-big{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.res-big .pct{font-weight:800;font-size:3.4rem;line-height:1}
+.lo-bars{display:flex;flex-direction:column;gap:8px}
+.lo-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 44px;gap:10px;align-items:center;font-size:.86rem}
+@media (max-width:520px){.lo-row{grid-template-columns:minmax(0,1fr) 70px 40px}}
+.lo-row .b{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.lo-row .b i{display:block;height:100%}
+.lo-row .v{font-family:var(--mono);font-size:.78rem;text-align:right}
+.review{display:flex;flex-direction:column;gap:8px}
+.review details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.review summary{cursor:pointer;font-size:.92rem}
+.review .mk{font-family:var(--mono);font-weight:700;margin-right:6px}
+.review .mk.ok{color:var(--good)}.review .mk.no{color:var(--bad)}
+.review p{font-size:.88rem;margin:6px 0 0}
+.muted{color:var(--muted)}
+/* umpan balik studi kasus */
+.btn.sm{padding:7px 12px;font-size:.84rem}
+.fbk{margin-top:8px}
+.fbres{margin-top:10px}
+.gbox{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px}
+.ghead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.meter{display:flex;gap:4px}
+.meter i{width:22px;height:10px;border-radius:3px;background:var(--sunk)}
+.meter i.on{background:var(--navy)}
+.glv{font-weight:800}
+.gnote{font-size:.72rem;color:var(--muted);margin-left:auto}
+.crit{list-style:none;padding:0;margin:6px 0;display:grid;gap:5px}
+.crit li{font-size:.86rem;display:flex;gap:8px;align-items:flex-start}
+.crit li .m{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:.7rem;font-weight:800;margin-top:2px}
+.crit li.y .m{background:var(--good);color:#fff}
+.crit li.n .m{background:var(--sunk);color:var(--muted);border:1.5px dashed var(--muted)}
+.crit li.n span.h{color:var(--muted)}
+.gwarn{font-size:.84rem;background:var(--gold-soft);border-radius:8px;padding:8px 10px;margin-top:8px}
+.selfc{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.selfc label{display:flex;gap:8px;align-items:flex-start;font-size:.88rem;margin:6px 0;cursor:pointer}
+.selfc input{width:18px;height:18px;accent-color:var(--navy);flex:none;margin-top:2px}
+.stale{font-size:.8rem;color:var(--gold);font-weight:700;margin-top:6px}
+.csum{font-family:var(--mono);font-size:.75rem;font-weight:500;background:var(--sunk);color:var(--muted);padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle}
+
+/* widget topik 5 */
+.mlbl{display:grid;gap:4px;font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:8px}
+.mlbl input,.mlbl textarea{font:inherit;font-size:.9rem;font-weight:400;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.slrow{display:grid;grid-template-columns:44px minmax(0,1fr);gap:8px;align-items:start;padding:8px 0;border-bottom:1px solid var(--line)}
+.slk{font-family:var(--mono);font-weight:700;color:var(--navy);font-size:.95rem}
+.slrow>.slk{padding-top:8px}
+.slmain{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+@media (max-width:620px){.slmain{grid-template-columns:minmax(0,1fr)}}
+.slmain input{font:inherit;font-size:.9rem;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.slsc{display:flex;gap:8px}
+.slsc label{display:grid;gap:2px;font-size:.7rem;font-weight:700;color:var(--muted)}
+.slsc select{font:inherit;font-size:.88rem;padding:6px 8px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+.slrank{display:grid;gap:5px;margin-top:8px}
+.slr{display:grid;grid-template-columns:40px minmax(0,1fr) 36px;gap:8px;align-items:center;padding:7px 10px;border-radius:8px;background:var(--surface);border-left:4px solid var(--line);font-size:.88rem}
+.slr .slt{overflow-wrap:anywhere}
+.slr .sls{font-family:var(--mono);font-weight:700;text-align:right}
+.slr.hi{border-left-color:var(--bad)}
+.slr.md{border-left-color:var(--gold)}
+.slr.lo{border-left-color:var(--good)}
+.ukc{display:flex;gap:8px;align-items:flex-start;font-size:.88rem;margin:5px 0;cursor:pointer}
+.ukc input{width:18px;height:18px;accent-color:var(--navy);flex:none;margin-top:2px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <button class="iconbtn menubtn" id="menuBtn" aria-label="Buka menu" aria-expanded="false">☰</button>
+  <div class="brand"><b>Topik 05 · Analisis Lingkungan Makro Digital</b><small><a href="../" style="color:inherit">← Pengantar Bisnis Digital (DG234101) · ITS</a></small></div>
+  <div class="prog" title="Kemajuan belajar"><span class="lbl" id="progLbl">0%</span><span class="bar"><i id="progBar"></i></span></div>
+  <button class="iconbtn" id="themeBtn" aria-label="Ganti tema terang/gelap">◐</button>
+</header>
+
+<div class="shell">
+<nav class="side" id="side" aria-label="Navigasi materi"></nav>
+<main id="main">
+
+<!-- ================= HOME ================= -->
+<section class="view" data-view="home">
+  <div class="hero">
+    <div class="eyebrow">Minggu 5 · Belajar Mandiri</div>
+    <h1>Isu Kunci dalam Lingkungan Digital: Analisis Makro</h1>
+    <p>Bisnis digital bisa berubah dalam semalam karena hal-hal yang tidak dikendalikan perusahaan: regulasi baru, perubahan perilaku konsumen, kondisi ekonomi, keputusan politik, dan teknologi yang muncul tiba-tiba. Topik ini melatih Anda memindai lingkungan itu secara sistematis dengan kerangka <b>SLEPT</b> (atau PESTLE), lalu memprioritaskan faktor yang benar-benar penting.</p>
+  </div>
+
+  <div class="card">
+    <h3>🎯 Sub-CPMK 5 <span class="tag">CPMK2</span></h3>
+    <p style="margin:0">Mahasiswa mampu menganalisis faktor lingkungan eksternal (Sosial, Hukum, Ekonomi, Politik, Teknologi) menggunakan kerangka PESTLE dan dampaknya terhadap bisnis digital.</p>
+  </div>
+
+  <h3>Cara memakai aplikasi ini</h3>
+  <p>Aplikasi ini <b>bukan pengganti buku</b>. Ringkasan di sini sengaja dibuat padat; detail, gambar, dan kasus ada di buku. Setiap unit mengikuti tiga langkah:</p>
+  <div class="steps">
+    <div><i>📖</i><b>1. Baca</b><span>Buka subbab Chaffey Bab 4 yang ditunjuk, dengan pertanyaan pemandu sebagai fokus.</span></div>
+    <div><i>✅</i><b>2. Cek</b><span>Centang "sudah membaca" untuk membuka soal. Soal berlabel <span style="font-weight:700">Cek Bacaan</span> hanya bisa dijawab dari buku.</span></div>
+    <div><i>🧩</i><b>3. Terapkan</b><span>Susun matriks prioritas SLEPT, audit privasi sebuah situs, dan analisis kasus Indonesia.</span></div>
+  </div>
+  <p class="hint">Kemajuan Anda tersimpan otomatis di peramban ini (bukan di server). Gunakan menu <b>Catatan &amp; Referensi</b> untuk menyalin atau mengunduh semua jawaban Anda, termasuk matriks SLEPT untuk Project Milestone 1.</p>
+
+  <h3>Rencana belajar (± 4 jam)</h3>
+  <div class="tw"><table class="plan">
+    <thead><tr><th>#</th><th>Unit</th><th>Bacaan</th><th>Status</th></tr></thead>
+    <tbody id="planBody"></tbody>
+  </table></div>
+  <p class="hint">Bacaan utama: Chaffey, D., Hemphill, T., &amp; Edmundson-Bird, D. (2019). <em>Digital Business and E-Commerce Management</em> (7th ed.). Pearson. Bab 4: <em>Key issues in the digital environment</em>. Pendukung: artikel PESTEL tentang strategi media digital baru (tautan di menu Referensi). Rujukan memakai <b>nama subbab</b> serta nomor <b>Gambar, Tabel, Box, dan Case Study</b>.</p>
+
+  <div class="co idn"><b class="t">🇮🇩 Kasus Indonesia minggu ini.</b> Selain Case Study 4.1 dari buku, Anda akan menganalisis regulasi ojek online dari batas potongan 20% hingga <b>Perpres No. 27/2026</b> (8%), kebocoran <b>91 juta data akun Tokopedia</b> (2020) dalam terang UU Pelindungan Data Pribadi, dan menyusun <b>analisis SLEPT Gojek/Grab</b> sebagai latihan kelompok.</div>
+  <div class="co book"><b class="t">📌 Project Milestone 1 jatuh tempo minggu ini.</b> Laporan Analisis Pasar mencakup analisis lingkungan eksternal (SLEPT). Matriks prioritas di Unit 1 dan Studi Kasus 4 dirancang sebagai latihan langsung untuk laporan itu.</div>
+
+  <h3>🔥 Pemanasan (5 menit)</h3>
+  <div class="card">
+    <p>Pikirkan satu aplikasi yang Anda pakai hampir setiap hari (ojek online, marketplace, dompet digital, media sosial).</p>
+    <div class="cq"><b>Perubahan apa dari luar perusahaan (aturan, harga BBM, tren, teknologi) yang pernah Anda rasakan dampaknya pada aplikasi itu?</b><textarea data-note="warm_know" placeholder="Aplikasi: … Perubahan: … Dampaknya: …"></textarea></div>
+    <div class="cq"><b>Menurut Anda, faktor luar mana yang paling mengancam aplikasi itu dalam dua tahun ke depan, dan mengapa?</b><textarea data-note="warm_want" placeholder="Tebakan saya…"></textarea></div>
+  </div>
+  <div class="pager"><span></span><a class="btn" href="#u1">Mulai Unit 1 →</a></div>
+</section>
+
+<!-- ================= UNIT 1 ================= -->
+<section class="view" data-view="u1" data-unit="1">
+  <div class="eyebrow">Unit 1 <span class="tag">LO Bab 4</span><span class="tag">± 35 menit</span></div>
+  <h2>Lingkungan Makro, SLEPT, dan Environmental Scanning</h2>
+  <div class="read" data-read="1">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 4 · Introduction · Gambar 4.1–4.2 · Tabel 4.1–4.2 · Box 4.1</span></div>
+    <p style="margin:0 0 4px">Bagian pembuka Bab 4, termasuk Tabel 4.2 (hukum yang mengatur pemasaran digital) dan Box 4.1 (GDPR). Cari jawaban:</p>
+    <ul>
+      <li>Mengapa Chaffey memakai akronim SLEPT, bukan PEST?</li>
+      <li>Apa pesan Gambar 4.2 (<em>waves of change</em>) tentang kecepatan perubahan tiap faktor?</li>
+      <li>Apa tujuh isu hukum utama pada Tabel 4.2? Mengapa ulasan lingkungan tidak boleh memberi bobot sama pada semua faktor?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="1"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Organisasi memiliki dua lingkungan. <b>Lingkungan mikro</b> (pasar digital) berisi pelanggan, pemasok, pesaing, perantara, dan publik; ini dibahas di Minggu 3. <b>Lingkungan makro</b> berisi kekuatan yang lebih luas dan memengaruhi secara tidak langsung. Chaffey memakai akronim <b>SLEPT</b> agar faktor <b>hukum</b> mendapat penekanan, karena hukum sangat menentukan praktik pemasaran internet.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Faktor</th><th>Isi (Chaffey)</th><th>Contoh pertanyaan bagi manajer</th></tr></thead>
+    <tbody>
+      <tr><td><b>S</b>ocial</td><td>Persepsi dan perilaku konsumen: budaya, demografi, gaya hidup, kemakmuran, agama</td><td>Siapa yang sudah online, dan apa yang mereka takutkan?</td></tr>
+      <tr><td><b>L</b>egal &amp; etis</td><td>Cara produk boleh dipromosikan dan dijual; privasi; pajak</td><td>Data apa yang boleh kita kumpulkan, dengan izin seperti apa?</td></tr>
+      <tr><td><b>E</b>conomic</td><td>Pertumbuhan, inflasi, suku bunga, kebijakan moneter/fiskal, kurs</td><td>Bagaimana daya beli dan biaya modal memengaruhi rencana kita?</td></tr>
+      <tr><td><b>P</b>olitical</td><td>Peran pemerintah dan lembaga transnasional dalam mendorong maupun mengendalikan Internet</td><td>Kebijakan apa yang sedang disiapkan pemerintah?</td></tr>
+      <tr><td><b>T</b>echnological</td><td>Teknologi baru yang membuka cara baru memasarkan dan menjual</td><td>Teknologi mana yang perlu kita adopsi sekarang, dan mana yang ditunggu?</td></tr>
+    </tbody>
+  </table></div>
+  <p><b><em>Environmental scanning</em></b> adalah pemantauan terus-menerus terhadap lingkungan dan peristiwa, lalu meresponsnya. Perubahan sosial dan teknologi cenderung sangat cepat; perubahan hukum dan pemerintahan lebih lambat, tetapi undang-undang baru bisa muncul cukup cepat (Gambar 4.2). Kuncinya: <b>jangan memberi bobot sama</b> pada semua faktor; fokus pada yang paling menentukan daya saing.</p>
+  <div class="card cls" data-widget="slept"><h4>🧩 Latihan: faktor SLEPT yang mana?</h4></div>
+
+  <div class="card" id="sleptTool">
+    <h4>📊 Matriks prioritas SLEPT</h4>
+    <p class="hint">Pilih satu bisnis digital (mis. untuk Project Milestone 1). Tulis satu faktor terpenting untuk tiap huruf, lalu nilai <b>dampak</b> (1 = kecil, 5 = besar) dan <b>kemungkinan/kedekatan waktu</b> (1 = jauh, 5 = sudah terjadi). Aplikasi mengurutkan prioritasnya.</p>
+    <label class="mlbl">Bisnis yang dianalisis<input type="text" data-note="sl_name" placeholder="mis. Gojek di Indonesia"></label>
+    <div id="slRows"></div>
+    <div class="res" id="slRes"></div>
+  </div>
+
+  <div class="co idn"><b class="t">🇮🇩 Mengapa ini penting di Indonesia.</b> Menurut laporan e-Conomy SEA 2025 (Google, Temasek, Bain), ekonomi digital Indonesia mendekati GMV US$100 miliar pada 2025 dan tumbuh 14%, terbesar di Asia Tenggara. E-commerce menyumbang sekitar US$71 miliar; transportasi dan pesan-antar makanan sekitar US$10 miliar. Pasar sebesar ini menarik perhatian regulator, sehingga faktor hukum dan politik bergerak cepat. Contohnya Permendag 31/2023 (Minggu 3) dan Perpres 27/2026 tentang ojek online (Studi Kasus 2).</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u1"></div>
+  <div class="pager"><a class="btn ghost" href="#home">← Beranda</a><a class="btn" href="#u2">Unit 2 →</a></div>
+</section>
+
+<!-- ================= UNIT 2 ================= -->
+<section class="view" data-view="u2" data-unit="2">
+  <div class="eyebrow">Unit 2 <span class="tag">LO Bab 4</span><span class="tag">± 35 menit</span></div>
+  <h2>Faktor Sosial dan Perilaku Beli Online</h2>
+  <div class="read" data-read="2">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 4 · Social factors · Box 4.2 · Factors affecting e-commerce buying behaviour</span></div>
+    <p style="margin:0 0 4px">Subbab tentang faktor sosial (ZMOT, showrooming, Box 4.2 segmentasi M-Shopper), faktor yang memengaruhi perilaku beli online (enam kekhawatiran pembeli), dan motivasi penggunaan layanan online. Cari jawaban:</p>
+    <ul>
+      <li>Segmen M-Shopper mana yang terbesar menurut Columbia Business School dan Aimia (2013)?</li>
+      <li>Apa enam kekhawatiran umum saat berbelanja online, dan bagaimana perusahaan mengatasinya?</li>
+      <li>Apa yang ditunjukkan kasus Zoella dan Superdrug tentang pergeseran pengaruh media?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="2"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Faktor sosial mencakup budaya, demografi, gaya hidup, struktur rumah tangga, kemakmuran, dan agama. Internet mengubah proses beli: sebelum ke rak toko (<em>first moment of truth</em>), konsumen kini meriset online lebih dulu, yang oleh Google disebut <b>ZMOT</b> (<em>Zero Moment of Truth</em>). Ulasan online memengaruhi keputusan; menurut World Travel Market (2013), hampir 40% konsumen membaca ulasan sebelum memesan perjalanan.</p>
+  <p>Pengaruh juga bergeser ke individu: vlogger Zoella memiliki lebih dari 11,5 juta pelanggan YouTube, jauh di atas BBC News (1,3 juta). Koleksi kosmetiknya bersama Superdrug memecahkan rekor penjualan dalam 24 jam.</p>
+
+  <h3>Enam kekhawatiran pembeli online</h3>
+  <div class="card cls" data-widget="fear"><h4>🧩 Latihan: kekhawatiran mana yang diatasi?</h4></div>
+  <p>Chaffey juga menyebut <b><em>webographics</em></b> (lokasi akses, perangkat, kecepatan koneksi, ISP, pengalaman, jenis dan tingkat penggunaan), <b>segmentasi psikografis</b> (occasion, benefits sought, usage rate, user status, loyalty status), dan <b>FCB Involvement Grid</b> (think vs feel, keterlibatan tinggi vs rendah). Produk mahal dan kompleks (mobil, KPR) lebih banyak diriset online daripada dibeli online.</p>
+
+  <div class="co idn"><b class="t">🇮🇩 Konteks Indonesia.</b> Survei APJII 2025 mencatat 229,43 juta pengguna internet (penetrasi 80,66%), tetapi sebarannya timpang: Jawa menyumbang 58% pengguna, Maluku dan Papua hanya 3,71%. Kesenjangan digital ini adalah faktor sosial (dan infrastruktur) yang menentukan siapa yang bisa Anda jangkau. Perilaku belanja juga khas: <em>video commerce</em> tumbuh 90% menjadi 2,6 miliar transaksi pada 2025 (e-Conomy SEA 2025), sementara COD dan ulasan bintang menjadi cara mengatasi kekhawatiran "toko palsu" dan "produk tidak sesuai".</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u2"></div>
+  <div class="pager"><a class="btn ghost" href="#u1">← Unit 1</a><a class="btn" href="#u3">Unit 3 →</a></div>
+</section>
+
+<!-- ================= UNIT 3 ================= -->
+<section class="view" data-view="u3" data-unit="3">
+  <div class="eyebrow">Unit 3 <span class="tag">LO Bab 4</span><span class="tag">± 40 menit</span></div>
+  <h2>Privasi, Kepercayaan, dan Keamanan Data</h2>
+  <div class="read" data-read="3">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 4 · Privacy and trust in e-commerce · Box 4.3–4.5 · Tabel 4.3</span></div>
+    <p style="margin:0 0 4px">Subbab tentang privasi dan kepercayaan: kejahatan siber (Box 4.3), jenis informasi pelanggan (Tabel 4.3), isu etika, aturan email (Box 4.4), cookie (Box 4.5), dan checklist kepatuhan privasi. Cari jawaban:</p>
+    <ul>
+      <li>Apa yang terjadi pada TalkTalk (2015), dan berapa dendanya?</li>
+      <li>Apa empat isu etika informasi menurut Mason (1986)?</li>
+      <li>Apa beda cookie <em>first-party</em> dan <em>third-party</em>, <em>persistent</em> dan <em>session</em>?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="3"> Saya sudah membaca subbab tersebut</label>
+  </div>
+
+  <p><b>Privasi</b> adalah hak moral individu untuk terhindar dari campur tangan pihak lain dalam urusan pribadinya. Dilemanya: data pelanggan sangat berharga bagi pemasar (personalisasi, penargetan), tetapi konsumen khawatir pencurian identitas dan penyalahgunaan data. Kejahatan siber dibagi menjadi <em>cyber-dependent</em> (hanya mungkin lewat TIK, mis. malware) dan <em>cyber-enabled</em> (kejahatan lama yang diperbesar TIK, mis. penipuan). Bentuk yang paling umum: <b>phishing</b>, <b>pencurian identitas</b>, dan <b>hacking</b>.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Kerangka etika data</th><th>Isi</th></tr></thead>
+    <tbody>
+      <tr><td>Mason (1986)</td><td><b>Privacy</b> (data apa yang disimpan), <b>Accuracy</b> (benarkah), <b>Property</b> (siapa pemiliknya), <b>Accessibility</b> (siapa boleh mengakses)</td></tr>
+      <tr><td>Fletcher (2001)</td><td><b>Transparency</b>, <b>Security</b>, <b>Liability</b> (siapa bertanggung jawab bila data disalahgunakan)</td></tr>
+      <tr><td>Persetujuan ala GDPR (Box 4.1)</td><td>Harus dapat dibuktikan, mudah ditarik kembali, mencakup semua tujuan; kotak yang sudah dicentang atau diam <b>bukan</b> persetujuan</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="consent"><h4>🧩 Latihan: persetujuan sah atau tidak?</h4></div>
+  <div class="card cls" data-widget="cookie"><h4>🧩 Latihan: jenis cookie</h4></div>
+
+  <div class="card" id="privTool">
+    <h4>🔍 Audit privasi sebuah situs (checklist 10 langkah Chaffey, diringkas)</h4>
+    <p class="hint">Buka situs atau aplikasi yang sering Anda pakai, lalu periksa. Centang yang terpenuhi.</p>
+    <label class="mlbl">Situs/aplikasi yang diaudit<input type="text" data-note="pv_name" placeholder="mis. sebuah marketplace atau aplikasi ojol"></label>
+    <div id="pvList"></div>
+    <div class="res" id="pvRes"></div>
+  </div>
+
+  <div class="co idn"><b class="t">🇮🇩 UU Pelindungan Data Pribadi.</b> Indonesia memiliki UU No. 27/2022 tentang Pelindungan Data Pribadi (UU PDP), yang berlaku penuh sejak 17 Oktober 2024 setelah masa transisi dua tahun. Prinsipnya mirip GDPR: dasar pemrosesan yang sah (termasuk persetujuan), hak subjek data, kewajiban pengendali data, dan pemberitahuan bila terjadi kegagalan pelindungan data. Penegakannya bergantung pada lembaga pengawas PDP dan peraturan turunannya. Studi Kasus 3 membahas kebocoran data Tokopedia yang terjadi sebelum UU ini ada.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u3"></div>
+  <div class="pager"><a class="btn ghost" href="#u2">← Unit 2</a><a class="btn" href="#u4">Unit 4 →</a></div>
+</section>
+
+<!-- ================= UNIT 4 ================= -->
+<section class="view" data-view="u4" data-unit="4">
+  <div class="eyebrow">Unit 4 <span class="tag">LO Bab 4</span><span class="tag">± 30 menit</span></div>
+  <h2>Hukum E-commerce: Delapan Area Sparrow</h2>
+  <div class="read" data-read="4">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 4 · Other e-commerce legislation</span></div>
+    <p style="margin:0 0 4px">Subbab tentang delapan area hukum yang perlu diperhatikan pemasar online (Sparrow, 2000): domain dan merek, aksesibilitas, kontrak elektronik dan penjualan jarak jauh, pembayaran, autentikasi, risiko email, kekayaan intelektual, iklan, dan pelindungan data. Cari jawaban:</p>
+    <ul>
+      <li>Apa yang dibuktikan Bruce Maguire dalam gugatannya pada tahun 2000?</li>
+      <li>Mengapa peritel tidak wajib menjual televisi seharga £2,99 akibat salah harga?</li>
+      <li>Berapa yang dibayar Norwich Union kepada WPA, dan mengapa?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="4"> Saya sudah membaca subbab tersebut</label>
+  </div>
+
+  <div class="tw"><table>
+    <thead><tr><th>Area (Sparrow, 2000)</th><th>Inti</th><th>Padanan di Indonesia (contoh)</th></tr></thead>
+    <tbody>
+      <tr><td>1. Memasarkan bisnis e-commerce</td><td>Domain, merek dagang, aksesibilitas bagi penyandang disabilitas</td><td>Pendaftaran merek di DJKI; UU 8/2016 tentang Penyandang Disabilitas</td></tr>
+      <tr><td>2. Kontrak elektronik</td><td>Hukum negara mana yang berlaku; penjualan jarak jauh; salah harga sebagai <em>invitation to treat</em></td><td>UU ITE; PP 80/2019 tentang Perdagangan melalui Sistem Elektronik</td></tr>
+      <tr><td>3. Pembayaran</td><td>Tanggung jawab penerbit kartu, merchant, pembeli</td><td>Ketentuan Bank Indonesia tentang sistem pembayaran</td></tr>
+      <tr><td>4. Autentikasi</td><td>Membuktikan identitas pembeli: kode keamanan, tanda tangan digital</td><td>OTP; tanda tangan elektronik dalam UU ITE</td></tr>
+      <tr><td>5. Risiko email</td><td>Spam dan pencemaran nama baik</td><td>Ketentuan pencemaran nama baik dalam UU ITE</td></tr>
+      <tr><td>6. Kekayaan intelektual</td><td>Hak cipta konten, paten metode (mis. Amazon One-click)</td><td>UU 28/2014 tentang Hak Cipta</td></tr>
+      <tr><td>7. Iklan online</td><td>Standar iklan juga berlaku online</td><td>Etika Pariwara Indonesia; UU Perlindungan Konsumen 8/1999</td></tr>
+      <tr><td>8. Pelindungan data</td><td>Lihat Unit 3</td><td>UU 27/2022 (PDP)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="hint">Kolom Indonesia adalah padanan untuk perkuliahan ini, bukan nasihat hukum. Regulasi bisa berubah; periksa versi terbaru.</p>
+  <p>Contoh penting dari buku: gugatan aksesibilitas pertama di dunia oleh <b>Bruce Maguire</b> terhadap panitia Olimpiade Sydney (2000), yang dimenangkan dengan ganti rugi AU$20.000. Di Uni Eropa, konsumen berhak membatalkan pembelian jarak jauh hingga 14 hari setelah barang diterima, kecuali untuk konten digital yang langsung diunduh bila konsumen sudah menyetujuinya.</p>
+  <div class="card cls" data-widget="law"><h4>🧩 Latihan: area hukum yang mana?</h4></div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Kasus "salah harga" juga sering terjadi di marketplace Indonesia, misalnya produk elektronik yang tercantum dengan harga jauh di bawah harga normal karena salah input. Apakah penjual wajib mengirim? Prinsip <em>invitation to treat</em> dari buku memberi satu sudut pandang; di Indonesia, syarat dan ketentuan platform serta UU Perlindungan Konsumen juga perlu diperhatikan. Inilah alasan Chaffey menyarankan disclaimer dan syarat-ketentuan yang jelas.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u4"></div>
+  <div class="pager"><a class="btn ghost" href="#u3">← Unit 3</a><a class="btn" href="#u5">Unit 5 →</a></div>
+</section>
+
+<!-- ================= UNIT 5 ================= -->
+<section class="view" data-view="u5" data-unit="5">
+  <div class="eyebrow">Unit 5 <span class="tag">LO Bab 4</span><span class="tag">± 30 menit</span></div>
+  <h2>Faktor Ekonomi, Globalisasi, dan Lokalisasi</h2>
+  <div class="read" data-read="5">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 4 · Economic and competitive factors · Case Study 4.1 · Tabel 4.4</span></div>
+    <p style="margin:0 0 4px">Subbab tentang faktor ekonomi dan persaingan (e-economy, globalisasi, lokalisasi), Case Study 4.1, implikasi bagi perdagangan B2B internasional (Tabel 4.4), dan model adopsi e-business UKM (Gambar 4.16–4.17). Cari jawaban:</p>
+    <ul>
+      <li>Apa lima tingkat lokalisasi situs menurut Singh dan Pereira (2005)?</li>
+      <li>Apa yang terjadi pada konversi Karen Millen di AS setelah kata "autumn" diganti "fall"?</li>
+      <li>Apa empat hambatan UKM untuk berdagang internasional (Tabel 4.4)?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="5"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Faktor ekonomi mencakup pertumbuhan pasar, lapangan kerja, inflasi, suku bunga, kebijakan moneter/fiskal, dan kurs. Contoh dari buku adalah <b><em>dynamic pricing</em></b>: harga berubah otomatis menurut harga pesaing, permintaan, waktu, lokasi, bahkan perangkat yang dipakai pengunjung. <b>Globalisasi</b> membuka pasar dunia, tetapi menuntut layanan 24 jam, kemampuan ekspor, dan pemahaman pasar asing (Quelch &amp; Klein, 1996). <b>Lokalisasi</b> adalah penyesuaian situs untuk negara atau wilayah tertentu: bahasa, gaya, desain, produk, harga, mata uang, pembayaran, layanan pelanggan, dan format tanggal.</p>
+  <div class="card cls" data-widget="locz"><h4>🧩 Latihan: tingkat lokalisasi (Singh &amp; Pereira, 2005)</h4></div>
+  <p>Lokalisasi berdampak nyata: klien Net Media Planet mengalami kenaikan konversi rata-rata 20% ketika iklan dan landing page diterjemahkan, dan 70% ketika situs dilokalisasi penuh. Namun survei Multilingual (2008) menemukan 88% manajer menyebut lokalisasi penting, sementara lebih dari separuh hanya mengalokasikan 1–5% anggaran untuknya.</p>
+  <p>UKM menghadapi hambatan <b>psikologis</b>, <b>operasional</b>, <b>organisasional</b>, dan <b>produk/pasar</b> untuk berdagang internasional (Hamill &amp; Gregory, 1997). Model adopsi menunjukkan tahap informasi → komunikasi → transaksi → integrasi strategis, walaupun dalam praktik jalurnya jarang linear.</p>
+  <div class="co idn"><b class="t">🇮🇩 Konteks Indonesia.</b> Platform global yang masuk Indonesia biasanya melakukan lokalisasi lebih dari sekadar bahasa: menyediakan COD, dompet digital dan QRIS, gratis ongkir, kampanye tanggal kembar dan Ramadan, serta layanan pelanggan berbahasa Indonesia. Banyak UMKM masih berada di tahap awal model adopsi (komunikasi lewat WhatsApp dan Instagram), dan baru sebagian yang sampai tahap transaksi terintegrasi dengan stok dan keuangan.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u5"></div>
+  <div class="pager"><a class="btn ghost" href="#u4">← Unit 4</a><a class="btn" href="#u6">Unit 6 →</a></div>
+</section>
+
+<!-- ================= UNIT 6 ================= -->
+<section class="view" data-view="u6" data-unit="6">
+  <div class="eyebrow">Unit 6 <span class="tag">LO Bab 4</span><span class="tag">± 30 menit</span></div>
+  <h2>Faktor Politik: Pemerintah, Pajak, Sensor, dan Lingkungan Hidup</h2>
+  <div class="read" data-read="6">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 4 · Environmental and green issues · Taxation · Freedom-restrictive legislation · Government and digital transformation</span></div>
+    <p style="margin:0 0 4px">Subbab tentang isu lingkungan hidup, perpajakan, legislasi yang membatasi kebebasan, serta peran pemerintah dalam transformasi digital dan e-government. Cari jawaban:</p>
+    <ul>
+      <li>Apa enam alasan e-commerce disebut "hijau" menurut kampanye IMRG <em>Go Green, Go Online</em>?</li>
+      <li>Apa yang dimaksud LOCI (Mougayer, 1998)?</li>
+      <li>Apa lima tema kebijakan pemerintah untuk mendorong penggunaan Internet menurut Booz Allen Hamilton (2002)?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="6"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Pemerintah berperan ganda: <b>mendorong</b> adopsi Internet demi daya saing ekonomi (akses, keterampilan, kepercayaan, kampanye) dan <b>mengendalikannya</b> (privasi, pajak, sensor). <b>Pajak</b> menjadi isu karena transaksi lintas negara bisa menggerus penerimaan negara; Mougayer (1998) menyebut praktik memilih lokasi berpajak rendah sebagai LOCI (<em>location-optimised commerce on the Internet</em>). <b>Legislasi pembatas kebebasan</b> menimbulkan dilema antara keamanan dan hak warga; Freedom House (2000) mencatat 66 negara menerapkan sensor berat.</p>
+  <p>Isu <b>lingkungan hidup</b>: e-commerce bisa mengurangi perjalanan belanja (studi LeShop.ch: 3,5 kg CO₂ dihemat per belanja online yang menggantikan perjalanan mobil), persediaan, cetakan, kemasan, dan limbah, serta mendorong dematerialisasi. Namun pengiriman per paket dan kemasan berlapis bisa menghapus manfaat itu.</p>
+  <div class="card cls" data-widget="gov"><h4>🧩 Latihan: peran pemerintah yang mana?</h4></div>
+  <div class="co idn"><b class="t">🇮🇩 Konteks Indonesia.</b> <b>Pajak:</b> sejak 1 Juli 2020, layanan digital dari luar negeri (mis. streaming film dan musik) dipungut PPN melalui skema PPN PMSE (PMK 48/2020); tarifnya kini mengikuti tarif PPN yang berlaku. <b>E-government:</b> Sistem Pemerintahan Berbasis Elektronik (SPBE) diatur Perpres 95/2018. <b>Pengendalian:</b> kewajiban pendaftaran PSE dan Perpres 27/2026 tentang ojek online (Studi Kasus 2). <b>Lingkungan:</b> program motor listrik oleh aplikator ojol dan sorotan terhadap limbah kemasan belanja online.</div>
+  <div class="co"><b class="t">🤔 Activity 4.4.</b> "Pemerintah tidak berhak memantau semua komunikasi yang melewati ISP." Setuju atau tidak? Pertimbangkan kepentingan keamanan nasional, privasi warga, dan beban biaya bagi ISP.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u6"></div>
+  <div class="pager"><a class="btn ghost" href="#u5">← Unit 5</a><a class="btn" href="#u7">Unit 7 →</a></div>
+</section>
+
+<!-- ================= UNIT 7 ================= -->
+<section class="view" data-view="u7" data-unit="7">
+  <div class="eyebrow">Unit 7 <span class="tag">LO Bab 4 · artikel PESTEL</span><span class="tag">± 35 menit</span></div>
+  <h2>Faktor Teknologi: Menilai Inovasi dan Strategi Media Digital Baru</h2>
+  <div class="read" data-read="7">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 4 · Technological innovation and technology assessment · Gambar 4.18–4.20 + artikel PESTEL</span></div>
+    <p style="margin:0 0 4px">Subbab tentang inovasi dan penilaian teknologi (kurva difusi Rogers, Gartner hype cycle, persyaratan Trott, cara mengidentifikasi teknologi baru, Gambar 4.20, multiscreening), ditambah artikel <em>Using the PESTEL analysis to determine the effectiveness of new digital media strategies</em> (2023). Cari jawaban:</p>
+    <ul>
+      <li>Apa lima tahap Gartner hype cycle?</li>
+      <li>Garis A, B, dan C pada Gambar 4.20 mewakili sikap apa terhadap teknologi? Mana yang dianggap ideal?</li>
+      <li>Strategi media digital apa yang dianalisis artikel PESTEL, dan mengapa efektivitasnya berbeda antarnegara?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="7"> Saya sudah membaca Chaffey dan artikel tersebut</label>
+  </div>
+
+  <p>Tidak ada yang bisa meramal masa depan: Western Union (1876) meremehkan telepon, dan pimpinan IBM (1943) memperkirakan pasar dunia hanya untuk sekitar lima komputer. Manajer menghadapi tiga pilihan saat teknik baru muncul: <b>abaikan</b> (tunggu dan lihat), <b>adopsi segera</b> (early adopter, berisiko "bleeding edge"), atau <b>evaluasi dulu</b>. Rogers (1983) membagi pengadopsi menjadi <em>innovators, early adopters, early majority, late majority, laggards</em>.</p>
+  <div class="card cls" data-widget="hype"><h4>🧩 Latihan: tahap Gartner hype cycle</h4></div>
+  <p>Trott (1998) menyebut syarat organisasi yang responsif terhadap teknologi: orientasi pertumbuhan, kewaspadaan (<em>environmental scanning</em>), komitmen pada teknologi, penerimaan risiko, kerja sama lintas fungsi, reseptivitas, <em>slack</em> (waktu untuk bereksplorasi), adaptabilitas, dan keragaman keterampilan. Cara mengidentifikasi teknologi baru: <em>technology networking</em>, <em>crowdsourcing</em>, <em>technology hunting</em>, <em>technology mining</em>, dan inkubator korporat.</p>
+  <p><b>Artikel PESTEL (2023)</b> memakai kerangka PESTEL (SLEPT ditambah faktor <em>Environmental</em>) untuk menilai tiga strategi media digital baru: promosi berbasis <em>streaming</em>, strategi berbasis NFT, dan inisiatif metaverse. Temuannya: strategi ini bisa menarik pelanggan baru, perhatian publik, penjualan, dan pengenalan merek, tetapi efektivitasnya berbeda antarnegara karena faktor politik, ekonomi, sosial, teknologi, lingkungan, dan hukum yang berbeda. Pelajarannya untuk Anda: PESTEL bukan hanya untuk memindai pasar, tetapi juga untuk menilai apakah sebuah strategi cocok di negara tertentu.</p>
+  <div class="co idn"><b class="t">🇮🇩 Contoh Indonesia.</b> <b>QRIS</b> (diluncurkan Bank Indonesia 2019, wajib bagi penyelenggara pembayaran sejak 2020) adalah contoh difusi cepat yang didorong regulasi dan jaringan merchant. <b>NFT</b> sempat viral pada awal 2022 ketika seorang mahasiswa menjual foto swafotonya sebagai NFT; antusiasme kemudian surut, cerminan puncak dan lembah hype cycle. <b>Live shopping</b> di TikTok dan Shopee menunjukkan strategi <em>streaming</em> yang dibahas artikel PESTEL justru sangat efektif di Indonesia, sekaligus memicu respons regulasi (Permendag 31/2023).</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u7"></div>
+  <div class="pager"><a class="btn ghost" href="#u6">← Unit 6</a><a class="btn" href="#cases">Studi Kasus →</a></div>
+</section>
+
+<!-- ================= CASES ================= -->
+<section class="view" data-view="cases">
+  <div class="eyebrow">Penerapan <span class="tag">± 90 menit</span></div>
+  <h2>Studi Kasus</h2>
+  <p class="lead">Satu kasus dari buku, dua kasus Indonesia, dan satu latihan kelompok SLEPT. Alur setiap pertanyaan: <b>tulis jawaban → minta umpan balik aplikasi → nilai diri dengan checklist → buka arah jawaban</b>.</p>
+  <div class="co book"><b class="t">ℹ️ Tentang umpan balik otomatis.</b> Aplikasi memeriksa apakah konsep kunci dan penalaran ("karena", "sehingga") muncul dalam jawaban Anda. Aplikasi <b>tidak</b> bisa menilai apakah argumen Anda benar atau tajam. Skor 0–4 ini hanya umpan balik belajar, <b>bukan nilai</b>. Checklist penilaian diri menilai bagian yang tidak bisa diukur mesin.</div>
+  <div id="caseList"></div>
+  <div class="pager"><a class="btn ghost" href="#u7">← Unit 7</a><a class="btn" href="#final">Kuis Akhir →</a></div>
+</section>
+
+<!-- ================= FINAL ================= -->
+<section class="view" data-view="final">
+  <div class="eyebrow">Self-test</div>
+  <h2>Kuis Akhir: Uji Pemahaman</h2>
+  <div class="quiz" id="finalBox"></div>
+</section>
+
+<!-- ================= FLASH ================= -->
+<section class="view" data-view="cards">
+  <div class="eyebrow">Penguatan</div>
+  <h2>Flashcard Istilah Kunci</h2>
+  <p class="lead">Ketuk kartu untuk membalik. Tandai yang sudah Anda kuasai; sisanya akan muncul lagi.</p>
+  <div class="row" style="justify-content:space-between"><span class="score" id="fcCount"></span><button class="btn ghost" id="fcShuffle" style="padding:6px 12px">⤮ Acak</button></div>
+  <div class="fc" id="fc" tabindex="0" role="button" aria-label="Balik kartu"><div class="inner"><div class="face front"><b id="fcF"></b><small>ketuk untuk membalik</small></div><div class="face back"><div id="fcB"></div></div></div></div>
+  <div class="row" style="justify-content:center">
+    <button class="btn ghost" id="fcPrev">←</button>
+    <button class="btn gold" id="fcKnow">✓ Sudah hafal</button>
+    <button class="btn ghost" id="fcNext">→</button>
+  </div>
+  <p class="hint" style="text-align:center;margin-top:10px"><button class="retry" id="fcReset">Ulang semua kartu</button></p>
+</section>
+
+<!-- ================= NOTES & REFS ================= -->
+<section class="view" data-view="notes">
+  <div class="eyebrow">Rangkuman</div>
+  <h2>Catatan Saya &amp; Referensi</h2>
+  <div class="card">
+    <h3>📝 Semua jawaban Anda</h3>
+    <p class="hint">Gabungan pemanasan, matriks SLEPT, audit privasi, dan studi kasus. Salin atau unduh untuk dikumpulkan di MyITS Classroom bila diminta dosen, atau sebagai bahan Project Milestone 1.</p>
+    <div class="cq"><b>Nama &amp; NRP</b><textarea data-note="identity" style="min-height:44px" placeholder="Nama — NRP"></textarea></div>
+    <div class="row"><button class="btn" id="copyNotes">📋 Salin</button><button class="btn ghost" id="dlNotes">⬇ Unduh .txt</button><button class="btn ghost" id="resetAll" style="border-color:var(--bad);color:var(--bad)">Hapus semua kemajuan</button></div>
+    <pre id="notesPrev" style="white-space:pre-wrap;font-family:var(--f);font-size:.85rem;background:var(--sunk);padding:12px;border-radius:10px;margin-top:14px;max-height:300px;overflow:auto"></pre>
+  </div>
+
+  <h3>🧩 Ringkasan</h3>
+  <ul>
+    <li>Lingkungan makro dianalisis dengan SLEPT. Chaffey menekankan faktor hukum dan teknologi sebagai yang paling penting bagi e-commerce, dan menolak pemberian bobot sama pada semua faktor.</li>
+    <li>Environmental scanning harus terus-menerus, karena faktor sosial dan teknologi berubah cepat dan hukum baru bisa muncul mendadak.</li>
+    <li>Kepercayaan adalah syarat transaksi online: atasi enam kekhawatiran pembeli, lindungi privasi, minta persetujuan yang sah, dan jelaskan penggunaan cookie.</li>
+    <li>Hukum e-commerce mencakup delapan area (Sparrow, 2000). Di Indonesia, rujukannya antara lain UU ITE, PP 80/2019, UU Perlindungan Konsumen, dan UU PDP.</li>
+    <li>Globalisasi menuntut lokalisasi yang sepadan dengan nilai pasar; pemerintah mendorong sekaligus mengendalikan ekonomi digital melalui pajak, regulasi, dan e-government.</li>
+    <li>Teknologi baru dinilai dengan kurva difusi dan hype cycle. Posisi ideal biasanya "pengikut cepat" yang memantau lalu mengadopsi yang terbukti bermanfaat.</li>
+  </ul>
+  <div class="co book"><b class="t">➡️ Minggu 6: Perumusan Strategi Bisnis Digital.</b> Bacaan: Chaffey et al. (2019), Bab 5, dan Kane dkk. (2015); kasus Boohoo (Case Study 5.4). Analisis SLEPT minggu ini menjadi masukan untuk sisi <em>peluang</em> dan <em>ancaman</em> dalam SWOT. Pastikan Project Milestone 1 sudah dikumpulkan.</div>
+
+  <h3>📚 Bacaan pendukung</h3>
+  <ol class="ref">
+    <li><a href="https://aemps.ewapub.com/article/view/790" target="_blank" rel="noopener">(2023). <em>Using the PESTEL analysis to determine the effectiveness of new digital media strategies</em>. Advances in Economics, Management and Political Sciences, 5, 19–25. https://doi.org/10.54254/2754-1169/5/20220054</a> <span class="hint">RPS mencantumkan penulis Liu &amp; Li (2023); halaman penerbit mencantumkan Weihao Kung.</span></li>
+    <li><a href="https://blog.google/intl/id-id/company-news/outreach-initiatives/e-conomy-sea-2025-ekonomi-digital-indonesia-mendekati-gmv-us100-miliar/" target="_blank" rel="noopener">Google, Temasek, &amp; Bain. (2025). <em>e-Conomy SEA 2025</em>: ekonomi digital Indonesia mendekati GMV US$100 miliar.</a></li>
+  </ol>
+
+  <h3>Referensi</h3>
+  <ol class="ref">
+    <li>Chaffey, D., Hemphill, T., &amp; Edmundson-Bird, D. (2019). <em>Digital business and e-commerce management</em> (7th ed.). Pearson. Bab 4: <em>Key issues in the digital environment</em>, termasuk Case Study 4.1.</li>
+    <li>Undang-Undang No. 27 Tahun 2022 tentang Pelindungan Data Pribadi.</li>
+    <li>Peraturan Presiden No. 27 Tahun 2026 tentang Perlindungan Ekosistem Transportasi Berbasis Platform Digital.</li>
+    <li><a href="https://teknologi.bisnis.com/read/20250806/101/1899997/data-apjii-pengguna-internet-di-indonesia-tembus-22943-juta-orang-pada-2025" target="_blank" rel="noopener">Bisnis.com. (2025, 6 Agustus). Data APJII: pengguna internet di Indonesia tembus 229,43 juta orang pada 2025.</a></li>
+    <li><a href="https://pasardana.id/news/2025/5/20/diskusi-bersama-menhub-aplikator-ojol-tegaskan-tak-ambil-komisi-lebih-dari-20-persen" target="_blank" rel="noopener">Pasardana. (2025, 20 Mei). Diskusi bersama Menhub, aplikator ojol tegaskan tak ambil komisi lebih dari 20 persen.</a></li>
+    <li><a href="https://www.bloombergtechnoz.com/detail-news/96751/istana-perpres-ojol-tetap-terbit-meski-merger-goto-grab-buntu" target="_blank" rel="noopener">Bloomberg Technoz. (2026, 19 Januari). Istana: Perpres ojol tetap terbit meski merger GoTo–Grab buntu.</a></li>
+    <li><a href="https://ekonomi.bisnis.com/read/20260623/98/1982798/goto-grab-terapkan-potongan-8-per-1-juli-begini-respons-asosiasi-ojol" target="_blank" rel="noopener">Bisnis.com. (2026, 23 Juni). GoTo–Grab terapkan potongan 8% per 1 Juli.</a></li>
+    <li><a href="https://www.cnnindonesia.com/otomotif/20261009100050-579-1413414/perpres-ojol-terbit-tegaskan-potongan-8-dan-tarif-diatur-kemenhub" target="_blank" rel="noopener">CNN Indonesia. (2026, 9 Oktober). Perpres ojol terbit, tegaskan potongan 8% dan tarif diatur Kemenhub.</a></li>
+    <li><a href="https://www.cnbcindonesia.com/tech/20200512133506-37-157889/buka-bukaan-bos-tokopedia-soal-bocornya-91-juta-data-pengguna" target="_blank" rel="noopener">CNBC Indonesia. (2020, 12 Mei). Buka-bukaan bos Tokopedia soal bocornya 91 juta data pengguna.</a></li>
+    <li><a href="https://inet.detik.com/law-and-policy/d-7597590/uu-pdp-sudah-berlaku-ini-dampak-pelanggar-kebocoran-data" target="_blank" rel="noopener">detikInet. (2024, Oktober). UU PDP sudah berlaku, ini dampak pelanggar kebocoran data.</a></li>
+  </ol>
+  <p class="foot">Materi ini adalah ringkasan dan adaptasi untuk keperluan pembelajaran Pengantar Bisnis Digital (DG234101), Departemen Manajemen Bisnis ITS. Mahasiswa tetap wajib membaca bab asli pada buku acuan. Pengembang mata kuliah: Imam Baihaqi, Ph.D.</p>
+</section>
+
+</main>
+
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+/* ---------------- storage (safe) ---------------- */
+var KEY="bisdig-t05-v1", S={read:{},q:{},done:{},cls:{},notes:{},final:null,known:{},cs:{}};
+try{var raw=localStorage.getItem(KEY); if(raw){var o=JSON.parse(raw); for(var k in o) S[k]=o[k];}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} updateProgress();}
+try{var th=localStorage.getItem("bisdig-theme"); if(th) document.documentElement.setAttribute("data-theme",th);}catch(e){}
+
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove("on")},1800)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=a[i];a[i]=a[j];a[j]=x;}return a}
+var rp=function(n){return "Rp"+Math.round(n).toLocaleString("id-ID")};
+/* ---------------- units meta ---------------- */
+var UNITS=[
+ {id:"u1",t:"Lingkungan Makro & SLEPT",pg:"Gambar 4.1–4.2 · Tabel 4.2"},
+ {id:"u2",t:"Faktor Sosial & Perilaku Beli",pg:"Box 4.2"},
+ {id:"u3",t:"Privasi, Kepercayaan & Keamanan",pg:"Box 4.3–4.5 · Tabel 4.3"},
+ {id:"u4",t:"Hukum E-commerce (Sparrow)",pg:"Other e-commerce legislation"},
+ {id:"u5",t:"Ekonomi, Globalisasi & Lokalisasi",pg:"CS 4.1 · Tabel 4.4"},
+ {id:"u6",t:"Politik, Pajak & Lingkungan Hidup",pg:"Taxation · Government"},
+ {id:"u7",t:"Teknologi & Strategi Media Baru",pg:"Gambar 4.18–4.20 · artikel PESTEL"}
+];
+
+/* ---------------- unit quizzes ---------------- */
+var QZ={
+u1:[
+ {k:"c",q:"Faktor pemasok, pesaing, dan perantara termasuk lingkungan…",o:["Makro","Mikro","Internal saja","Politik"],a:1,e:"Lingkungan mikro (pasar digital); lingkungan makro berpengaruh tidak langsung."},
+ {k:"r",pg:"subbab Introduction Bab 4",q:"Mengapa Chaffey memakai akronim SLEPT, bukan PEST?",o:["Karena lebih mudah diucapkan","Untuk menekankan pentingnya hukum dalam memengaruhi praktik pemasaran internet","Karena faktor ekonomi tidak relevan","Karena diwajibkan GDPR"],a:1,e:"Huruf L di depan menegaskan peran hukum."},
+ {k:"r",pg:"Gambar 4.2",q:"Menurut Gambar 4.2 (waves of change), faktor mana yang cenderung berubah paling cepat?",o:["Hukum dan pemerintahan","Budaya sosial dan teknologi","Pajak","Struktur demografi"],a:1,e:"Hukum dan pemerintahan cenderung lebih lambat, walau undang-undang baru bisa muncul cukup cepat."}
+],
+u2:[
+ {k:"c",q:"Konsumen meriset produk secara online sebelum ke toko. Google menyebut momen ini…",o:["First moment of truth","Zero Moment of Truth (ZMOT)","Second moment of truth","Showrooming"],a:1,e:"ZMOT adalah riset pra-pembelian online."},
+ {k:"r",pg:"Box 4.2",q:"Menurut Columbia Business School dan Aimia (2013) di Box 4.2, segmen M-Shopper terbesar adalah…",o:["Exploiters","Traditionalists","Experience-seekers","Savvys"],a:2,e:"Experience-seekers (32%) mau membeli di toko demi pengalaman, walau harga online lebih murah."},
+ {k:"c",q:"Menampilkan alamat kantor, ulasan independen, dan logo mitra resmi terutama mengatasi kekhawatiran…",o:["Barang tidak sampai","Toko online palsu","Butuh bantuan pramuniaga","Data dijual"],a:1,e:"Tanda kredibilitas mengurangi rasa takut membeli dari toko yang tidak nyata."}
+],
+u3:[
+ {k:"c",q:"Kotak 'saya setuju menerima promosi' yang sudah dicentang sejak awal, menurut prinsip GDPR di Box 4.1…",o:["Merupakan persetujuan sah","Bukan persetujuan sah","Sah bila pengguna tidak protes","Sah untuk pelanggan lama saja"],a:1,e:"Persetujuan harus diberikan secara aktif, bukan diasumsikan."},
+ {k:"r",pg:"Box 4.3",q:"Menurut Box 4.3, apa yang terjadi pada TalkTalk pada Oktober 2015?",o:["Situsnya diretas sehingga data pribadi lebih dari 150.000 pelanggan diakses, dan perusahaan didenda £400.000","Seluruh layanan berhenti seminggu karena gempa","Ransomware meminta tebusan US$300 dalam bitcoin","Karyawan menjual data pelanggan"],a:0,e:"Serangan DDoS diduga menjadi pengalih serangan ke basis data. Tebusan bitcoin US$300 adalah kasus NHS (Mei 2017)."},
+ {k:"c",q:"Cookie yang dipasang jaringan iklan untuk melacak pengguna lintas situs adalah…",o:["First-party session cookie","Third-party persistent cookie","First-party persistent cookie","Session cookie keranjang belanja"],a:1,e:"Third-party cookie dipasang domain selain situs yang dikunjungi."}
+],
+u4:[
+ {k:"c",q:"Situs yang gambarnya tidak memiliki teks alternatif sehingga tak terbaca pembaca layar berisiko melanggar hukum…",o:["Pajak","Aksesibilitas/disabilitas","Kontrak","Merek dagang"],a:1,e:"Accessibility legislation melindungi pengguna dengan disabilitas."},
+ {k:"r",pg:"subbab Other e-commerce legislation (aksesibilitas)",q:"Apa hasil gugatan Bruce Maguire pada tahun 2000?",o:["Ia kalah karena situs tidak termasuk layanan publik","Ia menang melawan panitia Olimpiade Sydney dan pihak tergugat diperintahkan membayar AU$20.000","Kasusnya diselesaikan di luar pengadilan senilai £415.000","Amazon harus mencabut paten One-click"],a:1,e:"Kasus aksesibilitas pertama di dunia; £415.000 adalah kasus pencemaran nama baik Norwich Union–WPA."},
+ {k:"c",q:"Peritel salah mencantumkan harga TV £2,99 (seharusnya £299). Argumen bahwa ia tidak wajib menjual didasarkan pada prinsip…",o:["Country of origin","Invitation to treat","Soft opt-in","Notification"],a:1,e:"Tampilan produk adalah undangan untuk menawar, bukan penawaran pasti."}
+],
+u5:[
+ {k:"c",q:"Satu situs untuk semua pasar, tetapi menyediakan kontak anak perusahaan di luar negeri, termasuk tingkat lokalisasi…",o:["Standardised","Semi-localised","Highly localised","Culturally customised"],a:1,e:"Singh & Pereira (2005), tingkat 2."},
+ {k:"r",pg:"subbab Economic and competitive factors (lokalisasi)",q:"Apa yang terjadi pada konversi Karen Millen di AS setelah kata 'autumn' diganti 'fall'?",o:["Turun 25%","Tidak berubah","Naik 25%","Naik 70%"],a:2,e:"Kenaikan 70% adalah rata-rata klien Net Media Planet saat situs dilokalisasi penuh."},
+ {k:"c",q:"Harga berubah otomatis menurut harga pesaing, permintaan, waktu, atau perangkat pengunjung disebut…",o:["Dynamic pricing","LOCI","Dematerialisasi","Geo-blocking"],a:0,e:"Contoh faktor ekonomi dalam e-commerce."}
+],
+u6:[
+ {k:"c",q:"Pemerintah mengenakan PPN atas langganan layanan streaming dari luar negeri. Ini contoh peran pemerintah dalam…",o:["Mendorong akses perangkat","Mengendalikan e-commerce lewat pajak","Kampanye pemasaran langsung","Sertifikasi keterampilan"],a:1,e:"Pemerintah mendorong sekaligus mengendalikan."},
+ {k:"r",pg:"subbab Taxation",q:"Istilah LOCI (Mougayer, 1998) merujuk pada…",o:["Local online commerce index","Location-optimised commerce on the Internet: berjualan dari lokasi berpajak rendah","Lembaga sertifikasi situs","Localisation of content initiative"],a:1,e:"Contoh: peritel di Jersey memanfaatkan batas LVCR agar tidak dikenai PPN."},
+ {k:"r",pg:"subbab Environmental and green issues",q:"Menurut studi LeShop.ch, berapa emisi CO₂ yang dihemat setiap kali pelanggan belanja online alih-alih bermobil ke toko?",o:["0,5 kg","3,5 kg","18 kg","87 kg"],a:1,e:"Angka 18–87% adalah potensi pengurangan emisi belanja grocery menurut Siikavirta dkk. (2003)."}
+],
+u7:[
+ {k:"c",q:"Tahap ketika teknologi gagal memenuhi harapan dan media meninggalkannya disebut…",o:["Peak of inflated expectations","Trough of disillusionment","Slope of enlightenment","Plateau of productivity"],a:1,e:"Tahap ketiga Gartner hype cycle."},
+ {k:"r",pg:"Gambar 4.20",q:"Pada Gambar 4.20, garis mana yang dianggap posisi ideal oleh Chaffey?",o:["Garis A: mengadopsi sangat awal, bahkan mendahului teknologi","Garis B: memantau ide saat early adopter mencobanya, lalu mengadopsi yang berdampak positif","Garis C: pengadopsi konservatif","Kurva I: perubahan teknologi"],a:1,e:"Menunggu terlalu lama bisa membuat perusahaan tertinggal 6–12 bulan."},
+ {k:"r",pg:"artikel PESTEL (2023)",q:"Tiga strategi media digital baru apa yang dianalisis dengan PESTEL dalam artikel bacaan pendukung?",o:["SEO, email, dan iklan display","Promosi berbasis streaming, strategi NFT, dan inisiatif metaverse","Afiliasi, influencer, dan podcast","Chatbot, AR, dan QR code"],a:1,e:"Artikel menyimpulkan efektivitasnya berbeda antarnegara."}
+]};
+
+/* ---------------- classify widgets ---------------- */
+var CL={
+slept:{o:["Social","Legal","Economic","Political","Technological"],it:[
+ ["Generasi Z lebih memercayai ulasan kreator daripada iklan merek.","Social","Persepsi dan perilaku konsumen."],
+ ["UU Pelindungan Data Pribadi berlaku penuh.","Legal","Hukum yang mengatur pengumpulan data."],
+ ["Suku bunga naik sehingga startup sulit memperoleh pendanaan.","Economic","Biaya modal."],
+ ["Pemerintah merancang aturan khusus untuk ojek online setelah tuntutan pengemudi.","Political","Kebijakan dan sikap pemerintah. (Setelah terbit, aturannya menjadi faktor legal.)"],
+ ["Penggunaan alat AI generatif harian meluas di kalangan pengguna internet.","Technological","Adopsi teknologi baru."],
+ ["Rupiah melemah sehingga biaya server cloud dalam dolar naik.","Economic","Kurs."],
+ ["Sebagian besar pengguna internet terkonsentrasi di Jawa.","Social","Demografi dan akses."],
+ ["Kewajiban memungut PPN atas layanan digital dari luar negeri.","Legal","Perpajakan (Chaffey memasukkan pajak ke Legal & ethical)."]
+]},
+fear:{o:["Data kartu dicuri","Toko palsu","Data akan dijual","Ragu kualitas produk","Pesanan hilang","Butuh pramuniaga"],it:[
+ ["Seluruh situs dienkripsi (HTTPS) dan email terautentikasi.","Data kartu dicuri","Perlindungan terhadap kejahatan siber."],
+ ["Menampilkan alamat kantor dan tautan ke ulasan independen.","Toko palsu","Bukti bahwa bisnisnya nyata."],
+ ["Kebijakan privasi jelas dan pilihan frekuensi email.","Data akan dijual","Pelanggan mengendalikan informasi yang diterimanya."],
+ ["Video produk dipakai model, tampilan 360°, ukuran detail.","Ragu kualitas produk","Mengganti pengalaman menyentuh produk."],
+ ["Nomor resi dan pelacakan pesanan real-time.","Pesanan hilang","Pelanggan merasa memegang kendali."],
+ ["Live chat dengan staf yang paham produk.","Butuh pramuniaga","Menurut BoldChat, 31% pembeli lebih mungkin membeli setelah live chat."]
+]},
+consent:{o:["Sah","Tidak sah"],it:[
+ ["Kotak 'kirimi saya promo' sudah dicentang saat formulir dibuka.","Tidak sah","Kotak yang dicentang sebelumnya bukan persetujuan."],
+ ["Pengguna mencentang sendiri kotak promo, dan tautan berhenti berlangganan ada di setiap email.","Sah","Persetujuan aktif dan mudah ditarik."],
+ ["'Dengan melanjutkan menjelajah, Anda dianggap setuju dengan semua pemakaian data.'","Tidak sah","Diam atau tidak bertindak bukan persetujuan."],
+ ["Aplikasi tidak bisa dipakai sama sekali kecuali pengguna setuju datanya dijual ke pihak ketiga.","Tidak sah","Persetujuan tidak bebas bila tidak ada pilihan nyata."],
+ ["Pengguna memilih secara terpisah: newsletter (ya), iklan bertarget (tidak).","Sah","Persetujuan per tujuan."],
+ ["Persetujuan dicatat lengkap: siapa, kapan, dan lewat formulir apa.","Sah","Pengendali harus dapat membuktikan persetujuan."]
+]},
+cookie:{o:["First-party session","First-party persistent","Third-party persistent"],it:[
+ ["Mengingat isi keranjang belanja selama satu kunjungan.","First-party session","Hanya untuk satu sesi di situs itu."],
+ ["Mengenali pengunjung yang kembali minggu depan dan menampilkan rekomendasi.","First-party persistent","Bertahan antar-sesi, dari situs yang sama."],
+ ["Jaringan iklan melacak iklan yang Anda lihat di banyak situs berbeda.","Third-party persistent","Dipasang domain lain dan bertahan lama."],
+ ["Pelacakan afiliasi dari klik di blog hingga pembelian di toko online.","Third-party persistent","Melintasi situs."],
+ ["Web analytics situs sendiri menghitung proporsi pengunjung berulang.","First-party persistent","Chaffey mencatat alat analitik makin memakai first-party cookie karena lebih akurat."]
+]},
+law:{o:["Merek & domain","Aksesibilitas","Kontrak & penjualan jarak jauh","Autentikasi","Risiko email","Kekayaan intelektual"],it:[
+ ["Pesaing mendaftarkan domain mirip nama merek Anda.","Merek & domain","Sengketa domain dan perlindungan merek."],
+ ["Pembaca layar tidak bisa membaca tombol 'Bayar' karena berupa gambar tanpa teks alternatif.","Aksesibilitas","Diskriminasi terhadap pengguna dengan disabilitas."],
+ ["Konsumen membatalkan pesanan 10 hari setelah barang diterima.","Kontrak & penjualan jarak jauh","Hak pembatalan dalam penjualan jarak jauh."],
+ ["Pembeli diminta memasukkan kode OTP sebelum pembayaran diproses.","Autentikasi","Membuktikan identitas pembeli."],
+ ["Karyawan menyebarkan tuduhan palsu tentang pesaing lewat email internal yang bocor.","Risiko email","Pencemaran nama baik (kasus Norwich Union–WPA)."],
+ ["Foto produk Anda disalin toko lain tanpa izin.","Kekayaan intelektual","Hak cipta konten digital."]
+]},
+locz:{o:["1 Standardised","2 Semi-localised","3 Localised","4 Highly localised","5 Culturally customised"],it:[
+ ["Satu situs berbahasa Inggris untuk semua negara, tanpa informasi lokal.","1 Standardised","Tidak dilokalisasi."],
+ ["Satu situs global dengan halaman 'Kontak kantor Jakarta'.","2 Semi-localised","Hanya informasi kontak lokal."],
+ ["Situs khusus Indonesia yang diterjemahkan ke bahasa Indonesia.","3 Localised","Situs per negara dengan terjemahan."],
+ ["Situs Indonesia dengan harga rupiah, format tanggal lokal, dan kode pos Indonesia.","4 Highly localised","Format waktu, mata uang, dan alamat lokal."],
+ ["Situs Indonesia dengan kampanye Ramadan, model dan humor lokal, COD, dan QRIS.","5 Culturally customised","Imersi penuh dalam budaya target."]
+]},
+gov:{o:["Mendorong adopsi","Mengendalikan/regulasi","E-government"],it:[
+ ["Program pelatihan keterampilan digital gratis bagi UMKM.","Mendorong adopsi","Meningkatkan keterampilan dan kepercayaan (Booz Allen Hamilton)."],
+ ["Pembangunan titik akses internet publik di desa.","Mendorong adopsi","Meningkatkan penetrasi akses."],
+ ["Pemblokiran layanan yang belum terdaftar sebagai PSE.","Mengendalikan/regulasi","Pengendalian Internet."],
+ ["Pemungutan PPN atas layanan digital luar negeri.","Mengendalikan/regulasi","Perpajakan."],
+ ["Pengurusan izin usaha secara online melalui portal pemerintah.","E-government","Layanan pemerintah kepada warga dan bisnis lewat Internet."],
+ ["Batas maksimal potongan aplikasi ojek online.","Mengendalikan/regulasi","Regulasi pasar platform."]
+]},
+hype:{o:["Innovation trigger","Peak of inflated expectations","Trough of disillusionment","Slope of enlightenment","Plateau of productivity"],it:[
+ ["Sebuah terobosan diumumkan dan langsung ramai diberitakan.","Innovation trigger","Tahap 1."],
+ ["Semua orang ingin ikut; ekspektasi tidak realistis, kegagalan lebih banyak daripada keberhasilan.","Peak of inflated expectations","Tahap 2."],
+ ["Harga aset anjlok, media berhenti meliput, teknologi dianggap 'gimmick'.","Trough of disillusionment","Tahap 3."],
+ ["Sebagian bisnis tetap bereksperimen dan menemukan penerapan yang nyata.","Slope of enlightenment","Tahap 4."],
+ ["Manfaat sudah terbukti luas; teknologi stabil dan masuk generasi kedua atau ketiga.","Plateau of productivity","Tahap 5."]
+]}
+};
+
+/* ---------------- cases ---------------- */
+var CASES=[
+ {id:"c1",t:"Studi Kasus 1 — Mikro-lokalisasi vs globalisasi",src:"Chaffey et al., Bab 4, Case Study 4.1",
+  body:"<p>Brexit dan terpilihnya Donald Trump dipandang banyak orang sebagai cerminan perubahan sikap terhadap globalisasi. Analisis data menunjukkan sikap budaya dan identitas, bukan semata motif ekonomi, menjadi alasan utama pemungutan suara 'anti-globalisasi'. Slogan yang efektif: <em>'Take back control'</em> dan <em>'I want my country back'</em>.</p><p>Riset MediaCom <em>Britain Decoded</em> (2017) menemukan bangsa yang terfragmentasi dengan identitas nasional, regional, dan lokal, serta tiga makna 'komunitas': <b>lokal secara fisik</b>, <b>minat bersama</b>, dan <b>kepercayaan</b>. Penggunaan media sosial berbeda menurut wilayah. Implikasi bagi merek: <em>right-place marketing</em>, <em>right-time marketing</em>, <em>personalised storytelling</em>, <em>community activations</em>, dan <em>collective cultural moments</em>.</p><p>Contoh: perusahaan asuransi <b>Churchill</b> mendanai petugas penyeberangan sekolah ('lollipoppers'); kampanye ini menghasilkan 53.424 nominasi dari 6.448 sekolah, sentimen positif naik dari 7% ke 70%, dan rasio klik pencarian merek naik 65%. Burberry melaporkan lonjakan penjualan 30% dalam tiga bulan setelah referendum Brexit.</p>",
+  qs:[
+   ["Case Study 4.1 menunjukkan faktor SLEPT saling terkait. Uraikan faktor sosial, politik, ekonomi, dan teknologi apa yang bekerja bersama dalam kasus ini.","Sosial: identitas budaya dan lokal yang menguat; politik: Brexit dan pemilu AS; ekonomi: globalisasi dan efek kurs (penjualan Burberry naik); teknologi: analitik data, beacon/NFC, media sosial yang memungkinkan penargetan lokal. Pelajaran: SLEPT tidak boleh dianalisis dalam silo."],
+   ["Debatkan pernyataan: 'Lokalisasi situs untuk setiap negara adalah syarat mutlak keberhasilan e-commerce di negara itu.' Gunakan kerangka Singh & Pereira dan data biaya-manfaat dari buku.","Tidak mutlak. Tingkat lokalisasi harus sepadan dengan ukuran dan nilai pasar (Singh & Pereira, lima tingkat). Data konversi (+20% dengan terjemahan, +70% dengan lokalisasi penuh, +25% Karen Millen) menunjukkan manfaat, tetapi biaya lokalisasi penuh tinggi, terutama bagi UKM. Strateginya: prioritaskan negara bernilai besar dan lokalisasi bertahap."],
+   ["Terapkan gagasan mikro-lokalisasi ke Indonesia. Bagaimana sebuah merek nasional bisa memakai right-place marketing atau community activation di kota-kota yang berbeda?","Contoh: konten dan promo berbahasa daerah atau sesuai budaya lokal, kampanye berbasis kota (Surabaya vs Medan), dukungan komunitas lokal (UMKM, sekolah, pasar), penargetan geografis, dan momen budaya bersama (Ramadan, Agustusan). Harus disertai data (analitik, lokasi) dan dihubungkan dengan tujuan merek."]
+  ]},
+ {id:"c2",t:"Studi Kasus 2 — 🇮🇩 Regulasi ojek online: dari potongan 20% ke Perpres 27/2026",src:"Pasardana (2025); Bloomberg Technoz (2026); Bisnis.com (2026); CNN Indonesia (2026)",
+  body:"<p>Sejak 2022, Keputusan Menteri Perhubungan <b>KP 1001/2022</b> membatasi potongan aplikator ojek online maksimal <b>20%</b> dari tarif perjalanan (biaya sewa aplikasi hingga 15% ditambah biaya penunjang kesejahteraan hingga 5%). Pengemudi menilai potongan nyata sering lebih tinggi karena berbagai skema program. Pada <b>20 Mei 2025</b>, asosiasi pengemudi Garda Indonesia berdemonstrasi menuntut potongan diturunkan menjadi <b>10%</b>. Aplikator besar menyatakan tidak mengambil lebih dari 20% dan sebagian besar dana dipakai untuk promo pelanggan.</p><p>Pada saat yang sama berkembang wacana <b>merger GoTo dan Grab</b> dengan keterlibatan Danantara; KPPU mengingatkan bahwa merger harus mematuhi aturan persaingan usaha. Pada Januari 2026, pemerintah menyatakan pembicaraan merger buntu dan aturan ojol akan tetap diterbitkan. Dalam pidato Hari Buruh 1 Mei 2026, Presiden menyatakan menginginkan potongan di bawah 10%. Mulai <b>1 Juli 2026</b>, GoTo dan Grab menerapkan potongan <b>8%</b> untuk layanan penumpang roda dua, mengikuti keputusan Menteri Perhubungan. Pada <b>8 Oktober 2026</b>, pemerintah merilis <b>Perpres No. 27/2026</b> tentang Perlindungan Ekosistem Transportasi Berbasis Platform Digital, yang menegaskan batas potongan 8%, tarif dasar ditetapkan Kemenhub, pengaturan kemitraan diawasi Kementerian UMKM, dan peraturan pelaksana harus terbit paling lambat 31 Desember 2026.</p><p class=\"hint\">Contoh hitung dari Bisnis.com: untuk tarif perjalanan Rp28.300, pengemudi menerima sekitar Rp22.640 dengan potongan 20%, dan sekitar Rp26.036 dengan potongan 8%.</p>",
+  qs:[
+   ["Petakan kasus ini dengan SLEPT. Faktor mana yang paling dominan, dan bagaimana faktor-faktor itu saling memicu?","Politik (tuntutan pengemudi, sikap Presiden, Danantara) memicu Legal (KP 1001/2022 → keputusan menteri → Perpres 27/2026); Ekonomi (pendapatan pengemudi, margin aplikator, persaingan dan merger); Sosial (jutaan pengemudi sebagai pekerja informal, opini publik); Teknologi (algoritma tarif dan insentif). Faktor politik-hukum paling dominan dan bergerak cepat, sesuai peringatan Chaffey bahwa hukum baru bisa muncul cukup cepat."],
+   ["Analisis dampak ekonomi potongan 8% bagi tiga pihak: pengemudi, aplikator, dan pelanggan. Apa kemungkinan respons strategis aplikator?","Pengemudi: pendapatan per perjalanan naik (contoh Rp22.640 → Rp26.036). Aplikator: pendapatan per perjalanan turun tajam, sehingga mungkin mengurangi promo, menaikkan biaya platform yang dibayar pelanggan, mendorong layanan lain (makanan, logistik, iklan, keuangan), atau mengefisienkan biaya. Pelanggan: bisa menghadapi harga efektif lebih tinggi atau promo berkurang. Jawaban kuat menunjukkan efek berantai, bukan hanya satu pihak."],
+   ["Mengapa wacana merger GoTo–Grab menjadi faktor politik sekaligus ekonomi? Apa risiko bagi persaingan menurut KPPU, dan bagaimana kaitannya dengan regulasi ojol?","Merger dua pemain terbesar mengurangi persaingan dan bisa memberi kekuatan pasar terhadap pengemudi, merchant, dan pelanggan; karena itu KPPU mengawasi. Keterlibatan Danantara (negara) dan pernyataan bahwa Perpres menunggu kejelasan merger menunjukkan keputusan bisnis dan kebijakan saling terkait. Manajer harus memantau keduanya (environmental scanning)."],
+   ["Jika Anda manajer strategi di aplikator, bagaimana Anda seharusnya melakukan environmental scanning agar tidak terkejut oleh regulasi seperti ini?","Pantau sinyal politik sejak dini (tuntutan asosiasi, rapat DPR, pernyataan pejabat, Hari Buruh), bangun hubungan dengan regulator dan asosiasi, susun skenario (20%, 10%, 8%) beserta dampak keuangannya, dan siapkan respons sebelum aturan terbit. Gunakan matriks prioritas: dampak tinggi dan kemungkinan tinggi harus ditangani dulu."]
+  ]},
+ {id:"c3",t:"Studi Kasus 3 — 🇮🇩 Kebocoran 91 juta data akun Tokopedia (2020) dan UU PDP",src:"CNBC Indonesia (12 Mei 2020); detikInet (2024)",
+  body:"<p>Pada <b>2 Mei 2020</b>, sebuah akun pemantau kebocoran data melaporkan sekitar 15 juta data akun Tokopedia dibagikan gratis di forum dark web. Sehari kemudian, peretas berjuluk ShinyHunter mengklaim menjual <b>91 juta akun</b> seharga US$5.000. Data yang terpapar meliputi nama pengguna, alamat email, dan nomor telepon. Tokopedia menyatakan kata sandi dilindungi enkripsi satu arah.</p><p>Tokopedia menyatakan telah memberi tahu pengguna, menyelidiki, bekerja sama dengan Kominfo dan BSSN, serta menunjuk lembaga keamanan siber independen. CEO William Tanuwijaya menyatakan \"Pengguna kami adalah prioritas utama\" dan mengimbau pengguna rutin mengganti kata sandi, tidak memakai kata sandi yang sama di banyak platform, dan tidak membagikan kode OTP.</p><p>Saat itu Indonesia belum memiliki undang-undang pelindungan data pribadi yang komprehensif. <b>UU No. 27/2022 (UU PDP)</b> kemudian disahkan dan berlaku penuh sejak <b>17 Oktober 2024</b>.</p>",
+  qs:[
+   ["Gunakan kerangka Mason (privacy, accuracy, property, accessibility) atau Fletcher (transparency, security, liability) untuk menganalisis isu etika dalam kasus ini.","Fletcher: transparency (seberapa cepat dan jujur pengguna diberi tahu), security (bagaimana data dilindungi; kata sandi di-hash, tetapi email dan nomor telepon terbuka), liability (siapa bertanggung jawab: platform sebagai pengendali data, atau peretas). Mason: privacy dan accessibility, karena pihak tak berhak memperoleh akses. Jawaban kuat memilih satu kerangka dan menerapkannya secara konsisten."],
+   ["Meskipun kata sandi dienkripsi, mengapa bocornya email dan nomor telepon tetap berbahaya bagi pengguna dan bagi kepercayaan terhadap e-commerce?","Data itu bisa dipakai untuk phishing, rekayasa sosial (meminta OTP), spam, dan pencurian identitas, sehingga berkaitan dengan kekhawatiran 'data akan disalahgunakan' (Unit 2). Kepercayaan adalah syarat transaksi online; kebocoran besar menurunkan kepercayaan terhadap platform dan e-commerce secara umum."],
+   ["Seandainya insiden yang sama terjadi setelah UU PDP berlaku penuh, apa kewajiban Tokopedia sebagai pengendali data, dan apa yang berubah bagi manajer?","Kewajiban menjaga keamanan data, memberi tahu subjek data dan lembaga berwenang bila terjadi kegagalan pelindungan data dalam batas waktu yang ditentukan, membuktikan dasar pemrosesan yang sah, serta menghadapi sanksi administratif hingga pidana. Bagi manajer, kepatuhan privasi menjadi risiko hukum dan finansial, bukan hanya reputasi; perlu audit privasi (checklist Chaffey), minimisasi data, dan rencana respons insiden."]
+  ]},
+ {id:"c4",t:"Studi Kasus 4 — 🇮🇩 Latihan kelompok: analisis SLEPT ride-hailing (Gojek/Grab) di Indonesia",src:"Latihan kelompok sesuai RPS · bahan Project Milestone 1",noans:true,
+  body:"<p>Bersama kelompok, pilih <b>Gojek atau Grab</b> di Indonesia. Gunakan <b>matriks prioritas SLEPT di Unit 1</b> untuk menyusun dan memprioritaskan faktor, lalu jawab pertanyaan berikut. Gunakan sumber terbaru (laporan e-Conomy SEA, survei APJII, regulasi, berita) dan cantumkan sumbernya.</p><p>Bahan awal dari minggu ini: penetrasi internet 80,66% tetapi timpang antarwilayah; ekonomi digital mendekati US$100 miliar; transportasi dan pesan-antar makanan sekitar US$10 miliar; Perpres 27/2026 tentang potongan 8%; UU PDP; wacana merger GoTo–Grab; adopsi AI; motor listrik.</p>",
+  qs:[
+   ["Susun analisis SLEPT (tambahkan Environmental bila relevan) dengan minimal dua faktor per huruf, masing-masing dengan bukti atau sumber.",""],
+   ["Pilih tiga faktor dengan prioritas tertinggi dari matriks Anda. Jelaskan dampaknya terhadap model bisnis (pendapatan, biaya, mitra, pelanggan) dan apakah faktor itu peluang atau ancaman.",""],
+   ["Rekomendasikan dua respons strategis konkret untuk aplikator yang Anda pilih, serta indikator apa yang perlu dipantau (environmental scanning) dalam 12 bulan ke depan.",""]
+  ]}
+];
+
+/* ---------------- self-test bank ---------------- */
+var LO_NAMES={1:"Lingkungan makro & SLEPT",2:"Faktor sosial & perilaku beli",3:"Privasi, kepercayaan & keamanan",4:"Hukum e-commerce",5:"Ekonomi, globalisasi & lokalisasi",6:"Politik, pajak & lingkungan hidup",7:"Teknologi & strategi media baru"};
+var FINAL=[
+ [1,"Pemantauan lingkungan dan peristiwa secara terus-menerus lalu meresponsnya disebut…",["Situation analysis","Environmental scanning","Benchmarking","Hype cycle"],1,"Tanpa mekanisme pelaporan, perubahan besar bisa luput dari perhatian manajer."],
+ [1,"Menurut Chaffey, dua faktor makro yang paling penting bagi pengelolaan e-commerce adalah…",["Sosial dan ekonomi","Teknologi dan hukum","Politik dan ekonomi","Budaya dan agama"],1,"Karena itu bab ini berfokus pada keduanya."],
+ [1,"Kesalahan umum saat menyusun analisis SLEPT adalah…",["Mencantumkan sumber","Memberi bobot sama pada semua faktor","Memprioritaskan faktor","Memperbarui analisis secara berkala"],1,"Chaffey menyarankan fokus pada faktor yang paling menentukan."],
+ [1,"Manakah yang termasuk lingkungan makro?",["Pesaing langsung","Perantara marketplace","Kebijakan moneter","Pemasok kemasan"],2,"Faktor ekonomi makro."],
+ [1,"Pelaporan bahwa Perpres ojol mengatur potongan maksimal 8% paling tepat dikategorikan sebagai faktor…",["Sosial","Legal/politik","Teknologi","Lingkungan hidup"],1,"Kebijakan pemerintah yang menjadi aturan hukum."],
+ [2,"Konsumen melihat produk di toko fisik lalu membelinya online karena lebih murah disebut…",["Webrooming","Showrooming","ZMOT","Multiscreening"],1,"Biasanya memakai ponsel untuk membandingkan harga di dalam toko."],
+ [2,"Istilah webographics (Grossnickle & Raskin) mencakup…",["Usia dan jenis kelamin","Lokasi akses, perangkat, kecepatan koneksi, dan tingkat penggunaan","Agama dan budaya","Pendapatan dan pekerjaan"],1,"Karakteristik akses pengguna, bukan demografi klasik."],
+ [2,"Produk mahal dan kompleks seperti KPR atau mobil menurut Chaffey…",["Paling banyak dibeli online","Lebih banyak diriset online daripada dibeli online","Tidak dipengaruhi internet","Hanya dijual lewat media sosial"],1,"Peran utama pemasaran online adalah mendukung riset."],
+ [2,"Matriks yang memetakan pembelian menurut 'think vs feel' dan tingkat keterlibatan adalah…",["Matriks BCG","FCB Involvement Grid","Hype cycle","Matriks Ansoff"],1,"Foote, Cone & Belding."],
+ [2,"Data APJII 2025 yang menunjukkan Jawa menyumbang 58% pengguna internet, sedangkan Maluku-Papua 3,71%, menggambarkan faktor…",["Hukum","Sosial: kesenjangan akses digital","Politik","Pajak"],1,"Kesenjangan akses menentukan jangkauan pasar."],
+ [3,"Kejahatan lama seperti penipuan yang diperbesar skalanya oleh TIK disebut…",["Cyber-dependent crime","Cyber-enabled crime","Phishing","DDoS"],1,"Cyber-dependent hanya mungkin dilakukan lewat TIK, mis. malware."],
+ [3,"Email palsu yang meniru bank untuk memancing data pribadi disebut…",["Hacking","Phishing","Spam legal","Cookie"],1,"Salah satu serangan paling umum terhadap e-commerce kecil."],
+ [3,"Empat isu etika informasi menurut Mason (1986) adalah…",["Privacy, accuracy, property, accessibility","Transparency, security, liability, consent","Notification, consent, profiling, fines","Speed, price, trust, service"],0,"Fletcher (2001) menambahkan transparency, security, liability."],
+ [3,"Prinsip 'soft opt-in' dalam PECR berarti…",["Boleh mengirim email ke daftar yang dibeli","Boleh memasarkan produk serupa ke pelanggan yang baru membeli dan tidak menolak, asalkan selalu ada pilihan berhenti","Tidak perlu persetujuan sama sekali","Hanya berlaku untuk kampanye politik"],1,"Tidak berlaku untuk calon pelanggan baru dari daftar yang dibeli."],
+ [3,"Cookie yang hanya bertahan selama satu kunjungan disebut…",["Persistent cookie","Session cookie","Third-party cookie","Web beacon"],1,"Berguna untuk keranjang belanja."],
+ [3,"UU Pelindungan Data Pribadi Indonesia berlaku penuh sejak…",["1 Januari 2020","17 Oktober 2022","17 Oktober 2024","1 Juli 2026"],2,"Disahkan 2022 dengan masa transisi dua tahun."],
+ [3,"Gambar satu piksel dalam email untuk mengetahui apakah email dibuka disebut…",["Malware","Web beacon","Session cookie","Captcha"],1,"Tabel 4.3: perilaku pada satu situs."],
+ [4,"Paten Amazon untuk 'One-click' termasuk area hukum…",["Kontrak","Kekayaan intelektual","Aksesibilitas","Pajak"],1,"Metode transaksi bisa dipatenkan."],
+ [4,"Dalam aturan penjualan jarak jauh Uni Eropa, konsumen berhak membatalkan pesanan hingga…",["3 hari","7 hari","14 hari setelah barang diterima","30 hari"],2,"Kecuali konten digital yang langsung diunduh dengan persetujuan konsumen."],
+ [4,"Norwich Union membayar £415.000 kepada WPA karena…",["Pelanggaran hak cipta","Pencemaran nama baik lewat email internal","Kebocoran data","Spam"],1,"Contoh risiko email."],
+ [4,"Padanan Indonesia untuk aturan perdagangan melalui sistem elektronik adalah…",["UU 28/2014","PP 80/2019","Perpres 95/2018","PMK 48/2020"],1,"UU 28/2014 = hak cipta; Perpres 95/2018 = SPBE; PMK 48/2020 = PPN PMSE."],
+ [4,"Menampilkan produk di situs dianggap 'invitation to treat'. Artinya…",["Penjual wajib menjual apa pun yang dipesan","Tampilan adalah undangan untuk menawar, bukan penawaran yang mengikat","Pembeli tidak bisa membatalkan","Harga sudah termasuk pajak"],1,"Dasar argumen dalam kasus salah harga TV £2,99."],
+ [5,"Situs khusus negara dengan terjemahan serta format tanggal, mata uang, dan kode pos lokal termasuk tingkat…",["Semi-localised","Localised","Highly localised","Standardised"],2,"Singh & Pereira, tingkat 4."],
+ [5,"Menurut buku, kenaikan konversi rata-rata saat situs dilokalisasi penuh (Net Media Planet) adalah…",["5%","20%","25%","70%"],3,"20% bila hanya iklan dan landing page diterjemahkan."],
+ [5,"Manakah yang BUKAN salah satu hambatan UKM untuk berdagang internasional (Tabel 4.4)?",["Psikologis","Operasional","Organisasional","Astronomis"],3,"Empat hambatan: psikologis, operasional, organisasional, produk/pasar."],
+ [5,"Survei Multilingual (2008) menunjukkan paradoks lokalisasi, yaitu…",["Lokalisasi dianggap tidak penting","88% manajer menganggapnya penting, tetapi lebih dari separuh hanya mengalokasikan 1–5% anggaran","Semua perusahaan melokalisasi penuh","Lokalisasi menurunkan konversi"],1,"Ada kesenjangan antara keyakinan dan anggaran."],
+ [5,"Menurut Quelch & Klein (1996), perusahaan yang bersaing di pasar global harus memiliki…",["Kantor di setiap negara","Layanan pemesanan dan pelanggan 24 jam, pengalaman ekspor, dan pemahaman pasar asing","Situs berbahasa tunggal","Harga yang sama di semua negara"],1,"Tiga kapabilitas tersebut."],
+ [6,"Menurut Booz Allen Hamilton (2002), manakah yang termasuk tema kebijakan pemerintah untuk mendorong Internet?",["Menaikkan pajak perangkat","Meningkatkan penetrasi perangkat akses","Melarang e-commerce","Membatasi pelatihan"],1,"Lima tema: akses, keterampilan, sertifikasi, kepercayaan, kampanye langsung."],
+ [6,"Pembedaan yang benar antara Internet governance dan e-government adalah…",["Keduanya sama","Internet governance = kontrol atas operasi dan penggunaan Internet; e-government = layanan pemerintah lewat Internet","E-government = pengelolaan domain","Internet governance hanya untuk sektor swasta"],1,"Chaffey menegaskan keduanya berbeda."],
+ [6,"Skema PPN atas layanan digital dari luar negeri di Indonesia mulai berlaku pada…",["1 Juli 2020","1 Januari 2019","17 Oktober 2024","1 Juli 2026"],0,"Melalui PMK 48/2020."],
+ [6,"Argumen IMRG bahwa e-commerce 'hijau' TIDAK termasuk…",["Lebih sedikit perjalanan kendaraan","Lebih sedikit materi cetak","Dematerialisasi","Setiap paket dikirim terpisah dengan kemasan berlapis"],3,"Pengiriman per paket justru bisa menghapus manfaat lingkungan."],
+ [6,"Dasar hukum Sistem Pemerintahan Berbasis Elektronik (SPBE) di Indonesia adalah…",["Perpres 95/2018","UU 27/2022","PP 71/2019","Perpres 27/2026"],0,"E-government Indonesia."],
+ [7,"Kategori pengadopsi Rogers (1983) yang paling akhir adalah…",["Late majority","Laggards","Early majority","Innovators"],1,"Urutan: innovators, early adopters, early majority, late majority, laggards."],
+ [7,"Risiko menjadi early adopter sering disebut…",["Plateau","Bleeding edge","Slack","Long tail"],1,"Teknologi baru bisa bermasalah dan manfaatnya belum terbukti."],
+ [7,"Perusahaan meninjau secara terstruktur hingga 1.000 startup untuk mencari kemampuan baru (contoh BT). Pendekatan ini disebut…",["Technology mining","Technology hunting","Crowdsourcing","Technology networking"],1,"PMP (2008)."],
+ [7,"Menurut Microsoft (2010), perilaku multiscreening yang paling umum adalah…",["Social spider-webbing","Content grazing","Quantum journey","Investigative spider-webbing"],1,"68% konsumen memakai dua layar atau lebih untuk konten yang tidak berkaitan."],
+ [7,"QRIS yang diluncurkan 2019 dan diwajibkan bagi penyelenggara pembayaran sejak 2020 adalah contoh…",["Difusi lambat","Difusi cepat yang didorong regulasi dan jaringan","Trough of disillusionment","Laggards"],1,"Regulasi dan efek jaringan mempercepat adopsi."],
+ [7,"Pelajaran utama artikel PESTEL (2023) tentang strategi media digital baru adalah…",["Strategi NFT selalu berhasil","Efektivitas strategi berbeda antarnegara, sehingga perlu dinilai dengan faktor PESTEL setempat","PESTEL tidak relevan untuk pemasaran","Metaverse sudah menggantikan e-commerce"],1,"PESTEL dipakai untuk menilai kecocokan strategi dengan negara."]
+];
+
+/* ---------------- rubrik umpan balik studi kasus ---------------- */
+var RUB={
+ c1_0:{need:3,cr:[
+  ["Sosial","sosial|identitas|budaya|komunitas|lokal","Faktor sosial apa yang bekerja?"],
+  ["Politik","politik|brexit|trump|pemilu|referendum","Faktor politik apa yang terjadi?"],
+  ["Ekonomi","ekonomi|globalisasi|kurs|penjualan|burberry","Faktor ekonomi apa yang terlibat?"],
+  ["Teknologi","teknologi|data|analitik|beacon|nfc|media sosial|facebook|instagram","Teknologi apa yang memungkinkan respons merek?"],
+  ["Keterkaitan","silo|saling|terkait|bersama|kombinasi|memicu","Tunjukkan bahwa faktor saling terkait."]],
+  self:["Saya menunjukkan hubungan antarfaktor, bukan daftar terpisah"]},
+ c1_1:{need:3,cr:[
+  ["Posisi","setuju|tidak setuju|tidak mutlak|tergantung|sebagian","Ambil posisi yang jelas."],
+  ["Singh & Pereira","singh|pereira|tingkat|semi|highly|culturally|standardised","Gunakan tingkat lokalisasi Singh & Pereira."],
+  ["Data manfaat","20%|70%|25%|konversi|karen millen","Gunakan data konversi dari buku."],
+  ["Biaya/UKM","biaya|anggaran|ukm|sumber daya|1-5%|88%","Pertimbangkan biaya lokalisasi."]],
+  self:["Saya menimbang manfaat dan biaya, bukan hanya salah satunya"]},
+ c1_2:{need:3,cr:[
+  ["Konsep mikro-lokalisasi","right-place|right place|community|komunitas|lokal|kota|daerah","Gunakan konsep dari kasus."],
+  ["Contoh Indonesia konkret","surabaya|jakarta|medan|bahasa daerah|ramadan|agustus|umkm|pasar","Beri contoh Indonesia yang konkret."],
+  ["Data/penargetan","data|analitik|lokasi|geografis|geotarget|targeting","Bagaimana data mendukung penargetan lokal?"],
+  ["Tujuan merek","merek|brand|tujuan|purpose|kepercayaan|loyal","Kaitkan dengan tujuan merek."]],
+  self:["Ide saya bisa dilaksanakan dan bisa diukur"]},
+ c2_0:{need:3,cr:[
+  ["Politik","politik|presiden|pemerintah|dpr|danantara|demo","Faktor politik apa yang berperan?"],
+  ["Legal","legal|hukum|perpres|kp 1001|kepmenhub|regulasi|aturan","Faktor hukum apa yang berubah?"],
+  ["Ekonomi","ekonomi|pendapatan|margin|merger|persaingan|tarif","Faktor ekonomi apa yang terlibat?"],
+  ["Sosial/teknologi","sosial|pengemudi|pekerja|opini|teknologi|algoritma","Bagaimana dengan faktor sosial atau teknologi?"],
+  ["Dominan & saling memicu","dominan|paling|memicu|mendorong|cepat|berantai","Faktor mana yang dominan dan bagaimana saling memicu?"]],
+  self:["Saya menunjukkan urutan sebab-akibat antarfaktor"]},
+ c2_1:{need:3,cr:[
+  ["Pengemudi","pengemudi|driver|mitra|26.036|22.640","Dampak bagi pengemudi?"],
+  ["Aplikator","aplikator|platform|gojek|grab|goto|pendapatan per","Dampak bagi aplikator?"],
+  ["Pelanggan","pelanggan|konsumen|penumpang|harga|promo","Dampak bagi pelanggan?"],
+  ["Respons strategis","promo|biaya platform|layanan lain|iklan|efisiensi|diversifikasi|makanan|logistik","Apa respons strategis aplikator?"]],
+  self:["Saya menunjukkan efek berantai, bukan hanya dampak bagi satu pihak"]},
+ c2_2:{need:3,cr:[
+  ["Persaingan","persaingan|monopoli|kekuatan pasar|kppu|dominan","Apa risiko bagi persaingan?"],
+  ["Peran negara","danantara|negara|pemerintah|bumn|istana","Mengapa ini juga faktor politik?"],
+  ["Kaitan regulasi","perpres|regulasi|aturan|menunggu","Bagaimana kaitannya dengan regulasi ojol?"],
+  ["Pihak terdampak","pengemudi|merchant|pelanggan|mitra","Siapa yang terdampak bila persaingan berkurang?"]],
+  self:["Saya membedakan dimensi politik dan ekonomi dengan jelas"]},
+ c2_3:{need:3,cr:[
+  ["Sinyal dini","sinyal|asosiasi|dpr|pernyataan|hari buruh|demo|tuntutan","Sinyal dini apa yang harus dipantau?"],
+  ["Hubungan pemangku kepentingan","hubungan|dialog|regulator|asosiasi|advokasi|komunikasi","Bagaimana mengelola hubungan dengan regulator dan asosiasi?"],
+  ["Skenario","skenario|20%|10%|8%|simulasi|dampak keuangan","Susun skenario dan dampaknya."],
+  ["Prioritas","prioritas|matriks|dampak|kemungkinan","Gunakan logika prioritas."]],
+  self:["Saran saya bisa dijalankan tim strategi, bukan sekadar 'pantau berita'"]},
+ c3_0:{need:3,cr:[
+  ["Kerangka dipilih","mason|fletcher|privacy|accuracy|property|accessibility|transparency|security|liability","Gunakan kerangka Mason atau Fletcher."],
+  ["Penerapan pada kasus","tokopedia|email|telepon|hash|enkripsi|91 juta|peretas","Terapkan pada fakta kasus."],
+  ["Tanggung jawab","tanggung jawab|liability|pengendali|bertanggung","Siapa yang bertanggung jawab?"],
+  ["Transparansi/respons","transparan|memberi tahu|pemberitahuan|investigasi|bssn|kominfo","Bagaimana respons dan transparansi perusahaan?"]],
+  self:["Saya menerapkan kerangka secara konsisten pada fakta kasus"]},
+ c3_1:{need:3,cr:[
+  ["Phishing/rekayasa sosial","phishing|rekayasa sosial|social engineering|otp|penipuan","Bagaimana data itu bisa disalahgunakan?"],
+  ["Pencurian identitas/spam","identitas|spam|telepon|email","Risiko apa bagi pengguna?"],
+  ["Kepercayaan","kepercayaan|trust|percaya|reputasi","Apa dampaknya pada kepercayaan?"],
+  ["Kaitan Unit 2","kekhawatiran|takut|dijual|disalahgunakan|ragu","Kaitkan dengan kekhawatiran pembeli online."]],
+  self:["Saya menjelaskan mekanisme bahaya, bukan hanya menyebut 'berbahaya'"]},
+ c3_2:{need:3,cr:[
+  ["Kewajiban keamanan","keamanan|melindungi|menjaga|enkripsi|pengamanan","Kewajiban apa terkait keamanan?"],
+  ["Pemberitahuan","pemberitahuan|memberi tahu|notifikasi|lapor|batas waktu","Apa kewajiban pemberitahuan?"],
+  ["Sanksi","sanksi|denda|pidana|administratif","Apa konsekuensi hukumnya?"],
+  ["Tindakan manajer","audit|minimisasi|checklist|rencana respons|insiden|kebijakan privasi","Apa yang harus dilakukan manajer?"]],
+  self:["Saya membedakan kondisi sebelum dan sesudah UU PDP"]},
+ c4_0:{need:3,cr:[
+  ["Social","sosial|penetrasi|apjii|pengguna|kesenjangan|gaya hidup","Faktor sosial?"],
+  ["Legal","hukum|legal|perpres|uu pdp|regulasi|pajak","Faktor hukum?"],
+  ["Economic","ekonomi|gmv|inflasi|suku bunga|daya beli|persaingan","Faktor ekonomi?"],
+  ["Political","politik|pemerintah|danantara|merger|kppu|presiden","Faktor politik?"],
+  ["Technological","teknologi|ai|algoritma|qris|motor listrik|ev","Faktor teknologi?"]],
+  self:["Setiap faktor saya didukung bukti atau sumber"]},
+ c4_1:{need:3,cr:[
+  ["Prioritas","prioritas|tertinggi|paling|dampak|kemungkinan","Jelaskan mengapa ketiga faktor itu prioritas."],
+  ["Model bisnis","pendapatan|biaya|mitra|pelanggan|margin|model bisnis","Kaitkan dengan model bisnis."],
+  ["Peluang/ancaman","peluang|ancaman|risiko","Tentukan peluang atau ancaman."]],
+  self:["Saya memakai skor dari matriks prioritas, bukan intuisi saja"]},
+ c4_2:{need:3,cr:[
+  ["Respons konkret","diversifikasi|layanan|harga|kemitraan|investasi|efisiensi|produk","Apa respons strategisnya?"],
+  ["Indikator","indikator|kpi|pantau|memantau|metrik","Indikator apa yang dipantau?"],
+  ["Horizon waktu","12 bulan|bulan|kuartal|tahun","Kapan respons dan pemantauan dilakukan?"]],
+  self:["Rekomendasi saya terhubung langsung dengan faktor prioritas"]}
+};
+var CONN=["karena","sehingga","akibatnya","oleh karena itu","maka","sebab","menyebabkan","artinya","dengan demikian","namun","tetapi","sedangkan","jika","agar","membuat","berdampak","because","therefore"];
+var LV=["Belum terlihat","Perlu diperkuat","Cukup","Baik","Sangat baik"];
+
+/* ---------------- glossary ---------------- */
+var GLOSS=[
+ ["Lingkungan makro / mikro","Kekuatan luas yang berpengaruh tidak langsung / pelanggan, pemasok, pesaing, perantara"],
+ ["SLEPT","Social, Legal, Economic, Political, Technological"],
+ ["PESTEL","PEST ditambah Environmental dan Legal"],
+ ["Environmental scanning","Pemantauan lingkungan secara terus-menerus lalu meresponsnya"],
+ ["ZMOT","Zero Moment of Truth: riset online sebelum membeli"],
+ ["Showrooming","Melihat produk di toko, membelinya online"],
+ ["Webographics","Lokasi akses, perangkat, kecepatan koneksi, ISP, pengalaman, dan tingkat penggunaan"],
+ ["Segmentasi psikografis","Pembagian pelanggan menurut sikap, motif, dan perilaku"],
+ ["FCB Involvement Grid","Matriks think vs feel dan keterlibatan tinggi vs rendah"],
+ ["Privasi","Hak moral untuk terhindar dari campur tangan dalam urusan pribadi"],
+ ["Identity theft","Penyalahgunaan identitas orang lain tanpa izin"],
+ ["Phishing","Email palsu untuk memancing data pribadi"],
+ ["Opt-in / opt-out","Persetujuan aktif untuk menerima / pilihan untuk berhenti menerima"],
+ ["Permission marketing","Pelanggan setuju terlibat dalam pemasaran (Godin, 1999)"],
+ ["First-party / third-party cookie","Dipasang situs yang dikunjungi / dipasang domain lain"],
+ ["Persistent / session cookie","Bertahan antar-kunjungan / hanya satu sesi"],
+ ["Behavioural ad targeting","Iklan berdasarkan perilaku penjelajahan"],
+ ["Accessibility legislation","Hukum yang melindungi pengguna situs dengan disabilitas"],
+ ["Invitation to treat","Tampilan produk adalah undangan untuk menawar, bukan penawaran mengikat"],
+ ["Intellectual property rights","Hak atas ciptaan tak berwujud: hak cipta, merek, paten"],
+ ["Dynamic pricing","Harga berubah otomatis menurut kondisi pasar"],
+ ["Lokalisasi","Penyesuaian situs untuk negara atau wilayah tertentu"],
+ ["LOCI","Location-optimised commerce on the Internet"],
+ ["E-government","Layanan pemerintah kepada warga dan bisnis lewat Internet"],
+ ["Diffusion of innovation","Kurva adopsi Rogers: innovators hingga laggards"],
+ ["Hype cycle","Lima tahap kematangan teknologi (Gartner)"],
+ ["Crowdsourcing","Memanfaatkan jaringan pelanggan atau mitra untuk memperoleh ide"],
+ ["Multiscreening","Penggunaan beberapa layar secara bersamaan"]
+];
+
+/* ================= render: sidebar & plan ================= */
+var NAV=[["grp","Mulai"],["home","Beranda","⌂"],["grp","SLEPT & Faktor Sosial"],["u1"],["u2"],["grp","Hukum & Etika"],["u3"],["u4"],["grp","Ekonomi, Politik & Teknologi"],["u5"],["u6"],["u7"],["grp","Penerapan & Evaluasi"],["cases","Studi Kasus","📂"],["final","Kuis Akhir","🏁"],["cards","Flashcard","🃏"],["notes","Catatan & Referensi","📝"]];
+function renderSide(){
+  var h="";
+  NAV.forEach(function(n){
+    if(n[0]==="grp"){h+='<div class="grp">'+n[1]+'</div>';return}
+    var u=UNITS.filter(function(x){return x.id===n[0]})[0];
+    if(u){var i=UNITS.indexOf(u)+1;h+='<a href="#'+u.id+'" data-nav="'+u.id+'" class="'+(S.done[u.id]?"done":"")+'"><span class="n">'+(S.done[u.id]?"✓":i)+'</span>'+u.t+'</a>'}
+    else{var dn=(n[0]==="final"&&S.final&&S.final.best>=80)||(n[0]==="cases"&&casesDone()); h+='<a href="#'+n[0]+'" data-nav="'+n[0]+'" class="'+(dn?"done":"")+'"><span class="n ico">'+(dn?"✓":n[2])+'</span>'+n[1]+'</a>'}
+  });
+  $("#side").innerHTML=h; markNav();
+  var pb="";UNITS.forEach(function(u,i){pb+='<tr><td>'+(i+1)+'</td><td><a href="#'+u.id+'">'+u.t+'</a></td><td>'+u.pg+'</td><td class="st '+(S.done[u.id]?"y":"n")+'">'+(S.done[u.id]?"✓ selesai":(S.read[i+1]?"dibaca":"—"))+'</td></tr>'});
+  pb+='<tr><td>'+(UNITS.length+1)+'</td><td><a href="#cases">Studi kasus ('+CASES.length+')</a></td><td>—</td><td class="st '+(casesDone()?"y":"n")+'">'+(casesDone()?"✓ selesai":"—")+'</td></tr>';
+  pb+='<tr><td>'+(UNITS.length+2)+'</td><td><a href="#final">Kuis akhir</a></td><td>—</td><td class="st '+(S.final&&S.final.best>=80?"y":"n")+'">'+(S.final?("terbaik "+S.final.best+"%"):"—")+'</td></tr>';
+  $("#planBody").innerHTML=pb;
+}
+function casesDone(){var n=0;CASES.forEach(function(c){c.qs.forEach(function(q,i){if((S.notes[c.id+"_"+i]||"").trim().length>=40)n++})});var t=0;CASES.forEach(function(c){t+=c.qs.length});return n>=t}
+function updateProgress(){
+  var tot=UNITS.length+2,d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  if(casesDone())d++; if(S.final&&S.final.best>=80)d++;
+  var p=Math.round(d/tot*100);$("#progBar").style.width=p+"%";$("#progLbl").textContent=p+"%";
+}
+
+/* ================= quizzes ================= */
+function seededOrder(key,n){var h=2166136261;for(var c=0;c<key.length;c++){h^=key.charCodeAt(c);h=Math.imul(h,16777619)}var a=[];for(var i=0;i<n;i++)a.push(i);for(var k=n-1;k>0;k--){h=Math.imul(h^(h>>>15),2246822507)>>>0;var r=h%(k+1),x=a[k];a[k]=a[r];a[r]=x}return a}
+function renderQuiz(box,uid){
+  var qs=QZ[uid], h='<div class="lockmsg"><div>🔒 <b>Soal terkunci.</b><br>Baca subbab buku yang ditunjuk, lalu centang "Saya sudah membaca" di atas.</div></div><div class="qbody">';
+  qs.forEach(function(q,i){
+    h+='<div class="q" data-qi="'+i+'"><span class="kind '+(q.k==="r"?"rb":"")+'">'+(q.k==="r"?"📖 Cek bacaan · "+q.pg:"Konsep")+'</span><div class="qt">'+(i+1)+'. '+esc(q.q)+'</div><div class="opts">';
+    seededOrder(uid+"_"+i,q.o.length).forEach(function(j,pos){h+='<button class="opt" data-j="'+j+'"><span class="L">'+"ABCD"[pos]+'</span><span>'+esc(q.o[j])+'</span></button>'});
+    h+='</div><div class="fbx"></div></div>';
+  });
+  h+='<div class="score" id="sc_'+uid+'"></div></div>';
+  box.innerHTML=h;
+  $$(".q",box).forEach(function(qe){
+    var i=+qe.dataset.qi;
+    $$(".opt",qe).forEach(function(b){b.addEventListener("click",function(){answer(uid,i,+b.dataset.j,qe)})});
+    var prev=S.q[uid+"_"+i]; if(prev!=null) paint(uid,i,prev,qe);
+  });
+  lockState(box,uid); scoreUnit(uid);
+}
+function answer(uid,i,j,qe){S.q[uid+"_"+i]=j;paint(uid,i,j,qe);scoreUnit(uid);save();}
+function paint(uid,i,j,qe){
+  var q=QZ[uid][i],ok=j===q.a;
+  $$(".opt",qe).forEach(function(b){var k=+b.dataset.j;b.disabled=true;b.classList.remove("ok","no");if(k===j)b.classList.add(ok?"ok":"no");if(ok&&k===q.a)b.classList.add("ok")});
+  var fb=$(".fbx",qe);
+  fb.innerHTML='<div class="fb '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat.")+'</b>'+(ok?esc(q.e):(q.k==="r"?"Buka kembali "+q.pg+", dan cari bagian yang relevan.":"Baca ulang ringkasan di atas, lalu coba lagi."))+'</div>'+(ok?"":'<button class="retry">Coba lagi</button>');
+  var r=$(".retry",fb); if(r) r.addEventListener("click",function(){delete S.q[uid+"_"+i];save();$$(".opt",qe).forEach(function(b){b.disabled=false;b.classList.remove("ok","no")});fb.innerHTML="";scoreUnit(uid)});
+}
+function scoreUnit(uid){
+  var qs=QZ[uid],c=0;qs.forEach(function(q,i){if(S.q[uid+"_"+i]===q.a)c++});
+  var el=$("#sc_"+uid); if(el) el.textContent=c+" / "+qs.length+" benar"+(c===qs.length?" · Unit selesai ✓":"");
+  var was=!!S.done[uid]; S.done[uid]=c===qs.length;
+  if(S.done[uid]&&!was){toast("Unit selesai! 🎉");} if(was!==S.done[uid]){save();renderSide();}
+}
+function lockState(box,uid){var n=+uid.slice(1);box.classList.toggle("locked",!S.read[n])}
+
+/* ================= classify ================= */
+function renderClassify(el){
+  var key=el.dataset.widget,w=CL[key],h='';
+  w.it.forEach(function(it,i){
+    h+='<div class="it" data-i="'+i+'"><p>'+esc(it[0])+'</p><div class="chips">';
+    w.o.forEach(function(o){h+='<button class="chip" data-o="'+esc(o)+'">'+esc(o)+'</button>'});
+    h+='</div><div class="why"></div></div>';
+  });
+  h+='<div class="score" style="margin-top:10px"></div>';
+  el.insertAdjacentHTML("beforeend",h);
+  $$(".it",el).forEach(function(row){
+    var i=+row.dataset.i;
+    $$(".chip",row).forEach(function(c){c.addEventListener("click",function(){
+      var it=w.it[i],ok=c.dataset.o===it[1];
+      if(ok){S.cls[key+"_"+i]=1;paintCls(row,it,true);save();clsScore(el,key)}
+      else{c.classList.add("no");c.disabled=true;$(".why",row).textContent="Belum tepat. Coba pilihan lain.";}
+    })});
+    if(S.cls[key+"_"+i])paintCls(row,w.it[i],true);
+  });
+  clsScore(el,key);
+}
+function paintCls(row,it,ok){$$(".chip",row).forEach(function(c){c.disabled=true;c.classList.remove("no");if(c.dataset.o===it[1])c.classList.add("ok")});$(".why",row).innerHTML="✓ "+esc(it[2])}
+function clsScore(el,key){var w=CL[key],c=0;w.it.forEach(function(_,i){if(S.cls[key+"_"+i])c++});$(".score",el).textContent=c+" / "+w.it.length+" tepat"}
+
+/* ================= widget topik 5 ================= */
+/* SLEPT priority matrix */
+var SLF=[["S","Social"],["L","Legal & etis"],["E","Economic"],["P","Political"],["T","Technological"],["Env","Environmental (opsional)"]];
+function sleptTool(){
+  var box=$("#slRows");if(!box)return;
+  var sc;try{sc=JSON.parse(S.notes.sl_sc||"{}")}catch(e){sc={}}
+  box.innerHTML=SLF.map(function(f){var k=f[0];return '<div class="slrow"><b class="slk">'+k+'</b><div class="slmain"><input type="text" data-note="sl_'+k+'" placeholder="'+esc(f[1])+': faktor terpenting…"><div class="slsc"><label>Dampak<select data-sl="'+k+'" data-d="i">'+opts(sc[k+"i"])+'</select></label><label>Kemungkinan<select data-sl="'+k+'" data-d="p">'+opts(sc[k+"p"])+'</select></label></div></div></div>'}).join("");
+  function opts(v){return '<option value="">–</option>'+[1,2,3,4,5].map(function(n){return '<option'+(+v===n?' selected':'')+'>'+n+'</option>'}).join("")}
+  function upd(){
+    var rows=SLF.map(function(f){var k=f[0],t=(S.notes["sl_"+k]||"").trim(),i=+sc[k+"i"]||0,p=+sc[k+"p"]||0;return {k:k,n:f[1],t:t,i:i,p:p,s:i*p}}).filter(function(r){return r.t&&r.s});
+    if(!rows.length){$("#slRes").innerHTML='<span class="hint">Isi faktor dan beri skor dampak serta kemungkinan untuk melihat urutan prioritas.</span>';S.notes.sl_sum="";return}
+    rows.sort(function(a,b){return b.s-a.s||b.i-a.i});
+    var h='<b>Urutan prioritas</b> (skor = dampak × kemungkinan)<div class="slrank">'+rows.map(function(r,ix){var lvl=r.s>=15?"hi":r.s>=8?"md":"lo";return '<div class="slr '+lvl+'"><span class="slk">'+r.k+'</span><span class="slt">'+esc(r.t)+'</span><span class="sls">'+r.s+'</span></div>'}).join("")+'</div>';
+    var hi=rows.filter(function(r){return r.s>=15}).length,missing=SLF.slice(0,5).filter(function(f){return !(S.notes["sl_"+f[0]]||"").trim()}).length;
+    h+='<p class="hint" style="margin:6px 0 0">'+(hi?hi+' faktor berprioritas tinggi (skor ≥ 15): bahas lebih dulu di laporan dan siapkan responsnya. ':'Belum ada faktor berprioritas tinggi. Apakah Anda terlalu optimistis? ')+(missing?missing+' huruf SLEPT belum diisi. ':'')+'Ingat pesan Chaffey: jangan beri bobot sama pada semua faktor.</p>';
+    $("#slRes").innerHTML=h;
+    S.notes.sl_sum=rows.map(function(r){return r.k+" ("+r.s+"): "+r.t}).join("\n");
+  }
+  $$("#slRows select").forEach(function(s){s.addEventListener("change",function(){sc[s.dataset.sl+s.dataset.d]=s.value;S.notes.sl_sc=JSON.stringify(sc);upd();save();notesPreview()})});
+  $$("#slRows input").forEach(function(e){e.addEventListener("input",function(){setTimeout(upd,0)})});
+  upd();
+}
+
+/* Privacy audit (Chaffey checklist, condensed) */
+var PVQ=["Mematuhi aturan lokal (mis. menyebut UU PDP atau aturan setempat) dan memiliki sertifikasi keamanan bila tersedia","Sebelum meminta data, menjelaskan siapa perusahaannya, data apa yang dikumpulkan, dan untuk apa","Meminta persetujuan aktif (tidak ada kotak yang sudah dicentang)","Kebijakan privasi mudah ditemukan dan mudah dipahami","Memberi tahu pemakaian cookie dan memberi pilihan menolak","Hanya meminta data yang benar-benar perlu; data tambahan bersifat opsional","Pengguna bisa melihat dan memperbaiki datanya sendiri","Data dipakai untuk pemasaran hanya setelah pengguna setuju (opt-in)","Ada cara mudah berhenti menerima promosi (opt-out)","Memakai teknologi keamanan (HTTPS, verifikasi dua langkah)"];
+function privTool(){
+  var box=$("#pvList");if(!box)return;
+  var ck;try{ck=JSON.parse(S.notes.pv_chk||"[]")}catch(e){ck=[]}
+  box.innerHTML=PVQ.map(function(q,i){return '<label class="ukc"><input type="checkbox" data-pv="'+i+'"'+(ck[i]?" checked":"")+'><span>'+(i+1)+'. '+esc(q)+'</span></label>'}).join("");
+  function upd(){
+    var n=ck.filter(Boolean).length,name=(S.notes.pv_name||"").trim()||"Situs ini";
+    var miss=PVQ.map(function(q,i){return ck[i]?null:i+1}).filter(Boolean);
+    $("#pvRes").innerHTML='<b>'+esc(name)+': '+n+'/10 terpenuhi.</b> '+(n>=9?'Praktik privasinya baik. Periksa apakah klaimnya sesuai praktik nyata (mis. benarkah email promosi berhenti setelah opt-out?).':n>=6?'Cukup, tetapi ada celah pada butir '+miss.join(", ")+'.':'Banyak celah (butir '+miss.join(", ")+'). Apakah Anda masih mau memberikan data pribadi ke situs ini?');
+  }
+  $$("#pvList [data-pv]").forEach(function(c){c.addEventListener("change",function(){ck[+c.dataset.pv]=c.checked;S.notes.pv_chk=JSON.stringify(ck);upd();save();notesPreview()})});
+  $('#privTool [data-note="pv_name"]').addEventListener("input",function(){setTimeout(upd,0)});
+  upd();
+}
+
+/* ================= cases ================= */
+function norm(t){return (t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}
+function grade(id){
+  var r=RUB[id],t=norm(S.notes[id]),words=t.split(/\s+/).filter(Boolean).length;
+  var hits=r.cr.map(function(c){return new RegExp(c[1],"i").test(t)}),h=hits.filter(Boolean).length;
+  var conn=CONN.filter(function(w){return new RegExp("(^|[^a-z])"+w+"([^a-z]|$)").test(t)}).length;
+  var cov=Math.min(h,r.need)/r.need,raw=3*cov+(conn>=2?1:conn===1?.5:0),warn=[];
+  if(words<25){raw=Math.min(raw,2);warn.push("Jawaban terlalu singkat ("+words+" kata). Kembangkan penjelasan Anda.")}
+  if(h>=2&&conn===0&&words/h<7){raw=Math.min(raw,1);warn.push("Jawaban tampak seperti daftar kata kunci. Jelaskan hubungan antarkonsep dengan kalimat utuh.")}
+  else if(conn===0) warn.push("Belum ada penalaran sebab-akibat. Gunakan \"karena\", \"sehingga\", atau \"akibatnya\" untuk menunjukkan alur pikir.");
+  return {lv:Math.max(0,Math.min(4,Math.floor(raw+1e-9))),hits:hits,h:h,conn:conn,words:words,warn:warn,len:(S.notes[id]||"").length};
+}
+function renderGrade(id){
+  var box=$('.fbres[data-for="'+id+'"]'),st=S.cs[id];if(!box)return;
+  if(!st){box.innerHTML="";return}
+  var r=RUB[id],g=grade(id),noans=CASES.some(function(c){return c.noans&&id.indexOf(c.id+"_")===0});
+  var h='<div class="gbox"><div class="ghead"><span class="meter">'+[0,1,2,3].map(function(k){return '<i class="'+(k<g.lv?"on":"")+'"></i>'}).join("")+'</span><span class="glv">'+g.lv+'/4 · '+LV[g.lv]+'</span><span class="gnote">umpan balik otomatis, bukan nilai</span></div>';
+  h+='<p class="hint" style="margin:0 0 4px">Konsep kunci ('+g.h+' dari '+r.cr.length+' muncul; minimal '+r.need+' untuk cakupan penuh):</p><ul class="crit">';
+  r.cr.forEach(function(c,k){h+='<li class="'+(g.hits[k]?"y":"n")+'"><span class="m">'+(g.hits[k]?"✓":"")+'</span><span><b>'+esc(c[0])+'</b>'+(g.hits[k]?'':' <span class="h">· '+esc(c[2])+'</span>')+'</span></li>'});
+  h+='</ul><ul class="crit"><li class="'+(g.conn>=2?"y":"n")+'"><span class="m">'+(g.conn>=2?"✓":"")+'</span><span><b>Penalaran</b> <span class="h">· '+g.conn+' penghubung sebab-akibat'+(g.conn<2?" (target ≥ 2)":"")+'</span></span></li></ul>';
+  g.warn.forEach(function(w){h+='<div class="gwarn">⚠️ '+esc(w)+'</div>'});
+  if(st.len!==g.len) h+='<div class="stale">✎ Jawaban sudah diubah sejak dinilai. Klik "Nilai ulang" untuk memperbarui.</div>';
+  h+='<div class="selfc"><b style="font-size:.9rem">Penilaian diri: centang yang benar-benar sudah Anda lakukan</b>';
+  r.self.forEach(function(sx,k){h+='<label><input type="checkbox" data-self="'+id+'" data-k="'+k+'" '+(st.self&&st.self[k]?"checked":"")+'> '+esc(sx)+'</label>'});
+  h+=st.selfDone?'<p class="hint" style="margin:6px 0 0">✓ Penilaian diri tersimpan'+(noans?". Bawa jawaban ini ke diskusi kelas.":". Arah jawaban di bawah sudah terbuka.")+'</p>':'<button class="btn sm" data-selfdone="'+id+'" style="margin-top:6px">'+(noans?"Selesai menilai diri":"Selesai, buka arah jawaban")+'</button>';
+  h+='</div></div>';
+  box.innerHTML=h;
+  $$('[data-self]',box).forEach(function(c){c.addEventListener("change",function(){st.self=st.self||[];st.self[+c.dataset.k]=c.checked;save()})});
+  var sd=$('[data-selfdone]',box);if(sd)sd.addEventListener("click",function(){st.selfDone=true;save();renderGrade(id);refreshAnsLocks();updateCaseSums();var d=$('details.ans[data-for="'+id+'"]');if(d){d.open=true}});
+  var gb=$('[data-grade="'+id+'"]');if(gb)gb.textContent="↻ Nilai ulang";
+}
+function updateCaseSums(){
+  CASES.forEach(function(c){var el=$('[data-csum="'+c.id+'"]');if(!el)return;var n=0,tot=0;c.qs.forEach(function(q,i){var id=c.id+"_"+i;if(S.cs[id]){n++;tot+=grade(id).lv}});
+    el.textContent=n?("umpan balik rata-rata "+(tot/n).toFixed(1).replace(".",",")+"/4 · "+n+"/"+c.qs.length+" dinilai"):"belum dinilai"});
+}
+function renderCases(){
+  S.cs=S.cs||{};
+  var h="";
+  CASES.forEach(function(c){
+    h+='<div class="card"><h3>📂 '+c.t+' <span class="csum" data-csum="'+c.id+'"></span></h3><p class="hint" style="margin-top:-6px">Sumber: '+c.src+'</p>'+c.body;
+    h+='<h4 style="margin-top:18px">'+(c.noans?"Tugas persiapan diskusi kelas":"Pertanyaan diskusi")+'</h4>';
+    c.qs.forEach(function(q,i){
+      var id=c.id+"_"+i;
+      h+='<div class="cq"><b>'+(i+1)+'. '+esc(q[0])+'</b><textarea data-note="'+id+'" placeholder="Tulis jawaban Anda dalam kalimat utuh…"></textarea>';
+      h+='<div class="fbk"><button class="btn sm ghost" data-grade="'+id+'">🔍 Minta umpan balik</button><div class="fbres" data-for="'+id+'"></div></div>';
+      if(!c.noans) h+='<details class="ans" data-for="'+id+'"><summary>🔑 Arah jawaban</summary><div>'+esc(q[1])+'</div></details>';
+      h+='</div>';
+    });
+    if(c.noans) h+='<div class="co book"><b class="t">📝 Catatan.</b> Arah jawaban untuk kasus ini sengaja tidak diberikan dan akan dibahas di kelas. Umpan balik otomatis di sini hanya memeriksa kelengkapan struktur jawaban Anda.</div>';
+    h+='</div>';
+  });
+  $("#caseList").innerHTML=h;
+  $$("[data-grade]").forEach(function(b){b.addEventListener("click",function(){
+    var id=b.dataset.grade,len=(S.notes[id]||"").trim().length;
+    if(len<40){toast("Tulis jawaban Anda dulu (min. 40 karakter)");return}
+    var prev=S.cs[id]||{};S.cs[id]={len:(S.notes[id]||"").length,self:prev.self||[],selfDone:prev.selfDone||false};save();renderGrade(id);updateCaseSums();
+  })});
+  $$("details.ans").forEach(function(d){
+    d.addEventListener("click",function(e){if(d.classList.contains("lock")&&!d.open){e.preventDefault();toast("Minta umpan balik dan selesaikan penilaian diri dulu")}});
+  });
+  Object.keys(S.cs).forEach(renderGrade);
+  refreshAnsLocks();updateCaseSums();
+}
+function refreshAnsLocks(){$$("details.ans").forEach(function(d){var st=S.cs&&S.cs[d.dataset.for];d.classList.toggle("lock",!(st&&st.selfDone))})}
+
+/* ================= notes binding ================= */
+function bindNotes(){
+  $$("textarea[data-note],input[data-note]").forEach(function(t){
+    t.value=S.notes[t.dataset.note]||"";
+    t.addEventListener("input",function(){S.notes[t.dataset.note]=t.value;clearTimeout(t._h);t._h=setTimeout(function(){save();refreshAnsLocks();renderSide();notesPreview();if(S.cs&&S.cs[t.dataset.note])renderGrade(t.dataset.note)},350)});
+  });
+}
+function notesText(){
+  var L=["PENGANTAR BISNIS DIGITAL (DG234101) — TOPIK 05","Isu Kunci dalam Lingkungan Digital: Analisis Makro","",(S.notes.identity||"Nama — NRP"),"","== PEMANASAN ==","Perubahan eksternal yang pernah dirasakan:",S.notes.warm_know||"-","","Faktor yang paling mengancam:",S.notes.warm_want||"-",""];
+  L.push("== MATRIKS PRIORITAS SLEPT: "+(S.notes.sl_name||"-")+" ==",S.notes.sl_sum||"-","");
+  var ck;try{ck=JSON.parse(S.notes.pv_chk||"[]")}catch(e){ck=[]}
+  L.push("== AUDIT PRIVASI: "+(S.notes.pv_name||"-")+" ==",ck.filter(Boolean).length+"/10 butir terpenuhi","");
+  CASES.forEach(function(c){L.push("== "+c.t.toUpperCase()+" ==");c.qs.forEach(function(q,i){L.push((i+1)+". "+q[0]);L.push(S.notes[c.id+"_"+i]||"-");if(S.cs&&S.cs[c.id+"_"+i])L.push("[Umpan balik aplikasi: "+grade(c.id+"_"+i).lv+"/4]");L.push("")})});
+  var d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  L.push("== KEMAJUAN ==","Unit selesai: "+d+"/"+UNITS.length,"Kuis akhir (skor terbaik): "+(S.final?S.final.best+"%":"belum"));
+  return L.join("\n");
+}
+function notesPreview(){var p=$("#notesPrev");if(p)p.textContent=notesText()}
+
+/* ================= self-test (pola serviceman ch05) ================= */
+var quizEl=null, run=null;
+function setupQuiz(){
+  quizEl=$("#finalBox");
+  var best=S.final?S.final.best:null;
+  quizEl.innerHTML='<div class="qz-setup"><p>Soal diambil dari ketujuh unit (Chaffey Bab 4 dan artikel PESTEL). Anda mendapat umpan balik setelah setiap jawaban, dan rincian per unit di akhir. Topik dianggap tuntas bila skor ≥ 80%.</p>'+
+   '<div><p class="qz-lbl">Panjang</p><div class="seg" id="qzLen"><button data-n="10" aria-pressed="true">Cepat · 10 soal</button><button data-n="20" aria-pressed="false">Standar · 20</button><button data-n="'+FINAL.length+'" aria-pressed="false">Lengkap · semua '+FINAL.length+'</button></div></div>'+
+   '<div><p class="qz-lbl">Fokus</p><div class="seg" id="qzLo"><button data-lo="0" aria-pressed="true">Semua unit</button>'+Object.keys(LO_NAMES).map(function(k){return '<button data-lo="'+k+'" aria-pressed="false" title="'+LO_NAMES[k]+'">Unit '+k+'</button>'}).join("")+'</div></div>'+
+   '<div class="row"><button class="btn" id="qzStart">Mulai self-test</button>'+(best!=null?'<span class="muted" style="font-family:var(--mono);font-size:.8rem">Skor terbaik di perangkat ini: '+best+'%</span>':'')+'</div></div>';
+  var n=10, lo=0;
+  $$("#qzLen button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLen button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});n=+b.dataset.n})});
+  $$("#qzLo button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLo button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});lo=+b.dataset.lo})});
+  $("#qzStart").addEventListener("click",function(){
+    var pool=FINAL.map(function(q,i){return i}).filter(function(i){return !lo||FINAL[i][0]===lo});
+    pool=shuffle(pool).slice(0,Math.min(n,pool.length));
+    run={qs:pool.map(function(i){var q=FINAL[i],order=shuffle(q[2].map(function(_,j){return j}));return {lo:q[0],text:q[1],opts:order.map(function(j){return q[2][j]}),ans:order.indexOf(q[3]),exp:q[4]}}),i:0,picks:[]};
+    showQ();
+  });
+}
+function showQ(){
+  var r=run,q=r.qs[r.i],picked=r.picks[r.i],sofar=r.picks.filter(function(p,k){return p===r.qs[k].ans}).length;
+  quizEl.innerHTML='<div class="qz-top"><span class="qz-lbl">Soal '+(r.i+1)+' dari '+r.qs.length+' · Unit '+q.lo+' '+LO_NAMES[q.lo]+'</span><span class="muted" style="font-family:var(--mono);font-size:.8rem">'+sofar+' benar sejauh ini</span></div>'+
+   '<div class="qz-prog"><i style="width:'+(r.i/r.qs.length*100)+'%"></i></div>'+
+   '<p class="qz-q">'+esc(q.text)+'</p>'+
+   '<div class="qz-opts">'+q.opts.map(function(o,j){return '<button data-j="'+j+'"><span class="k">'+"ABCD"[j]+'</span><span>'+esc(o)+'</span></button>'}).join("")+'</div>'+
+   '<div id="qzExp"></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzQuit">Keluar</button><button class="btn" id="qzNext" '+(picked==null?"disabled":"")+'>'+(r.i===r.qs.length-1?"Lihat hasil":"Soal berikutnya")+'</button></div>';
+  function lock(j){
+    $$(".qz-opts button",quizEl).forEach(function(b){b.disabled=true;var k=+b.dataset.j;if(k===q.ans)b.classList.add("right");else if(k===j)b.classList.add("wrong")});
+    var ok=j===q.ans;
+    $("#qzExp").innerHTML='<div class="qz-exp '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat. Jawabannya "+"ABCD"[q.ans]+".")+'</b>'+esc(q.exp)+'</div>';
+    $("#qzNext").disabled=false;
+  }
+  if(picked!=null)lock(picked);
+  $$(".qz-opts button",quizEl).forEach(function(b){b.addEventListener("click",function(){var j=+b.dataset.j;r.picks[r.i]=j;lock(j);$("#qzNext").focus()})});
+  $("#qzNext").addEventListener("click",function(){if(r.i<r.qs.length-1){r.i++;showQ()}else results()});
+  $("#qzQuit").addEventListener("click",setupQuiz);
+}
+function results(){
+  var r=run,right=r.qs.filter(function(q,k){return r.picks[k]===q.ans}).length,pct=Math.round(right/r.qs.length*100);
+  S.final={best:Math.max(pct,S.final?S.final.best:0),n:(S.final?S.final.n:0)+1,last:pct};save();renderSide();
+  var by={};r.qs.forEach(function(q,k){by[q.lo]=by[q.lo]||{r:0,t:0};by[q.lo].t++;if(r.picks[k]===q.ans)by[q.lo].r++});
+  var verdict=pct>=80?"Pemahaman kuat. Topik 05 tuntas.":pct>=65?"Fondasi sudah baik. Tinjau unit di bawah 70%.":"Pelajari ulang unit yang lemah (dan halaman bukunya), lalu coba lagi.";
+  quizEl.innerHTML='<div class="res-big"><span class="pct" style="color:'+(pct>=65?"var(--good)":"var(--bad)")+'">'+pct+'%</span><span>'+right+' dari '+r.qs.length+' benar. '+verdict+'</span></div>'+
+   (pct>=80?'<div><span class="badge">🏅 Topik 05 tuntas</span></div>':'')+
+   '<div><p class="qz-lbl">Per unit</p><div class="lo-bars">'+Object.keys(by).sort().map(function(k){var v=by[k],p=Math.round(v.r/v.t*100);return '<div class="lo-row"><span><b style="font-family:var(--mono)">U'+k+'</b> '+LO_NAMES[k]+(p<70?' · <a href="#u'+k+'">tinjau</a>':'')+'</span><span class="b"><i style="width:'+p+'%;background:'+(p>=70?"var(--good)":"var(--bad)")+'"></i></span><span class="v">'+v.r+'/'+v.t+'</span></div>'}).join("")+'</div></div>'+
+   '<div><p class="qz-lbl">Tinjau jawaban Anda</p><div class="review">'+r.qs.map(function(q,k){var ok=r.picks[k]===q.ans;return '<details '+(ok?"":"open")+'><summary><span class="mk '+(ok?"ok":"no")+'">'+(ok?"✓":"✗")+'</span>'+esc(q.text)+'</summary><p><b>Jawaban Anda:</b> '+esc(q.opts[r.picks[k]])+(ok?'':'<br><b>Jawaban benar:</b> '+esc(q.opts[q.ans]))+'</p><p class="muted">'+esc(q.exp)+'</p></details>'}).join("")+'</div></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzNew">Ubah pengaturan</button><button class="btn" id="qzAgain">Ulangi dengan soal baru</button></div>';
+  $("#qzNew").addEventListener("click",setupQuiz);
+  $("#qzAgain").addEventListener("click",function(){setupQuiz();$("#qzStart").click()});
+  quizEl.scrollIntoView({block:"start"});
+}
+
+/* ================= flashcards ================= */
+var deck=[],di=0;
+function buildDeck(){deck=GLOSS.map(function(g,i){return i}).filter(function(i){return !S.known[i]});if(!deck.length){deck=GLOSS.map(function(g,i){return i})}di=0;showCard()}
+function showCard(){var fc=$("#fc");fc.classList.remove("flip");var g=GLOSS[deck[di]];$("#fcF").textContent=g[0];$("#fcB").textContent=g[1];
+  var k=Object.keys(S.known).length;$("#fcCount").textContent="Kartu "+(di+1)+" / "+deck.length+" · dikuasai "+k+" / "+GLOSS.length}
+function cards(){
+  var fc=$("#fc");function flip(){fc.classList.toggle("flip")}
+  fc.addEventListener("click",flip);fc.addEventListener("keydown",function(e){if(e.key===" "||e.key==="Enter"){e.preventDefault();flip()}});
+  $("#fcNext").addEventListener("click",function(){di=(di+1)%deck.length;showCard()});
+  $("#fcPrev").addEventListener("click",function(){di=(di-1+deck.length)%deck.length;showCard()});
+  $("#fcShuffle").addEventListener("click",function(){deck=shuffle(deck);di=0;showCard()});
+  $("#fcKnow").addEventListener("click",function(){S.known[deck[di]]=1;save();deck.splice(di,1);if(!deck.length){toast("Semua kartu dikuasai! 🎉");buildDeck();return}if(di>=deck.length)di=0;showCard()});
+  $("#fcReset").addEventListener("click",function(){S.known={};save();buildDeck()});
+  buildDeck();
+}
+
+/* ================= routing ================= */
+function markNav(){var v=current();$$(".side a").forEach(function(a){a.classList.toggle("on",a.dataset.nav===v)})}
+function current(){var h=(location.hash||"#home").slice(1);return $('[data-view="'+h+'"]')?h:"home"}
+function route(){
+  var v=current();$$(".view").forEach(function(s){s.hidden=s.dataset.view!==v});
+  markNav();$("#side").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");
+  window.scrollTo(0,0);
+  
+  if(v==="notes")notesPreview();
+  
+  document.title=(v==="home"?"Topik 05":($('[data-view="'+v+'"] h2')||{}).textContent)+" · Analisis Lingkungan Makro Digital";
+}
+
+/* ================= init ================= */
+$$("[data-quiz]").forEach(function(b){renderQuiz(b,b.dataset.quiz)});
+$$("[data-widget]").forEach(renderClassify);
+$$("[data-readchk]").forEach(function(c){
+  var n=+c.dataset.readchk;c.checked=!!S.read[n];
+  c.addEventListener("change",function(){S.read[n]=c.checked;save();var b=$('[data-quiz="u'+n+'"]');lockState(b,"u"+n);renderSide();if(c.checked)toast("Soal cek pemahaman terbuka ↓")});
+});
+setupQuiz();renderCases();sleptTool();bindNotes();privTool();cards();renderSide();updateProgress();
+window.addEventListener("hashchange",route);route();
+
+$("#menuBtn").addEventListener("click",function(){var o=$("#side").classList.toggle("open");this.setAttribute("aria-expanded",o)});
+$("#themeBtn").addEventListener("click",function(){
+  var r=document.documentElement,cur=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),nx=cur==="dark"?"light":"dark";
+  r.setAttribute("data-theme",nx);try{localStorage.setItem("bisdig-theme",nx)}catch(e){} 
+});
+$("#copyNotes").addEventListener("click",function(){var t=notesText();
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast("Tersalin ke clipboard")},function(){var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("Tersalin")}catch(e){toast("Gagal menyalin")}ta.remove()})});
+$("#dlNotes").addEventListener("click",function(){var b=new Blob([notesText()],{type:"text/plain;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="Topik05_Catatan_"+((S.notes.identity||"mahasiswa").replace(/[^\w]+/g,"_").slice(0,40))+".txt";document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)});
+$("#resetAll").addEventListener("click",function(){
+  if(this.dataset.confirm!=="1"){this.dataset.confirm="1";this.textContent="Klik lagi untuk konfirmasi";var me=this;setTimeout(function(){me.dataset.confirm="";me.textContent="Hapus semua kemajuan"},3000);return}
+  try{localStorage.removeItem(KEY)}catch(e){} location.hash="#home";location.reload();
+});
+})();
+</script>
+</body>
+</html>
