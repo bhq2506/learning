@@ -1,0 +1,1321 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Topik 07 · Manajemen Rantai Pasok dan Permintaan</title>
+<meta name="description" content="Web-app belajar mandiri Pengantar Bisnis Digital (DG234101) ITS — Topik 07: Manajemen Rantai Pasok dan Permintaan (e-SCM dan e-procurement), berbasis Chaffey et al. (2019) Bab 6, dengan kasus Indonesia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#F3F5FA; --surface:#FFFFFF; --sunk:#E8ECF5; --ink:#0F1B33; --muted:#56627A; --line:#D5DCEA;
+  --navy:#013880; --navy-ink:#FFFFFF; --navy-soft:#E1E9F7;
+  --gold:#B07A00; --gold-bg:#FFC72C; --gold-soft:#FFF4D4;
+  --good:#17784E; --good-soft:#DCF2E6; --bad:#B4372F; --bad-soft:#F9E2DF;
+  --dig:#5B3FB0; --dig-soft:#ECE7FA;
+  --idn:#B4372F; --idn-soft:#FBEAE8;
+  --f:"Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  --r:12px;
+  --shadow:0 1px 2px rgba(15,27,51,.06), 0 4px 16px rgba(15,27,51,.05);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.65}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:var(--navy)}
+h1,h2,h3,h4{line-height:1.2;margin:0 0 .5em;letter-spacing:-.01em}
+h2{font-size:clamp(1.45rem,1.1rem + 1.3vw,1.95rem);font-weight:800}
+h3{font-size:1.12rem;font-weight:700;margin-top:1.6em}
+p{margin:0 0 1em}
+em{font-style:italic}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold-bg);outline-offset:2px;border-radius:6px}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;padding-top:max(10px,env(safe-area-inset-top))}
+:root[data-theme="dark"] .top{background:#0E1A36}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .top{background:#0E1A36}}
+.top .brand{display:flex;flex-direction:column;line-height:1.2;min-width:0;flex:1}
+.top .brand b{font-size:.95rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .brand small{font-size:.72rem;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog{display:flex;align-items:center;gap:8px;font-size:.78rem;white-space:nowrap}
+.prog .bar{width:110px;height:8px;border-radius:99px;background:rgba(255,255,255,.22);overflow:hidden}
+.prog .bar i{display:block;height:100%;background:#FFC72C;border-radius:99px;width:0;transition:width .4s}
+.iconbtn{background:rgba(255,255,255,.12);border:0;border-radius:8px;width:34px;height:34px;display:grid;place-items:center;color:#fff;flex:none}
+.iconbtn:hover{background:rgba(255,255,255,.22)}
+.menubtn{display:none}
+@media (max-width:899px){.menubtn{display:grid}.prog .bar{width:64px}}
+@media (max-width:420px){.prog .lbl{display:none}}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1200px;margin:0 auto}
+@media (max-width:899px){.shell{grid-template-columns:minmax(0,1fr)}}
+nav.side{position:sticky;top:54px;align-self:start;height:calc(100vh - 54px);overflow:auto;padding:20px 12px 40px 16px;border-right:1px solid var(--line)}
+@media (max-width:899px){
+  nav.side{position:fixed;inset:54px 0 0 0;height:auto;background:var(--bg);z-index:15;border:0;transform:translateX(-100%);transition:transform .25s;padding:16px}
+  nav.side.open{transform:none}
+}
+.side .grp{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 8px 6px}
+.side .grp:first-child{margin-top:0}
+.side a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;text-decoration:none;color:var(--ink);font-size:.9rem;font-weight:500;line-height:1.3}
+.side a:hover{background:var(--sunk)}
+.side a.on{background:var(--navy-soft);color:var(--navy);font-weight:700}
+.side a .n{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk);color:var(--muted);border:1.5px solid var(--line)}
+.side a.done .n{background:var(--good);border-color:var(--good);color:#fff}
+.side a.on .n{border-color:var(--navy)}
+.side a .n.ico{font-size:.8rem}
+
+main{padding:28px 16px 80px;min-width:0}
+@media (min-width:900px){main{padding:36px 40px 100px}}
+.view{max-width:760px;margin:0 auto;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tag{display:inline-block;font-family:var(--mono);font-size:.7rem;font-weight:500;letter-spacing:0;text-transform:none;padding:2px 8px;border-radius:99px;background:var(--sunk);color:var(--muted)}
+.lead{font-size:1.05rem;color:var(--muted)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:18px 0;box-shadow:var(--shadow)}
+.card h3:first-child,.card h4:first-child{margin-top:0}
+
+/* reading box */
+.read{border:2px solid var(--navy);background:var(--navy-soft);border-radius:var(--r);padding:16px 18px;margin:20px 0}
+.read .hd{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.read .pg{font-family:var(--mono);font-size:.82rem;background:var(--navy);color:var(--navy-ink);padding:2px 9px;border-radius:6px}
+.read ul{margin:.3em 0 .8em;padding-left:1.2em}
+.read li{margin:.2em 0}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--line);cursor:pointer;font-weight:600;font-size:.92rem}
+.chk input{width:20px;height:20px;accent-color:var(--good);margin:1px 0 0;flex:none}
+
+/* callouts */
+.co{border-left:4px solid var(--dig);background:var(--dig-soft);padding:12px 16px;border-radius:0 10px 10px 0;margin:16px 0;font-size:.95rem}
+.co b.t{color:var(--dig)}
+.co.idn{border-color:var(--idn);background:var(--idn-soft)}
+.co.idn b.t{color:var(--idn)}
+.co.book{border-color:var(--gold);background:var(--gold-soft)}
+.co.book b.t{color:var(--gold)}
+.co p:last-child{margin:0}
+
+/* tables */
+.tw{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--sunk);font-weight:700;font-size:.8rem;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+
+.terms{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.terms span{font-size:.78rem;padding:3px 10px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-style:italic}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:.92rem;background:var(--navy);color:var(--navy-ink);text-decoration:none}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn.gold{background:var(--gold-bg);color:#1b1400}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:36px;padding-top:20px;border-top:1px solid var(--line)}
+
+/* quiz */
+.qwrap{position:relative}
+.qwrap.locked .qbody{filter:blur(3px);pointer-events:none;user-select:none;opacity:.6}
+.lockmsg{display:none;position:absolute;inset:0;z-index:2;align-items:center;justify-content:center;text-align:center;padding:16px}
+.qwrap.locked .lockmsg{display:flex}
+.lockmsg div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px;max-width:380px;box-shadow:0 6px 30px rgba(0,0,0,.12);font-size:.92rem}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0;background:var(--surface)}
+.q .qt{font-weight:600;margin-bottom:10px}
+.q .kind{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:5px;margin-bottom:6px;background:var(--sunk);color:var(--muted)}
+.q .kind.rb{background:var(--gold-soft);color:var(--gold)}
+.opts{display:grid;gap:7px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;padding:9px 12px;border-radius:9px;border:1.5px solid var(--line);background:var(--bg);font-size:.92rem;line-height:1.45}
+.opt:hover:not([disabled]){border-color:var(--navy)}
+.opt .L{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk)}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.ok .L{background:var(--good);color:#fff}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)}
+.opt.no .L{background:var(--bad);color:#fff}
+.opt.sel{border-color:var(--navy);background:var(--navy-soft)}
+.opt[disabled]{cursor:default}
+.fb{margin-top:10px;font-size:.88rem;padding:9px 12px;border-radius:8px}
+.fb.ok{background:var(--good-soft);color:var(--ink)}
+.fb.no{background:var(--bad-soft);color:var(--ink)}
+.fb b{margin-right:4px}
+.retry{margin-top:8px;font-size:.82rem;background:none;border:0;color:var(--navy);font-weight:700;padding:0;text-decoration:underline}
+
+/* classify widget */
+.cls .it{padding:12px 0;border-bottom:1px dashed var(--line)}
+.cls .it:last-child{border-bottom:0}
+.cls .it p{margin:0 0 8px;font-size:.93rem;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--line);background:var(--bg);border-radius:99px;padding:5px 12px;font-size:.8rem;font-weight:600}
+.chip:hover:not([disabled]){border-color:var(--navy)}
+.chip.ok{background:var(--good);border-color:var(--good);color:#fff}
+.chip.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.chip[disabled]{cursor:default}
+.cls .why{font-size:.84rem;color:var(--muted);margin-top:6px}
+.score{font-size:.85rem;font-weight:700;color:var(--muted)}
+
+/* simulator */
+.sim svg{width:100%;height:auto;display:block}
+.sim .ctl{display:grid;gap:10px;margin-top:10px}
+.sim input[type=range]{width:100%;accent-color:var(--navy)}
+.sim .out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.sim .out div{background:var(--sunk);border-radius:9px;padding:8px 10px;font-size:.78rem;color:var(--muted)}
+.sim .out b{display:block;font-size:1.05rem;color:var(--ink)}
+.state{font-weight:800;padding:8px 12px;border-radius:9px;text-align:center}
+.state.sh{background:var(--bad-soft);color:var(--bad)}
+.state.su{background:var(--gold-soft);color:var(--gold)}
+.state.eq{background:var(--good-soft);color:var(--good)}
+.tog{display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600}
+.tog input{width:18px;height:18px;accent-color:var(--dig)}
+
+/* calc */
+.calc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.calc{grid-template-columns:minmax(0,1fr)}}
+.calc label{font-size:.8rem;font-weight:600;color:var(--muted);display:grid;gap:4px}
+.calc input{font:inherit;font-size:.95rem;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.res{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--sunk);font-size:.92rem}
+.res big{font-size:1.4rem;font-weight:800;display:block}
+
+/* case */
+details.ans{margin-top:10px;border-radius:10px;border:1px dashed var(--gold);background:var(--gold-soft)}
+details.ans summary{cursor:pointer;padding:10px 14px;font-weight:700;color:var(--gold);font-size:.9rem}
+details.ans>div{padding:0 14px 12px;font-size:.92rem}
+details.ans.lock summary{color:var(--muted);cursor:not-allowed}
+textarea{font:inherit;font-size:.92rem;width:100%;min-height:92px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+textarea:focus{border-color:var(--navy);outline:none}
+.cq{margin:18px 0}
+.cq>b{display:block;margin-bottom:6px;font-size:.95rem}
+.hint{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+/* flashcards */
+.fc{perspective:1200px;margin:16px 0}
+.fc .inner{position:relative;min-height:230px;transition:transform .5s;transform-style:preserve-3d;cursor:pointer}
+.fc.flip .inner{transform:rotateY(180deg)}
+.fc .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;padding:24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border:1px solid var(--line);box-shadow:var(--shadow)}
+.fc .front{background:var(--navy);color:#fff}
+:root[data-theme="dark"] .fc .front{background:#1C2B4D;color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fc .front{background:#1C2B4D;color:var(--ink)}}
+.fc .front b{font-size:1.5rem;font-style:italic}
+.fc .back{background:var(--surface);transform:rotateY(180deg);font-size:1.02rem}
+.fc small{opacity:.7;font-size:.75rem;margin-top:10px}
+
+/* final */
+.big{font-size:2.6rem;font-weight:800;line-height:1}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--gold-bg);color:#1b1400;font-weight:800;padding:6px 14px;border-radius:99px}
+
+/* home */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+@media (max-width:620px){.steps{grid-template-columns:minmax(0,1fr)}}
+.steps div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.steps>div>b{display:block;font-size:1rem;margin-bottom:2px}
+.steps span{font-size:.85rem;color:var(--muted)}
+.steps i{font-style:normal;font-size:1.4rem}
+.plan td:nth-child(3){font-family:var(--mono);font-size:.8rem;white-space:nowrap}
+.plan .st{font-size:.75rem;font-weight:700;white-space:nowrap}
+.st.y{color:var(--good)}.st.n{color:var(--muted)}
+.hero{background:linear-gradient(135deg,#013880 0%,#0a4fa8 100%);color:#fff;border-radius:16px;padding:24px 22px;margin-bottom:20px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(1.6rem,1.2rem + 1.8vw,2.3rem);font-weight:800;margin:4px 0 8px}
+.hero p{opacity:.92;margin:0;max-width:56ch}
+.hero .eyebrow{color:#FFC72C}
+.hero::after{content:"";position:absolute;right:-40px;bottom:-60px;width:220px;height:220px;border-radius:50%;border:28px solid rgba(255,199,44,.18)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:.88rem;font-weight:600;z-index:40;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.foot{font-size:.78rem;color:var(--muted);margin-top:40px}
+ol.ref li{margin:.4em 0;font-size:.9rem}
+/* self-test (pola serviceman) */
+.quiz{scroll-margin-top:70px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow)}
+.qz-setup{display:flex;flex-direction:column;gap:14px}
+.qz-setup p{margin:0}
+.qz-lbl{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;font-size:.88rem;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.qz-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.qz-top .qz-lbl{margin:0}
+.qz-prog{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.qz-prog i{display:block;height:100%;background:var(--navy);width:0;transition:width .3s}
+.qz-q{font-size:1.18rem;font-weight:700;margin:0;line-height:1.4}
+.qz-opts{display:flex;flex-direction:column;gap:8px}
+.qz-opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;font-size:.95rem;line-height:1.45}
+.qz-opts button .k{font-family:var(--mono);font-size:.8rem;color:var(--muted);flex:none;padding-top:2px}
+.qz-opts button:hover:not(:disabled){border-color:var(--navy)}
+.qz-opts button:disabled{cursor:default}
+.qz-opts button.right{border-color:var(--good);background:var(--good-soft)}
+.qz-opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.qz-exp{border-radius:10px;padding:12px 14px;font-size:.93rem}
+.qz-exp.ok{background:var(--good-soft)}.qz-exp.no{background:var(--bad-soft)}
+.qz-exp b{display:block;margin-bottom:2px}
+.qz-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.res-big{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.res-big .pct{font-weight:800;font-size:3.4rem;line-height:1}
+.lo-bars{display:flex;flex-direction:column;gap:8px}
+.lo-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 44px;gap:10px;align-items:center;font-size:.86rem}
+@media (max-width:520px){.lo-row{grid-template-columns:minmax(0,1fr) 70px 40px}}
+.lo-row .b{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.lo-row .b i{display:block;height:100%}
+.lo-row .v{font-family:var(--mono);font-size:.78rem;text-align:right}
+.review{display:flex;flex-direction:column;gap:8px}
+.review details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.review summary{cursor:pointer;font-size:.92rem}
+.review .mk{font-family:var(--mono);font-weight:700;margin-right:6px}
+.review .mk.ok{color:var(--good)}.review .mk.no{color:var(--bad)}
+.review p{font-size:.88rem;margin:6px 0 0}
+.muted{color:var(--muted)}
+/* umpan balik studi kasus */
+.btn.sm{padding:7px 12px;font-size:.84rem}
+.fbk{margin-top:8px}
+.fbres{margin-top:10px}
+.gbox{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px}
+.ghead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.meter{display:flex;gap:4px}
+.meter i{width:22px;height:10px;border-radius:3px;background:var(--sunk)}
+.meter i.on{background:var(--navy)}
+.glv{font-weight:800}
+.gnote{font-size:.72rem;color:var(--muted);margin-left:auto}
+.crit{list-style:none;padding:0;margin:6px 0;display:grid;gap:5px}
+.crit li{font-size:.86rem;display:flex;gap:8px;align-items:flex-start}
+.crit li .m{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:.7rem;font-weight:800;margin-top:2px}
+.crit li.y .m{background:var(--good);color:#fff}
+.crit li.n .m{background:var(--sunk);color:var(--muted);border:1.5px dashed var(--muted)}
+.crit li.n span.h{color:var(--muted)}
+.gwarn{font-size:.84rem;background:var(--gold-soft);border-radius:8px;padding:8px 10px;margin-top:8px}
+.selfc{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.selfc label{display:flex;gap:8px;align-items:flex-start;font-size:.88rem;margin:6px 0;cursor:pointer}
+.selfc input{width:18px;height:18px;accent-color:var(--navy);flex:none;margin-top:2px}
+.stale{font-size:.8rem;color:var(--gold);font-weight:700;margin-top:6px}
+.csum{font-family:var(--mono);font-size:.75rem;font-weight:500;background:var(--sunk);color:var(--muted);padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle}
+
+/* widget topik 7 */
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:.8rem;font-weight:600;color:var(--ink)}
+.chip:hover{border-color:var(--navy)}
+.vsbar{height:12px;border-radius:6px;background:var(--surface);overflow:hidden;margin-top:8px;border:1px solid var(--line)}
+.vsbar i{display:block;height:100%;background:var(--good)}
+.calc3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.calc3{grid-template-columns:minmax(0,1fr)}}
+.calc3 fieldset{border:1px solid var(--line);border-radius:10px;padding:8px 10px 10px;margin:0;display:grid;gap:6px;align-content:start}
+.calc3 legend{font-size:.78rem;font-weight:800;color:var(--navy);padding:0 4px}
+.calc3 label{display:grid;gap:2px;font-size:.75rem;font-weight:600;color:var(--muted)}
+.calc3 input[type=number]{font:inherit;font-size:.88rem;padding:6px 8px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.tbar{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:.86rem;margin:6px 0 0}
+.tbar i{display:block;height:14px;border-radius:7px;min-width:4px}
+
+/* logo ITS & tombol beranda */
+.top .logo{display:flex;align-items:center;flex:none;line-height:0}
+.top .logo img{height:44px;width:auto;display:block}
+.top .logo .mk{display:none}
+@media (max-width:640px){.top .logo .full{display:none}.top .logo .mk{display:block;height:34px}}
+.homebtn{flex:none;display:inline-flex;align-items:center;gap:6px;background:#FFC72C;color:#013880;font-weight:800;font-size:.82rem;line-height:1;text-decoration:none;padding:9px 13px;border-radius:9px;box-shadow:0 0 0 2px rgba(255,255,255,.28);white-space:nowrap}
+.homebtn:hover{background:#FFD65C}
+.homebtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+@media (max-width:560px){.homebtn .t{display:none}.homebtn{padding:9px 11px;font-size:.95rem}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <button class="iconbtn menubtn" id="menuBtn" aria-label="Buka menu" aria-expanded="false">☰</button>
+  <a class="logo" href="../" aria-label="Beranda mata kuliah Pengantar Bisnis Digital, ITS"><img class="full" src="../assets/its-logo-white.png" alt="Institut Teknologi Sepuluh Nopember" width="77" height="44"><img class="mk" src="../assets/its-mark-white.png" alt="ITS" width="23" height="34"></a>
+  <div class="brand"><b>Topik 07 · Manajemen Rantai Pasok dan Permintaan</b><small>Pengantar Bisnis Digital (DG234101) · ITS</small></div>
+  <div class="prog" title="Kemajuan belajar"><span class="lbl" id="progLbl">0%</span><span class="bar"><i id="progBar"></i></span></div>
+  <a class="homebtn" href="../" title="Kembali ke beranda mata kuliah"><span aria-hidden="true">⌂</span><span class="t">Beranda</span></a>
+  <button class="iconbtn" id="themeBtn" aria-label="Ganti tema terang/gelap">◐</button>
+</header>
+
+<div class="shell">
+<nav class="side" id="side" aria-label="Navigasi materi"></nav>
+<main id="main">
+
+<!-- ================= HOME ================= -->
+<section class="view" data-view="home">
+  <div class="hero">
+    <div class="eyebrow">Minggu 7 · Belajar Mandiri</div>
+    <h1>Manajemen Rantai Pasok dan Permintaan</h1>
+    <p>Janji di layar ("sampai besok", "stok tersedia", "harga termurah") hanya bisa ditepati bila rantai pasok di belakangnya bekerja. Topik ini membahas bagaimana teknologi digital mengubah aliran barang dan informasi: dari pemasok hingga pelanggan, dari pengadaan hingga pengiriman jarak terakhir.</p>
+  </div>
+
+  <div class="card">
+    <h3>🎯 Sub-CPMK 7 <span class="tag">CPMK4</span></h3>
+    <p style="margin:0">Mahasiswa mampu menganalisis transformasi digital dalam manajemen rantai pasok dan e-procurement, serta memahami model push vs. pull.</p>
+  </div>
+
+  <h3>Cara memakai aplikasi ini</h3>
+  <p>Aplikasi ini <b>bukan pengganti buku</b>. Ringkasan di sini sengaja dibuat padat; detail, gambar, dan kasus ada di buku. Setiap unit mengikuti tiga langkah:</p>
+  <div class="steps">
+    <div><i>📖</i><b>1. Baca</b><span>Buka subbab Chaffey Bab 6 yang ditunjuk, dengan pertanyaan pemandu sebagai fokus.</span></div>
+    <div><i>✅</i><b>2. Cek</b><span>Centang "sudah membaca" untuk membuka soal. Soal berlabel <span style="font-weight:700">Cek Bacaan</span> hanya bisa dijawab dari buku.</span></div>
+    <div><i>🧩</i><b>3. Terapkan</b><span>Hitung perputaran persediaan, efisiensi value stream, dan penghematan e-procurement; analisis kasus Indonesia.</span></div>
+  </div>
+  <p class="hint">Kemajuan Anda tersimpan otomatis di peramban ini (bukan di server). Gunakan menu <b>Catatan &amp; Referensi</b> untuk menyalin atau mengunduh semua jawaban Anda.</p>
+
+  <h3>Rencana belajar (± 4 jam)</h3>
+  <div class="tw"><table class="plan">
+    <thead><tr><th>#</th><th>Unit</th><th>Bacaan</th><th>Status</th></tr></thead>
+    <tbody id="planBody"></tbody>
+  </table></div>
+  <p class="hint">Bacaan utama: Chaffey, D., Hemphill, T., &amp; Edmundson-Bird, D. (2019). <em>Digital Business and E-Commerce Management</em> (7th ed.). Pearson. Bab 6: <em>Supply chain and demand</em>. Rujukan memakai <b>nama subbab</b> serta nomor <b>Gambar, Tabel, Box, dan Case Study</b>.</p>
+
+  <div class="co idn"><b class="t">🇮🇩 Kasus Indonesia minggu ini.</b> Selain Case Study 6.3 dari buku (Argos), Anda akan menganalisis <b>Katalog Elektronik versi 6</b> LKPP untuk pengadaan pemerintah, model <b>quick commerce</b> Astro dengan janji antar 15 menit, dan menghitung manfaat e-procurement untuk pengadaan sebuah kampus.</div>
+
+  <h3>🔥 Pemanasan (5 menit)</h3>
+  <div class="card">
+    <p>Ingat satu belanja online terakhir Anda yang terlambat, salah kirim, atau Anda kembalikan.</p>
+    <div class="cq"><b>Apa yang terjadi, dan di titik mana dalam perjalanan barang menurut Anda masalahnya muncul?</b><textarea data-note="warm_know" placeholder="Barang: … Masalah: … Titik masalah: …"></textarea></div>
+    <div class="cq"><b>Siapa yang menanggung biaya masalah itu: Anda, penjual, marketplace, atau kurir? Simpan jawaban ini; Anda akan menimbangnya lagi di Unit 1 dan 2.</b><textarea data-note="warm_want" placeholder="Menurut saya…"></textarea></div>
+  </div>
+  <div class="pager"><span></span><a class="btn" href="#u1">Mulai Unit 1 →</a></div>
+</section>
+
+<!-- ================= UNIT 1 ================= -->
+<section class="view" data-view="u1" data-unit="1">
+  <div class="eyebrow">Unit 1 <span class="tag">LO Bab 6</span><span class="tag">± 35 menit</span></div>
+  <h2>Rantai Pasok dan Masalah yang Diatasi Teknologi Digital</h2>
+  <div class="read" data-read="1">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 6 · Introduction · Case Study 6.1 · Tabel 6.1 · What is supply chain management?</span></div>
+    <p style="margin:0 0 4px">Bagian pembuka Bab 6, Case Study 6.1 (Zara), <em>Problems of supply chain management</em> (Tabel 6.1), dan <em>What is supply chain management and e-procurement?</em> Cari jawaban:</p>
+    <ul>
+      <li>Berapa persen pakaian yang dijual Zara dengan harga penuh dibanding rata-rata industri, dan mengapa?</li>
+      <li>Apa beda rantai pasok <em>upstream</em> dan <em>downstream</em>?</li>
+      <li>Apa empat pilar keberhasilan rantai pasok menurut IGD (2017)?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="1"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b>Supply chain management (SCM)</b> adalah koordinasi seluruh aktivitas pasokan organisasi, dari pemasok dan mitra hingga pelanggan: optimasi <b>aliran material</b> dan <b>aliran informasi</b>. Aktivitas <b>upstream</b> (pengadaan, logistik masuk) setara dengan <em>buy-side e-commerce</em>; aktivitas <b>downstream</b> (penjualan, logistik keluar, pemenuhan pesanan) setara dengan <em>sell-side e-commerce</em>. Karena setiap perusahaan punya banyak rantai untuk banyak produk, istilah <b>supply chain network</b> lebih tepat.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Masalah SCM (diringkas dari Tabel 6.1)</th><th>Bantuan teknologi digital</th></tr></thead>
+    <tbody>
+      <tr><td>Tekanan menurunkan biaya produksi dan distribusi</td><td>Dokumen elektronik, persediaan lebih rendah, SCM berbasis SaaS</td></tr>
+      <tr><td>Peramalan permintaan</td><td>Berbagi data permintaan dengan pemasok (ECR)</td></tr>
+      <tr><td>Barang tidak tersedia di rak atau terlambat</td><td>Vendor-managed inventory: pemasok bertanggung jawab atas ketersediaan</td></tr>
+      <tr><td>Salah kirim</td><td>Kesalahan manusia berkurang lewat pemeriksaan otomatis</td></tr>
+      <tr><td>Biaya persediaan tinggi</td><td>Peramalan lebih baik dan pengisian ulang lebih cepat</td></tr>
+    </tbody>
+  </table></div>
+  <p>Ukuran kunci efisiensi persediaan adalah <b>inventory turnover</b>: harga pokok penjualan dibagi rata-rata persediaan. Perputaran terlalu rendah menandakan stok berlebih; terlalu tinggi bisa berarti stok kurang sehingga penjualan hilang. Biaya <b>retur</b> juga besar: menurut buku, memproses barang kembali bisa memakan dua kali biaya pengirimannya.</p>
+
+  <div class="card" id="invTool">
+    <h4>📦 Kalkulator perputaran persediaan</h4>
+    <div class="calc">
+      <label>Harga pokok penjualan setahun (Rp juta)<input type="number" id="ivC" value="12000" step="100" min="0"></label>
+      <label>Rata-rata persediaan (Rp juta)<input type="number" id="ivI" value="2000" step="50" min="1"></label>
+    </div>
+    <div class="row" style="gap:6px;margin-top:8px"><button class="chip" data-iv="zara">Bandingkan: logika Zara</button><button class="chip" data-iv="slow">Toko dengan stok menumpuk</button></div>
+    <div class="res" id="ivRes"></div>
+  </div>
+
+  <div class="co idn"><b class="t">🇮🇩 Konteks Indonesia.</b> Pemerintah mencatat biaya logistik nasional sekitar 14,29% dari PDB (2023), turun dari sekitar 24% (Bank Dunia, 2020), tetapi masih jauh di atas negara maju sekitar 8%, yang menjadi target 2045. Sebagai negara kepulauan, ongkos kirim antarpulau sering lebih mahal daripada harga barangnya sendiri. Bagi bisnis digital, efisiensi rantai pasok bukan urusan "belakang layar": ia menentukan harga, kecepatan, dan jangkauan pasar.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u1"></div>
+  <div class="pager"><a class="btn ghost" href="#home">← Beranda</a><a class="btn" href="#u2">Unit 2 →</a></div>
+</section>
+
+<!-- ================= UNIT 2 ================= -->
+<section class="view" data-view="u2" data-unit="2">
+  <div class="eyebrow">Unit 2 <span class="tag">LO Bab 6</span><span class="tag">± 35 menit</span></div>
+  <h2>Logistik, Push vs Pull, ECR, dan VMI</h2>
+  <div class="read" data-read="2">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 6 · Box 6.2 · Case Study 6.2 · What is logistics? · Push and pull supply chain models</span></div>
+    <p style="margin:0 0 4px">Box 6.2 (ECR), Case Study 6.2 (Shell Chemicals), subbab tentang logistik dan pengiriman di hari yang sama, serta model push dan pull (Gambar 6.6). Cari jawaban:</p>
+    <ul>
+      <li>Informasi apa yang harus diberikan pelanggan kepada Shell agar sistem SIMON bisa mengelola persediaannya?</li>
+      <li>Berapa lama rata-rata truk menunggu sebelum dan sesudah Shell beralih ke Elemica?</li>
+      <li>Apa empat prasyarat pengiriman di hari yang sama menurut Hausmann dkk. (2014)?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="2"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b>Logistik</b> adalah penempatan sumber daya terkait waktu, sering disebut "lima tepat": tempat, waktu, jumlah, kualitas, dan harga yang tepat. <b>Logistik masuk</b> mengelola barang dari pemasok; <b>logistik keluar</b> mengelola barang ke pelanggan. Pertumbuhan belanja online membuat <b>last mile</b> (langkah pengiriman terakhir ke pelanggan) makin penting, termasuk loker dan titik ambil.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Model</th><th>Ciri</th><th>Motivasi</th></tr></thead>
+    <tbody>
+      <tr><td><b>Push</b></td><td>Produsen mengembangkan produk lalu "mendorong" ke pelanggan yang pasif lewat distribusi</td><td>Mengoptimalkan biaya dan efisiensi produksi</td></tr>
+      <tr><td><b>Pull</b></td><td>Dimulai dari kebutuhan pelanggan; pelanggan aktif menentukan spesifikasi; mitra terhubung erat</td><td>Mengoptimalkan respons pelanggan, biaya, dan efisiensi</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="push"><h4>🧩 Latihan: push atau pull?</h4></div>
+  <p><b>Efficient consumer response (ECR)</b> berfokus pada pengelolaan <em>permintaan</em>: optimasi ragam produk, promosi, dan peluncuran produk baru. <b>Vendor-managed inventory (VMI)</b> memindahkan tugas pengelolaan stok, pembelian, dan pelacakan pesanan dari pelanggan ke pemasok, berdasarkan data persediaan dan permintaan yang dibagikan. Contoh buku: Shell Chemicals dengan sistem SIMON, lalu marketplace industri kimia Elemica.</p>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Distributor barang konsumsi yang memantau stok di jaringan minimarket lalu mengirim ulang otomatis menjalankan logika VMI. Pengiriman instan dan di hari yang sama di kota besar Indonesia memenuhi prasyarat Hausmann dkk.: stok tersedia dekat pelanggan (gudang mikro atau toko), visibilitas stok real-time, proses ambil-kemas cepat, dan armada kurir yang fleksibel. Studi Kasus 3 membahas model ekstremnya: quick commerce 15 menit.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u2"></div>
+  <div class="pager"><a class="btn ghost" href="#u1">← Unit 1</a><a class="btn" href="#u3">Unit 3 →</a></div>
+</section>
+
+<!-- ================= UNIT 3 ================= -->
+<section class="view" data-view="u3" data-unit="3">
+  <div class="eyebrow">Unit 3 <span class="tag">LO Bab 6</span><span class="tag">± 35 menit</span></div>
+  <h2>Value Chain, Value Stream, dan Value Network</h2>
+  <div class="read" data-read="3">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 6 · Focus on The value chain · Gambar 6.7–6.8 · Debate 6.1</span></div>
+    <p style="margin:0 0 4px">Subbab <em>Focus on The value chain</em>: value chain Porter dan kritiknya, virtual value chain, value stream (Womack &amp; Jones), analisis value chain lima langkah (Porter &amp; Millar), dan value network. Cari jawaban:</p>
+    <ul>
+      <li>Apa tiga kelemahan model value chain tradisional menurut Chaffey?</li>
+      <li>Pada contoh kaleng minuman, berapa total waktu siklus dari tambang hingga rumah, dibanding waktu pemrosesannya?</li>
+      <li>Berapa penurunan biaya transaksi pembelian rata-rata setelah BT menerapkan e-procurement?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="3"> Saya sudah membaca subbab tersebut</label>
+  </div>
+
+  <p><b>Value chain</b> (Porter) menguraikan aktivitas yang menambah nilai, dari aktivitas primer hingga pendukung. Nilai tercipta <em>di dalam</em> tiap aktivitas dan <em>di antarmuka</em> antar-aktivitas. Kritiknya: model ini paling cocok untuk manufaktur, bersifat satu arah (mendorong produk), dan kurang menonjolkan jaringan. Rayport dan Sviokla (1996) menambahkan <b>virtual value chain</b>: aktivitas yang dimediasi informasi elektronik.</p>
+  <p><b>Value stream</b> (Womack &amp; Jones, 1998) memetakan semua aktivitas untuk menghantarkan produk, lalu mengelompokkannya: (1) menciptakan nilai bagi pelanggan; (2) tidak menciptakan nilai tetapi masih diperlukan; (3) tidak menambah nilai dan bisa segera dihapus. Contoh buku: kaleng minuman butuh hampir setahun dari tambang bauksit hingga rumah, padahal pemrosesannya hanya sekitar tiga jam.</p>
+  <div class="card cls" data-widget="womack"><h4>🧩 Latihan: kategori aktivitas value stream</h4></div>
+
+  <div class="card" id="vsTool">
+    <h4>⏳ Kalkulator efisiensi value stream</h4>
+    <p class="hint">Efisiensi siklus = waktu pemrosesan yang menambah nilai ÷ total waktu siklus. Masukkan dalam jam.</p>
+    <div class="calc">
+      <label>Waktu pemrosesan (jam)<input type="number" id="vsP" value="3" step="0.5" min="0"></label>
+      <label>Waktu tunggu/penyimpanan (jam)<input type="number" id="vsW" value="7920" step="24" min="0"></label>
+    </div>
+    <div class="row" style="gap:6px;margin-top:8px"><button class="chip" data-vs="can">Kaleng minuman (buku)</button><button class="chip" data-vs="umkm">Pesanan UMKM batik</button></div>
+    <div class="res" id="vsRes"></div>
+  </div>
+
+  <p><b>Value network</b> menekankan hubungan digital dengan mitra: mitra sisi pasok, mitra yang menjalankan aktivitas inti, mitra sisi jual, dan <em>value chain integrators</em> yang menyediakan infrastruktur elektronik. Jaringan ini dinamis: mitra bisa ditambah atau diganti sesuai kondisi pasar.</p>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Banyak UMKM makanan di Indonesia bergantung pada value network digital: bahan baku dari pemasok lewat WhatsApp, pesanan dari aplikasi pesan-antar, pembayaran lewat QRIS, dan pengiriman oleh kurir aplikasi. UMKM itu sendiri hanya memegang aktivitas inti (memasak dan menjaga mutu). Inilah wujud kecil dari integrasi virtual (Unit 4).</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u3"></div>
+  <div class="pager"><a class="btn ghost" href="#u2">← Unit 2</a><a class="btn" href="#u4">Unit 4 →</a></div>
+</section>
+
+<!-- ================= UNIT 4 ================= -->
+<section class="view" data-view="u4" data-unit="4">
+  <div class="eyebrow">Unit 4 <span class="tag">LO Bab 6</span><span class="tag">± 35 menit</span></div>
+  <h2>Restrukturisasi Rantai Pasok dan Integrasi Online-Offline</h2>
+  <div class="read" data-read="4">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 6 · Options for restructuring the supply chain · Using digital business to restructure the supply chain · Case Study 6.3</span></div>
+    <p style="margin:0 0 4px">Subbab tentang pilihan restrukturisasi rantai pasok (Gambar 6.9, Activity 6.2), information supply chain dan efek <em>bullwhip</em>, opsi teknologi, lima manfaat eSCM, dan Case Study 6.3 (Argos). Cari jawaban:</p>
+    <ul>
+      <li>Apa beda vertical integration, vertical disintegration, dan virtual integration? Mana yang mewakili IBM 1980-an dan Dell?</li>
+      <li>Apa yang dimaksud efek <em>bullwhip</em> atau <em>information asymmetry</em>?</li>
+      <li>Berapa porsi penjualan Argos dari fitur Check &amp; Reserve pada 2009?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="4"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Pilihan struktur rantai pasok adalah kontinuum dari <b>vertical integration</b> (aktivitas dikendalikan sendiri) melalui <b>vertical disintegration</b> hingga <b>virtual integration</b> (sebagian besar aktivitas dijalankan pihak ketiga). Contoh buku: IBM 1980-an membuat sendiri prosesor, hard disk, monitor, bahkan mouse; Dell memakai komponen pihak ketiga dan merakit sesuai pesanan. Hayes dan Wheelwright (1994) menyebut tiga keputusan: <b>arah</b> ekspansi (upstream atau downstream), <b>luas</b> integrasi (<em>process span</em>), dan <b>keseimbangan</b> antar-tahap.</p>
+  <div class="card cls" data-widget="integ"><h4>🧩 Latihan: vertical atau virtual integration?</h4></div>
+  <p>Efisiensi rantai pasok bergantung pada <b>information supply chain</b>. Masalah klasiknya adalah <b>efek bullwhip</b>: sinyal permintaan membesar dan persediaan berfluktuasi di sepanjang rantai karena informasi tidak dibagi dengan baik. Teknologi pendukungnya EDI, XML, middleware, dan ERP. Chaffey menyebut lima manfaat eSCM: efisiensi proses, rantai yang lebih sederhana (disintermediasi), integrasi data, biaya lebih rendah lewat outsourcing, dan inovasi.</p>
+  <div class="co"><b class="t">💡 Argos (Case Study 6.3).</b> Fitur <em>Check &amp; Reserve</em> (cek stok toko secara online, lalu ambil di toko) menyumbang 22% total penjualan Argos pada 2009 dan tumbuh 36%. Kuncinya integrasi situs dengan sistem stok: karena stok disimpan di bagian belakang toko, informasi ketersediaan akurat dan barang bisa langsung diambil.</div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh integrasi online-offline.</b> Jaringan minimarket yang menyediakan "pesan di aplikasi, ambil di toko" serta marketplace yang memakai gerai sebagai titik ambil dan titik bayar menerapkan logika yang sama dengan Argos. Tantangannya juga sama: tanpa data stok per gerai yang akurat, janji "tersedia" berubah menjadi kekecewaan pelanggan.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u4"></div>
+  <div class="pager"><a class="btn ghost" href="#u3">← Unit 3</a><a class="btn" href="#u5">Unit 5 →</a></div>
+</section>
+
+<!-- ================= UNIT 5 ================= -->
+<section class="view" data-view="u5" data-unit="5">
+  <div class="eyebrow">Unit 5 <span class="tag">LO Bab 6</span><span class="tag">± 35 menit</span></div>
+  <h2>Implementasi eSCM: Visibilitas, RFID, Kinerja, dan Kemitraan</h2>
+  <div class="read" data-read="5">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 6 · IS infrastructure for SCM · Supply chain management implementation · Managing partnerships · Case Study 6.4 · Tabel 6.3–6.4</span></div>
+    <p style="margin:0 0 4px">Subbab tentang infrastruktur SI untuk SCM (Gambar 6.10), RFID dan Internet of Things, implementasi dan strategi SCM (Tabel 6.3, Gambar 6.11), ukuran kinerja eSCM, pengelolaan kemitraan (Tabel 6.4), dan Case Study 6.4. Cari jawaban:</p>
+    <ul>
+      <li>Apa yang dimaksud <em>supply chain visibility</em>?</li>
+      <li>Menurut Stuart dan McCutcheon (2000), bentuk kemitraan apa yang cocok bila tujuannya penurunan biaya, dan apa bila tujuannya nilai tambah?</li>
+      <li>Mengapa banyak perusahaan menunda RFID menurut Case Study 6.4?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="5"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b>Supply chain visibility</b> adalah akses ke informasi proses rantai pasok yang mutakhir, akurat, dan relevan bagi tiap pihak: pelanggan ingin tahu status pesanan, pemasok ingin tahu kapan pesanan besar berikutnya. Infrastrukturnya berupa basis data operasional terpadu (biasanya ERP) dengan tampilan berbeda per pihak, serta aplikasi perencanaan dan eksekusi. <b>RFID</b> memungkinkan barang dilacak tanpa garis pandang ("barcode on steroids"); bila terhubung ke internet, disebut <b>Internet of Things</b>. Kendalanya: biaya, standar, keamanan data, dan sulitnya membuktikan ROI.</p>
+  <p>Strategi perbaikan rantai pasok dipetakan menurut <b>cakupan</b> dan <b>kecepatan</b> perubahan (Gambar 6.11): perbaikan proses tunggal berisiko rendah, sedangkan rekayasa ulang menyeluruh berisiko tinggi dengan potensi imbal hasil besar. Ukuran kinerja eSCM mencakup biaya, profitabilitas, responsivitas, fleksibilitas, kemitraan, kinerja pengiriman, kepuasan pelanggan, waktu, dan kualitas (Sambasivan dkk., 2009).</p>
+  <div class="card cls" data-widget="partner"><h4>🧩 Latihan: bentuk kemitraan yang cocok</h4></div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Fitur lacak paket dengan status per jam di aplikasi kurir dan marketplace adalah wujud <em>supply chain visibility</em> bagi pelanggan. Di sisi bisnis, banyak penjual Indonesia memakai fulfilment pihak ketiga (gudang dan pengiriman dikelola mitra), sehingga memilih bentuk kemitraan (kontrak jangka panjang dengan SLA atau tender kompetitif) menjadi keputusan strategis.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u5"></div>
+  <div class="pager"><a class="btn ghost" href="#u4">← Unit 4</a><a class="btn" href="#u6">Unit 6 →</a></div>
+</section>
+
+<!-- ================= UNIT 6 ================= -->
+<section class="view" data-view="u6" data-unit="6">
+  <div class="eyebrow">Unit 6 <span class="tag">LO Bab 6</span><span class="tag">± 40 menit</span></div>
+  <h2>E-procurement: Jenis, Pendorong, dan Penghematan</h2>
+  <div class="read" data-read="6">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 6 · What is e-procurement? · Drivers of e-procurement · Focus on Estimating e-procurement costs · Tabel 6.5–6.7 · Case Study 6.5</span></div>
+    <p style="margin:0 0 4px">Subbab tentang pengertian dan jenis e-procurement, pendorongnya (Smart, 2010), contoh manfaat (Case Study 6.5 Honeywell), dan estimasi biaya e-procurement (Tabel 6.7, Activity 6.5). Cari jawaban:</p>
+    <ul>
+      <li>Berapa waktu siklus khas pengadaan tradisional dibanding e-procurement (Tabel 6.5 dan 6.6)?</li>
+      <li>Apa lima jenis e-procurement (Knudsen, 2003; Smart, 2010)?</li>
+      <li>Industri mana yang biaya pengadaannya paling besar terhadap harga pokok penjualan (Tabel 6.7)?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="6"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b>E-procurement</b> adalah integrasi dan pengelolaan elektronik seluruh aktivitas pengadaan: permintaan, otorisasi, pemesanan, pengiriman, dan pembayaran. <em>Procurement</em> lebih luas daripada <em>purchasing</em> karena mencakup logistik masuk dan pergudangan. Sasarannya lima tepat pembelian: harga, waktu, kualitas, jumlah, dan sumber yang tepat. Barang yang dibeli terbagi menjadi <b>terkait produksi</b> dan <b>non-produksi/MRO</b> (perlengkapan kantor, suku cadang, tiket perjalanan); cara membelinya <b>systematic sourcing</b> (kontrak dengan pemasok tetap) atau <b>spot sourcing</b> (kebutuhan mendadak).</p>
+  <div class="card cls" data-widget="eproc"><h4>🧩 Latihan: jenis e-procurement</h4></div>
+  <p>Pendorong adopsi (Smart, 2010): <b>kontrol</b>, <b>biaya</b>, <b>proses</b>, <b>kinerja individu</b>, dan <b>pengelolaan pemasok</b>. Contoh buku: siklus pengadaan tradisional sekitar 5,5 hari menjadi sekitar 1,5 hari; BT membeli 95% kebutuhan kantor secara online dan menurunkan biaya transaksi rata-rata dari £56 menjadi £40. Rumus penghematan: <b>jumlah permintaan × (biaya lama − biaya baru)</b>.</p>
+
+  <div class="card" id="epTool">
+    <h4>💰 Kalkulator penghematan dan dampak laba e-procurement (Activity 6.5)</h4>
+    <div class="calc3">
+      <fieldset><legend>Biaya proses pengadaan</legend>
+        <label>Permintaan pembelian per bulan<input type="number" id="epN" value="2000" step="100" min="0"></label>
+        <label>Biaya proses per pesanan, cara lama (Rp ribu)<input type="number" id="epO" value="750" step="10" min="0"></label>
+        <label>Biaya proses per pesanan, e-procurement (Rp ribu)<input type="number" id="epE" value="250" step="10" min="0"></label>
+      </fieldset>
+      <fieldset><legend>Dampak terhadap laba (Rp juta/tahun)</legend>
+        <label>Pendapatan<input type="number" id="epT" value="10000" step="100" min="0"></label>
+        <label>Biaya pembelian<input type="number" id="epP" value="5000" step="100" min="0"></label>
+        <label>Biaya lain<input type="number" id="epX" value="4000" step="100" min="0"></label>
+        <label>Penurunan biaya pembelian (%)<input type="number" id="epR" value="20" step="1" min="0" max="100"></label>
+      </fieldset>
+      <fieldset><legend>Contoh dari buku (Tabel 6.9)</legend>
+        <button class="chip" data-ep="A">Perusahaan A</button>
+        <button class="chip" data-ep="B">Perusahaan B</button>
+        <p class="hint" style="margin:0">Pendapatan sama, tetapi porsi biaya pembeliannya berbeda. Angka buku dalam poundsterling (£10 juta, £5 juta, dst.); di sini dipakai dalam satuan "juta" yang sama, karena yang penting adalah proporsinya.</p>
+      </fieldset>
+    </div>
+    <div class="res" id="epRes"></div>
+  </div>
+
+  <div class="co idn"><b class="t">🇮🇩 E-procurement pemerintah.</b> Pengadaan pemerintah Indonesia memakai sistem elektronik LKPP, termasuk <b>Katalog Elektronik</b> (e-Katalog). Versi 6 diluncurkan Presiden pada 10 Desember 2024 dan wajib dipakai seluruh kementerian, lembaga, dan pemerintah daerah mulai 1 Januari 2025. Fiturnya antara lain harga dan spesifikasi yang bisa dilihat publik, integrasi pembayaran untuk usaha mikro dan kecil, serta e-audit dan pemantauan transaksi real-time. Studi Kasus 2 membahasnya.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u6"></div>
+  <div class="pager"><a class="btn ghost" href="#u5">← Unit 5</a><a class="btn" href="#u7">Unit 7 →</a></div>
+</section>
+
+<!-- ================= UNIT 7 ================= -->
+<section class="view" data-view="u7" data-unit="7">
+  <div class="eyebrow">Unit 7 <span class="tag">LO Bab 6</span><span class="tag">± 30 menit</span></div>
+  <h2>Implementasi E-procurement dan Marketplace B2B</h2>
+  <div class="read" data-read="7">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 6 · Barriers and risks · Implementing e-procurement · Focus on B2B marketplaces · Tabel 6.10–6.11 · The future of e-procurement</span></div>
+    <p style="margin:0 0 4px">Subbab tentang hambatan dan risiko e-procurement, implementasinya (Gambar 6.14–6.16, Tabel 6.10), marketplace B2B (Tabel 6.11), dan masa depan e-procurement. Cari jawaban:</p>
+    <ul>
+      <li>Apa itu <em>maverick purchasing</em>, dan mengapa risikonya muncul dengan e-procurement?</li>
+      <li>Apa kelebihan dan kekurangan model sell-side, buy-side, dan marketplace bagi pembeli?</li>
+      <li>Apa empat jenis marketplace B2B menurut Kaplan dan Sawhney (2000)?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="7"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Hambatan e-procurement: persaingan dalam pembelian kolektif, persepsi negatif pemasok (margin tergerus lelang terbalik), biaya membuat katalog, resistensi budaya, dan ancaman pengurangan staf. Risiko lain adalah <b><em>maverick purchasing</em></b>: pemesan yang diberdayakan membeli barang yang tidak perlu atau terlalu mahal, sehingga sistem perlu aturan (batas anggaran, katalog yang disetujui, alur persetujuan). CIPS menegaskan: <b>rekayasa ulang proses dulu</b>, jangan sekadar mengotomatisasi proses kertas.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Model (Tabel 6.10)</th><th>Kelebihan bagi pembeli</th><th>Kekurangan bagi pembeli</th></tr></thead>
+    <tbody>
+      <tr><td><b>Sell-side</b> (situs katalog pemasok)</td><td>Pencarian mudah; pemasok yang memelihara data</td><td>Antarmuka berbeda di tiap situs, pilihan terbatas, integrasi dengan ERP buruk, kontrol pembelian lemah</td></tr>
+      <tr><td><b>Buy-side</b> (sistem/exchange milik pembeli)</td><td>Satu antarmuka, pilihan lebih luas, terintegrasi ERP, kontrol baik</td><td>Pembeli memelihara data, biaya lisensi, pelatihan ulang</td></tr>
+      <tr><td><b>Marketplace independen</b></td><td>Pilihan terluas, syarat dan formulir seragam</td><td>Sulit memilih marketplace, kontrol dan integrasi lebih lemah, mutu pemasok tidak dikenal</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="ks"><h4>🧩 Latihan: jenis marketplace B2B (Kaplan &amp; Sawhney, 2000)</h4></div>
+  <p>Masa depan e-procurement mengarah ke <b>agen perangkat lunak</b> dan AI: Gartner menyebut asisten pengadaan virtual dan penasihat pengadaan kognitif yang membantu mengklasifikasi belanja, menilai pemasok, dan mengelola risiko. Pertanyaan yang belum terjawab: bagaimana mesin menilai kepercayaan dan kompetensi pemasok sebagai mitra?</p>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Platform pengadaan B2B untuk bisnis dan instansi di Indonesia umumnya berbentuk katalog daring dengan alur persetujuan dan faktur elektronik. Katalog Elektronik pemerintah dekat dengan model <em>buy-side</em> (dikelola pihak pembeli, yaitu negara, dengan pemasok yang ditayangkan), sedangkan marketplace B2B umum dekat dengan model marketplace independen. Pertanyaan Debate 6.4 relevan: siapa yang akan dominan?</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u7"></div>
+  <div class="pager"><a class="btn ghost" href="#u6">← Unit 6</a><a class="btn" href="#cases">Studi Kasus →</a></div>
+</section>
+
+<!-- ================= CASES ================= -->
+<section class="view" data-view="cases">
+  <div class="eyebrow">Penerapan <span class="tag">± 90 menit</span></div>
+  <h2>Studi Kasus</h2>
+  <p class="lead">Satu kasus dari buku, dua kasus Indonesia, dan satu latihan kelompok. Alur setiap pertanyaan: <b>tulis jawaban → minta umpan balik aplikasi → nilai diri dengan checklist → buka arah jawaban</b>.</p>
+  <div class="co book"><b class="t">ℹ️ Tentang umpan balik otomatis.</b> Aplikasi memeriksa apakah konsep kunci dan penalaran ("karena", "sehingga") muncul dalam jawaban Anda. Aplikasi <b>tidak</b> bisa menilai apakah argumen Anda benar atau tajam. Skor 0–4 ini hanya umpan balik belajar, <b>bukan nilai</b>. Checklist penilaian diri menilai bagian yang tidak bisa diukur mesin.</div>
+  <div id="caseList"></div>
+  <div class="pager"><a class="btn ghost" href="#u7">← Unit 7</a><a class="btn" href="#final">Kuis Akhir →</a></div>
+</section>
+
+<!-- ================= FINAL ================= -->
+<section class="view" data-view="final">
+  <div class="eyebrow">Self-test</div>
+  <h2>Kuis Akhir: Uji Pemahaman</h2>
+  <div class="quiz" id="finalBox"></div>
+</section>
+
+<!-- ================= FLASH ================= -->
+<section class="view" data-view="cards">
+  <div class="eyebrow">Penguatan</div>
+  <h2>Flashcard Istilah Kunci</h2>
+  <p class="lead">Ketuk kartu untuk membalik. Tandai yang sudah Anda kuasai; sisanya akan muncul lagi.</p>
+  <div class="row" style="justify-content:space-between"><span class="score" id="fcCount"></span><button class="btn ghost" id="fcShuffle" style="padding:6px 12px">⤮ Acak</button></div>
+  <div class="fc" id="fc" tabindex="0" role="button" aria-label="Balik kartu"><div class="inner"><div class="face front"><b id="fcF"></b><small>ketuk untuk membalik</small></div><div class="face back"><div id="fcB"></div></div></div></div>
+  <div class="row" style="justify-content:center">
+    <button class="btn ghost" id="fcPrev">←</button>
+    <button class="btn gold" id="fcKnow">✓ Sudah hafal</button>
+    <button class="btn ghost" id="fcNext">→</button>
+  </div>
+  <p class="hint" style="text-align:center;margin-top:10px"><button class="retry" id="fcReset">Ulang semua kartu</button></p>
+</section>
+
+<!-- ================= NOTES & REFS ================= -->
+<section class="view" data-view="notes">
+  <div class="eyebrow">Rangkuman</div>
+  <h2>Catatan Saya &amp; Referensi</h2>
+  <div class="card">
+    <h3>📝 Semua jawaban Anda</h3>
+    <p class="hint">Gabungan pemanasan, hasil kalkulator, dan studi kasus. Salin atau unduh untuk dikumpulkan di MyITS Classroom bila diminta dosen.</p>
+    <div class="cq"><b>Nama &amp; NRP</b><textarea data-note="identity" style="min-height:44px" placeholder="Nama — NRP"></textarea></div>
+    <div class="row"><button class="btn" id="copyNotes">📋 Salin</button><button class="btn ghost" id="dlNotes">⬇ Unduh .txt</button><button class="btn ghost" id="resetAll" style="border-color:var(--bad);color:var(--bad)">Hapus semua kemajuan</button></div>
+    <pre id="notesPrev" style="white-space:pre-wrap;font-family:var(--f);font-size:.85rem;background:var(--sunk);padding:12px;border-radius:10px;margin-top:14px;max-height:300px;overflow:auto"></pre>
+  </div>
+
+  <h3>🧩 Ringkasan</h3>
+  <ul>
+    <li>SCM mengoptimalkan aliran material dan informasi dari pemasok hingga pelanggan. Upstream setara buy-side; downstream setara sell-side.</li>
+    <li>Pemikiran rantai pasok bergeser dari push (mendorong produk ke pelanggan pasif) ke pull (pelanggan aktif; ECR, VMI, berbagi data permintaan).</li>
+    <li>Value chain, value stream, dan value network membantu menemukan aktivitas yang menambah nilai serta pemborosan yang bisa dihapus.</li>
+    <li>Struktur rantai pasok berkisar dari vertical integration hingga virtual integration. Teknologi digital memungkinkan integrasi data, outsourcing, dan integrasi online-offline seperti Argos.</li>
+    <li>E-procurement memangkas waktu siklus dan biaya proses. Dampak laba terbesar ada pada perusahaan yang porsi biaya pembeliannya tinggi.</li>
+    <li>Implementasi menuntut rekayasa ulang proses, kontrol terhadap maverick purchasing, dan pilihan model sell-side, buy-side, atau marketplace.</li>
+  </ul>
+  <div class="co book"><b class="t">➡️ Minggu 8: Ujian Tengah Semester.</b> Materi Minggu 1–7, ujian tulis 90 menit berupa esai singkat dan analisis kasus mini. Ulangi kuis akhir tiap topik dan kerjakan ulang studi kasus sebagai latihan. Minggu 9 dilanjutkan dengan Strategi Pemasaran Digital (Chaffey Bab 7).</div>
+
+  <h3>Referensi</h3>
+  <ol class="ref">
+    <li>Chaffey, D., Hemphill, T., &amp; Edmundson-Bird, D. (2019). <em>Digital business and e-commerce management</em> (7th ed.). Pearson. Bab 6: <em>Supply chain and demand</em>, termasuk Case Study 6.1–6.5.</li>
+    <li><a href="https://ekonomi.bisnis.com/read/20231010/9/1702763/ongkos-logistik-ri-1429-persen-bappenas-negara-maju-8-persen" target="_blank" rel="noopener">Bisnis.com. (2023, 10 Oktober). Ongkos logistik RI 14,29 persen, Bappenas: negara maju 8 persen.</a></li>
+    <li><a href="https://investortrust.id/business/50104/lkpp-e-katalog-versi-6-tingkatkan-proses-transaksi-pengadaan-pemerintah" target="_blank" rel="noopener">InvestorTrust. (2024, 10 Desember). LKPP: e-Katalog versi 6 tingkatkan proses transaksi pengadaan pemerintah.</a></li>
+    <li><a href="https://katadata.co.id/digital/startup/68c7e7b7cbcc6/amazon-dikabarkan-pimpin-pendanaan-rp-815-miliar-di-startup-indonesia-astro" target="_blank" rel="noopener">Katadata. (2025, 15 September). Amazon dikabarkan pimpin pendanaan di startup Indonesia Astro.</a></li>
+  </ol>
+  <p class="foot">Materi ini adalah ringkasan dan adaptasi untuk keperluan pembelajaran Pengantar Bisnis Digital (DG234101), Departemen Manajemen Bisnis ITS. Mahasiswa tetap wajib membaca bab asli pada buku acuan. Pengembang mata kuliah: Imam Baihaqi, Ph.D.</p>
+</section>
+
+</main>
+
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+/* ---------------- storage (safe) ---------------- */
+var KEY="bisdig-t07-v1", S={read:{},q:{},done:{},cls:{},notes:{},final:null,known:{},cs:{}};
+try{var raw=localStorage.getItem(KEY); if(raw){var o=JSON.parse(raw); for(var k in o) S[k]=o[k];}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} updateProgress();}
+try{var th=localStorage.getItem("bisdig-theme"); if(th) document.documentElement.setAttribute("data-theme",th);}catch(e){}
+
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove("on")},1800)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=a[i];a[i]=a[j];a[j]=x;}return a}
+var rp=function(n){return "Rp"+Math.round(n).toLocaleString("id-ID")};
+/* ---------------- units meta ---------------- */
+var UNITS=[
+ {id:"u1",t:"Rantai Pasok & Masalahnya",pg:"CS 6.1 · Tabel 6.1"},
+ {id:"u2",t:"Logistik, Push vs Pull, ECR, VMI",pg:"Box 6.2 · CS 6.2"},
+ {id:"u3",t:"Value Chain, Stream & Network",pg:"Gambar 6.7–6.8"},
+ {id:"u4",t:"Restrukturisasi & Online-Offline",pg:"Gambar 6.9 · CS 6.3"},
+ {id:"u5",t:"Implementasi eSCM & Kemitraan",pg:"Tabel 6.3–6.4 · CS 6.4"},
+ {id:"u6",t:"E-procurement & Penghematan",pg:"Tabel 6.5–6.7 · CS 6.5"},
+ {id:"u7",t:"Implementasi E-procurement & B2B",pg:"Tabel 6.10–6.11"}
+];
+
+/* ---------------- unit quizzes ---------------- */
+var QZ={
+u1:[
+ {k:"c",q:"Pengadaan dan logistik masuk termasuk rantai pasok…",o:["Downstream","Upstream","Outbound","Sell-side"],a:1,e:"Upstream setara buy-side e-commerce."},
+ {k:"r",pg:"Case Study 6.1",q:"Menurut Case Study 6.1, berapa persen pakaian Zara yang terjual dengan harga penuh dibanding rata-rata industri?",o:["Sekitar 50% vs 70%","Sekitar 85% vs 60–70%","Sekitar 60% vs 85%","Sekitar 95% vs 90%"],a:1,e:"Barang tak terjual kurang dari 10% stok, dibanding rata-rata industri 17–20%."},
+ {k:"c",q:"Inventory turnover dihitung sebagai…",o:["Persediaan ÷ penjualan","Harga pokok penjualan ÷ rata-rata persediaan","Laba ÷ aset","Jumlah gudang ÷ jumlah toko"],a:1,e:"Perputaran rendah bisa berarti stok berlebih."}
+],
+u2:[
+ {k:"c",q:"Pemasok mengelola pengisian ulang stok di lokasi pelanggan berdasarkan data persediaan dan permintaan yang dibagikan. Ini disebut…",o:["ECR","VMI","MRP","EDI"],a:1,e:"Vendor-managed inventory."},
+ {k:"r",pg:"Case Study 6.2",q:"Setelah Shell Chemicals beralih ke Elemica, rata-rata waktu tunggu truk di pabrik berubah dari…",o:["1 hari menjadi 2 jam","2 jam menjadi 15 menit","30 menit menjadi 5 menit","4 jam menjadi 1 jam"],a:1,e:"Dokumen kini diproses otomatis 24 jam; sebelumnya harus difaks bolak-balik."},
+ {k:"r",pg:"subbab What is logistics? (Hausmann dkk., 2014)",q:"Menurut pengalaman Amazon yang dikutip buku, opsi pengiriman di hari yang sama…",o:["Menurunkan konversi","Menaikkan konversi saat checkout 20–30%, meski sedikit pelanggan yang memilihnya","Dipilih oleh mayoritas pelanggan","Tidak berpengaruh"],a:1,e:"Prasyaratnya: stok lokal, visibilitas real-time, ambil-kemas cepat, dan pengiriman fleksibel."}
+],
+u3:[
+ {k:"c",q:"Menurut Womack dan Jones, aktivitas yang tidak menambah nilai dan bisa segera dihapus termasuk kategori…",o:["1","2","3","Tidak ada kategori seperti itu"],a:2,e:"Kategori 2: tidak menambah nilai tetapi masih diperlukan."},
+ {k:"r",pg:"subbab Value chain analysis (contoh kaleng minuman)",q:"Pada contoh value stream kaleng minuman (Womack & Jones), total waktu siklus dari tambang hingga rumah dibanding waktu pemrosesannya adalah…",o:["1 bulan vs 1 minggu","Hampir setahun vs sekitar 3 jam","1 minggu vs 1 hari","6 bulan vs 3 bulan"],a:1,e:"Waktu penyimpanan masuk sekitar lima bulan dan penyimpanan jadi sekitar enam bulan."},
+ {k:"r",pg:"Focus on The value chain",q:"Menurut IBF (2008), apa hasil e-procurement di BT?",o:["Biaya transaksi naik","95% perlengkapan kantor dibeli online; biaya transaksi rata-rata turun dari £56 menjadi £40","Semua staf pengadaan diberhentikan","Waktu siklus naik"],a:1,e:"Contoh manfaat di value chain sekunder."}
+],
+u4:[
+ {k:"c",q:"Dell yang memakai komponen pihak ketiga dan merakit sesuai pesanan lebih dekat ke…",o:["Vertical integration","Virtual integration","Diversifikasi","Push supply chain"],a:1,e:"IBM 1980-an lebih dekat ke vertical integration."},
+ {k:"c",q:"Sinyal permintaan yang membesar dan fluktuasi persediaan di sepanjang rantai pasok karena informasi tidak dibagi disebut…",o:["Long tail","Efek bullwhip","Network effect","Showrooming"],a:1,e:"Juga disebut information asymmetry; ECR berusaha menguranginya."},
+ {k:"r",pg:"Case Study 6.3",q:"Menurut Case Study 6.3, berapa porsi penjualan Argos dari fitur Check & Reserve pada 2009?",o:["5%","22%","45%","70%"],a:1,e:"Tumbuh 36%; penjualan internet 32% dari total."}
+],
+u5:[
+ {k:"c",q:"Akses ke informasi rantai pasok yang mutakhir, akurat, dan relevan bagi tiap pihak disebut…",o:["Supply chain visibility","Vertical integration","Spot sourcing","Value stream"],a:0,e:"Pelanggan melihat status pesanan, pemasok melihat perkiraan permintaan."},
+ {k:"r",pg:"subbab Managing partnerships",q:"Menurut Stuart dan McCutcheon (2000), bila tujuan utama kemitraan adalah nilai tambah (mis. kecepatan atau kustomisasi), bentuk yang cocok adalah…",o:["Spot market dan lelang","Aliansi strategis atau kemitraan kooperatif","Tender kompetitif","Kontrak jangka pendek"],a:1,e:"Untuk penurunan biaya: hubungan dengan tekanan persaingan (opsi 6–9 Tabel 6.4)."},
+ {k:"r",pg:"Case Study 6.4",q:"Menurut Case Study 6.4, alasan utama banyak perusahaan menunda RFID adalah…",o:["Teknologinya belum ada","Selain karena kewajiban dari pelanggan besar, sulit membuktikan ROI; standar, biaya, dan keamanan masih menjadi hambatan","Dilarang pemerintah","Barcode lebih akurat"],a:1,e:"\"The business case for RFID is very challenging.\""}
+],
+u6:[
+ {k:"c",q:"Perlengkapan kantor, suku cadang, dan tiket perjalanan dinas termasuk barang…",o:["Terkait produksi","MRO/non-produksi","Bahan baku utama","Barang jadi"],a:1,e:"Maintenance, repair and operating."},
+ {k:"r",pg:"Tabel 6.5–6.6",q:"Menurut Tabel 6.5 dan 6.6, waktu siklus khas pengadaan tradisional dibanding e-procurement adalah…",o:["10 hari vs 5 hari","5,5 hari vs 1,5 hari","3 hari vs 2 hari","1 hari vs 1 jam"],a:1,e:"Efisiensi dari berkurangnya pencarian, entri ulang, dan rekonsiliasi dokumen."},
+ {k:"r",pg:"Tabel 6.7",q:"Menurut estimasi Kluge (1997) di Tabel 6.7, industri dengan porsi biaya pengadaan terbesar terhadap harga pokok penjualan adalah…",o:["Industri jasa","Farmasi","Elektronik konsumen","Otomotif"],a:2,e:"Elektronik konsumen 60–70%; industri jasa 10–40%."}
+],
+u7:[
+ {k:"c",q:"Pemesan membeli barang di luar kontrak yang tidak perlu atau terlalu mahal disebut…",o:["Spot sourcing","Maverick purchasing","Reverse auction","Punchout"],a:1,e:"Dicegah dengan aturan anggaran, katalog yang disetujui, dan alur persetujuan."},
+ {k:"c",q:"Model e-procurement dengan satu antarmuka, terintegrasi ERP, dan kontrol pembelian baik, tetapi pembeli harus memelihara data, adalah…",o:["Sell-side","Buy-side","Marketplace independen","Spot market"],a:1,e:"Tabel 6.10."},
+ {k:"r",pg:"Tabel 6.11",q:"Menurut Kaplan dan Sawhney (2000), marketplace untuk pembelian sistematis atas sumber daya operasional (MRO) disebut…",o:["Exchanges","Yield managers","MRO hubs","Catalogue hubs"],a:2,e:"Catalogue hubs: sistematis, sumber daya manufaktur; yield managers: spot, operasional; exchanges: spot, manufaktur."}
+]};
+
+/* ---------------- classify widgets ---------------- */
+var CL={
+push:{o:["Push","Pull"],it:[
+ ["Pabrik memproduksi massal lalu menitipkan stok ke distributor dan berharap laku.","Push","Optimasi produksi; pelanggan pasif."],
+ ["Pelanggan merancang sendiri desain kaos di situs; produksi dimulai setelah pesanan masuk.","Pull","Pelanggan aktif menentukan spesifikasi."],
+ ["Zara memproduksi gaya baru di tengah musim berdasarkan masukan manajer toko.","Pull","Merespons permintaan nyata."],
+ ["Dell merakit komputer sesuai konfigurasi pesanan.","Pull","Build to order."],
+ ["Produsen menetapkan target penjualan tahunan lalu menekan pengecer untuk menambah stok.","Push","Mendorong produk ke saluran."],
+ ["Pre-order produk sebelum diproduksi sehingga jumlah produksi mengikuti pesanan.","Pull","Produksi mengikuti permintaan."]
+]},
+womack:{o:["1 Menciptakan nilai","2 Tidak bernilai tapi diperlukan","3 Hapus segera"],it:[
+ ["Menjahit pakaian sesuai pesanan pelanggan.","1 Menciptakan nilai","Pelanggan membayar untuk ini."],
+ ["Pemeriksaan mutu wajib sebelum pengiriman.","2 Tidak bernilai tapi diperlukan","Tidak dirasakan langsung, tetapi belum bisa dihapus."],
+ ["Mengetik ulang pesanan dari WhatsApp ke buku besar lalu ke spreadsheet.","3 Hapus segera","Pemborosan; bisa diotomatisasi."],
+ ["Barang menunggu tiga minggu di gudang sebelum dikirim.","3 Hapus segera","Waktu tunggu tanpa nilai."],
+ ["Persetujuan anggaran oleh atasan untuk pembelian di atas batas tertentu.","2 Tidak bernilai tapi diperlukan","Kontrol yang diperlukan, sebaiknya dipercepat."],
+ ["Mengemas produk dengan aman agar sampai tanpa rusak.","1 Menciptakan nilai","Pelanggan menghargai barang yang utuh."]
+]},
+integ:{o:["Vertical integration","Virtual integration"],it:[
+ ["IBM era 1980-an membuat sendiri prosesor, hard disk, monitor, dan mouse.","Vertical integration","Aktivitas dikendalikan sendiri."],
+ ["Merek fesyen online merancang sendiri, tetapi produksi, gudang, dan pengiriman dijalankan mitra.","Virtual integration","Sebagian besar aktivitas oleh pihak ketiga."],
+ ["Produsen mobil dahulu berlokasi dekat pabrik baja dan membuat sebagian besar komponen sendiri.","Vertical integration","Process span lebar."],
+ ["Perusahaan farmasi membeli perusahaan pengelola distribusi obat.","Vertical integration","Integrasi vertikal ke arah downstream."],
+ ["Dell memakai prosesor Intel, hard disk Seagate, dan monitor Sony.","Virtual integration","Komponen dari pihak ketiga."],
+ ["UMKM kuliner hanya memasak; pesanan, pembayaran, dan pengiriman lewat platform.","Virtual integration","Value network digital."]
+]},
+partner:{o:["Aliansi / kemitraan jangka panjang","Tender kompetitif / spot"],it:[
+ ["Membeli kertas fotokopi standar dengan harga termurah.","Tender kompetitif / spot","Tujuan biaya, barang komoditas."],
+ ["Mengembangkan komponen khusus bersama pemasok untuk produk baru.","Aliansi / kemitraan jangka panjang","Nilai tambah dan desain bersama."],
+ ["Mengelola persediaan bersama pemasok dengan berbagi data permintaan harian (VMI).","Aliansi / kemitraan jangka panjang","Butuh kepercayaan dan pertukaran informasi intensif."],
+ ["Membeli sisa stok bahan lewat lelang online.","Tender kompetitif / spot","Spot market."],
+ ["Fulfilment pihak ketiga dengan SLA ketat untuk pengiriman cepat.","Aliansi / kemitraan jangka panjang","Kontrak jangka panjang dengan SLA dan penalti."],
+ ["Memilih jasa katering acara satu kali dari beberapa penawaran.","Tender kompetitif / spot","Kebutuhan sesaat, berbasis harga."]
+]},
+eproc:{o:["E-sourcing","E-tendering","E-informing","E-reverse auction","eMRO / web-based ERP"],it:[
+ ["Mencari calon pemasok baru lewat internet.","E-sourcing","Tahap pengumpulan informasi."],
+ ["Mengirim permintaan penawaran harga (RFP) ke pemasok terpilih.","E-tendering","Penyaringan dan permintaan informasi atau harga."],
+ ["Menilai kualitas, kondisi keuangan, dan kemampuan kirim pemasok tanpa transaksi.","E-informing","Kualifikasi pemasok."],
+ ["Pemasok saling menurunkan harga secara online untuk memenangkan kontrak.","E-reverse auction","Harga terendah atau kombinasi harga dan syarat."],
+ ["Karyawan memesan alat tulis lewat sistem yang otomatis meminta persetujuan atasan.","eMRO / web-based ERP","Inti e-procurement: permintaan, persetujuan, pemesanan, penerimaan."]
+]},
+ks:{o:["MRO hubs","Catalogue hubs","Yield managers","Exchanges"],it:[
+ ["Platform pembelian rutin perlengkapan kantor dan suku cadang dari pemasok kontrak.","MRO hubs","Sistematis, sumber daya operasional."],
+ ["Katalog industri khusus untuk pembelian rutin bahan baku tertentu.","Catalogue hubs","Sistematis, sumber daya manufaktur (vertikal)."],
+ ["Platform untuk mencari tenaga lepas atau jasa secara mendadak.","Yield managers","Spot, sumber daya operasional (contoh buku: Upwork)."],
+ ["Bursa online jual-beli bahan plastik atau baja sesuai harga pasar saat itu.","Exchanges","Spot, sumber daya manufaktur."]
+]}
+};
+
+/* ---------------- cases ---------------- */
+var CASES=[
+ {id:"c1",t:"Studi Kasus 1 — Argos: e-supply chain untuk kenyamanan pelanggan",src:"Chaffey et al., Bab 6, Case Study 6.3",
+  body:"<p>Argos, peritel Inggris, meluncurkan situs transaksional pada 2000 dan menjadi pelopor layanan reservasi. Penjualan multichannel mencapai £1,9 miliar pada 2009. Fitur <b>Check &amp; Reserve</b>, yang memungkinkan pengunjung mengecek ketersediaan stok di toko tertentu lalu memesan untuk diambil, menyumbang <b>22%</b> total penjualan pada 2009 dan tumbuh <b>36%</b>; penjualan internet 32% dari total.</p><p>Argos menampilkan stok real-time, dan barang yang dipesan bisa langsung diambil. Menurut kepala multichannel David Tarbuck, model toko Argos (pelanggan di depan, stok di belakang) membuat data stok tiap toko akurat. Argos meluncurkan aplikasi iPhone pada 2010 setelah lalu lintas dari perangkat mobile naik 600%; pada 2015, 45% penjualan datang dari kanal digital. Katalog cetak (dua kali setahun, masing-masing 18 juta eksemplar) tetap menjadi titik awal belanja, sementara lebih dari 11.000 produk hanya tersedia online. Argos memiliki tim multichannel khusus yang bekerja erat dengan pemasaran.</p>",
+  qs:[
+   ["Jelaskan bagaimana Argos memakai manajemen rantai pasok untuk memperbaiki proposisi bagi pelanggan.","Integrasi situs dan aplikasi dengan sistem stok tiap toko memberi visibilitas stok real-time (supply chain visibility), sehingga pelanggan bisa memastikan barang tersedia dan mengambilnya segera tanpa perjalanan sia-sia. Toko berfungsi sebagai titik pemenuhan (pull: pelanggan memilih kapan dan di mana), mengurangi biaya last mile dan risiko retur."],
+   ["Faktor apa yang membuat strategi multichannel Argos berhasil? Kaitkan dengan integrasi kanal online-offline dan prasyarat pengiriman cepat (Hausmann dkk.).","Model operasi toko yang memudahkan akurasi stok; integrasi sistem; peran katalog dan aplikasi yang saling melengkapi (multichannel/omnichannel); tim multichannel yang terintegrasi dengan pemasaran; dan respons cepat terhadap mobile. Prasyarat Hausmann terpenuhi: stok lokal di toko dan visibilitas real-time."],
+   ["Apa tantangan bagi peritel Indonesia yang ingin meniru 'pesan online, ambil di toko' seperti Argos?","Akurasi stok per gerai (banyak gerai belum memakai sistem stok real-time), integrasi sistem antara aplikasi, POS, dan gudang, kapasitas staf toko untuk menyiapkan pesanan, serta perilaku pelanggan yang terbiasa pengiriman ke rumah dan COD. Tanpa data stok yang akurat, efek bullwhip dan kekecewaan pelanggan meningkat."]
+  ]},
+ {id:"c2",t:"Studi Kasus 2 — 🇮🇩 Katalog Elektronik v6: e-procurement pemerintah",src:"InvestorTrust (10 Des 2024)",
+  body:"<p>Pengadaan barang/jasa pemerintah Indonesia dikelola melalui sistem elektronik LKPP (Lembaga Kebijakan Pengadaan Barang/Jasa Pemerintah). Salah satunya <b>Katalog Elektronik</b> (e-Katalog): katalog daring tempat instansi membeli produk yang telah ditayangkan penyedia.</p><p>Pada <b>10 Desember 2024</b>, Presiden meluncurkan <b>Katalog Elektronik versi 6</b> di Istana. Versi ini sebelumnya diuji di lima instansi (Kementerian Keuangan, Kemendikbudristek, LKPP, Pemprov DKI Jakarta, dan Pemprov Jawa Tengah) dan <b>wajib dipakai seluruh kementerian, lembaga, dan pemerintah daerah mulai 1 Januari 2025</b>. Menurut Kepala LKPP, fiturnya antara lain: harga, spesifikasi, dan gambar produk bisa dilihat siapa saja; pembayaran bagi usaha mikro dan kecil terintegrasi dengan sistem keuangan pemerintah (SAKTI dan SIPD); e-audit dan pemantauan transaksi real-time; serta pencarian yang lebih cepat. Presiden menyebut e-katalog berpotensi menghemat 20–30% anggaran belanja negara dan mengurangi risiko korupsi.</p><p class=\"hint\">Catatan: angka 20–30% adalah pernyataan politik, bukan hasil evaluasi independen. Gunakan secara kritis.</p>",
+  qs:[
+   ["Gunakan lima pendorong e-procurement menurut Smart (2010): kontrol, biaya, proses, kinerja individu, dan pengelolaan pemasok. Pendorong mana yang paling terlihat pada Katalog Elektronik v6?","Kontrol (transparansi harga publik, e-audit, pemantauan real-time, pencegahan korupsi), biaya (klaim penghematan, persaingan penyedia), dan proses (pencarian lebih cepat, pembayaran terintegrasi, waktu siklus lebih pendek). Pengelolaan pemasok juga terlihat lewat pelibatan usaha mikro dan kecil."],
+   ["Termasuk model e-procurement mana Katalog Elektronik (sell-side, buy-side, atau marketplace)? Jelaskan kelebihan dan risikonya bagi instansi pembeli menurut Tabel 6.10.","Paling dekat dengan buy-side (dikelola pihak pembeli, yaitu pemerintah, dengan satu antarmuka, integrasi dengan sistem keuangan, dan kontrol pembelian yang baik), dengan ciri marketplace karena banyak penyedia. Kelebihannya kontrol, standardisasi, dan satu antarmuka. Risikonya: beban memelihara data katalog, kualitas dan harga penyedia harus diverifikasi, potensi maverick purchasing atau kolusi bila aturan lemah, serta kesiapan pengguna di daerah."],
+   ["Klaim penghematan 20–30% perlu diuji. Bagaimana Anda akan mengukur manfaat nyata e-katalog dengan kerangka buku (rumus penghematan dan Debate 6.3)?","Ukur biaya proses per transaksi sebelum dan sesudah (waktu staf, dokumen), jumlah transaksi, lalu hitung penghematan = jumlah permintaan × (biaya lama − biaya baru). Pisahkan penghematan harga barang dari penghematan proses. Debate 6.3 mengingatkan bahwa penghematan proses baru menjadi nyata bila waktu staf benar-benar dialihkan ke pekerjaan bernilai lebih tinggi. Bandingkan harga katalog dengan harga pasar, dan pantau waktu siklus serta temuan audit."]
+  ]},
+ {id:"c3",t:"Studi Kasus 3 — 🇮🇩 Astro: quick commerce 15 menit lewat dark store",src:"Katadata (15 Sep 2025)",
+  body:"<p><b>Astro</b> adalah startup <em>quick commerce</em> yang berdiri pada 2021 di Jakarta. Astro menjual kebutuhan sehari-hari (bahan makanan, minuman, kebutuhan rumah tangga) dengan janji <b>antar dalam 15 menit</b>, memakai model <b><em>dark store</em></b>: gudang mikro yang tidak melayani pembeli langsung dan tersebar dekat permukiman.</p><p>Astro meraih pendanaan Seri B US$60 juta pada 2022, dengan total pendanaan lebih dari US$90 juta sejak berdiri. Pada September 2025, media melaporkan putaran baru sekitar US$51,9 juta yang dikabarkan dipimpin Amazon. Di banyak negara, model quick commerce dikenal sulit menguntungkan karena biaya gudang mikro, tenaga kerja, dan pengiriman per pesanan yang tinggi.</p>",
+  qs:[
+   ["Analisis model dark store Astro dengan empat prasyarat pengiriman cepat menurut Hausmann dkk. (2014). Prasyarat mana yang paling mahal dipenuhi?","Stok lokal (dark store dekat pelanggan), visibilitas stok real-time, ambil-kemas sangat cepat (tata letak gudang dan ragam produk terbatas), dan pengiriman fleksibel (armada kurir siap). Yang paling mahal biasanya jaringan gudang mikro dan kurir yang siaga di jam sepi, karena biaya tetap harus ditanggung meski pesanan sedikit."],
+   ["Apakah quick commerce lebih dekat ke rantai pasok push atau pull? Apa risikonya terhadap persediaan dan efek bullwhip?","Di sisi pelanggan bersifat pull (pesanan memicu pengiriman), tetapi pengisian dark store tetap berbasis peramalan (push ke gudang mikro). Risikonya: stok terfragmentasi di banyak gudang kecil sehingga stok berlebih atau kosong, barang segar kedaluwarsa, dan fluktuasi permintaan diperbesar ke pemasok bila data tidak dibagi."],
+   ["Apa ukuran kinerja eSCM (Sambasivan dkk.) yang paling penting bagi Astro, dan bagaimana ukuran itu menentukan apakah modelnya bisa menguntungkan?","Responsivitas (waktu antar, tingkat pemenuhan pesanan atau fill rate, kejadian stok kosong), biaya (biaya per pesanan, biaya persediaan, susut barang segar), dan profitabilitas. Kunci untung: nilai pesanan rata-rata cukup besar, kepadatan pesanan per dark store tinggi, dan perputaran persediaan cepat."]
+  ]},
+ {id:"c4",t:"Studi Kasus 4 — 🇮🇩 Latihan kelompok: e-procurement untuk pengadaan kampus",src:"Skenario rekaan untuk diskusi kelas",noans:true,
+  body:"<p>Sebuah perguruan tinggi di Surabaya memiliki 30 unit kerja yang setiap bulan mengajukan sekitar <b>1.500 permintaan pembelian</b> barang habis pakai dan MRO (alat tulis, bahan laboratorium, suku cadang, cetak). Prosesnya masih semi-manual: formulir di unit, persetujuan berjenjang lewat surat atau email, pemesanan oleh bagian pengadaan, lalu pencocokan faktur dan barang. Rata-rata satu permintaan butuh 6 hari dan diperkirakan memakan biaya proses Rp600 ribu (waktu staf dan dokumen). Rektorat menimbang sistem e-procurement dengan katalog internal (buy-side) yang terhubung ke beberapa pemasok kontrak.</p><p>Gunakan <b>kalkulator e-procurement di Unit 6</b>. Asumsikan biaya proses per permintaan bisa turun ke Rp200 ribu.</p>",
+  qs:[
+   ["Hitung penghematan biaya proses per tahun dengan rumus buku. Lalu jelaskan mengapa angka ini belum tentu berarti penghematan kas (Debate 6.3).",""],
+   ["Pilih model e-procurement (sell-side, buy-side, atau marketplace) yang paling cocok, dan rancang tiga aturan sistem untuk mencegah maverick purchasing.",""],
+   ["Identifikasi hambatan dan risiko implementasi (staf, pemasok, budaya, data katalog), lalu usulkan langkah implementasi yang sesuai saran CIPS: rekayasa ulang proses sebelum otomatisasi.",""]
+  ]}
+];
+
+/* ---------------- self-test bank ---------------- */
+var LO_NAMES={1:"Rantai pasok & masalahnya",2:"Logistik, push vs pull, ECR, VMI",3:"Value chain, stream & network",4:"Restrukturisasi & online-offline",5:"Implementasi eSCM & kemitraan",6:"E-procurement & penghematan",7:"Implementasi e-procurement & B2B"};
+var FINAL=[
+ [1,"Supply chain management pada intinya adalah optimasi…",["Iklan dan promosi","Aliran material dan aliran informasi dalam operasi organisasi","Struktur organisasi","Harga jual"],1,"Definisi pembuka Bab 6."],
+ [1,"Istilah yang lebih tepat daripada 'rantai' karena perusahaan memiliki banyak rantai untuk banyak produk adalah…",["Value stream","Supply chain network","Spot market","Bullwhip"],1,"Termasuk pemasok tingkat pertama, kedua, dan ketiga."],
+ [1,"Manakah yang BUKAN salah satu dari empat pilar keberhasilan rantai pasok menurut IGD (2017)?",["Customer centric","Powered by people","Transformed by technology","Lowest price always"],3,"Pilar keempat: resilient and responsive."],
+ [1,"Menurut buku, ASOS menemukan tingkat retur pesanan pakaian wanita di Jerman sekitar…",["10%","25%","50%","70%"],3,"Dibanding sekitar 25% di Inggris."],
+ [1,"Zara mampu membawa produk dari konsep ke toko dalam sekitar…",["15 hari","3 bulan","6 bulan","1 tahun"],0,"Standar industri sekitar enam bulan."],
+ [2,"Fokus ECR (efficient consumer response) adalah…",["Mengurangi jumlah pemasok","Mengelola permintaan: ragam produk, promosi, dan produk baru","Mengotomatisasi akuntansi","Menurunkan gaji"],1,"Berbeda dari pengisian ulang produk tradisional."],
+ [2,"Sistem SIMON milik Shell memerlukan tiga jenis informasi dari pelanggan, yaitu…",["Harga, diskon, promosi","Tingkat persediaan, perkiraan permintaan, dan rincian pengiriman","Nama, alamat, nomor telepon","Laporan keuangan"],1,"Case Study 6.2."],
+ [2,"Langkah pengiriman terakhir ke pelanggan disebut…",["First mile","Last mile","Middle mile","Backhaul"],1,"Makin penting dengan meningkatnya belanja online."],
+ [2,"Motivasi khas model push adalah…",["Mengoptimalkan respons pelanggan","Mengoptimalkan biaya dan efisiensi produksi","Personalisasi","Kolaborasi dengan pelanggan"],1,"Model pull mengoptimalkan respons pelanggan."],
+ [2,"Lima 'tepat' dalam logistik menurut CILT adalah tempat, waktu, jumlah, kualitas, dan…",["Merek","Harga","Promosi","Kemasan"],1,"Right place, time, quantity, quality, price."],
+ [3,"Menurut rumus Chaffey, nilai dalam value chain tercipta…",["Hanya di tahap produksi","Di dalam tiap aktivitas dan di antarmuka antar-aktivitas","Hanya di penjualan","Hanya di aktivitas pendukung"],1,"Value = (manfaat aktivitas − biayanya) + (manfaat antarmuka − biayanya)."],
+ [3,"Value chain paralel yang dimediasi informasi elektronik disebut…",["Value network","Virtual value chain","Value stream","Value proposition"],1,"Rayport & Sviokla (1996)."],
+ [3,"Langkah pertama analisis value chain menurut Porter dan Millar (1985) adalah…",["Membeli ERP","Menilai intensitas informasi dalam value chain","Memecat staf","Membuat iklan"],1,"Lima langkah; rencana harus berbasis bisnis, bukan teknologi."],
+ [3,"Pihak yang menyediakan infrastruktur elektronik yang menghubungkan value chain internal dan eksternal disebut…",["Value chain integrators","Laggards","Metamediaries","Traditional manufacturers"],0,"Bagian dari value network (Gambar 6.8)."],
+ [3,"Tesco memakai Tesco Information Exchange sehingga pesanan toko Senin malam tiba…",["Seminggu kemudian","Sebelum toko buka Rabu pagi","Hari Jumat","Bulan berikutnya"],1,"Pengisian ulang berkelanjutan dalam 24 jam."],
+ [4,"Kontinuum struktur rantai pasok yang benar adalah…",["Push → pull → push","Vertical integration → vertical disintegration → virtual integration","Sell-side → buy-side","Upstream → downstream"],1,"Gambar 6.9."],
+ [4,"Menurut Hayes dan Wheelwright, pembelian perusahaan farmasi atas pengelola distribusi obat adalah integrasi vertikal ke arah…",["Upstream (defensif)","Downstream (ofensif)","Horizontal","Virtual"],1,"Meningkatkan kekuatan terhadap pelanggan."],
+ [4,"Standar pertukaran data yang sudah lama dipakai untuk pesanan, surat jalan, dan faktur adalah…",["SEO","EDI","CRM","CMS"],1,"Juga XML dan middleware."],
+ [4,"Manakah yang termasuk lima manfaat eSCM menurut Chaffey?",["Menambah tingkat persediaan","Integrasi data yang lebih baik antar-elemen rantai pasok","Memperpanjang siklus","Menambah dokumen kertas"],1,"Juga efisiensi proses, disintermediasi, outsourcing, dan inovasi."],
+ [4,"Argos meluncurkan aplikasi iPhone pada 2010 karena…",["Kompetitor menutup toko","Lalu lintas dari perangkat mobile ke situsnya naik 600%","Diwajibkan pemerintah","Katalog dihentikan"],1,"Case Study 6.3."],
+ [5,"RFID disebut 'barcode on steroids' karena…",["Lebih murah daripada barcode","Bisa dibaca tanpa garis pandang dan memuat informasi lebih kaya","Tidak butuh pembaca","Dipakai sejak 2020"],1,"Case Study 6.4."],
+ [5,"Strategi perbaikan rantai pasok dipetakan Hughes dkk. menurut…",["Harga dan promosi","Cakupan dan kecepatan perubahan","Ukuran dan lokasi","Visi dan misi"],1,"Gambar 6.11."],
+ [5,"Menurut survei PwC (2013), berapa persen responden yang setuju rantai pasok dipandang sebagai aset strategis di perusahaannya?",["15%","45%","75%","95%"],1,"Menunjukkan kesenjangan antara potensi dan persepsi."],
+ [5,"Aturan Arnold (2000) untuk distribusi global antara lain…",["Biarkan distributor yang memilih Anda","Pilih distributor, jangan biarkan mereka memilih Anda","Serahkan strategi pemasaran sepenuhnya ke distributor","Anggap distributor sebagai mitra sementara"],1,"Tujuh aturan distribusi internasional."],
+ [5,"Mini Case Study 6.1: Boots menggabungkan empat pusat distribusi nasional dan 17 gudang regional menjadi…",["Dua pusat","Satu pusat distribusi terpusat","Sepuluh gudang","Tetap sama"],1,"Efisiensi waktu naik 65%."],
+ [6,"Procurement lebih luas daripada purchasing karena juga mencakup…",["Pemasaran","Logistik masuk, penerimaan barang, dan pergudangan","Rekrutmen","Penjualan"],1,"Kalakota & Robinson (2000)."],
+ [6,"Pembelian berulang barang yang sama persis disebut…",["Modified rebuy","Straight rebuy","Spot sourcing","Reverse auction"],1,"Modified rebuy: dengan sedikit perubahan."],
+ [6,"Rumus penghematan e-procurement menurut buku adalah…",["Pendapatan − biaya","Jumlah permintaan × (biaya lama − biaya baru)","Biaya baru ÷ biaya lama","Jumlah pemasok × harga"],1,"Focus on Estimating e-procurement costs."],
+ [6,"Perusahaan A dan B berpendapatan sama £10 juta; biaya pembelian A £5 juta, B £1 juta. Bila biaya pembelian turun 20%, laba siapa yang naik lebih besar secara persentase?",["B","A","Sama","Tidak bisa dihitung"],1,"A: laba £1 juta → £2 juta (+100%); B: £1 juta → £1,2 juta (+20%)."],
+ [6,"Manakah yang BUKAN pendorong e-procurement menurut Smart (2010)?",["Kontrol","Biaya","Proses","Menambah jumlah pemasok"],3,"Pengelolaan pemasok justru biasanya mengurangi jumlah pemasok."],
+ [6,"Katalog Elektronik v6 LKPP wajib dipakai seluruh kementerian, lembaga, dan pemerintah daerah mulai…",["1 Januari 2023","10 Desember 2024","1 Januari 2025","1 Juli 2026"],2,"Diluncurkan 10 Desember 2024."],
+ [7,"Saran utama CIPS dalam implementasi e-procurement adalah…",["Otomatisasi proses kertas apa adanya","Rekayasa ulang proses sebelum menerapkan e-purchasing","Tunda sampai semua pemasok siap","Hapus persetujuan"],1,"Jangan sekadar mengotomatisasi proses lama."],
+ [7,"Katalog dinamis milik pemasok atau perantara yang diakses langsung dari sistem pembeli disebut…",["Punchout catalogue","Print catalogue","CD catalogue","Brochureware"],0,"Gambar 6.16."],
+ [7,"Pihak ketiga yang menyediakan satu titik kontak dan beragam layanan antara pelanggan dan pemasok disebut…",["Metamediaries","Laggards","Disintermediaries","Aggregators saja"],0,"Contoh buku: PlasticsNet."],
+ [7,"Kekurangan model sell-side bagi pembeli adalah…",["Pilihan terluas","Antarmuka berbeda di tiap situs dan integrasi buruk dengan ERP","Kontrol pembelian sangat baik","Satu antarmuka"],1,"Tabel 6.10."],
+ [7,"Marketplace B2B untuk pembelian spot sumber daya manufaktur disebut…",["MRO hubs","Catalogue hubs","Yield managers","Exchanges"],3,"Kaplan & Sawhney (2000)."],
+ [7,"Menurut Gartner, peran AI dalam pengadaan antara lain…",["Menggantikan seluruh negosiasi manusia saat ini","Mengklasifikasi dan menganalisis belanja serta memberi rekomendasi lewat asisten virtual","Mencetak faktur kertas","Menaikkan harga"],1,"Virtual personal assistants dan cognitive procurement advisors."]
+];
+
+/* ---------------- rubrik umpan balik studi kasus ---------------- */
+var RUB={
+ c1_0:{need:3,cr:[
+  ["Visibilitas stok","stok|real-time|ketersediaan|visibility|visibilitas|akurat","Bagaimana informasi stok dipakai?"],
+  ["Integrasi sistem","integrasi|sistem|aplikasi|situs|website|logistik","Sistem apa yang diintegrasikan?"],
+  ["Manfaat pelanggan","langsung|segera|perjalanan|kenyamanan|convenience|ambil","Apa manfaatnya bagi pelanggan?"],
+  ["Konsep SCM","pull|last mile|pemenuhan|fulfilment|toko sebagai","Kaitkan dengan konsep SCM."]],
+  self:["Saya menjelaskan peran rantai pasok, bukan hanya fitur aplikasinya"]},
+ c1_1:{need:3,cr:[
+  ["Model operasi toko","model toko|stok di belakang|depan|toko","Apa peran model operasi toko?"],
+  ["Multichannel","katalog|aplikasi|mobile|multichannel|omnichannel|kanal","Bagaimana kanal saling melengkapi?"],
+  ["Tim/organisasi","tim|organisasi|pemasaran|struktur","Apa peran tim dan struktur?"],
+  ["Hausmann","hausmann|stok lokal|real-time|prasyarat","Kaitkan dengan prasyarat Hausmann."]],
+  self:["Saya menyebut faktor teknologi dan faktor organisasi"]},
+ c1_2:{need:3,cr:[
+  ["Akurasi stok","akurasi|stok|data|real-time","Apa tantangan data stok?"],
+  ["Integrasi sistem","integrasi|pos|gudang|sistem","Apa tantangan integrasi?"],
+  ["Perilaku pelanggan","cod|antar ke rumah|kebiasaan|pelanggan|perilaku","Bagaimana perilaku pelanggan Indonesia?"],
+  ["Konsekuensi","bullwhip|kecewa|retur|biaya|staf","Apa akibatnya bila gagal?"]],
+  self:["Tantangan saya spesifik untuk konteks Indonesia"]},
+ c2_0:{need:3,cr:[
+  ["Kontrol","kontrol|transparan|audit|korupsi|pemantauan","Bagaimana pendorong kontrol terlihat?"],
+  ["Biaya","biaya|hemat|penghematan|harga|persaingan","Bagaimana pendorong biaya terlihat?"],
+  ["Proses","proses|cepat|waktu siklus|pembayaran|otomatis|pencarian","Bagaimana pendorong proses terlihat?"],
+  ["Pemasok","pemasok|penyedia|umkm|usaha mikro","Bagaimana pengelolaan pemasok terlihat?"]],
+  self:["Saya memakai kelima pendorong Smart secara eksplisit"]},
+ c2_1:{need:3,cr:[
+  ["Model","buy-side|buy side|marketplace|sell-side","Tentukan modelnya."],
+  ["Kelebihan","satu antarmuka|kontrol|integrasi|standar","Apa kelebihannya?"],
+  ["Risiko","risiko|maverick|kolusi|data katalog|verifikasi|kesiapan","Apa risikonya?"],
+  ["Tabel 6.10","tabel 6.10|kelebihan|kekurangan|pembeli","Gunakan kerangka Tabel 6.10."]],
+  self:["Saya menimbang kelebihan dan risiko secara seimbang"]},
+ c2_2:{need:3,cr:[
+  ["Rumus penghematan","jumlah permintaan|biaya lama|biaya baru|×|rumus","Gunakan rumus penghematan."],
+  ["Pisahkan harga vs proses","harga barang|biaya proses|pisahkan|membedakan","Bedakan penghematan harga dan proses."],
+  ["Debate 6.3","debate|staf|dialihkan|nyata|kas","Kapan penghematan menjadi nyata?"],
+  ["Indikator","waktu siklus|audit|harga pasar|indikator|ukur","Indikator apa yang dipantau?"]],
+  self:["Saya bersikap kritis terhadap klaim angka"]},
+ c3_0:{need:3,cr:[
+  ["Stok lokal","stok lokal|dekat|dark store|gudang mikro","Prasyarat stok lokal?"],
+  ["Visibilitas","real-time|visibilitas|data stok","Prasyarat visibilitas stok?"],
+  ["Ambil-kemas","ambil|kemas|picking|packing|cepat","Prasyarat ambil-kemas cepat?"],
+  ["Pengiriman fleksibel","kurir|armada|pengiriman|fleksibel","Prasyarat pengiriman fleksibel?"],
+  ["Paling mahal","mahal|biaya tetap|sewa|tenaga","Mana yang paling mahal, dan mengapa?"]],
+  self:["Saya menilai biaya tiap prasyarat, bukan hanya menyebutnya"]},
+ c3_1:{need:3,cr:[
+  ["Pull di sisi pelanggan","pull|pesanan memicu","Di sisi pelanggan, push atau pull?"],
+  ["Push ke gudang","push|peramalan|forecast|pengisian","Bagaimana pengisian dark store?"],
+  ["Risiko persediaan","kedaluwarsa|stok kosong|berlebih|fragmentasi|susut","Apa risiko persediaannya?"],
+  ["Bullwhip","bullwhip|fluktuasi|pemasok|berbagi data","Kaitkan dengan efek bullwhip."]],
+  self:["Saya membedakan sisi pelanggan dan sisi pengisian stok"]},
+ c3_2:{need:3,cr:[
+  ["Responsivitas","waktu antar|fill rate|tingkat pemenuhan|stok kosong|responsivitas","Ukuran responsivitas?"],
+  ["Biaya","biaya per pesanan|biaya persediaan|biaya","Ukuran biaya?"],
+  ["Profitabilitas","nilai pesanan|kepadatan|perputaran|untung|profit","Apa yang menentukan untung?"]],
+  self:["Saya menghubungkan ukuran kinerja dengan kelayakan bisnis"]},
+ c4_0:{need:3,cr:[
+  ["Perhitungan","1.500|1500|400|7,2|7.2|miliar|per tahun","Hitung penghematannya."],
+  ["Rumus","biaya lama|biaya baru|jumlah permintaan|×","Tunjukkan rumusnya."],
+  ["Debate 6.3","staf|kas|nyata|dialihkan|debate","Mengapa belum tentu penghematan kas?"]],
+  self:["Saya menunjukkan cara menghitung dan asumsinya"]},
+ c4_1:{need:3,cr:[
+  ["Model","buy-side|sell-side|marketplace","Pilih model e-procurement."],
+  ["Aturan anti-maverick","batas|anggaran|katalog|persetujuan|plafon|aturan","Rancang aturan sistem."],
+  ["Alasan","karena|kontrol|integrasi|pemasok kontrak","Jelaskan alasan pilihan."]],
+  self:["Aturan saya bisa diterapkan dalam sistem"]},
+ c4_2:{need:3,cr:[
+  ["Hambatan","hambatan|resistensi|budaya|pemasok|katalog|staf","Apa hambatannya?"],
+  ["Rekayasa ulang","rekayasa ulang|re-engineering|proses|cips","Bagaimana rekayasa ulang proses dilakukan?"],
+  ["Langkah implementasi","pilot|bertahap|pelatihan|tahap","Apa langkah implementasinya?"]],
+  self:["Usulan saya realistis untuk organisasi kampus"]}
+};
+var CONN=["karena","sehingga","akibatnya","oleh karena itu","maka","sebab","menyebabkan","artinya","dengan demikian","namun","tetapi","sedangkan","jika","agar","membuat","berdampak","because","therefore"];
+var LV=["Belum terlihat","Perlu diperkuat","Cukup","Baik","Sangat baik"];
+
+/* ---------------- glossary ---------------- */
+var GLOSS=[
+ ["Supply chain management","Koordinasi seluruh aktivitas pasokan dari pemasok hingga pelanggan"],
+ ["Upstream / downstream","Transaksi dengan pemasok (buy-side) / dengan pelanggan (sell-side)"],
+ ["Supply chain network","Hubungan organisasi dengan semua mitra dalam banyak rantai pasok"],
+ ["Inventory turnover","Harga pokok penjualan ÷ rata-rata persediaan"],
+ ["Logistik masuk / keluar","Pengelolaan barang dari pemasok / ke pelanggan"],
+ ["Last mile","Langkah pengiriman terakhir ke pelanggan"],
+ ["Push / pull supply chain","Mendorong produk ke pelanggan pasif / melayani pelanggan aktif"],
+ ["ECR","Efficient consumer response: pengelolaan permintaan"],
+ ["VMI","Vendor-managed inventory: pemasok mengelola pengisian ulang stok pelanggan"],
+ ["Value chain","Aktivitas yang menambah nilai dari konsepsi hingga pengiriman"],
+ ["Virtual value chain","Value chain yang dimediasi informasi elektronik"],
+ ["Value stream","Seluruh tindakan untuk menghantarkan nilai; dasar lean thinking"],
+ ["Value network","Hubungan organisasi dengan mitra strategis dan non-strategis"],
+ ["Vertical / virtual integration","Aktivitas dikendalikan sendiri / dijalankan pihak ketiga"],
+ ["Information supply chain","Pandangan rantai pasok yang berpusat pada informasi"],
+ ["Bullwhip effect","Sinyal permintaan membesar sepanjang rantai karena informasi tidak dibagi"],
+ ["Supply chain visibility","Akses ke informasi rantai pasok yang mutakhir dan akurat"],
+ ["RFID / IoT","Tag radio untuk melacak barang / benda yang terhubung internet"],
+ ["E-procurement","Integrasi elektronik seluruh aktivitas pengadaan"],
+ ["MRO","Maintenance, repair and operating goods"],
+ ["Systematic / spot sourcing","Kontrak dengan pemasok tetap / pembelian untuk kebutuhan mendadak"],
+ ["E-reverse auction","Pemasok bersaing menurunkan harga secara online"],
+ ["Maverick purchasing","Pembelian di luar kontrak yang tidak perlu atau terlalu mahal"],
+ ["Punchout catalogue","Katalog dinamis pemasok yang diakses dari sistem pembeli"],
+ ["Metamediaries","Pihak ketiga yang memberi satu titik kontak dan beragam layanan"]
+];
+
+/* ================= render: sidebar & plan ================= */
+var NAV=[["grp","Mulai"],["home","Beranda","⌂"],["grp","Rantai Pasok & Nilai"],["u1"],["u2"],["u3"],["grp","Restrukturisasi & eSCM"],["u4"],["u5"],["grp","E-procurement"],["u6"],["u7"],["grp","Penerapan & Evaluasi"],["cases","Studi Kasus","📂"],["final","Kuis Akhir","🏁"],["cards","Flashcard","🃏"],["notes","Catatan & Referensi","📝"]];
+function renderSide(){
+  var h="";
+  NAV.forEach(function(n){
+    if(n[0]==="grp"){h+='<div class="grp">'+n[1]+'</div>';return}
+    var u=UNITS.filter(function(x){return x.id===n[0]})[0];
+    if(u){var i=UNITS.indexOf(u)+1;h+='<a href="#'+u.id+'" data-nav="'+u.id+'" class="'+(S.done[u.id]?"done":"")+'"><span class="n">'+(S.done[u.id]?"✓":i)+'</span>'+u.t+'</a>'}
+    else{var dn=(n[0]==="final"&&S.final&&S.final.best>=80)||(n[0]==="cases"&&casesDone()); h+='<a href="#'+n[0]+'" data-nav="'+n[0]+'" class="'+(dn?"done":"")+'"><span class="n ico">'+(dn?"✓":n[2])+'</span>'+n[1]+'</a>'}
+  });
+  $("#side").innerHTML=h; markNav();
+  var pb="";UNITS.forEach(function(u,i){pb+='<tr><td>'+(i+1)+'</td><td><a href="#'+u.id+'">'+u.t+'</a></td><td>'+u.pg+'</td><td class="st '+(S.done[u.id]?"y":"n")+'">'+(S.done[u.id]?"✓ selesai":(S.read[i+1]?"dibaca":"—"))+'</td></tr>'});
+  pb+='<tr><td>'+(UNITS.length+1)+'</td><td><a href="#cases">Studi kasus ('+CASES.length+')</a></td><td>—</td><td class="st '+(casesDone()?"y":"n")+'">'+(casesDone()?"✓ selesai":"—")+'</td></tr>';
+  pb+='<tr><td>'+(UNITS.length+2)+'</td><td><a href="#final">Kuis akhir</a></td><td>—</td><td class="st '+(S.final&&S.final.best>=80?"y":"n")+'">'+(S.final?("terbaik "+S.final.best+"%"):"—")+'</td></tr>';
+  $("#planBody").innerHTML=pb;
+}
+function casesDone(){var n=0;CASES.forEach(function(c){c.qs.forEach(function(q,i){if((S.notes[c.id+"_"+i]||"").trim().length>=40)n++})});var t=0;CASES.forEach(function(c){t+=c.qs.length});return n>=t}
+function updateProgress(){
+  var tot=UNITS.length+2,d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  if(casesDone())d++; if(S.final&&S.final.best>=80)d++;
+  var p=Math.round(d/tot*100);$("#progBar").style.width=p+"%";$("#progLbl").textContent=p+"%";
+}
+
+/* ================= quizzes ================= */
+function seededOrder(key,n){var h=2166136261;for(var c=0;c<key.length;c++){h^=key.charCodeAt(c);h=Math.imul(h,16777619)}var a=[];for(var i=0;i<n;i++)a.push(i);for(var k=n-1;k>0;k--){h=Math.imul(h^(h>>>15),2246822507)>>>0;var r=h%(k+1),x=a[k];a[k]=a[r];a[r]=x}return a}
+function renderQuiz(box,uid){
+  var qs=QZ[uid], h='<div class="lockmsg"><div>🔒 <b>Soal terkunci.</b><br>Baca subbab buku yang ditunjuk, lalu centang "Saya sudah membaca" di atas.</div></div><div class="qbody">';
+  qs.forEach(function(q,i){
+    h+='<div class="q" data-qi="'+i+'"><span class="kind '+(q.k==="r"?"rb":"")+'">'+(q.k==="r"?"📖 Cek bacaan · "+q.pg:"Konsep")+'</span><div class="qt">'+(i+1)+'. '+esc(q.q)+'</div><div class="opts">';
+    seededOrder(uid+"_"+i,q.o.length).forEach(function(j,pos){h+='<button class="opt" data-j="'+j+'"><span class="L">'+"ABCD"[pos]+'</span><span>'+esc(q.o[j])+'</span></button>'});
+    h+='</div><div class="fbx"></div></div>';
+  });
+  h+='<div class="score" id="sc_'+uid+'"></div></div>';
+  box.innerHTML=h;
+  $$(".q",box).forEach(function(qe){
+    var i=+qe.dataset.qi;
+    $$(".opt",qe).forEach(function(b){b.addEventListener("click",function(){answer(uid,i,+b.dataset.j,qe)})});
+    var prev=S.q[uid+"_"+i]; if(prev!=null) paint(uid,i,prev,qe);
+  });
+  lockState(box,uid); scoreUnit(uid);
+}
+function answer(uid,i,j,qe){S.q[uid+"_"+i]=j;paint(uid,i,j,qe);scoreUnit(uid);save();}
+function paint(uid,i,j,qe){
+  var q=QZ[uid][i],ok=j===q.a;
+  $$(".opt",qe).forEach(function(b){var k=+b.dataset.j;b.disabled=true;b.classList.remove("ok","no");if(k===j)b.classList.add(ok?"ok":"no");if(ok&&k===q.a)b.classList.add("ok")});
+  var fb=$(".fbx",qe);
+  fb.innerHTML='<div class="fb '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat.")+'</b>'+(ok?esc(q.e):(q.k==="r"?"Buka kembali "+q.pg+", dan cari bagian yang relevan.":"Baca ulang ringkasan di atas, lalu coba lagi."))+'</div>'+(ok?"":'<button class="retry">Coba lagi</button>');
+  var r=$(".retry",fb); if(r) r.addEventListener("click",function(){delete S.q[uid+"_"+i];save();$$(".opt",qe).forEach(function(b){b.disabled=false;b.classList.remove("ok","no")});fb.innerHTML="";scoreUnit(uid)});
+}
+function scoreUnit(uid){
+  var qs=QZ[uid],c=0;qs.forEach(function(q,i){if(S.q[uid+"_"+i]===q.a)c++});
+  var el=$("#sc_"+uid); if(el) el.textContent=c+" / "+qs.length+" benar"+(c===qs.length?" · Unit selesai ✓":"");
+  var was=!!S.done[uid]; S.done[uid]=c===qs.length;
+  if(S.done[uid]&&!was){toast("Unit selesai! 🎉");} if(was!==S.done[uid]){save();renderSide();}
+}
+function lockState(box,uid){var n=+uid.slice(1);box.classList.toggle("locked",!S.read[n])}
+
+/* ================= classify ================= */
+function renderClassify(el){
+  var key=el.dataset.widget,w=CL[key],h='';
+  w.it.forEach(function(it,i){
+    h+='<div class="it" data-i="'+i+'"><p>'+esc(it[0])+'</p><div class="chips">';
+    w.o.forEach(function(o){h+='<button class="chip" data-o="'+esc(o)+'">'+esc(o)+'</button>'});
+    h+='</div><div class="why"></div></div>';
+  });
+  h+='<div class="score" style="margin-top:10px"></div>';
+  el.insertAdjacentHTML("beforeend",h);
+  $$(".it",el).forEach(function(row){
+    var i=+row.dataset.i;
+    $$(".chip",row).forEach(function(c){c.addEventListener("click",function(){
+      var it=w.it[i],ok=c.dataset.o===it[1];
+      if(ok){S.cls[key+"_"+i]=1;paintCls(row,it,true);save();clsScore(el,key)}
+      else{c.classList.add("no");c.disabled=true;$(".why",row).textContent="Belum tepat. Coba pilihan lain.";}
+    })});
+    if(S.cls[key+"_"+i])paintCls(row,w.it[i],true);
+  });
+  clsScore(el,key);
+}
+function paintCls(row,it,ok){$$(".chip",row).forEach(function(c){c.disabled=true;c.classList.remove("no");if(c.dataset.o===it[1])c.classList.add("ok")});$(".why",row).innerHTML="✓ "+esc(it[2])}
+function clsScore(el,key){var w=CL[key],c=0;w.it.forEach(function(_,i){if(S.cls[key+"_"+i])c++});$(".score",el).textContent=c+" / "+w.it.length+" tepat"}
+
+/* ================= widget topik 7 ================= */
+function n2(x,d){return x.toLocaleString("id-ID",{maximumFractionDigits:d==null?1:d})}
+/* Inventory turnover */
+function invTool(){
+  if(!$("#ivC"))return;
+  var P={zara:[12000,800],slow:[12000,4000]};
+  function upd(){
+    var c=+$("#ivC").value||0,i=Math.max(0.0001,+$("#ivI").value||0),t=c/i,days=t?365/t:0;
+    var msg=t>=12?'Perputaran tinggi: stok cepat terjual. Pastikan tidak sering kehabisan stok (penjualan hilang).':t>=4?'Perputaran menengah. Cari produk lambat laku yang mengikat modal.':'Perputaran rendah: stok menumpuk, modal terikat, risiko barang usang dan diskon besar.';
+    $("#ivRes").innerHTML='<big>'+n2(t)+'× per tahun</big>Rata-rata barang tersimpan sekitar <b>'+n2(days,0)+' hari</b> sebelum terjual. '+msg+'<p class="hint" style="margin:6px 0 0">Zara (Case Study 6.1) menjaga stok sangat ramping dengan pengiriman dua kali seminggu dan produksi di tengah musim, sehingga barang tak terjual kurang dari 10% stok.</p>';
+    S.notes.iv_sum="Perputaran "+n2(t)+"×/tahun (≈"+n2(days,0)+" hari)";
+  }
+  $$("#invTool [data-iv]").forEach(function(b){b.addEventListener("click",function(){var p=P[b.dataset.iv];$("#ivC").value=p[0];$("#ivI").value=p[1];upd();save();notesPreview()})});
+  ["ivC","ivI"].forEach(function(id){$("#"+id).addEventListener("input",function(){upd();save();notesPreview()})});
+  upd();
+}
+/* Value stream efficiency */
+function vsTool(){
+  if(!$("#vsP"))return;
+  var P={can:[3,7920],umkm:[6,330]};
+  function dur(h){return h>=48?n2(h/24,0)+" hari":n2(h)+" jam"}
+  function upd(){
+    var p=+$("#vsP").value||0,w=+$("#vsW").value||0,tot=p+w,eff=tot?p/tot*100:0;
+    $("#vsRes").innerHTML='<big>'+(eff<0.1?eff.toFixed(3).replace(".",","):n2(eff,1))+'% waktu menambah nilai</big>Total siklus '+dur(tot)+'; pemrosesan hanya '+dur(p)+'.'+
+      '<div class="vsbar"><i style="width:'+Math.max(eff,0.6)+'%"></i></div>'+
+      '<p class="hint" style="margin:6px 0 0">Sebagian besar waktu habis untuk menunggu dan menyimpan. Menurut Womack &amp; Jones, sasaran pertama adalah menghapus aktivitas kategori 3, lalu memangkas kategori 2. Berbagi informasi digital (mis. data penjualan harian ke pemasok) memotong waktu tunggu tanpa mengubah proses produksi.</p>';
+    S.notes.vs_sum="Efisiensi siklus "+n2(eff,2)+"% (proses "+dur(p)+" dari "+dur(tot)+")";
+  }
+  $$("#vsTool [data-vs]").forEach(function(b){b.addEventListener("click",function(){var q=P[b.dataset.vs];$("#vsP").value=q[0];$("#vsW").value=q[1];upd();save();notesPreview()})});
+  ["vsP","vsW"].forEach(function(id){$("#"+id).addEventListener("input",function(){upd();save();notesPreview()})});
+  upd();
+}
+/* E-procurement savings & profitability */
+function epTool(){
+  if(!$("#epN"))return;
+  var ids=["epN","epO","epE","epT","epP","epX","epR"];
+  var P={A:[10000,5000,4000,20],B:[10000,1000,8000,20]};
+  function v(id){return +$("#"+id).value||0}
+  function upd(){
+    var yr=v("epN")*12,sav=yr*(v("epO")-v("epE"))*1000,pct=v("epO")?(v("epO")-v("epE"))/v("epO")*100:0;
+    var T=v("epT"),Pc=v("epP"),X=v("epX"),r=v("epR")/100,p0=T-Pc-X,p1=T-Pc*(1-r)-X,dp=p1-p0,dpp=p0?dp/Math.abs(p0)*100:0;
+    $("#epRes").innerHTML='<b>Penghematan biaya proses:</b> '+n2(yr,0)+' permintaan/tahun × Rp'+n2((v("epO")-v("epE"))*1000,0)+' = <b>Rp'+n2(sav/1e6,1)+' juta per tahun</b> ('+n2(pct,0)+'% per pesanan).'+
+      '<div class="tbar"><span>Laba awal</span><i style="width:'+Math.max(2,Math.min(100,p0/Math.max(p0,p1,1)*100))+'%;background:var(--navy)"></i><b>Rp'+n2(p0,0)+' jt</b></div>'+
+      '<div class="tbar"><span>Laba baru</span><i style="width:'+Math.max(2,Math.min(100,p1/Math.max(p0,p1,1)*100))+'%;background:var(--gold-bg)"></i><b>Rp'+n2(p1,0)+' jt</b></div>'+
+      '<p style="margin:6px 0 0">Penurunan biaya pembelian '+n2(r*100,0)+'% menaikkan laba sebesar <b>Rp'+n2(dp,0)+' juta ('+(p0>0?n2(dpp,0)+'%':'laba awal ≤ 0')+')</b>.</p>'+
+      '<p class="hint" style="margin:4px 0 0">Pelajaran Activity 6.5: dampak laba terbesar terjadi pada perusahaan yang porsi biaya pembeliannya tinggi terhadap pendapatan (mis. manufaktur elektronik konsumen), bukan perusahaan jasa. Penghematan proses baru menjadi kas bila waktu staf benar-benar dialihkan (Debate 6.3).</p>';
+    S.notes.ep_sum="Penghematan proses Rp"+n2(sav/1e6,1)+" jt/th; laba "+n2(p0,0)+" → "+n2(p1,0)+" jt";
+  }
+  $$("#epTool [data-ep]").forEach(function(b){b.addEventListener("click",function(){var q=P[b.dataset.ep];["epT","epP","epX","epR"].forEach(function(id,i){$("#"+id).value=q[i]});upd();save();notesPreview()})});
+  ids.forEach(function(id){$("#"+id).addEventListener("input",function(){upd();save();notesPreview()})});
+  upd();
+}
+
+/* ================= cases ================= */
+function norm(t){return (t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}
+function grade(id){
+  var r=RUB[id],t=norm(S.notes[id]),words=t.split(/\s+/).filter(Boolean).length;
+  var hits=r.cr.map(function(c){return new RegExp(c[1],"i").test(t)}),h=hits.filter(Boolean).length;
+  var conn=CONN.filter(function(w){return new RegExp("(^|[^a-z])"+w+"([^a-z]|$)").test(t)}).length;
+  var cov=Math.min(h,r.need)/r.need,raw=3*cov+(conn>=2?1:conn===1?.5:0),warn=[];
+  if(words<25){raw=Math.min(raw,2);warn.push("Jawaban terlalu singkat ("+words+" kata). Kembangkan penjelasan Anda.")}
+  if(h>=2&&conn===0&&words/h<7){raw=Math.min(raw,1);warn.push("Jawaban tampak seperti daftar kata kunci. Jelaskan hubungan antarkonsep dengan kalimat utuh.")}
+  else if(conn===0) warn.push("Belum ada penalaran sebab-akibat. Gunakan \"karena\", \"sehingga\", atau \"akibatnya\" untuk menunjukkan alur pikir.");
+  return {lv:Math.max(0,Math.min(4,Math.floor(raw+1e-9))),hits:hits,h:h,conn:conn,words:words,warn:warn,len:(S.notes[id]||"").length};
+}
+function renderGrade(id){
+  var box=$('.fbres[data-for="'+id+'"]'),st=S.cs[id];if(!box)return;
+  if(!st){box.innerHTML="";return}
+  var r=RUB[id],g=grade(id),noans=CASES.some(function(c){return c.noans&&id.indexOf(c.id+"_")===0});
+  var h='<div class="gbox"><div class="ghead"><span class="meter">'+[0,1,2,3].map(function(k){return '<i class="'+(k<g.lv?"on":"")+'"></i>'}).join("")+'</span><span class="glv">'+g.lv+'/4 · '+LV[g.lv]+'</span><span class="gnote">umpan balik otomatis, bukan nilai</span></div>';
+  h+='<p class="hint" style="margin:0 0 4px">Konsep kunci ('+g.h+' dari '+r.cr.length+' muncul; minimal '+r.need+' untuk cakupan penuh):</p><ul class="crit">';
+  r.cr.forEach(function(c,k){h+='<li class="'+(g.hits[k]?"y":"n")+'"><span class="m">'+(g.hits[k]?"✓":"")+'</span><span><b>'+esc(c[0])+'</b>'+(g.hits[k]?'':' <span class="h">· '+esc(c[2])+'</span>')+'</span></li>'});
+  h+='</ul><ul class="crit"><li class="'+(g.conn>=2?"y":"n")+'"><span class="m">'+(g.conn>=2?"✓":"")+'</span><span><b>Penalaran</b> <span class="h">· '+g.conn+' penghubung sebab-akibat'+(g.conn<2?" (target ≥ 2)":"")+'</span></span></li></ul>';
+  g.warn.forEach(function(w){h+='<div class="gwarn">⚠️ '+esc(w)+'</div>'});
+  if(st.len!==g.len) h+='<div class="stale">✎ Jawaban sudah diubah sejak dinilai. Klik "Nilai ulang" untuk memperbarui.</div>';
+  h+='<div class="selfc"><b style="font-size:.9rem">Penilaian diri: centang yang benar-benar sudah Anda lakukan</b>';
+  r.self.forEach(function(sx,k){h+='<label><input type="checkbox" data-self="'+id+'" data-k="'+k+'" '+(st.self&&st.self[k]?"checked":"")+'> '+esc(sx)+'</label>'});
+  h+=st.selfDone?'<p class="hint" style="margin:6px 0 0">✓ Penilaian diri tersimpan'+(noans?". Bawa jawaban ini ke diskusi kelas.":". Arah jawaban di bawah sudah terbuka.")+'</p>':'<button class="btn sm" data-selfdone="'+id+'" style="margin-top:6px">'+(noans?"Selesai menilai diri":"Selesai, buka arah jawaban")+'</button>';
+  h+='</div></div>';
+  box.innerHTML=h;
+  $$('[data-self]',box).forEach(function(c){c.addEventListener("change",function(){st.self=st.self||[];st.self[+c.dataset.k]=c.checked;save()})});
+  var sd=$('[data-selfdone]',box);if(sd)sd.addEventListener("click",function(){st.selfDone=true;save();renderGrade(id);refreshAnsLocks();updateCaseSums();var d=$('details.ans[data-for="'+id+'"]');if(d){d.open=true}});
+  var gb=$('[data-grade="'+id+'"]');if(gb)gb.textContent="↻ Nilai ulang";
+}
+function updateCaseSums(){
+  CASES.forEach(function(c){var el=$('[data-csum="'+c.id+'"]');if(!el)return;var n=0,tot=0;c.qs.forEach(function(q,i){var id=c.id+"_"+i;if(S.cs[id]){n++;tot+=grade(id).lv}});
+    el.textContent=n?("umpan balik rata-rata "+(tot/n).toFixed(1).replace(".",",")+"/4 · "+n+"/"+c.qs.length+" dinilai"):"belum dinilai"});
+}
+function renderCases(){
+  S.cs=S.cs||{};
+  var h="";
+  CASES.forEach(function(c){
+    h+='<div class="card"><h3>📂 '+c.t+' <span class="csum" data-csum="'+c.id+'"></span></h3><p class="hint" style="margin-top:-6px">Sumber: '+c.src+'</p>'+c.body;
+    h+='<h4 style="margin-top:18px">'+(c.noans?"Tugas persiapan diskusi kelas":"Pertanyaan diskusi")+'</h4>';
+    c.qs.forEach(function(q,i){
+      var id=c.id+"_"+i;
+      h+='<div class="cq"><b>'+(i+1)+'. '+esc(q[0])+'</b><textarea data-note="'+id+'" placeholder="Tulis jawaban Anda dalam kalimat utuh…"></textarea>';
+      h+='<div class="fbk"><button class="btn sm ghost" data-grade="'+id+'">🔍 Minta umpan balik</button><div class="fbres" data-for="'+id+'"></div></div>';
+      if(!c.noans) h+='<details class="ans" data-for="'+id+'"><summary>🔑 Arah jawaban</summary><div>'+esc(q[1])+'</div></details>';
+      h+='</div>';
+    });
+    if(c.noans) h+='<div class="co book"><b class="t">📝 Catatan.</b> Arah jawaban untuk kasus ini sengaja tidak diberikan dan akan dibahas di kelas. Umpan balik otomatis di sini hanya memeriksa kelengkapan struktur jawaban Anda.</div>';
+    h+='</div>';
+  });
+  $("#caseList").innerHTML=h;
+  $$("[data-grade]").forEach(function(b){b.addEventListener("click",function(){
+    var id=b.dataset.grade,len=(S.notes[id]||"").trim().length;
+    if(len<40){toast("Tulis jawaban Anda dulu (min. 40 karakter)");return}
+    var prev=S.cs[id]||{};S.cs[id]={len:(S.notes[id]||"").length,self:prev.self||[],selfDone:prev.selfDone||false};save();renderGrade(id);updateCaseSums();
+  })});
+  $$("details.ans").forEach(function(d){
+    d.addEventListener("click",function(e){if(d.classList.contains("lock")&&!d.open){e.preventDefault();toast("Minta umpan balik dan selesaikan penilaian diri dulu")}});
+  });
+  Object.keys(S.cs).forEach(renderGrade);
+  refreshAnsLocks();updateCaseSums();
+}
+function refreshAnsLocks(){$$("details.ans").forEach(function(d){var st=S.cs&&S.cs[d.dataset.for];d.classList.toggle("lock",!(st&&st.selfDone))})}
+
+/* ================= notes binding ================= */
+function bindNotes(){
+  $$("textarea[data-note],input[data-note]").forEach(function(t){
+    t.value=S.notes[t.dataset.note]||"";
+    t.addEventListener("input",function(){S.notes[t.dataset.note]=t.value;clearTimeout(t._h);t._h=setTimeout(function(){save();refreshAnsLocks();renderSide();notesPreview();if(S.cs&&S.cs[t.dataset.note])renderGrade(t.dataset.note)},350)});
+  });
+}
+function notesText(){
+  var L=["PENGANTAR BISNIS DIGITAL (DG234101) — TOPIK 07","Manajemen Rantai Pasok dan Permintaan","",(S.notes.identity||"Nama — NRP"),"","== PEMANASAN ==","Pengalaman belanja bermasalah:",S.notes.warm_know||"-","","Siapa menanggung biaya:",S.notes.warm_want||"-",""];
+  L.push("== HASIL KALKULATOR (terakhir) ==","Perputaran persediaan: "+(S.notes.iv_sum||"-"),"Value stream: "+(S.notes.vs_sum||"-"),"E-procurement: "+(S.notes.ep_sum||"-"),"");
+  CASES.forEach(function(c){L.push("== "+c.t.toUpperCase()+" ==");c.qs.forEach(function(q,i){L.push((i+1)+". "+q[0]);L.push(S.notes[c.id+"_"+i]||"-");if(S.cs&&S.cs[c.id+"_"+i])L.push("[Umpan balik aplikasi: "+grade(c.id+"_"+i).lv+"/4]");L.push("")})});
+  var d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  L.push("== KEMAJUAN ==","Unit selesai: "+d+"/"+UNITS.length,"Kuis akhir (skor terbaik): "+(S.final?S.final.best+"%":"belum"));
+  return L.join("\n");
+}
+function notesPreview(){var p=$("#notesPrev");if(p)p.textContent=notesText()}
+
+/* ================= self-test (pola serviceman ch05) ================= */
+var quizEl=null, run=null;
+function setupQuiz(){
+  quizEl=$("#finalBox");
+  var best=S.final?S.final.best:null;
+  quizEl.innerHTML='<div class="qz-setup"><p>Soal diambil dari ketujuh unit (Chaffey Bab 6). Anda mendapat umpan balik setelah setiap jawaban, dan rincian per unit di akhir. Topik dianggap tuntas bila skor ≥ 80%.</p>'+
+   '<div><p class="qz-lbl">Panjang</p><div class="seg" id="qzLen"><button data-n="10" aria-pressed="true">Cepat · 10 soal</button><button data-n="20" aria-pressed="false">Standar · 20</button><button data-n="'+FINAL.length+'" aria-pressed="false">Lengkap · semua '+FINAL.length+'</button></div></div>'+
+   '<div><p class="qz-lbl">Fokus</p><div class="seg" id="qzLo"><button data-lo="0" aria-pressed="true">Semua unit</button>'+Object.keys(LO_NAMES).map(function(k){return '<button data-lo="'+k+'" aria-pressed="false" title="'+LO_NAMES[k]+'">Unit '+k+'</button>'}).join("")+'</div></div>'+
+   '<div class="row"><button class="btn" id="qzStart">Mulai self-test</button>'+(best!=null?'<span class="muted" style="font-family:var(--mono);font-size:.8rem">Skor terbaik di perangkat ini: '+best+'%</span>':'')+'</div></div>';
+  var n=10, lo=0;
+  $$("#qzLen button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLen button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});n=+b.dataset.n})});
+  $$("#qzLo button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLo button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});lo=+b.dataset.lo})});
+  $("#qzStart").addEventListener("click",function(){
+    var pool=FINAL.map(function(q,i){return i}).filter(function(i){return !lo||FINAL[i][0]===lo});
+    pool=shuffle(pool).slice(0,Math.min(n,pool.length));
+    run={qs:pool.map(function(i){var q=FINAL[i],order=shuffle(q[2].map(function(_,j){return j}));return {lo:q[0],text:q[1],opts:order.map(function(j){return q[2][j]}),ans:order.indexOf(q[3]),exp:q[4]}}),i:0,picks:[]};
+    showQ();
+  });
+}
+function showQ(){
+  var r=run,q=r.qs[r.i],picked=r.picks[r.i],sofar=r.picks.filter(function(p,k){return p===r.qs[k].ans}).length;
+  quizEl.innerHTML='<div class="qz-top"><span class="qz-lbl">Soal '+(r.i+1)+' dari '+r.qs.length+' · Unit '+q.lo+' '+LO_NAMES[q.lo]+'</span><span class="muted" style="font-family:var(--mono);font-size:.8rem">'+sofar+' benar sejauh ini</span></div>'+
+   '<div class="qz-prog"><i style="width:'+(r.i/r.qs.length*100)+'%"></i></div>'+
+   '<p class="qz-q">'+esc(q.text)+'</p>'+
+   '<div class="qz-opts">'+q.opts.map(function(o,j){return '<button data-j="'+j+'"><span class="k">'+"ABCD"[j]+'</span><span>'+esc(o)+'</span></button>'}).join("")+'</div>'+
+   '<div id="qzExp"></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzQuit">Keluar</button><button class="btn" id="qzNext" '+(picked==null?"disabled":"")+'>'+(r.i===r.qs.length-1?"Lihat hasil":"Soal berikutnya")+'</button></div>';
+  function lock(j){
+    $$(".qz-opts button",quizEl).forEach(function(b){b.disabled=true;var k=+b.dataset.j;if(k===q.ans)b.classList.add("right");else if(k===j)b.classList.add("wrong")});
+    var ok=j===q.ans;
+    $("#qzExp").innerHTML='<div class="qz-exp '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat. Jawabannya "+"ABCD"[q.ans]+".")+'</b>'+esc(q.exp)+'</div>';
+    $("#qzNext").disabled=false;
+  }
+  if(picked!=null)lock(picked);
+  $$(".qz-opts button",quizEl).forEach(function(b){b.addEventListener("click",function(){var j=+b.dataset.j;r.picks[r.i]=j;lock(j);$("#qzNext").focus()})});
+  $("#qzNext").addEventListener("click",function(){if(r.i<r.qs.length-1){r.i++;showQ()}else results()});
+  $("#qzQuit").addEventListener("click",setupQuiz);
+}
+function results(){
+  var r=run,right=r.qs.filter(function(q,k){return r.picks[k]===q.ans}).length,pct=Math.round(right/r.qs.length*100);
+  S.final={best:Math.max(pct,S.final?S.final.best:0),n:(S.final?S.final.n:0)+1,last:pct};save();renderSide();
+  var by={};r.qs.forEach(function(q,k){by[q.lo]=by[q.lo]||{r:0,t:0};by[q.lo].t++;if(r.picks[k]===q.ans)by[q.lo].r++});
+  var verdict=pct>=80?"Pemahaman kuat. Topik 07 tuntas.":pct>=65?"Fondasi sudah baik. Tinjau unit di bawah 70%.":"Pelajari ulang unit yang lemah (dan halaman bukunya), lalu coba lagi.";
+  quizEl.innerHTML='<div class="res-big"><span class="pct" style="color:'+(pct>=65?"var(--good)":"var(--bad)")+'">'+pct+'%</span><span>'+right+' dari '+r.qs.length+' benar. '+verdict+'</span></div>'+
+   (pct>=80?'<div><span class="badge">🏅 Topik 07 tuntas</span></div>':'')+
+   '<div><p class="qz-lbl">Per unit</p><div class="lo-bars">'+Object.keys(by).sort().map(function(k){var v=by[k],p=Math.round(v.r/v.t*100);return '<div class="lo-row"><span><b style="font-family:var(--mono)">U'+k+'</b> '+LO_NAMES[k]+(p<70?' · <a href="#u'+k+'">tinjau</a>':'')+'</span><span class="b"><i style="width:'+p+'%;background:'+(p>=70?"var(--good)":"var(--bad)")+'"></i></span><span class="v">'+v.r+'/'+v.t+'</span></div>'}).join("")+'</div></div>'+
+   '<div><p class="qz-lbl">Tinjau jawaban Anda</p><div class="review">'+r.qs.map(function(q,k){var ok=r.picks[k]===q.ans;return '<details '+(ok?"":"open")+'><summary><span class="mk '+(ok?"ok":"no")+'">'+(ok?"✓":"✗")+'</span>'+esc(q.text)+'</summary><p><b>Jawaban Anda:</b> '+esc(q.opts[r.picks[k]])+(ok?'':'<br><b>Jawaban benar:</b> '+esc(q.opts[q.ans]))+'</p><p class="muted">'+esc(q.exp)+'</p></details>'}).join("")+'</div></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzNew">Ubah pengaturan</button><button class="btn" id="qzAgain">Ulangi dengan soal baru</button></div>';
+  $("#qzNew").addEventListener("click",setupQuiz);
+  $("#qzAgain").addEventListener("click",function(){setupQuiz();$("#qzStart").click()});
+  quizEl.scrollIntoView({block:"start"});
+}
+
+/* ================= flashcards ================= */
+var deck=[],di=0;
+function buildDeck(){deck=GLOSS.map(function(g,i){return i}).filter(function(i){return !S.known[i]});if(!deck.length){deck=GLOSS.map(function(g,i){return i})}di=0;showCard()}
+function showCard(){var fc=$("#fc");fc.classList.remove("flip");var g=GLOSS[deck[di]];$("#fcF").textContent=g[0];$("#fcB").textContent=g[1];
+  var k=Object.keys(S.known).length;$("#fcCount").textContent="Kartu "+(di+1)+" / "+deck.length+" · dikuasai "+k+" / "+GLOSS.length}
+function cards(){
+  var fc=$("#fc");function flip(){fc.classList.toggle("flip")}
+  fc.addEventListener("click",flip);fc.addEventListener("keydown",function(e){if(e.key===" "||e.key==="Enter"){e.preventDefault();flip()}});
+  $("#fcNext").addEventListener("click",function(){di=(di+1)%deck.length;showCard()});
+  $("#fcPrev").addEventListener("click",function(){di=(di-1+deck.length)%deck.length;showCard()});
+  $("#fcShuffle").addEventListener("click",function(){deck=shuffle(deck);di=0;showCard()});
+  $("#fcKnow").addEventListener("click",function(){S.known[deck[di]]=1;save();deck.splice(di,1);if(!deck.length){toast("Semua kartu dikuasai! 🎉");buildDeck();return}if(di>=deck.length)di=0;showCard()});
+  $("#fcReset").addEventListener("click",function(){S.known={};save();buildDeck()});
+  buildDeck();
+}
+
+/* ================= routing ================= */
+function markNav(){var v=current();$$(".side a").forEach(function(a){a.classList.toggle("on",a.dataset.nav===v)})}
+function current(){var h=(location.hash||"#home").slice(1);return $('[data-view="'+h+'"]')?h:"home"}
+function route(){
+  var v=current();$$(".view").forEach(function(s){s.hidden=s.dataset.view!==v});
+  markNav();$("#side").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");
+  window.scrollTo(0,0);
+  
+  if(v==="notes")notesPreview();
+  
+  document.title=(v==="home"?"Topik 07":($('[data-view="'+v+'"] h2')||{}).textContent)+" · Manajemen Rantai Pasok dan Permintaan";
+}
+
+/* ================= init ================= */
+$$("[data-quiz]").forEach(function(b){renderQuiz(b,b.dataset.quiz)});
+$$("[data-widget]").forEach(renderClassify);
+$$("[data-readchk]").forEach(function(c){
+  var n=+c.dataset.readchk;c.checked=!!S.read[n];
+  c.addEventListener("change",function(){S.read[n]=c.checked;save();var b=$('[data-quiz="u'+n+'"]');lockState(b,"u"+n);renderSide();if(c.checked)toast("Soal cek pemahaman terbuka ↓")});
+});
+setupQuiz();renderCases();bindNotes();invTool();vsTool();epTool();cards();renderSide();updateProgress();
+window.addEventListener("hashchange",route);route();
+
+$("#menuBtn").addEventListener("click",function(){var o=$("#side").classList.toggle("open");this.setAttribute("aria-expanded",o)});
+$("#themeBtn").addEventListener("click",function(){
+  var r=document.documentElement,cur=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),nx=cur==="dark"?"light":"dark";
+  r.setAttribute("data-theme",nx);try{localStorage.setItem("bisdig-theme",nx)}catch(e){} 
+});
+$("#copyNotes").addEventListener("click",function(){var t=notesText();
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast("Tersalin ke clipboard")},function(){var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("Tersalin")}catch(e){toast("Gagal menyalin")}ta.remove()})});
+$("#dlNotes").addEventListener("click",function(){var b=new Blob([notesText()],{type:"text/plain;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="Topik07_Catatan_"+((S.notes.identity||"mahasiswa").replace(/[^\w]+/g,"_").slice(0,40))+".txt";document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)});
+$("#resetAll").addEventListener("click",function(){
+  if(this.dataset.confirm!=="1"){this.dataset.confirm="1";this.textContent="Klik lagi untuk konfirmasi";var me=this;setTimeout(function(){me.dataset.confirm="";me.textContent="Hapus semua kemajuan"},3000);return}
+  try{localStorage.removeItem(KEY)}catch(e){} location.hash="#home";location.reload();
+});
+})();
+</script>
+</body>
+</html>
