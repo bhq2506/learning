@@ -1073,7 +1073,7 @@ function renderSide(){
   });
   $("#side").innerHTML=h; markNav();
   var pb="";UNITS.forEach(function(u,i){pb+='<tr><td>'+(i+1)+'</td><td><a href="#'+u.id+'">'+u.t+'</a></td><td>'+u.pg+'</td><td class="st '+(S.done[u.id]?"y":"n")+'">'+(S.done[u.id]?"✓ selesai":(S.read[i+1]?"dibaca":"—"))+'</td></tr>'});
-  pb+='<tr><td>'+(UNITS.length+1)+'</td><td><a href="#cases">Studi kasus ("+CASES.length+")</a></td><td>—</td><td class="st '+(casesDone()?"y":"n")+'">'+(casesDone()?"✓ selesai":"—")+'</td></tr>';
+  pb+='<tr><td>'+(UNITS.length+1)+'</td><td><a href="#cases">Studi kasus ('+CASES.length+')</a></td><td>—</td><td class="st '+(casesDone()?"y":"n")+'">'+(casesDone()?"✓ selesai":"—")+'</td></tr>';
   pb+='<tr><td>'+(UNITS.length+2)+'</td><td><a href="#final">Kuis akhir</a></td><td>—</td><td class="st '+(S.final&&S.final.best>=80?"y":"n")+'">'+(S.final?("terbaik "+S.final.best+"%"):"—")+'</td></tr>';
   $("#planBody").innerHTML=pb;
 }
