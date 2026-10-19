@@ -281,6 +281,29 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
 .review .mk.ok{color:var(--good)}.review .mk.no{color:var(--bad)}
 .review p{font-size:.88rem;margin:6px 0 0}
 .muted{color:var(--muted)}
+/* umpan balik studi kasus */
+.btn.sm{padding:7px 12px;font-size:.84rem}
+.fbk{margin-top:8px}
+.fbres{margin-top:10px}
+.gbox{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px}
+.ghead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.meter{display:flex;gap:4px}
+.meter i{width:22px;height:10px;border-radius:3px;background:var(--sunk)}
+.meter i.on{background:var(--navy)}
+.glv{font-weight:800}
+.gnote{font-size:.72rem;color:var(--muted);margin-left:auto}
+.crit{list-style:none;padding:0;margin:6px 0;display:grid;gap:5px}
+.crit li{font-size:.86rem;display:flex;gap:8px;align-items:flex-start}
+.crit li .m{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:.7rem;font-weight:800;margin-top:2px}
+.crit li.y .m{background:var(--good);color:#fff}
+.crit li.n .m{background:var(--sunk);color:var(--muted);border:1.5px dashed var(--muted)}
+.crit li.n span.h{color:var(--muted)}
+.gwarn{font-size:.84rem;background:var(--gold-soft);border-radius:8px;padding:8px 10px;margin-top:8px}
+.selfc{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.selfc label{display:flex;gap:8px;align-items:flex-start;font-size:.88rem;margin:6px 0;cursor:pointer}
+.selfc input{width:18px;height:18px;accent-color:var(--navy);flex:none;margin-top:2px}
+.stale{font-size:.8rem;color:var(--gold);font-weight:700;margin-top:6px}
+.csum{font-family:var(--mono);font-size:.75rem;font-weight:500;background:var(--sunk);color:var(--muted);padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle}
 </style>
 </head>
 <body>
@@ -697,7 +720,8 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
 <section class="view" data-view="cases">
   <div class="eyebrow">Penerapan <span class="tag">± 70 menit</span></div>
   <h2>Studi Kasus</h2>
-  <p class="lead">Tulis jawaban Anda dulu. "Arah jawaban" baru bisa dibuka setelah Anda menulis minimal 40 karakter. Arah jawaban berisi poin kunci, bukan jawaban lengkap.</p>
+  <p class="lead">Alur setiap pertanyaan: <b>tulis jawaban → minta umpan balik aplikasi → nilai diri dengan checklist → buka arah jawaban</b>.</p>
+  <div class="co book"><b class="t">ℹ️ Tentang umpan balik otomatis.</b> Aplikasi memeriksa apakah konsep kunci dan penalaran ("karena", "sehingga") muncul dalam jawaban Anda. Aplikasi <b>tidak</b> bisa menilai apakah argumen Anda benar atau tajam. Skor 0–4 ini hanya umpan balik belajar, <b>bukan nilai</b>. Menempel daftar kata kunci mungkin menaikkan skor, tetapi tidak membuat Anda lebih paham. Checklist penilaian diri justru menilai bagian yang tidak bisa diukur mesin.</div>
   <div id="caseList"></div>
   <div class="pager"><a class="btn ghost" href="#u8">← Unit 8</a><a class="btn" href="#final">Kuis Akhir →</a></div>
 </section>
@@ -771,7 +795,7 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
 (function(){
 "use strict";
 /* ---------------- storage (safe) ---------------- */
-var KEY="bisdig-t01-v1", S={read:{},q:{},done:{},cls:{},notes:{},final:null,known:{}};
+var KEY="bisdig-t01-v1", S={read:{},q:{},done:{},cls:{},notes:{},final:null,known:{},cs:{}};
 try{var raw=localStorage.getItem(KEY); if(raw){var o=JSON.parse(raw); for(var k in o) S[k]=o[k];}}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} updateProgress();}
 try{var th=localStorage.getItem("bisdig-theme"); if(th) document.documentElement.setAttribute("data-theme",th);}catch(e){}
@@ -969,6 +993,92 @@ var FINAL=[
  [8,"Sebuah perusahaan memisahkan unit fintech-nya menjadi perusahaan independen yang berdiri sendiri. Ini disebut…",["Merger","Acquisition","Spin-off","Strategic alliance"],2,"Spin-off memisahkan unit usaha menjadi perusahaan independen; divestiture menjual sebagian unit."]
 ];
 
+/* ---------------- rubrik umpan balik studi kasus ----------------
+   need = jumlah kriteria minimal agar cakupan dianggap penuh; cr = [label, regex, petunjuk bila belum muncul] */
+var RUB={
+ c1_0:{need:3,cr:[
+  ["Dimensi ekonomi","ekonomi|kelas menengah|reformasi|pasar bebas|socialist market|daya beli","Bagaimana kondisi ekonomi Tiongkok (reformasi, kelas menengah) memengaruhi Alibaba?"],
+  ["Dimensi politik-hukum","politi|hukum|regulasi|perlindungan konsumen|legal","Lemahnya perlindungan hukum bagi konsumen itu dimensi apa?"],
+  ["Dimensi teknologi","teknologi|internet|online|daring|digital|website|situs","Apa peran internet dalam kisah Jack Ma?"],
+  ["Dimensi sosiokultural","sosio|budaya|kultur|lajang|single|jomblo|demografi","Mengapa Singles Day bisa muncul? Lihat karakteristik demografis."],
+  ["Dimensi global","global|internasional|ipo|amerika|\\bas\\b|investor asing|bursa","Dari mana Alibaba menghimpun modal saat IPO?"]],
+  self:["Setiap dimensi yang saya sebut disertai bukti konkret dari kasus","Saya menjelaskan mengapa dimensi itu menentukan, bukan sekadar menyebutnya","Saya menentukan dimensi mana yang paling menentukan"]},
+ c1_1:{need:4,cr:[
+  ["Perubahan sistem ekonomi Tiongkok","1978|terencana|planned|socialist market|reformasi|komunis|sosialis|ekonomi pasar","Jelaskan pergeseran sistem ekonomi sejak 1978."],
+  ["Hak milik pribadi","hak milik|kepemilikan pribadi|milik pribadi|private property|properti|memiliki usaha","Elemen pertama private enterprise belum dibahas."],
+  ["Kebebasan memilih","kebebasan|bebas memilih|bebas|freedom","Bagaimana dengan kebebasan memilih bagi produsen dan konsumen?"],
+  ["Profit sebagai insentif","profit|laba|keuntungan|insentif","Apa yang mendorong wirausaha mau menanggung risiko?"],
+  ["Persaingan","persaingan|kompetisi|bersaing|pesaing|competition","Elemen persaingan belum disebut."]],
+  self:["Saya mengaitkan elemen private enterprise dengan situasi Tiongkok sebelum dan sesudah 1978","Saya menjelaskan apa yang terjadi pada wirausaha tanpa elemen-elemen tersebut"]},
+ c1_2:{need:3,cr:[
+  ["Masalah kepercayaan (trust)","percaya|trust|kepercayaan|ragu|khawatir","Masalah inti apa yang dihadapi pembeli dan penjual yang tidak saling kenal?"],
+  ["Mekanisme escrow","escrow|menahan dana|dana ditahan|ditahan|rekening bersama|pihak ketiga","Bagaimana cara kerja Alipay secara spesifik?"],
+  ["Barang palsu / perlindungan konsumen","palsu|penipuan|perlindungan|kualitas|subpar","Risiko apa yang ingin dihindari pembeli?"],
+  ["Faktor produksi yang dipilih","information|informasi|data|entrepreneur|wirausaha|kewirausahaan|capital|modal|labor|physical","Pertanyaan kedua (faktor produksi) belum dijawab."]],
+  self:["Saya menjelaskan bagaimana escrow memecahkan masalah, bukan hanya menyebutnya","Pilihan faktor produksi saya disertai alasan"]},
+ c1_3:{need:4,cr:[
+  ["Pergeseran kurva permintaan","geser|pergeseran|shift|kurva","Apakah kurva permintaan benar-benar bergeser?"],
+  ["Pemindahan waktu pembelian","memindahkan|dipindah|menunda|ditunda|waktu pembelian|dipercepat|menahan belanja","Mungkinkah konsumen hanya menunda pembelian ke tanggal 11.11?"],
+  ["Permintaan baru / impulsif","impuls|permintaan baru|tambahan|tercipta|fomo","Apakah ada pembelian yang tidak akan terjadi tanpa Singles Day?"],
+  ["Implikasi operasional","stok|persediaan|inventori|logistik|gudang|pengiriman|kapasitas|server","Apa dampak lonjakan sesaat bagi operasi penjual?"],
+  ["Implikasi margin/profit","margin|diskon|laba|profit|potongan harga|untung","Apa dampak diskon besar terhadap keuntungan?"]],
+  self:["Saya mengambil posisi yang jelas (bergeser, pindah waktu, atau keduanya) beserta alasannya","Saya membahas lebih dari satu implikasi bagi penjual"]},
+ c2_0:{need:3,cr:[
+  ["Niche","niche|ceruk|segmen","Apakah Netflix menggarap segmen tertentu yang belum terlayani?"],
+  ["First-mover","first|pertama|pelopor|lebih dulu|duluan","Apakah Netflix yang pertama melakukan sesuatu?"],
+  ["Bukti dari kasus","denda|keluar rumah|pos|mail|dvd|kenyamanan|convenience","Dukung jawaban dengan fakta dari kasus."],
+  ["Menentukan yang paling tepat","paling tepat|kombinasi|keduanya|lebih tepat|utama","Pertanyaan meminta Anda memilih yang paling tepat."]],
+  self:["Saya menjelaskan mengapa sumber kompetensi yang saya pilih lebih tepat dari yang lain"]},
+ c2_1:{need:3,cr:[
+  ["Resourcefulness","resourceful|kreatif|meminjam|gym|model bisnis lain|akal","Dari mana Hastings mendapat ide model bisnisnya?"],
+  ["Fokus pada pelanggan","pelanggan|customer|konsumen","Bagaimana Hastings memperlakukan keluhan pelanggan soal denda?"],
+  ["Risiko terukur / menguji","risiko|uji|menguji|coba|trial|eksperimen|test","Apa yang dilakukan Netflix sebelum mengubah model bisnisnya?"],
+  ["Menghadapi ketidakpastian","ambigu|ketidakpastian|tidak pasti|tidak tahu|uncertain","Apakah Hastings yakin modelnya akan berhasil?"],
+  ["Bukti angka/fakta","80|uji coba gratis|free trial|40|denda","Sertakan bukti spesifik dari kasus."]],
+  self:["Setiap karakteristik yang saya sebut didukung bukti dari kasus"]},
+ c2_2:{need:3,cr:[
+  ["Lingkungan teknologi","teknologi|streaming|internet|dvd|digital|online","Perubahan teknologi apa yang melemahkan Blockbuster?"],
+  ["Lingkungan sosiokultural","kebiasaan|perilaku|preferensi|sosio|budaya|gaya hidup","Bagaimana kebiasaan konsumen berubah?"],
+  ["Aset fisik menjadi beban","toko|aset|fisik|beban|biaya tetap|gerai","Mengapa jaringan toko justru menjadi kelemahan?"],
+  ["Model pendapatan dari denda","denda|late fee","Dari mana sebagian pendapatan Blockbuster berasal, dan bagaimana pelanggan menyikapinya?"]],
+  self:["Saya menjelaskan mengapa keunggulan Blockbuster (modal, merek, toko) tidak menolongnya"]},
+ c2_3:{need:3,cr:[
+  ["Status first-mover advantage","first|pertama|pelopor","Bahas apakah keunggulan sebagai pelopor masih relevan."],
+  ["Sikap yang jelas","masih|tidak lagi|terkikis|berkurang|hilang|melemah|bertahan","Ambil posisi: masih menjadi keunggulan atau tidak?"],
+  ["Sumber keunggulan saat ini","skala|data|konten orisinal|original|algoritma|rekomendasi|merek|brand","Jika bukan first-mover, apa yang kini menopang Netflix?"],
+  ["Ancaman","pesaing|disney|amazon|hbo|apple|youtube|perang konten|biaya konten|kejenuhan|churn|harga|pembajakan","Apa ancaman terbesarnya?"]],
+  self:["Saya mendukung pendapat saya dengan contoh atau data terkini","Saya mempertimbangkan argumen yang berlawanan"]},
+ c3_0:{need:5,cr:[
+  ["Domestik","domestik|pedagang|tanah abang|umkm|pesaing lokal|marketplace","Siapa pelaku domestik yang terdampak?"],
+  ["Global","global|impor|asing|lintas negara|internasional|tiongkok|china|bytedance","Unsur internasional apa yang terlibat?"],
+  ["Teknologi","teknologi|live|social commerce|aplikasi|algoritma|digital","Inovasi teknologi apa yang memicu perubahan?"],
+  ["Politik-hukum","politi|hukum|regulasi|permendag|aturan|izin|pemerintah","Peran regulasi belum dipetakan."],
+  ["Sosiokultural","sosio|budaya|kebiasaan|perilaku|hiburan|kreator|gaya hidup","Perubahan perilaku belanja masyarakat belum dibahas."],
+  ["Ekonomi","ekonomi|harga|daya beli|omzet|pendapatan|investasi|us\\$|dolar","Dimensi ekonomi belum dipetakan."],
+  ["Pemicu vs dampak","pemicu|dampak|penyebab|akibat|memicu|berdampak","Tugas meminta Anda membedakan pemicu dan dampak."]],
+  self:["Saya memetakan peristiwa secara kronologis: pemicu → respons → dampak","Setiap pemetaan saya didukung fakta dari kasus"]},
+ c3_1:{need:4,cr:[
+  ["Kondisi sebelum akuisisi","sebelum","Bagaimana struktur pasar sebelum akuisisi?"],
+  ["Kondisi sesudah akuisisi","sesudah|setelah|pasca|akuisisi|merger|tokopedia","Bagaimana struktur pasar setelah TikTok menguasai Tokopedia?"],
+  ["Konsep struktur pasar","oligopol|monopol|persaingan|konsentrasi|kompetisi|pangsa pasar|market share","Gunakan konsep struktur pasar (Unit 3)."],
+  ["Kesimpulan tentang persaingan","meningkat|menurun|naik|turun|mengurangi|menambah|melemah|menguat|berkurang","Apakah persaingan meningkat atau menurun?"]],
+  self:["Saya menggunakan data pangsa pasar atau jumlah pemain, bukan hanya opini"]},
+ c3_2:{need:3,cr:[
+  ["Minimal dua peluang","(^|\\s)(1|2)[\\.\\)]|pertama|kedua|peluang lain|selain itu","Tugas meminta minimal dua peluang; beri nomor agar jelas."],
+  ["Distinctive competence","distinctive|kompetensi|keunggulan|niche|first|pasar baru|ceruk","Sebutkan distinctive competence yang dibutuhkan untuk setiap peluang."],
+  ["Kaitan dengan pelaku terdampak","umkm|penjual|seller|kreator|affiliate|afiliasi|live|pedagang","Siapa target pelanggan peluang usaha Anda?"]],
+  self:["Peluang yang saya usulkan benar-benar muncul karena perubahan ini, bukan peluang umum","Saya realistis soal siapa yang akan membayar"]},
+ c3_3:{need:4,cr:[
+  ["Pihak yang diuntungkan","untung|diuntungkan|manfaat|menguntungkan","Siapa yang diuntungkan oleh regulasi ini?"],
+  ["Pihak yang dirugikan","rugi|dirugikan|merugikan|kehilangan","Siapa yang dirugikan?"],
+  ["Konsep supply–demand","permintaan|penawaran|demand|supply|harga keseimbangan|surplus|shortage","Gunakan konsep supply–demand (Unit 3)."],
+  ["Elemen private enterprise","hak milik|kebebasan|profit|persaingan|private enterprise","Kaitkan dengan empat elemen private enterprise."],
+  ["Sumber data/berita","http|www\\.|\\(20\\d\\d\\)|menurut|sumber|data dari|dikutip","Tugas mewajibkan minimal satu sumber kredibel."]],
+  self:["Saya mengambil posisi yang jelas: tujuan regulasi tercapai, tidak tercapai, atau sebagian","Sumber yang saya kutip kredibel (media, lembaga, atau data resmi)"]}
+};
+var CONN=["karena","sehingga","akibatnya","oleh karena itu","maka","sebab","menyebabkan","artinya","dengan demikian","namun","tetapi","sedangkan","jika","agar","membuat","berdampak","because","therefore"];
+var LV=["Belum terlihat","Perlu diperkuat","Cukup","Baik","Sangat baik"];
+
 /* ---------------- glossary ---------------- */
 var GLOSS=[
  ["Business","Organisasi yang menyediakan barang/jasa untuk dijual demi profit"],
@@ -1121,38 +1231,80 @@ function calcs(){
 }
 
 /* ================= cases ================= */
+function norm(t){return (t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}
+function grade(id){
+  var r=RUB[id],t=norm(S.notes[id]),words=t.split(/\s+/).filter(Boolean).length;
+  var hits=r.cr.map(function(c){return new RegExp(c[1],"i").test(t)}),h=hits.filter(Boolean).length;
+  var conn=CONN.filter(function(w){return new RegExp("(^|[^a-z])"+w+"([^a-z]|$)").test(t)}).length;
+  var cov=Math.min(h,r.need)/r.need,raw=3*cov+(conn>=2?1:conn===1?.5:0),warn=[];
+  if(words<25){raw=Math.min(raw,2);warn.push("Jawaban terlalu singkat ("+words+" kata). Kembangkan penjelasan Anda.")}
+  if(h>=2&&conn===0&&words/h<7){raw=Math.min(raw,1);warn.push("Jawaban tampak seperti daftar kata kunci. Jelaskan hubungan antarkonsep dengan kalimat utuh.")}
+  else if(conn===0) warn.push("Belum ada penalaran sebab-akibat. Gunakan \"karena\", \"sehingga\", atau \"akibatnya\" untuk menunjukkan alur pikir.");
+  return {lv:Math.max(0,Math.min(4,Math.floor(raw+1e-9))),hits:hits,h:h,conn:conn,words:words,warn:warn,len:(S.notes[id]||"").length};
+}
+function renderGrade(id){
+  var box=$('.fbres[data-for="'+id+'"]'),st=S.cs[id];if(!box)return;
+  if(!st){box.innerHTML="";return}
+  var r=RUB[id],g=grade(id),noans=id.indexOf("c3_")===0;
+  var h='<div class="gbox"><div class="ghead"><span class="meter">'+[0,1,2,3].map(function(k){return '<i class="'+(k<g.lv?"on":"")+'"></i>'}).join("")+'</span><span class="glv">'+g.lv+'/4 · '+LV[g.lv]+'</span><span class="gnote">umpan balik otomatis, bukan nilai</span></div>';
+  h+='<p class="hint" style="margin:0 0 4px">Konsep kunci ('+g.h+' dari '+r.cr.length+' muncul; minimal '+r.need+' untuk cakupan penuh):</p><ul class="crit">';
+  r.cr.forEach(function(c,k){h+='<li class="'+(g.hits[k]?"y":"n")+'"><span class="m">'+(g.hits[k]?"✓":"")+'</span><span><b>'+esc(c[0])+'</b>'+(g.hits[k]?'':' <span class="h">· '+esc(c[2])+'</span>')+'</span></li>'});
+  h+='</ul><ul class="crit"><li class="'+(g.conn>=2?"y":"n")+'"><span class="m">'+(g.conn>=2?"✓":"")+'</span><span><b>Penalaran</b> <span class="h">· '+g.conn+' penghubung sebab-akibat'+(g.conn<2?" (target ≥ 2)":"")+'</span></span></li></ul>';
+  g.warn.forEach(function(w){h+='<div class="gwarn">⚠️ '+esc(w)+'</div>'});
+  if(st.len!==g.len) h+='<div class="stale">✎ Jawaban sudah diubah sejak dinilai. Klik "Nilai ulang" untuk memperbarui.</div>';
+  h+='<div class="selfc"><b style="font-size:.9rem">Penilaian diri: centang yang benar-benar sudah Anda lakukan</b>';
+  r.self.forEach(function(sx,k){h+='<label><input type="checkbox" data-self="'+id+'" data-k="'+k+'" '+(st.self&&st.self[k]?"checked":"")+'> '+esc(sx)+'</label>'});
+  h+=st.selfDone?'<p class="hint" style="margin:6px 0 0">✓ Penilaian diri tersimpan'+(noans?". Bawa jawaban ini ke diskusi kelas.":". Arah jawaban di bawah sudah terbuka.")+'</p>':'<button class="btn sm" data-selfdone="'+id+'" style="margin-top:6px">'+(noans?"Selesai menilai diri":"Selesai, buka arah jawaban")+'</button>';
+  h+='</div></div>';
+  box.innerHTML=h;
+  $$('[data-self]',box).forEach(function(c){c.addEventListener("change",function(){st.self=st.self||[];st.self[+c.dataset.k]=c.checked;save()})});
+  var sd=$('[data-selfdone]',box);if(sd)sd.addEventListener("click",function(){st.selfDone=true;save();renderGrade(id);refreshAnsLocks();updateCaseSums();var d=$('details.ans[data-for="'+id+'"]');if(d){d.open=true}});
+  var gb=$('[data-grade="'+id+'"]');if(gb)gb.textContent="↻ Nilai ulang";
+}
+function updateCaseSums(){
+  CASES.forEach(function(c){var el=$('[data-csum="'+c.id+'"]');if(!el)return;var n=0,tot=0;c.qs.forEach(function(q,i){var id=c.id+"_"+i;if(S.cs[id]){n++;tot+=grade(id).lv}});
+    el.textContent=n?("umpan balik rata-rata "+(tot/n).toFixed(1).replace(".",",")+"/4 · "+n+"/"+c.qs.length+" dinilai"):"belum dinilai"});
+}
 function renderCases(){
+  S.cs=S.cs||{};
   var h="";
   CASES.forEach(function(c){
-    h+='<div class="card"><h3>📂 '+c.t+'</h3><p class="hint" style="margin-top:-6px">Sumber: '+c.src+'</p>'+c.body;
+    h+='<div class="card"><h3>📂 '+c.t+' <span class="csum" data-csum="'+c.id+'"></span></h3><p class="hint" style="margin-top:-6px">Sumber: '+c.src+'</p>'+c.body;
     h+='<h4 style="margin-top:18px">'+(c.noans?"Tugas persiapan diskusi kelas":"Pertanyaan diskusi")+'</h4>';
     c.qs.forEach(function(q,i){
       var id=c.id+"_"+i;
-      h+='<div class="cq"><b>'+(i+1)+'. '+esc(q[0])+'</b><textarea data-note="'+id+'" placeholder="Tulis jawaban Anda…"></textarea>';
+      h+='<div class="cq"><b>'+(i+1)+'. '+esc(q[0])+'</b><textarea data-note="'+id+'" placeholder="Tulis jawaban Anda dalam kalimat utuh…"></textarea>';
+      h+='<div class="fbk"><button class="btn sm ghost" data-grade="'+id+'">🔍 Minta umpan balik</button><div class="fbres" data-for="'+id+'"></div></div>';
       if(!c.noans) h+='<details class="ans" data-for="'+id+'"><summary>🔑 Arah jawaban</summary><div>'+esc(q[1])+'</div></details>';
       h+='</div>';
     });
-    if(c.noans) h+='<div class="co book"><b class="t">📝 Catatan.</b> Arah jawaban untuk kasus ini sengaja tidak diberikan dan akan dibahas di kelas. Siapkan argumen dengan data pendukung dan cantumkan sumbernya.</div>';
+    if(c.noans) h+='<div class="co book"><b class="t">📝 Catatan.</b> Arah jawaban untuk kasus ini sengaja tidak diberikan dan akan dibahas di kelas. Umpan balik otomatis di sini hanya memeriksa kelengkapan struktur jawaban Anda.</div>';
     h+='</div>';
   });
   $("#caseList").innerHTML=h;
+  $$("[data-grade]").forEach(function(b){b.addEventListener("click",function(){
+    var id=b.dataset.grade,len=(S.notes[id]||"").trim().length;
+    if(len<40){toast("Tulis jawaban Anda dulu (min. 40 karakter)");return}
+    var prev=S.cs[id]||{};S.cs[id]={len:(S.notes[id]||"").length,self:prev.self||[],selfDone:prev.selfDone||false};save();renderGrade(id);updateCaseSums();
+  })});
   $$("details.ans").forEach(function(d){
-    d.addEventListener("click",function(e){var len=(S.notes[d.dataset.for]||"").trim().length;if(len<40&&!d.open){e.preventDefault();toast("Tulis jawaban Anda dulu (min. 40 karakter)")}});
+    d.addEventListener("click",function(e){if(d.classList.contains("lock")&&!d.open){e.preventDefault();toast("Minta umpan balik dan selesaikan penilaian diri dulu")}});
   });
-  refreshAnsLocks();
+  Object.keys(S.cs).forEach(renderGrade);
+  refreshAnsLocks();updateCaseSums();
 }
-function refreshAnsLocks(){$$("details.ans").forEach(function(d){d.classList.toggle("lock",(S.notes[d.dataset.for]||"").trim().length<40)})}
+function refreshAnsLocks(){$$("details.ans").forEach(function(d){var st=S.cs&&S.cs[d.dataset.for];d.classList.toggle("lock",!(st&&st.selfDone))})}
 
 /* ================= notes binding ================= */
 function bindNotes(){
   $$("textarea[data-note]").forEach(function(t){
     t.value=S.notes[t.dataset.note]||"";
-    t.addEventListener("input",function(){S.notes[t.dataset.note]=t.value;clearTimeout(t._h);t._h=setTimeout(function(){save();refreshAnsLocks();renderSide();notesPreview()},350)});
+    t.addEventListener("input",function(){S.notes[t.dataset.note]=t.value;clearTimeout(t._h);t._h=setTimeout(function(){save();refreshAnsLocks();renderSide();notesPreview();if(S.cs&&S.cs[t.dataset.note])renderGrade(t.dataset.note)},350)});
   });
 }
 function notesText(){
   var L=["PENGANTAR BISNIS DIGITAL (DG234101) — TOPIK 01","Pengantar Bisnis & Kewirausahaan","",(S.notes.identity||"Nama — NRP"),"","== PEMANASAN ==","Yang sudah saya ketahui:",S.notes.warm_know||"-","","Yang ingin saya pelajari:",S.notes.warm_want||"-",""];
-  CASES.forEach(function(c){L.push("== "+c.t.toUpperCase()+" ==");c.qs.forEach(function(q,i){L.push((i+1)+". "+q[0]);L.push(S.notes[c.id+"_"+i]||"-");L.push("")})});
+  CASES.forEach(function(c){L.push("== "+c.t.toUpperCase()+" ==");c.qs.forEach(function(q,i){L.push((i+1)+". "+q[0]);L.push(S.notes[c.id+"_"+i]||"-");if(S.cs&&S.cs[c.id+"_"+i])L.push("[Umpan balik aplikasi: "+grade(c.id+"_"+i).lv+"/4]");L.push("")})});
   var d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
   L.push("== KEMAJUAN ==","Unit selesai: "+d+"/8","Kuis akhir (skor terbaik): "+(S.final?S.final.best+"%":"belum"));
   return L.join("\n");
