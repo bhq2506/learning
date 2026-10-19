@@ -1,0 +1,1432 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Topik 04 · Infrastruktur Bisnis Digital</title>
+<meta name="description" content="Web-app belajar mandiri Pengantar Bisnis Digital (DG234101) ITS — Topik 04: Manajemen Infrastruktur Bisnis Digital, berbasis Chaffey et al. (2019) Bab 3 dan Arora dkk. (2020), dengan kasus Indonesia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#F3F5FA; --surface:#FFFFFF; --sunk:#E8ECF5; --ink:#0F1B33; --muted:#56627A; --line:#D5DCEA;
+  --navy:#013880; --navy-ink:#FFFFFF; --navy-soft:#E1E9F7;
+  --gold:#B07A00; --gold-bg:#FFC72C; --gold-soft:#FFF4D4;
+  --good:#17784E; --good-soft:#DCF2E6; --bad:#B4372F; --bad-soft:#F9E2DF;
+  --dig:#5B3FB0; --dig-soft:#ECE7FA;
+  --idn:#B4372F; --idn-soft:#FBEAE8;
+  --f:"Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  --r:12px;
+  --shadow:0 1px 2px rgba(15,27,51,.06), 0 4px 16px rgba(15,27,51,.05);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.65}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:var(--navy)}
+h1,h2,h3,h4{line-height:1.2;margin:0 0 .5em;letter-spacing:-.01em}
+h2{font-size:clamp(1.45rem,1.1rem + 1.3vw,1.95rem);font-weight:800}
+h3{font-size:1.12rem;font-weight:700;margin-top:1.6em}
+p{margin:0 0 1em}
+em{font-style:italic}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold-bg);outline-offset:2px;border-radius:6px}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;padding-top:max(10px,env(safe-area-inset-top))}
+:root[data-theme="dark"] .top{background:#0E1A36}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .top{background:#0E1A36}}
+.top .brand{display:flex;flex-direction:column;line-height:1.2;min-width:0;flex:1}
+.top .brand b{font-size:.95rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .brand small{font-size:.72rem;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog{display:flex;align-items:center;gap:8px;font-size:.78rem;white-space:nowrap}
+.prog .bar{width:110px;height:8px;border-radius:99px;background:rgba(255,255,255,.22);overflow:hidden}
+.prog .bar i{display:block;height:100%;background:#FFC72C;border-radius:99px;width:0;transition:width .4s}
+.iconbtn{background:rgba(255,255,255,.12);border:0;border-radius:8px;width:34px;height:34px;display:grid;place-items:center;color:#fff;flex:none}
+.iconbtn:hover{background:rgba(255,255,255,.22)}
+.menubtn{display:none}
+@media (max-width:899px){.menubtn{display:grid}.prog .bar{width:64px}}
+@media (max-width:420px){.prog .lbl{display:none}}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1200px;margin:0 auto}
+@media (max-width:899px){.shell{grid-template-columns:minmax(0,1fr)}}
+nav.side{position:sticky;top:54px;align-self:start;height:calc(100vh - 54px);overflow:auto;padding:20px 12px 40px 16px;border-right:1px solid var(--line)}
+@media (max-width:899px){
+  nav.side{position:fixed;inset:54px 0 0 0;height:auto;background:var(--bg);z-index:15;border:0;transform:translateX(-100%);transition:transform .25s;padding:16px}
+  nav.side.open{transform:none}
+}
+.side .grp{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 8px 6px}
+.side .grp:first-child{margin-top:0}
+.side a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;text-decoration:none;color:var(--ink);font-size:.9rem;font-weight:500;line-height:1.3}
+.side a:hover{background:var(--sunk)}
+.side a.on{background:var(--navy-soft);color:var(--navy);font-weight:700}
+.side a .n{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk);color:var(--muted);border:1.5px solid var(--line)}
+.side a.done .n{background:var(--good);border-color:var(--good);color:#fff}
+.side a.on .n{border-color:var(--navy)}
+.side a .n.ico{font-size:.8rem}
+
+main{padding:28px 16px 80px;min-width:0}
+@media (min-width:900px){main{padding:36px 40px 100px}}
+.view{max-width:760px;margin:0 auto;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tag{display:inline-block;font-family:var(--mono);font-size:.7rem;font-weight:500;letter-spacing:0;text-transform:none;padding:2px 8px;border-radius:99px;background:var(--sunk);color:var(--muted)}
+.lead{font-size:1.05rem;color:var(--muted)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:18px 0;box-shadow:var(--shadow)}
+.card h3:first-child,.card h4:first-child{margin-top:0}
+
+/* reading box */
+.read{border:2px solid var(--navy);background:var(--navy-soft);border-radius:var(--r);padding:16px 18px;margin:20px 0}
+.read .hd{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.read .pg{font-family:var(--mono);font-size:.82rem;background:var(--navy);color:var(--navy-ink);padding:2px 9px;border-radius:6px}
+.read ul{margin:.3em 0 .8em;padding-left:1.2em}
+.read li{margin:.2em 0}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--line);cursor:pointer;font-weight:600;font-size:.92rem}
+.chk input{width:20px;height:20px;accent-color:var(--good);margin:1px 0 0;flex:none}
+
+/* callouts */
+.co{border-left:4px solid var(--dig);background:var(--dig-soft);padding:12px 16px;border-radius:0 10px 10px 0;margin:16px 0;font-size:.95rem}
+.co b.t{color:var(--dig)}
+.co.idn{border-color:var(--idn);background:var(--idn-soft)}
+.co.idn b.t{color:var(--idn)}
+.co.book{border-color:var(--gold);background:var(--gold-soft)}
+.co.book b.t{color:var(--gold)}
+.co p:last-child{margin:0}
+
+/* tables */
+.tw{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--sunk);font-weight:700;font-size:.8rem;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+
+.terms{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.terms span{font-size:.78rem;padding:3px 10px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-style:italic}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:.92rem;background:var(--navy);color:var(--navy-ink);text-decoration:none}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn.gold{background:var(--gold-bg);color:#1b1400}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:36px;padding-top:20px;border-top:1px solid var(--line)}
+
+/* quiz */
+.qwrap{position:relative}
+.qwrap.locked .qbody{filter:blur(3px);pointer-events:none;user-select:none;opacity:.6}
+.lockmsg{display:none;position:absolute;inset:0;z-index:2;align-items:center;justify-content:center;text-align:center;padding:16px}
+.qwrap.locked .lockmsg{display:flex}
+.lockmsg div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px;max-width:380px;box-shadow:0 6px 30px rgba(0,0,0,.12);font-size:.92rem}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0;background:var(--surface)}
+.q .qt{font-weight:600;margin-bottom:10px}
+.q .kind{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:5px;margin-bottom:6px;background:var(--sunk);color:var(--muted)}
+.q .kind.rb{background:var(--gold-soft);color:var(--gold)}
+.opts{display:grid;gap:7px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;padding:9px 12px;border-radius:9px;border:1.5px solid var(--line);background:var(--bg);font-size:.92rem;line-height:1.45}
+.opt:hover:not([disabled]){border-color:var(--navy)}
+.opt .L{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk)}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.ok .L{background:var(--good);color:#fff}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)}
+.opt.no .L{background:var(--bad);color:#fff}
+.opt.sel{border-color:var(--navy);background:var(--navy-soft)}
+.opt[disabled]{cursor:default}
+.fb{margin-top:10px;font-size:.88rem;padding:9px 12px;border-radius:8px}
+.fb.ok{background:var(--good-soft);color:var(--ink)}
+.fb.no{background:var(--bad-soft);color:var(--ink)}
+.fb b{margin-right:4px}
+.retry{margin-top:8px;font-size:.82rem;background:none;border:0;color:var(--navy);font-weight:700;padding:0;text-decoration:underline}
+
+/* classify widget */
+.cls .it{padding:12px 0;border-bottom:1px dashed var(--line)}
+.cls .it:last-child{border-bottom:0}
+.cls .it p{margin:0 0 8px;font-size:.93rem;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--line);background:var(--bg);border-radius:99px;padding:5px 12px;font-size:.8rem;font-weight:600}
+.chip:hover:not([disabled]){border-color:var(--navy)}
+.chip.ok{background:var(--good);border-color:var(--good);color:#fff}
+.chip.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.chip[disabled]{cursor:default}
+.cls .why{font-size:.84rem;color:var(--muted);margin-top:6px}
+.score{font-size:.85rem;font-weight:700;color:var(--muted)}
+
+/* simulator */
+.sim svg{width:100%;height:auto;display:block}
+.sim .ctl{display:grid;gap:10px;margin-top:10px}
+.sim input[type=range]{width:100%;accent-color:var(--navy)}
+.sim .out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.sim .out div{background:var(--sunk);border-radius:9px;padding:8px 10px;font-size:.78rem;color:var(--muted)}
+.sim .out b{display:block;font-size:1.05rem;color:var(--ink)}
+.state{font-weight:800;padding:8px 12px;border-radius:9px;text-align:center}
+.state.sh{background:var(--bad-soft);color:var(--bad)}
+.state.su{background:var(--gold-soft);color:var(--gold)}
+.state.eq{background:var(--good-soft);color:var(--good)}
+.tog{display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600}
+.tog input{width:18px;height:18px;accent-color:var(--dig)}
+
+/* calc */
+.calc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.calc{grid-template-columns:minmax(0,1fr)}}
+.calc label{font-size:.8rem;font-weight:600;color:var(--muted);display:grid;gap:4px}
+.calc input{font:inherit;font-size:.95rem;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.res{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--sunk);font-size:.92rem}
+.res big{font-size:1.4rem;font-weight:800;display:block}
+
+/* case */
+details.ans{margin-top:10px;border-radius:10px;border:1px dashed var(--gold);background:var(--gold-soft)}
+details.ans summary{cursor:pointer;padding:10px 14px;font-weight:700;color:var(--gold);font-size:.9rem}
+details.ans>div{padding:0 14px 12px;font-size:.92rem}
+details.ans.lock summary{color:var(--muted);cursor:not-allowed}
+textarea{font:inherit;font-size:.92rem;width:100%;min-height:92px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+textarea:focus{border-color:var(--navy);outline:none}
+.cq{margin:18px 0}
+.cq>b{display:block;margin-bottom:6px;font-size:.95rem}
+.hint{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+/* flashcards */
+.fc{perspective:1200px;margin:16px 0}
+.fc .inner{position:relative;min-height:230px;transition:transform .5s;transform-style:preserve-3d;cursor:pointer}
+.fc.flip .inner{transform:rotateY(180deg)}
+.fc .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;padding:24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border:1px solid var(--line);box-shadow:var(--shadow)}
+.fc .front{background:var(--navy);color:#fff}
+:root[data-theme="dark"] .fc .front{background:#1C2B4D;color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fc .front{background:#1C2B4D;color:var(--ink)}}
+.fc .front b{font-size:1.5rem;font-style:italic}
+.fc .back{background:var(--surface);transform:rotateY(180deg);font-size:1.02rem}
+.fc small{opacity:.7;font-size:.75rem;margin-top:10px}
+
+/* final */
+.big{font-size:2.6rem;font-weight:800;line-height:1}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--gold-bg);color:#1b1400;font-weight:800;padding:6px 14px;border-radius:99px}
+
+/* home */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+@media (max-width:620px){.steps{grid-template-columns:minmax(0,1fr)}}
+.steps div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.steps>div>b{display:block;font-size:1rem;margin-bottom:2px}
+.steps span{font-size:.85rem;color:var(--muted)}
+.steps i{font-style:normal;font-size:1.4rem}
+.plan td:nth-child(3){font-family:var(--mono);font-size:.8rem;white-space:nowrap}
+.plan .st{font-size:.75rem;font-weight:700;white-space:nowrap}
+.st.y{color:var(--good)}.st.n{color:var(--muted)}
+.hero{background:linear-gradient(135deg,#013880 0%,#0a4fa8 100%);color:#fff;border-radius:16px;padding:24px 22px;margin-bottom:20px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(1.6rem,1.2rem + 1.8vw,2.3rem);font-weight:800;margin:4px 0 8px}
+.hero p{opacity:.92;margin:0;max-width:56ch}
+.hero .eyebrow{color:#FFC72C}
+.hero::after{content:"";position:absolute;right:-40px;bottom:-60px;width:220px;height:220px;border-radius:50%;border:28px solid rgba(255,199,44,.18)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:.88rem;font-weight:600;z-index:40;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.foot{font-size:.78rem;color:var(--muted);margin-top:40px}
+ol.ref li{margin:.4em 0;font-size:.9rem}
+/* self-test (pola serviceman) */
+.quiz{scroll-margin-top:70px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow)}
+.qz-setup{display:flex;flex-direction:column;gap:14px}
+.qz-setup p{margin:0}
+.qz-lbl{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;font-size:.88rem;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.qz-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.qz-top .qz-lbl{margin:0}
+.qz-prog{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.qz-prog i{display:block;height:100%;background:var(--navy);width:0;transition:width .3s}
+.qz-q{font-size:1.18rem;font-weight:700;margin:0;line-height:1.4}
+.qz-opts{display:flex;flex-direction:column;gap:8px}
+.qz-opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;font-size:.95rem;line-height:1.45}
+.qz-opts button .k{font-family:var(--mono);font-size:.8rem;color:var(--muted);flex:none;padding-top:2px}
+.qz-opts button:hover:not(:disabled){border-color:var(--navy)}
+.qz-opts button:disabled{cursor:default}
+.qz-opts button.right{border-color:var(--good);background:var(--good-soft)}
+.qz-opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.qz-exp{border-radius:10px;padding:12px 14px;font-size:.93rem}
+.qz-exp.ok{background:var(--good-soft)}.qz-exp.no{background:var(--bad-soft)}
+.qz-exp b{display:block;margin-bottom:2px}
+.qz-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.res-big{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.res-big .pct{font-weight:800;font-size:3.4rem;line-height:1}
+.lo-bars{display:flex;flex-direction:column;gap:8px}
+.lo-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 44px;gap:10px;align-items:center;font-size:.86rem}
+@media (max-width:520px){.lo-row{grid-template-columns:minmax(0,1fr) 70px 40px}}
+.lo-row .b{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.lo-row .b i{display:block;height:100%}
+.lo-row .v{font-family:var(--mono);font-size:.78rem;text-align:right}
+.review{display:flex;flex-direction:column;gap:8px}
+.review details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.review summary{cursor:pointer;font-size:.92rem}
+.review .mk{font-family:var(--mono);font-weight:700;margin-right:6px}
+.review .mk.ok{color:var(--good)}.review .mk.no{color:var(--bad)}
+.review p{font-size:.88rem;margin:6px 0 0}
+.muted{color:var(--muted)}
+/* umpan balik studi kasus */
+.btn.sm{padding:7px 12px;font-size:.84rem}
+.fbk{margin-top:8px}
+.fbres{margin-top:10px}
+.gbox{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px}
+.ghead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.meter{display:flex;gap:4px}
+.meter i{width:22px;height:10px;border-radius:3px;background:var(--sunk)}
+.meter i.on{background:var(--navy)}
+.glv{font-weight:800}
+.gnote{font-size:.72rem;color:var(--muted);margin-left:auto}
+.crit{list-style:none;padding:0;margin:6px 0;display:grid;gap:5px}
+.crit li{font-size:.86rem;display:flex;gap:8px;align-items:flex-start}
+.crit li .m{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:.7rem;font-weight:800;margin-top:2px}
+.crit li.y .m{background:var(--good);color:#fff}
+.crit li.n .m{background:var(--sunk);color:var(--muted);border:1.5px dashed var(--muted)}
+.crit li.n span.h{color:var(--muted)}
+.gwarn{font-size:.84rem;background:var(--gold-soft);border-radius:8px;padding:8px 10px;margin-top:8px}
+.selfc{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.selfc label{display:flex;gap:8px;align-items:flex-start;font-size:.88rem;margin:6px 0;cursor:pointer}
+.selfc input{width:18px;height:18px;accent-color:var(--navy);flex:none;margin-top:2px}
+.stale{font-size:.8rem;color:var(--gold);font-weight:700;margin-top:6px}
+.csum{font-family:var(--mono);font-size:.75rem;font-weight:500;background:var(--sunk);color:var(--muted);padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle}
+
+/* widget topik 4 */
+.mlbl{display:grid;gap:4px;font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:8px}
+.mlbl input,.mlbl textarea{font:inherit;font-size:.9rem;font-weight:400;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.mlbl textarea{min-height:70px}
+.grid2c{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.grid2c{grid-template-columns:minmax(0,1fr)}}
+.grid2c .card{margin:0}
+.grid2c .calc{grid-template-columns:minmax(0,1fr)}
+.layers{display:grid;gap:6px;margin:8px 0}
+.lyr{display:grid;grid-template-columns:44px minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 12px;color:var(--ink);font:inherit}
+.lyr b{grid-row:1/3;align-self:center;font-family:var(--mono,monospace);font-size:1.05rem;color:var(--navy)}
+.lyr span{font-weight:700;font-size:.92rem}
+.lyr small{color:var(--muted);font-size:.8rem}
+.lyr[aria-pressed="true"]{border-color:var(--navy);background:var(--navy-soft)}
+.nines{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 10px;font-size:.8rem;font-weight:600;color:var(--ink)}
+.chip.on{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.evq{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:.88rem}
+@media (max-width:560px){.evq{grid-template-columns:minmax(0,1fr)}}
+.evs{display:flex;gap:4px}
+.evs button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-weight:700;color:var(--ink)}
+.evs button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.calc3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.calc3{grid-template-columns:minmax(0,1fr)}}
+.calc3 fieldset{border:1px solid var(--line);border-radius:10px;padding:8px 10px 10px;margin:0;display:grid;gap:6px;align-content:start}
+.calc3 legend{font-size:.78rem;font-weight:800;color:var(--navy);padding:0 4px}
+.calc3 label{display:grid;gap:2px;font-size:.75rem;font-weight:600;color:var(--muted)}
+.calc3 input[type=number]{font:inherit;font-size:.88rem;padding:6px 8px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.tbar{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:.88rem;margin:4px 0}
+.tbar i{display:block;height:14px;border-radius:7px;min-width:4px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <button class="iconbtn menubtn" id="menuBtn" aria-label="Buka menu" aria-expanded="false">☰</button>
+  <div class="brand"><b>Topik 04 · Infrastruktur Bisnis Digital</b><small><a href="../" style="color:inherit">← Pengantar Bisnis Digital (DG234101) · ITS</a></small></div>
+  <div class="prog" title="Kemajuan belajar"><span class="lbl" id="progLbl">0%</span><span class="bar"><i id="progBar"></i></span></div>
+  <button class="iconbtn" id="themeBtn" aria-label="Ganti tema terang/gelap">◐</button>
+</header>
+
+<div class="shell">
+<nav class="side" id="side" aria-label="Navigasi materi"></nav>
+<main id="main">
+
+<!-- ================= HOME ================= -->
+<section class="view" data-view="home">
+  <div class="hero">
+    <div class="eyebrow">Minggu 4 · Belajar Mandiri</div>
+    <h1>Manajemen Infrastruktur Bisnis Digital</h1>
+    <p>Topik ini membahas teknologi dari sudut pandang <b>manajer</b>, bukan insinyur. Anda tidak perlu bisa mengonfigurasi server. Yang perlu Anda kuasai adalah pertanyaan yang tepat: apa risikonya, berapa biaya totalnya, siapa yang bertanggung jawab, dan apa dampaknya bagi pelanggan?</p>
+  </div>
+
+  <div class="card">
+    <h3>🎯 Sub-CPMK 4 <span class="tag">CPMK2</span></h3>
+    <p style="margin:0">Mahasiswa mampu menjelaskan komponen infrastruktur teknologi (hardware, software, jaringan) dan implikasi manajerial cloud computing, SaaS, dan Internet governance.</p>
+  </div>
+
+  <h3>Cara memakai aplikasi ini</h3>
+  <p>Aplikasi ini <b>bukan pengganti buku</b>. Ringkasan di sini sengaja dibuat padat; detail, gambar, dan mini case ada di buku. Setiap unit mengikuti tiga langkah:</p>
+  <div class="steps">
+    <div><i>📖</i><b>1. Baca</b><span>Buka subbab Chaffey Bab 3 (atau artikel McKinsey) yang ditunjuk, dengan pertanyaan pemandu sebagai fokus.</span></div>
+    <div><i>✅</i><b>2. Cek</b><span>Centang "sudah membaca" untuk membuka soal. Soal berlabel <span style="font-weight:700">Cek Bacaan</span> hanya bisa dijawab dari buku.</span></div>
+    <div><i>🧩</i><b>3. Terapkan</b><span>Hitung downtime, bandwidth, dan TCO; analisis kasus infrastruktur Indonesia.</span></div>
+  </div>
+  <p class="hint">Kemajuan Anda tersimpan otomatis di peramban ini (bukan di server). Gunakan menu <b>Catatan &amp; Referensi</b> untuk menyalin atau mengunduh semua jawaban Anda.</p>
+
+  <h3>Rencana belajar (± 3,5 jam)</h3>
+  <div class="tw"><table class="plan">
+    <thead><tr><th>#</th><th>Unit</th><th>Bacaan</th><th>Status</th></tr></thead>
+    <tbody id="planBody"></tbody>
+  </table></div>
+  <p class="hint">Bacaan utama: Chaffey, D., Hemphill, T., &amp; Edmundson-Bird, D. (2019). <em>Digital Business and E-Commerce Management</em> (7th ed.). Pearson. Bab 3: <em>Managing digital business infrastructure</em>. Pendukung: Arora dkk. (2020), McKinsey Quarterly (tautan di menu Referensi).</p>
+
+  <div class="co idn"><b class="t">🇮🇩 Kasus Indonesia minggu ini.</b> Selain Case Study 3.1 (Google) dari buku, Anda akan menganalisis tiga kasus dari Indonesia: serangan ransomware <b>Pusat Data Nasional Sementara 2</b> di Surabaya (2024), gangguan layanan <b>Bank Syariah Indonesia</b> (2023), dan keputusan sebuah startup Surabaya: <b>server sendiri atau cloud?</b></div>
+
+  <h3>🔥 Pemanasan (5 menit)</h3>
+  <div class="card">
+    <p>Ingat satu pengalaman ketika aplikasi atau situs yang Anda pakai bermasalah: lambat, error saat membayar, data hilang, atau tidak bisa diakses saat pendaftaran dibuka.</p>
+    <div class="cq"><b>Apa yang terjadi, dan apa dampaknya bagi Anda sebagai pengguna?</b><textarea data-note="warm_know" placeholder="Layanan: … Masalah: … Dampak: …"></textarea></div>
+    <div class="cq"><b>Tebakan Anda: di bagian mana masalahnya (jaringan, server, aplikasi, data)? Simpan tebakan ini; Anda akan mengujinya di Unit 3.</b><textarea data-note="warm_want" placeholder="Tebakan saya…"></textarea></div>
+  </div>
+  <div class="pager"><span></span><a class="btn" href="#u1">Mulai Unit 1 →</a></div>
+</section>
+
+<!-- ================= UNIT 1 ================= -->
+<section class="view" data-view="u1" data-unit="1">
+  <div class="eyebrow">Unit 1 <span class="tag">LO Bab 3</span><span class="tag">± 20 menit</span></div>
+  <h2>Infrastruktur Bisnis Digital dan Isu Manajerialnya</h2>
+  <div class="read" data-read="1">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 3 · Introduction · Tabel 3.1 · Mini Case 3.2</span></div>
+    <p style="margin:0 0 4px">Bagian pembuka Bab 3 (Tabel 3.1, Activity 3.1), wawancara <em>Real-world Digital Business</em> dengan Royal Mail, dan Mini Case Study 3.2 (toko fisik Amazon). Cari jawaban:</p>
+    <ul>
+      <li>Apa definisi <em>digital business infrastructure</em>? Keputusan kunci apa yang harus diambil manajer tentangnya?</li>
+      <li>Apa enam isu manajerial utama di Tabel 3.1?</li>
+      <li>Masalah teknis apa yang dihadapi toko grocery tanpa kasir milik Amazon di Mini Case Study 3.2?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="1"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b><em>Digital business infrastructure</em></b> adalah arsitektur perangkat keras, perangkat lunak, konten, dan data yang dipakai untuk memberikan layanan bisnis digital kepada karyawan, pelanggan, dan mitra. Infrastruktur juga mencakup <em>di mana</em> komponen itu berada. Keputusan kuncinya: komponen mana yang dikelola sendiri dan mana yang diserahkan ke pihak luar. Trennya, semakin banyak yang dikelola pihak luar.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Isu manajerial (diringkas dari Tabel 3.1)</th><th>Inti persoalan</th></tr></thead>
+    <tbody>
+      <tr><td>Platform akses mana yang didukung?</td><td>Mobile kini paling penting; juga feed dan API untuk pertukaran data</td></tr>
+      <tr><td>Layanan apa untuk produk digital baru?</td><td>Domain, hosting, cloud, dan SaaS</td></tr>
+      <tr><td>Bagaimana menjamin kualitas layanan?</td><td>Kesesuaian bisnis, keamanan, kecepatan, ketersediaan, tingkat error</td></tr>
+      <tr><td>Di mana aplikasi di-hosting?</td><td>Internal atau eksternal; integrasi dengan sistem lama dan mitra</td></tr>
+      <tr><td>Bagaimana mengelola konten dan data?</td><td>Mutakhir, akurat, mudah dicari, mudah dipahami</td></tr>
+      <tr><td>Bagaimana mengamankan data?</td><td>Data bisa hilang karena kesalahan atau serangan</td></tr>
+    </tbody>
+  </table></div>
+  <div class="co"><b class="t">💡 Kualitas data adalah fondasi.</b> Dalam wawancara di Bab 3, kepala layanan data Royal Mail menegaskan bahwa personalisasi secanggih apa pun tidak berguna bila alamat atau kontak pelanggan salah. Data harus divalidasi saat dikumpulkan, dibersihkan berkala, dan disertai izin yang jelas.</div>
+  <div class="card cls" data-widget="issue"><h4>🧩 Latihan: isu manajerial yang mana?</h4></div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u1"></div>
+  <div class="pager"><a class="btn ghost" href="#home">← Beranda</a><a class="btn" href="#u2">Unit 2 →</a></div>
+</section>
+
+<!-- ================= UNIT 2 ================= -->
+<section class="view" data-view="u2" data-unit="2">
+  <div class="eyebrow">Unit 2 <span class="tag">LO Bab 3</span><span class="tag">± 25 menit</span></div>
+  <h2>Platform Akses Digital: Desktop, Mobile, dan Lainnya</h2>
+  <div class="read" data-read="2">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 3 · Digital access platforms · Mini Case 3.1</span></div>
+    <p style="margin:0 0 4px">Subbab tentang ragam platform akses digital, Box 3.1 (mobile site vs app), dan Mini Case Study 3.1 (location-based marketing). Cari jawaban:</p>
+    <ul>
+      <li>Apa saja keunggulan akses mobile menurut Chaffey (ubiquity, reachability, …)?</li>
+      <li>Apa beda <em>geo-targeting</em> dan <em>geofencing</em>?</li>
+      <li>Siapa yang ditargetkan Domino's dalam Mini Case Study 3.1, dan lewat apa?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="2"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Platform akses kini beragam: <b>desktop/laptop</b> (masih dominan saat jam kerja), <b>mobile</b> (browser dan aplikasi; penggunaan mobile melampaui desktop sejak 2016), dan <b>lainnya</b> (konsol game, kiosk interaktif, signage dengan QR code). Keunggulan mobile: <em>ubiquity</em> (bisa diakses di mana saja), <em>reachability</em> (pengguna bisa dihubungi di mana saja), <em>convenience</em>, keamanan identitas (tiap perangkat unik), layanan berbasis lokasi, privasi, dan selalu terhubung.</p>
+
+  <h3>Mobile site atau mobile app?</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Mendukung mobile site</th><th>Mendukung mobile app</th></tr></thead>
+    <tbody>
+      <tr><td style="font-weight:500">Langsung tersedia tanpa unduh</td><td>Layanan kompleks dan interaktif</td></tr>
+      <tr><td style="font-weight:500">Kompatibel dengan semua perangkat</td><td>Personalisasi; data tersimpan di perangkat</td></tr>
+      <tr><td style="font-weight:500">Terindeks mesin pencari (SEO)</td><td>Memanfaatkan daya proses perangkat; bisa offline</td></tr>
+      <tr><td style="font-weight:500">Mudah dibagikan lewat tautan; biaya lebih rendah</td><td>Notifikasi dan keterlibatan berulang</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="siteapp"><h4>🧩 Latihan: mobile site atau mobile app?</h4></div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Marketplace dan dompet digital mendorong pemakaian aplikasi karena frekuensinya tinggi dan notifikasinya bernilai. Bagi UMKM atau layanan yang jarang dipakai (misalnya laman penerimaan mahasiswa baru), mobile site yang cepat lebih masuk akal. Pengguna cenderung menghapus aplikasi yang jarang dibuka.</div>
+
+  <h3>Pemasaran berbasis lokasi dan AR</h3>
+  <p><b>Geo-targeting</b>: menargetkan pesan berdasarkan lokasi dari alamat IP, ISP, atau kode pos. <b>Geofencing</b>: "pagar virtual" di suatu area; pengguna yang masuk area menerima pesan. <b>Beacon</b>: perangkat Bluetooth jarak pendek di toko atau stadion. <b>Augmented reality</b>: menggabungkan kamera dengan konten digital, mis. mencoba furnitur secara virtual di ruangan sendiri. Pelacakan lokasi menimbulkan isu etis dan, di Indonesia, terkait UU 27/2022 tentang Pelindungan Data Pribadi.</p>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u2"></div>
+  <div class="pager"><a class="btn ghost" href="#u1">← Unit 1</a><a class="btn" href="#u3">Unit 3 →</a></div>
+</section>
+
+<!-- ================= UNIT 3 ================= -->
+<section class="view" data-view="u3" data-unit="3">
+  <div class="eyebrow">Unit 3 <span class="tag">LO Bab 3</span><span class="tag">± 25 menit</span></div>
+  <h2>Model Lima Lapis dan Cara Kerja Internet</h2>
+  <div class="read" data-read="3">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 3 · Infrastructure components · Gambar 3.2</span></div>
+    <p style="margin:0 0 4px">Subbab <em>Digital business infrastructure components</em> (Gambar 3.2) dan <em>A short introduction to digital technology</em>. Cari jawaban:</p>
+    <ul>
+      <li>Apa lima lapis infrastruktur pada Gambar 3.2, dan contoh tugas pengguna yang dipakai Chaffey untuk menjelaskannya?</li>
+      <li>Bagaimana data berpindah dari client ke server melalui ISP dan backbone?</li>
+      <li>Peristiwa apa pada Februari 2016 yang mengganggu bisnis di Singapura?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="3"> Saya sudah membaca subbab tersebut</label>
+  </div>
+
+  <div class="card">
+    <h4>🧱 Diagram interaktif model lima lapis (adaptasi Gambar 3.2)</h4>
+    <p class="hint">Ketuk tiap lapis. Contoh tugas: mahasiswa mengajukan cuti akademik secara online.</p>
+    <div class="layers" id="layers"></div>
+    <div class="res" id="layerInfo"></div>
+  </div>
+  <div class="card cls" data-widget="layer"><h4>🧩 Latihan: masalah ini terjadi di lapis mana?</h4></div>
+
+  <h3>Cara kerja Internet secara singkat</h3>
+  <p>Internet adalah sistem <b><em>client-server</em></b> berskala raksasa: perangkat pengguna (<em>client</em>) meminta layanan ke server yang menyimpan informasi dan aplikasi. Pengguna terhubung melalui <b>ISP</b> lokal, yang terhubung ke ISP lebih besar dan ke <b><em>backbone</em></b> berkecepatan tinggi, termasuk kabel bawah laut antarnegara.</p>
+  <div class="co idn"><b class="t">🇮🇩 Konteks Indonesia.</b> Sebagai negara kepulauan, Indonesia bergantung pada jaringan serat optik Palapa Ring, kabel laut internasional, dan satelit (mis. SATRIA-1, diluncurkan 2023) untuk menjangkau daerah terpencil. Chaffey mencontohkan gempa bawah laut yang merusak kabel data dan mengganggu bisnis di Singapura; kawasan Asia Tenggara yang aktif secara seismik menghadapi risiko serupa.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u3"></div>
+  <div class="pager"><a class="btn ghost" href="#u2">← Unit 2</a><a class="btn" href="#u4">Unit 4 →</a></div>
+</section>
+
+<!-- ================= UNIT 4 ================= -->
+<section class="view" data-view="u4" data-unit="4">
+  <div class="eyebrow">Unit 4 <span class="tag">LO Bab 3</span><span class="tag">± 30 menit</span></div>
+  <h2>Domain, Hosting, dan Kualitas Layanan</h2>
+  <div class="read" data-read="4">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 3 · Domain names · Hosting · Box 3.4 · Mini Case 3.3</span></div>
+    <p style="margin:0 0 4px">Subbab tentang nama domain dan URL (Mini Case Study 3.3), pengelolaan ISP dan hosting, Box 3.4 (berapa lama orang mau menunggu), serta kasus situs yang tumbang karena lonjakan pengunjung. Cari jawaban:</p>
+    <ul>
+      <li>Apa itu <em>exact match domain</em>, dan berapa nilai pembelian cars.com yang disebut buku?</li>
+      <li>Berapa batas waktu muat yang dianggap dapat diterima, dan apa dampak setiap detik keterlambatan video?</li>
+      <li>Kasus apa yang dipakai buku untuk menunjukkan situs yang tumbang karena lonjakan pengunjung?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="4"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <h3>Nama domain</h3>
+  <p><b><em>Domain name</em></b> adalah alamat server web; ekstensinya disebut <em>top-level domain</em>, baik generik (gTLD: .com, .org) maupun kode negara (ccTLD). Organisasi besar perlu <em>URL strategy</em> yang konsisten. Risiko yang sering diremehkan: domain kedaluwarsa lalu diambil pihak lain, dan <b><em>cybersquatting</em></b>.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Domain Indonesia</th><th>Peruntukan</th></tr></thead>
+    <tbody>
+      <tr><td>.id</td><td>Umum: perorangan, merek</td></tr>
+      <tr><td>.co.id</td><td>Badan usaha di Indonesia</td></tr>
+      <tr><td>.ac.id</td><td>Perguruan tinggi (mis. its.ac.id)</td></tr>
+      <tr><td>.go.id</td><td>Instansi pemerintah</td></tr>
+      <tr><td>.or.id / .sch.id</td><td>Organisasi / sekolah</td></tr>
+    </tbody>
+  </table></div>
+  <p class="hint">Domain .id dikelola PANDI (Pengelola Nama Domain Internet Indonesia).</p>
+
+  <h3>Kualitas layanan: kecepatan, bandwidth, availability, SLA</h3>
+  <p>Konten perlu dimuat dalam sekitar <b>dua detik</b>; untuk video, setiap detik tambahan mengurangi penonton sekitar 6% (Krishnan &amp; Sitaraman, 2012). Kecepatan juga faktor peringkat Google. <b>Bandwidth</b> diukur dalam bit per detik (1 byte = 8 bit). <b>Availability</b> adalah persentase waktu layanan bisa diakses. Pilihan hosting: <b>shared server</b> (dipakai bersama, murah, tetapi kinerjanya ikut terpengaruh situs lain) atau <b>dedicated server</b> (khusus satu organisasi, jauh lebih mahal; materi kuliah menyebut bisa 5–10 kali lipat). Semua standar ini dituangkan dalam <b><em>service level agreement</em> (SLA)</b>.</p>
+
+  <div class="grid2c">
+    <div class="card">
+      <h4>⏱️ Kalkulator downtime</h4>
+      <div class="calc"><label>Availability (%)<input type="number" id="avPct" value="99.9" step="0.01" min="90" max="100"></label><span></span></div>
+      <div class="res" id="avRes"></div>
+    </div>
+    <div class="card">
+      <h4>📶 Kalkulator bandwidth</h4>
+      <div class="calc">
+        <label>Ukuran file (MB)<input type="number" id="bwMB" value="120" step="10" min="0"></label>
+        <label>Koneksi server (Mbps)<input type="number" id="bwMbps" value="100" step="10" min="1"></label>
+        <label>Pengguna serentak<input type="number" id="bwUsers" value="50" step="1" min="1"></label>
+      </div>
+      <div class="res" id="bwRes"></div>
+    </div>
+  </div>
+  <div class="co idn"><b class="t">🇮🇩 Konteks Indonesia.</b> Situs penjualan tiket konser, pendaftaran seleksi, dan pemesanan tiket mudik kerap kewalahan saat dibuka serentak. Chaffey mencatat kasus serupa: situs operator seluler O2 tumbang saat peluncuran iPhone pertama di Inggris, dan See Tickets berulang kali gangguan saat tiket Glastonbury dijual. Lonjakan permintaan adalah risiko yang bisa diprediksi, sehingga harus direncanakan.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u4"></div>
+  <div class="pager"><a class="btn ghost" href="#u3">← Unit 3</a><a class="btn" href="#u5">Unit 5 →</a></div>
+</section>
+
+<!-- ================= UNIT 5 ================= -->
+<section class="view" data-view="u5" data-unit="5">
+  <div class="eyebrow">Unit 5 <span class="tag">LO Bab 3</span><span class="tag">± 20 menit</span></div>
+  <h2>Integrasi Aplikasi, Intranet, dan Extranet</h2>
+  <div class="read" data-read="5">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 3 · Applications integration · Intranets · Mini Case 3.6</span></div>
+    <p style="margin:0 0 4px">Subbab tentang integrasi aplikasi (ERP, middleware), pengelolaan komunikasi digital internal dan eksternal (intranet, extranet), dan Mini Case Study 3.6 (perusahaan virtual). Cari jawaban:</p>
+    <ul>
+      <li>Apa masalah <em>application silos</em>, dan contoh apa yang diberikan buku?</li>
+      <li>Apa lima pertanyaan Chaffey untuk mengevaluasi intranet atau extranet?</li>
+      <li>Menurut Mini Case Study 3.6, apa yang seharusnya dinilai manajer dari karyawan yang bekerja jarak jauh?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="5"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Banyak organisasi memiliki <b><em>application silos</em></b>: tiap departemen memakai sistem dan basis data sendiri, sehingga biaya tinggi dan informasi terpecah. Contoh buku: staf layanan pelanggan bisa melihat data pribadi pelanggan, tetapi tidak bisa melihat status pesanannya. Solusi klasik adalah <b>ERP</b> (mis. SAP, Oracle); penghubung antar-aplikasi disebut <b>middleware</b> atau <b><em>enterprise application integration</em> (EAI)</b>. Tidak ada satu vendor yang bisa memenuhi semua kebutuhan.</p>
+  <p><b>Intranet</b> dipakai untuk direktori staf, prosedur, informasi produk, pelatihan, dan layanan mandiri (mis. pengajuan cuti). <b>Extranet</b> menghubungkan mitra: pemesanan, pelacakan pesanan, portal agen. Tanda bahaya intranet "mati": penggunaan rendah, konten kedaluwarsa, tampilan tidak konsisten.</p>
+
+  <div class="card" id="evalTool">
+    <h4>🔍 Evaluasi portal yang Anda pakai (lima pertanyaan Chaffey)</h4>
+    <p class="hint">Pilih satu portal kampus atau tempat magang. Beri nilai 1 (sangat buruk) sampai 5 (sangat baik).</p>
+    <label class="mlbl">Portal yang dinilai<input type="text" data-note="ev_name" placeholder="mis. portal akademik / LMS kampus"></label>
+    <div id="evList"></div>
+    <div class="res" id="evRes"></div>
+    <label class="mlbl" style="margin-top:10px">Satu usulan perbaikan konkret untuk aspek terlemah<textarea data-note="ev_fix" placeholder="Usulan saya…"></textarea></label>
+  </div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u5"></div>
+  <div class="pager"><a class="btn ghost" href="#u4">← Unit 4</a><a class="btn" href="#u6">Unit 6 →</a></div>
+</section>
+
+<!-- ================= UNIT 6 ================= -->
+<section class="view" data-view="u6" data-unit="6">
+  <div class="eyebrow">Unit 6 <span class="tag">LO Bab 3 · McKinsey</span><span class="tag">± 45 menit</span></div>
+  <h2>SaaS, Cloud Computing, dan Nilai Cloud</h2>
+  <div class="read" data-read="6">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 3 · SaaS · Cloud · Mini Case 3.4–3.5 + Arora dkk. (2020)</span></div>
+    <p style="margin:0 0 4px">Subbab tentang <em>Software as a Service</em>, <em>cloud computing</em>, dan virtualisasi (Mini Case Study 3.4 dan 3.5), ditambah artikel Arora dkk. (2020) <em>Three actions CEOs can take to get value from cloud computing</em>. Cari jawaban:</p>
+    <ul>
+      <li>Berapa persen perusahaan yang memperoleh ROI pada tahun pertama dari SaaS menurut survei Computer Economics (2006)?</li>
+      <li>Mengapa Netflix pindah ke AWS, dan mengapa Slack bergantung padanya?</li>
+      <li>Apa tiga aksi CEO menurut McKinsey, dan mengapa ketiganya bukan keputusan teknis?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="6"> Saya sudah membaca Chaffey dan artikel McKinsey</label>
+  </div>
+
+  <h3>SaaS dan konsep terkait</h3>
+  <p><b><em>Software as a Service</em> (SaaS)</b>: aplikasi bisnis diakses lewat Internet dan dikelola di server penyedia, biasanya berlangganan. Manfaat: biaya instalasi dan pemeliharaan dialihkan ke penyedia, bayar sesuai pemakaian, selalu versi terbaru, akses dari mana saja. Tantangan: kurang bisa disesuaikan, downtime bila penyedia bermasalah, keamanan dan backup bergantung pada penyedia, lokasi data harus sesuai hukum.</p>
+  <ul>
+    <li><b><em>Multi-tenancy</em></b>: satu instans aplikasi melayani banyak pelanggan yang berbagi sumber daya; <em>single-tenancy</em>: sumber daya khusus.</li>
+    <li><b>API</b>: "pintu" agar sistem lain bisa memakai data atau fungsi suatu layanan, mis. peta di aplikasi ojek, tombol bayar payment gateway, tarif ongkir kurir otomatis.</li>
+    <li><b>SOA</b>: sistem disusun dari layanan-layanan kecil yang saling berkomunikasi; bank memakainya untuk menghubungkan sistem lama dengan aplikasi modern.</li>
+  </ul>
+
+  <h3>Cloud computing</h3>
+  <p><b><em>Cloud computing</em></b>: penyimpanan dan pemrosesan terdistribusi di server lewat Internet, disediakan pihak lain dengan model berlangganan. Teknologi pendukungnya <b>virtualisasi</b>: satu server fisik menjalankan banyak mesin virtual. Model layanan menurut NIST: <b>IaaS</b> (server virtual, penyimpanan), <b>PaaS</b> (platform untuk membangun aplikasi), <b>SaaS</b> (aplikasi siap pakai).</p>
+  <div class="card cls" data-widget="cloud"><h4>🧩 Latihan: IaaS, PaaS, atau SaaS?</h4></div>
+  <p>Chaffey menekankan bahwa keputusan cloud <b>bukan hanya soal "lebih murah?"</b>: kecepatan menguji ide tanpa investasi fisik, skalabilitas, fokus pada produk, dan jangkauan global. Netflix pindah dari pusat data sendiri ke AWS agar layanannya konsisten di banyak negara; Slack bisa tumbuh cepat dengan model freemium berkat AWS. Ukuran biayanya adalah <b><em>total cost of ownership</em> (TCO)</b>.</p>
+
+  <div class="card" id="tcoTool">
+    <h4>🧮 Kalkulator TCO 3 tahun: server sendiri vs cloud (skenario KosKita)</h4>
+    <p class="hint">Data rekaan dari Studi Kasus 4. Ubah asumsi dan bandingkan kedua skenario pertumbuhan.</p>
+    <div class="calc3">
+      <fieldset><legend>Opsi A · Server sendiri (colocation)</legend>
+        <label>Investasi server awal (Rp juta)<input type="number" id="tA0" value="240" step="10" min="0"></label>
+        <label>Colocation &amp; listrik/bulan (Rp juta)<input type="number" id="tAm" value="4" step="0.5" min="0"></label>
+        <label>Staf teknis/bulan (Rp juta)<input type="number" id="tAs" value="12" step="0.5" min="0"></label>
+        <label>Server tambahan bila tumbuh (Rp juta)<input type="number" id="tAg" value="240" step="10" min="0"></label>
+        <label>Colocation tambahan/bulan bila tumbuh (Rp juta)<input type="number" id="tAgm" value="4" step="0.5" min="0"></label>
+      </fieldset>
+      <fieldset><legend>Opsi B · Cloud (IaaS + terkelola)</legend>
+        <label>Biaya cloud/bulan, skala kini (Rp juta)<input type="number" id="tBm" value="15" step="0.5" min="0"></label>
+        <label>Biaya cloud/bulan bila 5× pengguna (Rp juta)<input type="number" id="tBg" value="35" step="0.5" min="0"></label>
+        <label>Staf DevOps/bulan (Rp juta)<input type="number" id="tBs" value="6" step="0.5" min="0"></label>
+      </fieldset>
+      <fieldset><legend>Skenario</legend>
+        <label class="tog" style="font-size:.85rem;color:var(--ink)"><input type="checkbox" id="tGrow"> Pengguna naik 5× mulai tahun ke-2</label>
+        <p class="hint" style="margin:0">Disederhanakan: tanpa pajak, diskon kontrak, nilai sisa server, maupun biaya gangguan.</p>
+      </fieldset>
+    </div>
+    <div class="res" id="tcoRes"></div>
+  </div>
+
+  <h3>Tiga aksi CEO untuk memperoleh nilai dari cloud (Arora dkk., 2020)</h3>
+  <p>Banyak perusahaan gagal memperoleh nilai dari cloud karena menganggapnya sekadar proyek TI. Nilai sebenarnya datang dari kecepatan inovasi dan pertumbuhan, bukan hanya penghematan.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Aksi</th><th>Penjelasan</th></tr></thead>
+    <tbody>
+      <tr><td>1. Bangun model pendanaan berkelanjutan</td><td>Perlakukan platform cloud sebagai sumber keunggulan bersaing; geser pendanaan TI dari proyek sekali jalan ke pendanaan produk dan platform</td></tr>
+      <tr><td>2. Terapkan model operasi bisnis–teknologi baru</td><td>Padukan cloud dengan cara kerja agile, product owner senior, dan selera risiko yang pragmatis</td></tr>
+      <tr><td>3. Tinjau kebijakan SDM, kompensasi, dan lokasi</td><td>Hapus hambatan merekrut talenta cloud; hargai keahlian, bukan jumlah bawahan</td></tr>
+    </tbody>
+  </table></div>
+  <div class="co idn"><b class="t">🇮🇩 Konteks Indonesia.</b> Penyedia cloud global telah membuka pusat data di Jakarta, antara lain Google Cloud (2020), AWS (2021), dan Microsoft Azure (2025), di samping penyedia lokal. Lokasi data penting: PP 71/2019 mewajibkan sistem elektronik lingkup publik mengelola dan menyimpan data di Indonesia (dengan pengecualian terbatas), sedangkan lingkup privat lebih fleksibel. UU 27/2022 tentang Pelindungan Data Pribadi juga berlaku.</div>
+  <div class="co"><b class="t">🤔 Berpikir kritis.</b> Cloud bukan berarti tanpa risiko. Ketika satu penyedia besar gangguan, ribuan aplikasi ikut terganggu. Strategi apa yang mengurangi risiko konsentrasi? Petunjuk: multi-region, multi-cloud, backup terpisah. Kasus PDNS (Studi Kasus 2) menunjukkan risiko yang sama pada pusat data pemerintah.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u6"></div>
+  <div class="pager"><a class="btn ghost" href="#u5">← Unit 5</a><a class="btn" href="#u7">Unit 7 →</a></div>
+</section>
+
+<!-- ================= UNIT 7 ================= -->
+<section class="view" data-view="u7" data-unit="7">
+  <div class="eyebrow">Unit 7 <span class="tag">LO Bab 3</span><span class="tag">± 25 menit</span></div>
+  <h2>Tata Kelola Internet, Net Neutrality, dan Open Source</h2>
+  <div class="read" data-read="7">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 3 · Internet governance · Standards · Debate 3.1</span></div>
+    <p style="margin:0 0 4px">Subbab tentang tata kelola Internet, net neutrality, open source (Debate 3.1), dan standar teknologi. Cari jawaban:</p>
+    <ul>
+      <li>Bagaimana Esther Dyson (1998) mendefinisikan Internet governance?</li>
+      <li>Dari dua arah mana ancaman terhadap net neutrality datang?</li>
+      <li>Apa tiga prinsip Internet dalam dokumen <em>World of Ends</em>?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="7"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <h3>Tata kelola Internet</h3>
+  <p>Internet jauh lebih sulit dikendalikan satu pemerintah daripada cetak, TV, atau radio. Esther Dyson mendefinisikan <b><em>Internet governance</em></b> sebagai kontrol untuk mengelola pertumbuhan dan penggunaan Internet, yang banyak dijalankan lembaga di atas level negara: <b>ICANN</b> (nama domain dan alamat IP), <b>ISOC</b> (pengembangan Internet terbuka; rumah IETF dan IAB), <b>IETF</b> (standar protokol), dan <b>W3C</b> (standar web dan aksesibilitas; dipimpin Tim Berners-Lee).</p>
+  <div class="card cls" data-widget="gov"><h4>🧩 Latihan: lembaga yang mana?</h4></div>
+
+  <h3>Net neutrality</h3>
+  <p><b><em>Net neutrality</em></b>: semua data diperlakukan setara; penyedia jaringan tidak boleh memperlambat atau mempercepat layanan tertentu karena bayaran atau persaingan. Ancamannya datang dari (1) ISP yang ingin akses berjenjang berdasarkan bayaran penyedia konten, dan (2) pemerintah yang memblokir layanan atau konten.</p>
+  <div class="co idn"><b class="t">🇮🇩 Konteks Indonesia.</b> Kementerian yang membidangi komunikasi dan digital (kini Komdigi) mewajibkan pendaftaran Penyelenggara Sistem Elektronik (PSE); pada 2022 sejumlah layanan global sempat diblokir sementara karena belum mendaftar. Paket kuota khusus aplikasi tertentu (<em>zero-rating</em>) juga memicu perdebatan net neutrality: adilkah bagi startup lokal yang tidak masuk paket?</div>
+
+  <h3>Open source dan standar</h3>
+  <p><b><em>Open-source software</em></b> dikembangkan komunitas; kodenya bisa dibaca, diubah, dan didistribusikan ulang (Linux, Apache, MySQL, WordPress, Moodle). Klaimnya gratis dan fleksibel, tetapi biaya migrasi, pelatihan, dan dukungan bisa tinggi; fleksibilitas hanya berguna bila organisasi mampu mengubah kodenya. Standar terbuka (HTML, XML) mencegah dominasi satu perusahaan; penerapan <em>semantic web</em> yang paling terlihat adalah Knowledge Graph Google. Prinsip <em>World of Ends</em>: tidak ada yang memilikinya, semua orang bisa memakainya, siapa pun bisa memperbaikinya.</p>
+  <div class="co"><b class="t">🤔 Debate 3.1.</b> "Bisnis digital sebaiknya memilih solusi open source daripada membangun sistem sendiri atau memakai teknologi proprietary." Setuju? Pertimbangkan contoh dekat: kampus memakai Moodle (open source) untuk LMS.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u7"></div>
+  <div class="pager"><a class="btn ghost" href="#u6">← Unit 6</a><a class="btn" href="#cases">Studi Kasus →</a></div>
+</section>
+
+<!-- ================= CASES ================= -->
+<section class="view" data-view="cases">
+  <div class="eyebrow">Penerapan <span class="tag">± 80 menit</span></div>
+  <h2>Studi Kasus</h2>
+  <p class="lead">Satu kasus dari buku dan tiga kasus Indonesia. Alur setiap pertanyaan: <b>tulis jawaban → minta umpan balik aplikasi → nilai diri dengan checklist → buka arah jawaban</b>.</p>
+  <div class="co book"><b class="t">ℹ️ Tentang umpan balik otomatis.</b> Aplikasi memeriksa apakah konsep kunci dan penalaran ("karena", "sehingga") muncul dalam jawaban Anda. Aplikasi <b>tidak</b> bisa menilai apakah argumen Anda benar atau tajam. Skor 0–4 ini hanya umpan balik belajar, <b>bukan nilai</b>. Checklist penilaian diri menilai bagian yang tidak bisa diukur mesin.</div>
+  <div id="caseList"></div>
+  <div class="pager"><a class="btn ghost" href="#u7">← Unit 7</a><a class="btn" href="#final">Kuis Akhir →</a></div>
+</section>
+
+<!-- ================= FINAL ================= -->
+<section class="view" data-view="final">
+  <div class="eyebrow">Self-test</div>
+  <h2>Kuis Akhir: Uji Pemahaman</h2>
+  <div class="quiz" id="finalBox"></div>
+</section>
+
+<!-- ================= FLASH ================= -->
+<section class="view" data-view="cards">
+  <div class="eyebrow">Penguatan</div>
+  <h2>Flashcard Istilah Kunci</h2>
+  <p class="lead">Ketuk kartu untuk membalik. Tandai yang sudah Anda kuasai; sisanya akan muncul lagi.</p>
+  <div class="row" style="justify-content:space-between"><span class="score" id="fcCount"></span><button class="btn ghost" id="fcShuffle" style="padding:6px 12px">⤮ Acak</button></div>
+  <div class="fc" id="fc" tabindex="0" role="button" aria-label="Balik kartu"><div class="inner"><div class="face front"><b id="fcF"></b><small>ketuk untuk membalik</small></div><div class="face back"><div id="fcB"></div></div></div></div>
+  <div class="row" style="justify-content:center">
+    <button class="btn ghost" id="fcPrev">←</button>
+    <button class="btn gold" id="fcKnow">✓ Sudah hafal</button>
+    <button class="btn ghost" id="fcNext">→</button>
+  </div>
+  <p class="hint" style="text-align:center;margin-top:10px"><button class="retry" id="fcReset">Ulang semua kartu</button></p>
+</section>
+
+<!-- ================= NOTES & REFS ================= -->
+<section class="view" data-view="notes">
+  <div class="eyebrow">Rangkuman</div>
+  <h2>Catatan Saya &amp; Referensi</h2>
+  <div class="card">
+    <h3>📝 Semua jawaban Anda</h3>
+    <p class="hint">Gabungan pemanasan, evaluasi portal, hitungan TCO, dan studi kasus. Salin atau unduh untuk dikumpulkan di MyITS Classroom bila diminta dosen.</p>
+    <div class="cq"><b>Nama &amp; NRP</b><textarea data-note="identity" style="min-height:44px" placeholder="Nama — NRP"></textarea></div>
+    <div class="row"><button class="btn" id="copyNotes">📋 Salin</button><button class="btn ghost" id="dlNotes">⬇ Unduh .txt</button><button class="btn ghost" id="resetAll" style="border-color:var(--bad);color:var(--bad)">Hapus semua kemajuan</button></div>
+    <pre id="notesPrev" style="white-space:pre-wrap;font-family:var(--f);font-size:.85rem;background:var(--sunk);padding:12px;border-radius:10px;margin-top:14px;max-height:300px;overflow:auto"></pre>
+  </div>
+
+  <h3>🧩 Ringkasan</h3>
+  <ul>
+    <li>Infrastruktur bisnis digital terdiri dari lima lapis: aplikasi, perangkat lunak sistem, jaringan, penyimpanan fisik, serta konten dan data. Setiap lapis memiliki isu manajerial sendiri.</li>
+    <li>Pilihan platform akses (desktop, mobile site, mobile app) harus mengikuti tujuan bisnis dan perilaku pengguna.</li>
+    <li>Kualitas layanan ditentukan oleh kecepatan, bandwidth, ketersediaan, dan keamanan, dan harus dituangkan dalam SLA.</li>
+    <li>SaaS dan cloud mengalihkan pengelolaan infrastruktur ke penyedia. Keputusannya menyangkut TCO, risiko, kelincahan, dan kepatuhan lokasi data, bukan hanya harga.</li>
+    <li>Nilai cloud baru tercapai bila didukung perubahan pendanaan, model operasi, dan SDM (Arora dkk., 2020).</li>
+    <li>Kasus PDNS dan BSI menunjukkan bahwa backup terpisah, segmentasi, dan komunikasi insiden sama pentingnya dengan teknologi itu sendiri.</li>
+  </ul>
+  <div class="co book"><b class="t">➡️ Minggu 5: Isu Kunci Lingkungan Digital, Analisis Makro.</b> Bacaan: Chaffey et al. (2019), Bab 4, dan Liu &amp; Li (2023). Pertanyaan pemantik: faktor Sosial, Hukum, Ekonomi, Politik, dan Teknologi apa yang paling memengaruhi Gojek dan Grab di Indonesia? Minggu 5 juga tenggat Project Milestone 1.</div>
+
+  <h3>📚 Bacaan pendukung</h3>
+  <ol class="ref">
+    <li><a href="https://www.mckinsey.com/capabilities/tech-and-ai/our-insights/three-actions-ceos-can-take-to-get-value-from-cloud-computing" target="_blank" rel="noopener">Arora, C., Catlin, T., Forrest, W., Kaplan, J., &amp; Vinter, L. (2020, 21 Juli). <em>Three actions CEOs can take to get value from cloud computing</em>. McKinsey Quarterly.</a></li>
+    <li><a href="https://csrc.nist.gov/pubs/sp/800/145/final" target="_blank" rel="noopener">Mell, P., &amp; Grance, T. (2011). <em>The NIST definition of cloud computing</em> (SP 800-145).</a></li>
+  </ol>
+
+  <h3>Referensi</h3>
+  <ol class="ref">
+    <li>Chaffey, D., Hemphill, T., &amp; Edmundson-Bird, D. (2019). <em>Digital business and e-commerce management</em> (7th ed.). Pearson. Bab 3: <em>Managing digital business infrastructure</em>, termasuk Case Study 3.1.</li>
+    <li>Peraturan Pemerintah No. 71 Tahun 2019 tentang Penyelenggaraan Sistem dan Transaksi Elektronik.</li>
+    <li>Undang-Undang No. 27 Tahun 2022 tentang Pelindungan Data Pribadi.</li>
+    <li><a href="https://kalsel.antaranews.com/berita/419220/menkominfo-jelaskan-kronologi-serangan-siber-pdns-2" target="_blank" rel="noopener">ANTARA. (2024, 27 Juni). Menkominfo jelaskan kronologi serangan siber PDNS 2.</a></li>
+    <li><a href="https://www.cnnindonesia.com/teknologi/20230513093401-185-949046/ransomware-lockbit-30-klaim-lumpuhkan-bsi-dan-curi-data-pengguna" target="_blank" rel="noopener">CNN Indonesia. (2023, 13 Mei). Ransomware LockBit 3.0 klaim lumpuhkan BSI dan curi data pengguna.</a></li>
+    <li><a href="https://keuangan.kontan.co.id/news/bos-bsi-tegaskan-telah-pulihkan-gangguan-it-dan-jaga-data-nasabah" target="_blank" rel="noopener">Kontan. (2023, 13 Mei). Bos BSI tegaskan telah pulihkan gangguan IT dan jaga data nasabah.</a></li>
+    <li><a href="https://news.microsoft.com/id-id/2025/05/27/microsoft-opens-indonesia-central/" target="_blank" rel="noopener">Microsoft. (2025, 27 Mei). Microsoft opens its first cloud region in Indonesia.</a></li>
+  </ol>
+  <p class="foot">Materi ini adalah ringkasan dan adaptasi untuk keperluan pembelajaran Pengantar Bisnis Digital (DG234101), Departemen Manajemen Bisnis ITS. Mahasiswa tetap wajib membaca bab asli pada buku acuan. Pengembang mata kuliah: Imam Baihaqi, Ph.D.</p>
+</section>
+
+</main>
+
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+/* ---------------- storage (safe) ---------------- */
+var KEY="bisdig-t04-v1", S={read:{},q:{},done:{},cls:{},notes:{},final:null,known:{},cs:{}};
+try{var raw=localStorage.getItem(KEY); if(raw){var o=JSON.parse(raw); for(var k in o) S[k]=o[k];}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} updateProgress();}
+try{var th=localStorage.getItem("bisdig-theme"); if(th) document.documentElement.setAttribute("data-theme",th);}catch(e){}
+
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove("on")},1800)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=a[i];a[i]=a[j];a[j]=x;}return a}
+var rp=function(n){return "Rp"+Math.round(n).toLocaleString("id-ID")};
+/* ---------------- units meta ---------------- */
+var UNITS=[
+ {id:"u1",t:"Infrastruktur & Isu Manajerial",pg:"Tabel 3.1 · MC 3.2"},
+ {id:"u2",t:"Platform Akses Digital",pg:"Box 3.1 · MC 3.1"},
+ {id:"u3",t:"Model Lima Lapis & Internet",pg:"Gambar 3.2"},
+ {id:"u4",t:"Domain, Hosting & Kualitas Layanan",pg:"Box 3.4 · MC 3.3"},
+ {id:"u5",t:"Integrasi, Intranet & Extranet",pg:"MC 3.6"},
+ {id:"u6",t:"SaaS, Cloud & Nilai Cloud",pg:"MC 3.4–3.5 · McKinsey"},
+ {id:"u7",t:"Tata Kelola Internet & Open Source",pg:"Debate 3.1"}
+];
+
+/* ---------------- unit quizzes ---------------- */
+var QZ={
+u1:[
+ {k:"c",q:"Digital business infrastructure didefinisikan sebagai…",o:["Gedung dan jaringan listrik perusahaan","Arsitektur perangkat keras, perangkat lunak, konten, dan data untuk memberikan layanan bisnis digital","Anggaran TI tahunan","Tim TI perusahaan"],a:1,e:"Infrastruktur juga mencakup di mana komponen-komponen itu berada."},
+ {k:"c",q:"Menurut Chaffey, tren keputusan pengelolaan komponen infrastruktur adalah…",o:["Semakin banyak dikelola sendiri","Semakin banyak dikelola pihak luar","Tidak berubah","Semuanya dipindahkan ke pemerintah"],a:1,e:"Keputusan kuncinya: mana yang dikelola sendiri dan mana yang diserahkan ke pihak luar; trennya ke pihak luar."},
+ {k:"r",pg:"Mini Case Study 3.2",q:"Menurut Mini Case Study 3.2, masalah teknis apa yang dihadapi toko grocery tanpa kasir milik Amazon?",o:["Pembayaran kartu sering gagal","Sistem kesulitan melacak banyak pelanggan, sehingga hanya sedikit orang yang boleh berada di toko sekaligus","Rak tidak bisa diisi ulang","Listrik sering padam"],a:1,e:"Sensor dan kamera melacak barang yang diambil; peluncuran publiknya sempat tertunda karena masalah ini."}
+],
+u2:[
+ {k:"c",q:"Manakah alasan kuat memilih mobile site daripada mobile app?",o:["Perlu dipakai offline","Perlu terindeks mesin pencari dan langsung diakses tanpa unduh","Membutuhkan daya proses perangkat","Membutuhkan notifikasi rutin"],a:1,e:"Mobile site unggul dalam ketersediaan instan, kompatibilitas, dan SEO."},
+ {k:"c",q:"Memasang 'pagar virtual' di suatu area sehingga pengguna yang masuk menerima pesan disebut…",o:["Geo-targeting","Geofencing","Beacon","Augmented reality"],a:1,e:"Geo-targeting memakai lokasi dari IP atau alamat; geofencing memakai zona virtual."},
+ {k:"r",pg:"Mini Case Study 3.1",q:"Dalam Mini Case Study 3.1, siapa yang ditargetkan Domino's dan lewat apa?",o:["Mahasiswa lewat aplikasi kampus","Tamu hotel di Florida lewat aplikasi akses kamar hotel, sebagai alternatif room service","Penonton stadion lewat beacon","Pengemudi lewat aplikasi navigasi"],a:1,e:"Contoh geofencing: menargetkan pengguna aplikasi tertentu di lokasi tertentu dengan penawaran relevan."}
+],
+u3:[
+ {k:"c",q:"Dalam model lima lapis Chaffey, server dan media penyimpanan berada pada lapis…",o:["I. Applications","III. Transport","IV. Storage/physical","V. Content/data"],a:2,e:"Lapis IV adalah lapis fisik: server, memori, dan penyimpanan."},
+ {k:"c",q:"Arsitektur ketika perangkat pengguna meminta layanan dari komputer yang menyimpan informasi dan aplikasi disebut…",o:["Peer-to-peer","Client-server","Mainframe","Blockchain"],a:1,e:"Internet adalah sistem client-server berskala raksasa."},
+ {k:"r",pg:"subbab A short introduction to digital technology",q:"Menurut Chaffey, apa yang terjadi pada Februari 2016 yang mengganggu bisnis di Singapura?",o:["Serangan DDoS besar","Gempa bawah laut merusak beberapa kabel data serat optik","Pemadaman listrik nasional","Satelit komunikasi rusak"],a:1,e:"Kabel bawah laut adalah backbone antarnegara yang rentan, terutama di kawasan seismik Asia Tenggara."}
+],
+u4:[
+ {k:"c",q:"Layanan dengan availability 99,9% kira-kira mengalami downtime … per tahun.",o:["53 menit","8,8 jam","3,6 hari","36 hari"],a:1,e:"0,1% × 8.760 jam ≈ 8,8 jam."},
+ {k:"c",q:"Kontrak yang menetapkan standar ketersediaan dan kinerja layanan hosting disebut…",o:["API","SLA","TCO","ERP"],a:1,e:"Service level agreement."},
+ {k:"r",pg:"Mini Case Study 3.3",q:"Mini Case Study 3.3 bertanya apakah nama domain sepadan dengan biayanya. Pembelian apa yang disebut sebagai contoh?",o:["Google membeli google.id","Gannett membeli cars.com senilai US$1,8 miliar pada 2014 (termasuk aset situsnya)","Amazon membeli books.com","Facebook membeli fb.com senilai US$10 juta"],a:1,e:"Nilai itu termasuk aset di balik domain. Buku juga membahas exact match domains yang kini bisa dihukum Google."}
+],
+u5:[
+ {k:"c",q:"Setiap departemen memakai sistem dan basis data sendiri yang tidak terhubung. Kondisi ini disebut…",o:["Cloud computing","Application silos","Multi-tenancy","Middleware"],a:1,e:"Silo membuat biaya tinggi, keputusan lambat, dan informasi terpecah."},
+ {k:"c",q:"Perangkat lunak 'lem' yang menghubungkan aplikasi-aplikasi berbeda disebut…",o:["ERP","Middleware / EAI","SaaS","Hypervisor"],a:1,e:"Enterprise application integration menjembatani sistem yang berbeda."},
+ {k:"r",pg:"Mini Case Study 3.6",q:"Menurut Mini Case Study 3.6 (Basecamp), apa yang seharusnya dinilai manajer dari karyawan yang bekerja di luar kantor?",o:["Jumlah jam di depan komputer","Apa yang dihasilkan, bukan berapa lama mereka bekerja","Kehadiran rapat","Kecepatan membalas email"],a:1,e:"Basecamp (dulu 37Signals) berpendapat orang perlu bekerja di tempat ia paling produktif, didukung sistem dan budaya yang tepat."}
+],
+u6:[
+ {k:"c",q:"Satu instans aplikasi SaaS melayani banyak pelanggan yang berbagi sumber daya. Ini disebut…",o:["Single-tenancy","Multi-tenancy","Virtualisasi","Colocation"],a:1,e:"Multi-tenancy lebih efisien, tetapi sumber daya dibagi."},
+ {k:"c",q:"Perusahaan menyewa server virtual dan mengelola sendiri sistem operasi serta aplikasinya. Model cloud ini adalah…",o:["SaaS","PaaS","IaaS","On-premise"],a:2,e:"IaaS: penyedia menyediakan infrastruktur; pengguna mengelola OS, aplikasi, dan data."},
+ {k:"r",pg:"subbab Software as a Service",q:"Menurut survei Computer Economics (2006) yang dikutip Chaffey, berapa persen perusahaan memperoleh ROI pada tahun pertama dari SaaS?",o:["37%","57%","80%","91%"],a:3,e:"Dari jumlah itu, 57% manfaat ekonominya melebihi biaya SaaS dan 37% balik modal pada tahun pertama; 80% TCO sesuai atau di bawah anggaran."}
+],
+u7:[
+ {k:"c",q:"Prinsip bahwa penyedia jaringan tidak boleh memperlambat atau mempercepat layanan tertentu karena bayaran atau persaingan disebut…",o:["Internet governance","Net neutrality","Open source","Semantic web"],a:1,e:"Net neutrality menuntut semua data diperlakukan setara."},
+ {k:"c",q:"Lembaga yang mengelola alokasi nama domain dan alamat IP secara global adalah…",o:["W3C","ICANN","IETF","PANDI"],a:1,e:"PANDI mengelola domain .id di Indonesia; ICANN di tingkat global."},
+ {k:"r",pg:"subbab tentang standar dan World of Ends",q:"Tiga prinsip Internet dalam dokumen World of Ends yang dikutip Chaffey adalah…",o:["Cepat, murah, aman","Tidak ada yang memilikinya, semua orang bisa memakainya, siapa pun bisa memperbaikinya","Terbuka, gratis, anonim","Global, lokal, mobile"],a:1,e:"Prinsip ini menjelaskan mengapa masa depan Internet terbuka tetap terjaga meski perusahaan besar berusaha memengaruhi standar."}
+]};
+
+/* ---------------- classify widgets ---------------- */
+var CL={
+issue:{o:["Platform akses","Layanan untuk produk baru","Kualitas layanan","Hosting & integrasi","Konten & data","Keamanan"],it:[
+ ["Perlukah kami membuat aplikasi Android, atau cukup situs yang ramah ponsel?","Platform akses","Memilih platform akses yang didukung."],
+ ["Startup baru memilih nama domain dan layanan hosting untuk peluncuran.","Layanan untuk produk baru","Domain, hosting, cloud, SaaS."],
+ ["Halaman checkout butuh 8 detik untuk dimuat saat promo.","Kualitas layanan","Kecepatan dan ketersediaan."],
+ ["Sistem toko online tidak terhubung dengan sistem gudang yang lama.","Hosting & integrasi","Integrasi dengan sistem lama."],
+ ["30% alamat pelanggan di database salah ketik sehingga paket sering kembali.","Konten & data","Kualitas data."],
+ ["Karyawan membuka lampiran email palsu dan file server terenkripsi.","Keamanan","Data bisa hilang karena serangan."]
+]},
+siteapp:{o:["Mobile site","Mobile app"],it:[
+ ["Laman penerimaan mahasiswa baru yang dikunjungi setahun sekali.","Mobile site","Jarang dipakai; harus mudah ditemukan lewat pencarian."],
+ ["Dompet digital yang dipakai setiap hari untuk membayar.","Mobile app","Frekuensi tinggi, keamanan perangkat, notifikasi."],
+ ["Katalog UMKM kuliner yang dibagikan lewat tautan WhatsApp.","Mobile site","Mudah dibagikan, tanpa unduh."],
+ ["Aplikasi peta yang harus tetap bisa dipakai tanpa sinyal di gunung.","Mobile app","Fitur offline memerlukan aplikasi."],
+ ["Halaman promo kampanye musiman yang harus muncul di Google.","Mobile site","Terindeks mesin pencari."],
+ ["Aplikasi kebugaran yang membaca sensor detak jantung jam pintar.","Mobile app","Memanfaatkan perangkat keras dan daya proses perangkat."]
+]},
+layer:{o:["I. Applications","II. Systems software","III. Transport/network","IV. Storage/physical","V. Content/data"],it:[
+ ["Wi-Fi kampus putus sehingga portal tidak bisa diakses.","III. Transport/network","Masalah jaringan."],
+ ["Harga produk di toko online keliru ditulis Rp1.000.","V. Content/data","Masalah konten dan data."],
+ ["Hard disk server rusak dan tidak ada salinan.","IV. Storage/physical","Masalah penyimpanan fisik."],
+ ["Browser versi lama tidak bisa menampilkan formulir.","II. Systems software","Perangkat lunak sistem."],
+ ["Modul pengajuan cuti punya bug sehingga tombol 'kirim' tidak berfungsi.","I. Applications","Aplikasi bisnis yang dipakai pengguna."],
+ ["Kabel laut terputus dan akses ke server luar negeri melambat.","III. Transport/network","Backbone antarnegara adalah lapis jaringan."]
+]},
+cloud:{o:["IaaS","PaaS","SaaS"],it:[
+ ["Menyewa server virtual dan memasang sendiri sistem operasinya.","IaaS","Penyedia memberi infrastruktur; pengguna mengelola sisanya."],
+ ["Tim memakai Google Workspace untuk email dan dokumen.","SaaS","Aplikasi siap pakai."],
+ ["Developer mengunggah kode ke platform yang otomatis menjalankan dan menskalakan aplikasinya.","PaaS","Platform untuk membangun dan menjalankan aplikasi."],
+ ["UMKM berlangganan aplikasi akuntansi online.","SaaS","Hanya data dan pengaturan yang dikelola pengguna."],
+ ["Menyewa kapasitas penyimpanan objek untuk backup video.","IaaS","Penyimpanan sebagai infrastruktur."],
+ ["Memakai layanan basis data terkelola tanpa mengurus servernya.","PaaS","Platform terkelola untuk aplikasi."]
+]},
+gov:{o:["ICANN","IETF","W3C","ISOC","PANDI","Komdigi"],it:[
+ ["Mengelola alokasi nama domain dan alamat IP global.","ICANN","Internet Corporation for Assigned Names and Numbers."],
+ ["Mengembangkan standar protokol seperti IP.","IETF","Internet Engineering Task Force."],
+ ["Mengembangkan standar HTML, XML, dan aksesibilitas web.","W3C","Dipimpin Tim Berners-Lee."],
+ ["Menjaga pengembangan Internet yang terbuka; rumah bagi IETF dan IAB.","ISOC","Internet Society."],
+ ["Mengelola pendaftaran domain .id.","PANDI","Pengelola Nama Domain Internet Indonesia."],
+ ["Mewajibkan pendaftaran Penyelenggara Sistem Elektronik di Indonesia.","Komdigi","Regulator nasional bidang komunikasi dan digital."]
+]}
+};
+
+/* ---------------- cases ---------------- */
+var CASES=[
+ {id:"c1",t:"Studi Kasus 1 — Inovasi di Google",src:"Chaffey et al., Bab 3, Case Study 3.1 (2017 update)",
+  body:"<p>Google tetap menjadi mesin pencari paling populer di dunia, tetapi terus mencari bisnis baru, dan tidak semuanya sukses. Pada 2015, Google menjadi bagian dari induk bernama Alphabet.</p><p><b>Segmen Google:</b> Search, AdWords (kini Google Ads), Shopping, Maps, YouTube, Google Cloud, Android, Chrome, Google Play, serta perangkat keras seperti Pixel dan Google Home. <b>Other Bets:</b> Google Fiber, Calico, CapitalG, GV, Nest, Verily, Waymo, dan X. <b>Pendapatan:</b> iklan di properti Google sendiri, iklan di situs dan aplikasi mitra jaringan, serta pendapatan lain (Google Play, perangkat keras, lisensi, Google Cloud). Iklan tetap sumber pendapatan terbesar. <b>Risiko:</b> persaingan, inovasi yang gagal, hilangnya kepercayaan pengguna, dan pengiklan yang berhenti beriklan bila imbal hasilnya tidak sepadan.</p>",
+  qs:[
+   ["Bagaimana infrastruktur Google (pusat data, Android, Chrome) menjadi sumber keunggulan bersaing, bukan sekadar biaya?","Skala pusat data membuat pencarian cepat dan murah per kueri; Android dan Chrome mengamankan akses ke pengguna dan data; semuanya membentuk ecosystem model yang sulit ditiru."],
+   ["Google Cloud menjual infrastruktur yang awalnya dibangun untuk kebutuhan Google sendiri. Apa kesamaannya dengan AWS milik Amazon?","Keduanya memonetisasi kapabilitas internal: infrastruktur yang dibangun untuk bisnis inti dijual sebagai layanan (kapasitas berlebih menjadi produk). Ini diversifikasi berbasis sumber daya."],
+   ["Dari empat risiko yang diakui Alphabet, mana yang paling relevan saat ini, misalnya dengan munculnya asisten AI generatif sebagai alternatif mesin pencari?","Persaingan dan kepercayaan. Jika pengguna bertanya ke asisten AI dan tidak lagi mengklik hasil pencarian, model iklan per klik tertekan. Ini contoh teknologi disruptif (Minggu 2) yang mengancam pemimpin pasar."]
+  ]},
+ {id:"c2",t:"Studi Kasus 2 — 🇮🇩 Serangan ransomware Pusat Data Nasional Sementara 2 (2024)",src:"ANTARA (2024), penjelasan Menkominfo",
+  body:"<p>Gangguan pertama terdeteksi 17 Juni 2024; aktivitas ransomware <b>Brain Cipher</b> dimulai 20 Juni 2024 dini hari di <b>Pusat Data Nasional Sementara 2 (PDNS 2) di Surabaya</b>, setelah sebelumnya ada upaya mematikan Windows Defender. Penyerang mengenkripsi data dan meminta tebusan <b>US$8 juta</b> (sekitar Rp131 miliar). Per 26 Juni 2024, <b>239 instansi</b> terdampak: 30 kementerian/lembaga, 15 provinsi, 148 kabupaten, dan 48 kota. Dampak paling terlihat publik adalah gangguan layanan keimigrasian di bandara.</p><p>Pemulihan berjalan lambat karena banyak instansi tidak memiliki cadangan data terpisah. Sebaliknya, <b>43 instansi</b> yang hanya menyimpan <em>backup</em> di PDNS 2, sementara sistem utamanya berjalan di tempat lain, tidak terdampak.</p><p class=\"hint\">Kasus ini terjadi di kota yang sama dengan kampus Anda, dan menyentuh hampir semua konsep minggu ini: lapisan infrastruktur, pusat data, SLA, availability, backup, keamanan, dan tata kelola.</p>",
+  qs:[
+   ["Pada lapis infrastruktur mana (model lima lapis) kegagalan utama terjadi, dan lapis mana yang terdampak?","Serangan menyasar lapis IV (server dan penyimpanan) dan lapis II (perangkat lunak sistem, mis. perlindungan endpoint yang dilumpuhkan). Dampaknya terasa pada lapis V (data terenkripsi) dan lapis I (aplikasi layanan publik tidak berfungsi)."],
+   ["Fakta bahwa instansi yang hanya menyimpan backup di PDNS 2 justru selamat memberi pelajaran apa tentang arsitektur dan pengelolaan risiko?","Backup harus terpisah dari sistem utama (lokasi dan sistem berbeda, mis. aturan 3-2-1: tiga salinan, dua media, satu di luar lokasi) dan hindari single point of failure. Backup di sistem yang sama tidak melindungi dari serangan yang sama."],
+   ["Jika Anda kepala TI sebuah instansi pengguna, klausul apa yang seharusnya ada di SLA dengan pengelola pusat data?","Target availability; kewajiban dan frekuensi backup beserta uji pemulihannya; target waktu pemulihan (RTO) dan batas kehilangan data (RPO); standar keamanan dan audit; prosedur dan tenggat pemberitahuan insiden; pembagian tanggung jawab dan kompensasi."],
+   ["Apakah kasus ini argumen untuk atau melawan pemusatan data pemerintah dalam satu pusat data nasional? Pertimbangkan efisiensi dan risiko konsentrasi.","Pemusatan memberi skala, standar, dan efisiensi, tetapi menciptakan risiko konsentrasi. Jawaban yang baik: pemusatan boleh asalkan disertai redundansi (beberapa lokasi), backup independen, segmentasi jaringan, dan tata kelola yang jelas, konsisten dengan prinsip diversifikasi pada strategic agility."]
+  ]},
+ {id:"c3",t:"Studi Kasus 3 — 🇮🇩 Gangguan layanan Bank Syariah Indonesia (2023)",src:"CNN Indonesia (2023); Kontan (2023)",
+  body:"<p>Mulai <b>Senin, 8 Mei 2023</b>, layanan ATM dan mobile banking <b>Bank Syariah Indonesia (BSI)</b> terganggu selama beberapa hari. BSI awalnya menyebut gangguan terjadi karena <b>pemeliharaan sistem</b>. Pada 10 Mei, Direktur Utama BSI menyatakan bank sedang menormalkan sistem dengan fokus menjaga dana dan data nasabah, serta meminta maaf atas ketidaknyamanan.</p><p>Sekitar 13 Mei, kelompok ransomware <b>LockBit 3.0 mengklaim</b> telah menyerang BSI dan mencuri sekitar 1,5 TB data, termasuk sekitar 15 juta catatan nasabah serta data karyawan dan dokumen internal. BSI tidak mengonfirmasi klaim tersebut; bank menyatakan layanan dasar mobile banking, ATM, dan cabang mulai pulih sekitar 11–12 Mei, membuka 434 cabang pada akhir pekan 13–14 Mei, dan memperkuat keamanan melalui divisi di bawah CISO.</p><p class=\"hint\">Catatan: angka data yang dicuri adalah klaim pelaku, bukan fakta yang dikonfirmasi bank.</p>",
+  qs:[
+   ["Mengapa gangguan beberapa hari pada layanan bank digital berdampak jauh lebih besar daripada gangguan pada toko online biasa? Kaitkan dengan availability dan soft lock-in (Minggu 2).","Nasabah bergantung pada akses dana untuk kebutuhan harian; availability bank harus sangat tinggi (mis. 99,99%), sehingga beberapa hari downtime jauh melampaui toleransi. Soft lock-in bisa runtuh: kepercayaan hilang dan nasabah membuka rekening di bank lain."],
+   ["BSI awalnya menyebut gangguan sebagai 'pemeliharaan sistem'. Bagaimana seharusnya organisasi berkomunikasi saat insiden siber, dan apa risikonya jika komunikasi tidak transparan?","Komunikasi cepat, jujur, dan berkala: akui insiden, jelaskan dampak bagi pelanggan dan langkah pemulihan, berikan alternatif layanan. Penjelasan yang kemudian bertentangan dengan klaim pihak lain merusak kepercayaan lebih dalam daripada insidennya. UU PDP juga mengatur kewajiban pemberitahuan kegagalan pelindungan data."],
+   ["Bandingkan kasus BSI dengan PDNS 2. Pelajaran infrastruktur apa yang sama, dan apa bedanya bagi organisasi bisnis versus instansi pemerintah?","Sama: ransomware menyerang lapis IV/II dan melumpuhkan lapis I; backup terpisah, segmentasi, dan rencana pemulihan (RTO/RPO) menentukan kecepatan pulih. Beda: bank menghadapi kompetitor dan nasabah yang bisa pindah (risiko pasar langsung) serta pengawasan OJK; instansi menghadapi kepercayaan publik dan kontinuitas layanan negara tanpa kompetitor."]
+  ]},
+ {id:"c4",t:"Studi Kasus 4 — 🇮🇩 Diskusi kelas: server sendiri atau cloud bagi startup?",src:"Skenario rekaan untuk diskusi kelas",noans:true,
+  body:"<p><b>KosKita</b> adalah startup di Surabaya yang mempertemukan mahasiswa dengan pemilik kos melalui aplikasi dan website, dengan 20.000 pengguna aktif. Pendiri harus memutuskan: membangun server sendiri (colocation) atau memakai cloud. Investor memperkirakan pengguna bisa naik lima kali lipat dalam dua tahun, tetapi belum pasti.</p><p>Gunakan <b>kalkulator TCO di Unit 6</b> untuk menghitung kedua opsi. Asumsi awal: Opsi A investasi server Rp240 juta (umur 3 tahun), colocation dan listrik Rp4 juta/bulan, satu sysadmin Rp12 juta/bulan, dan harus membeli server tambahan bila tumbuh. Opsi B tanpa investasi awal, cloud Rp15 juta/bulan (Rp35 juta bila pengguna naik 5×), setengah waktu DevOps Rp6 juta/bulan, kapasitas bisa ditambah dalam hitungan menit, dan bisa memilih region Jakarta.</p>",
+  qs:[
+   ["Hitung TCO 3 tahun kedua opsi dalam dua skenario (pengguna tetap; naik 5× mulai tahun ke-2). Opsi mana yang lebih murah di tiap skenario, dan apa yang mengejutkan dari hasilnya?",""],
+   ["Sebutkan minimal tiga faktor non-biaya yang menurut Anda lebih penting daripada selisih TCO bagi startup tahap awal, serta risiko tiap opsi (SLA, availability, keamanan data, vendor lock-in).",""],
+   ["Apakah ada opsi hibrida yang lebih masuk akal? Kapan startup sebaiknya mempertimbangkan pindah dari cloud ke server sendiri? Kaitkan dengan tiga aksi CEO McKinsey dan pelajaran dari kasus PDNS.",""]
+  ]}
+];
+
+/* ---------------- self-test bank ---------------- */
+var LO_NAMES={1:"Infrastruktur & isu manajerial",2:"Platform akses digital",3:"Model lima lapis & Internet",4:"Domain, hosting & kualitas layanan",5:"Integrasi, intranet & extranet",6:"SaaS, cloud & nilai cloud",7:"Tata kelola Internet & open source"};
+var FINAL=[
+ [1,"Manakah yang BUKAN salah satu isu manajerial utama infrastruktur di Tabel 3.1?",["Platform akses yang didukung","Kualitas layanan","Desain logo perusahaan","Keamanan data"],2,"Enam isu: platform akses, layanan untuk produk baru, kualitas layanan, hosting dan integrasi, konten dan data, keamanan."],
+ [1,"Menurut wawancara Royal Mail di Bab 3, fondasi semua pemasaran berbasis data adalah…",["Anggaran iklan besar","Kualitas data","Aplikasi mobile","Kecerdasan buatan"],1,"Personalisasi tidak berguna jika alamat dan kontak pelanggan salah."],
+ [1,"Halaman checkout lambat saat promo adalah isu…",["Platform akses","Kualitas layanan","Tata kelola Internet","Open source"],1,"Kecepatan dan ketersediaan termasuk kualitas layanan."],
+ [1,"Infrastruktur juga mencakup di mana komponen berada. Keputusan kunci yang mengikutinya adalah…",["Warna antarmuka","Komponen mana yang dikelola sendiri dan mana oleh pihak luar","Jumlah karyawan","Harga produk"],1,"Trennya, makin banyak yang dikelola pihak luar."],
+ [1,"Mengapa kualitas infrastruktur relevan bagi strategi, bukan hanya bagi TI?",["Karena menentukan gaji staf TI","Karena menentukan kualitas layanan yang dirasakan pelanggan dan kemampuan membedakan diri","Karena diwajibkan undang-undang","Karena murah"],1,"Kecepatan dan ketersediaan adalah bagian dari pengalaman pelanggan."],
+ [2,"Keunggulan akses mobile yang berarti pengguna bisa dihubungi meski berada di luar lokasi biasanya adalah…",["Ubiquity","Reachability","Convenience","Privasi"],1,"Ubiquity = bisa mengakses dari mana saja; reachability = bisa dihubungi di mana saja."],
+ [2,"Aplikasi kebugaran yang membaca sensor jam pintar sebaiknya dikembangkan sebagai…",["Mobile site","Mobile app","Email newsletter","Kiosk"],1,"Memanfaatkan perangkat keras dan daya proses perangkat."],
+ [2,"Menargetkan pesan berdasarkan lokasi dari alamat IP atau kode pos disebut…",["Geofencing","Geo-targeting","Beacon","AR"],1,"Geofencing memakai zona virtual; geo-targeting memakai lokasi yang diketahui."],
+ [2,"Perangkat Bluetooth jarak pendek di toko untuk mengirim penawaran ke ponsel pengunjung disebut…",["Router","Beacon","Hypervisor","Backbone"],1,"Beacon dipakai mis. di toko ritel dan stadion."],
+ [2,"Isu yang paling perlu diwaspadai dalam pemasaran berbasis lokasi di Indonesia adalah…",["Biaya baterai","Pelindungan data pribadi dan reaksi negatif pelanggan","Ukuran layar","Kecepatan prosesor"],1,"Pelacakan lokasi fisik terkait UU 27/2022."],
+ [3,"Formulir pengajuan cuti tidak bisa dikirim karena bug di modul. Masalahnya di lapis…",["I. Applications","III. Transport","IV. Storage","V. Content"],0,"Aplikasi bisnis yang dipakai pengguna."],
+ [3,"Data mahasiswa yang salah input termasuk lapis…",["II. Systems software","III. Transport","IV. Storage","V. Content/data"],3,"Konten dan data adalah lapis V."],
+ [3,"Jalur komunikasi berkecepatan tinggi antarwilayah dan antarnegara disebut…",["ISP","Backbone","Intranet","API"],1,"Termasuk kabel bawah laut."],
+ [3,"Infrastruktur yang dibangun Indonesia untuk menghubungkan daerah terpencil dengan serat optik adalah…",["SATRIA-1","Palapa Ring","QRIS","PDNS"],1,"SATRIA-1 adalah satelit (2023); Palapa Ring adalah jaringan serat optik."],
+ [3,"Pengguna terhubung ke Internet melalui…",["ICANN","Internet service provider (ISP)","W3C","Hypervisor"],1,"ISP lokal terhubung ke ISP yang lebih besar dan ke backbone."],
+ [4,"Domain resmi perguruan tinggi di Indonesia menggunakan akhiran…",[".edu",".co.id",".ac.id",".go.id"],2,".edu adalah domain perguruan tinggi di AS."],
+ [4,"File 60 MB diunduh melalui koneksi 60 Mbps oleh satu pengguna. Waktu unduhnya sekitar…",["1 detik","8 detik","60 detik","480 detik"],1,"60 MB × 8 = 480 Mb; 480 ÷ 60 = 8 detik."],
+ [4,"Mendaftarkan domain bernama merek orang lain lebih dulu disebut…",["Phishing","Cybersquatting","Hosting","Spoofing"],1,"Risiko yang sering diremehkan, selain domain kedaluwarsa."],
+ [4,"Dibanding dedicated server, kelemahan utama shared server adalah…",["Jauh lebih mahal","Kinerjanya ikut terpengaruh situs lain di server yang sama","Tidak bisa memakai domain sendiri","Tidak bisa diakses dari ponsel"],1,"Shared lebih murah (dedicated bisa 5–10× lipat menurut materi kuliah), tetapi sumber dayanya dibagi."],
+ [4,"Availability 99,99% kira-kira berarti downtime … per tahun.",["8,8 jam","53 menit","5 menit","3 hari"],1,"0,01% × 525.600 menit ≈ 53 menit."],
+ [5,"Staf layanan pelanggan bisa melihat data pribadi pelanggan, tetapi tidak bisa melihat status pesanannya. Ini contoh…",["Multi-tenancy","Application silos","Net neutrality","Cloud bursting"],1,"Contoh dari buku."],
+ [5,"Perangkat lunak terintegrasi untuk produksi, distribusi, penjualan, keuangan, dan SDM adalah…",["CRM","ERP","CMS","LMS"],1,"Mis. SAP dan Oracle."],
+ [5,"Manakah yang BUKAN salah satu dari lima pertanyaan Chaffey untuk mengevaluasi intranet?",["Apakah tingkat penggunaannya memadai?","Siapa pemiliknya?","Berapa jumlah warna di logonya?","Bagaimana kualitas informasinya?"],2,"Lima pertanyaan: penggunaan, efektivitas/efisiensi, kepemilikan, kualitas layanan, kualitas informasi."],
+ [5,"Portal agen asuransi yang hanya bisa diakses mitra terdaftar adalah…",["Intranet","Extranet","Internet publik","Blog"],1,"Extranet menghubungkan mitra bisnis tertentu."],
+ [5,"Tanda bahaya intranet yang 'mati' adalah…",["Penggunaan tinggi","Konten kedaluwarsa dan penggunaan rendah","Ada fitur pencarian","Diakses lewat ponsel"],1,"Juga tampilan tidak konsisten dan isi yang tidak dibutuhkan pengguna."],
+ [6,"Menurut Arora dkk. (2020), manakah yang BUKAN salah satu dari tiga aksi CEO untuk memperoleh nilai dari cloud?",["Model pendanaan berkelanjutan","Model operasi bisnis–teknologi baru","Memilih penyedia cloud termurah","Meninjau kebijakan SDM dan kompensasi"],2,"Artikel menekankan cloud sebagai sumber keunggulan bersaing, bukan sekadar biaya yang ditekan."],
+ [6,"Netflix pindah dari pusat data sendiri ke AWS terutama karena…",["AWS gratis","Lebih mudah menjaga layanan konsisten di banyak negara","Diwajibkan pemerintah AS","Netflix menjual pusat datanya ke Amazon"],1,"Pusat data privat bisa memadai jika hanya satu negara, tetapi sulit dikelola secara global."],
+ [6,"Teknologi yang memungkinkan satu server fisik menjalankan banyak mesin virtual adalah…",["Virtualisasi","Middleware","Geofencing","SEO"],0,"Dikendalikan oleh hypervisor."],
+ [6,"Peta di dalam aplikasi ojek dan tombol bayar yang memanggil payment gateway memanfaatkan…",["API","ERP","SLA","DNS"],0,"API memungkinkan sistem memakai data atau fungsi layanan lain."],
+ [6,"PP 71/2019 relevan bagi keputusan cloud karena mengatur…",["Pajak cloud","Lokasi pengelolaan dan penyimpanan data sistem elektronik lingkup publik","Harga paket data","Tarif listrik pusat data"],1,"Lingkup publik wajib di Indonesia (dengan pengecualian terbatas); lingkup privat lebih fleksibel."],
+ [7,"Ancaman terhadap net neutrality datang dari…",["Hanya pengguna","ISP yang ingin akses berjenjang berbayar dan pemerintah yang memblokir layanan","Hanya startup","W3C"],1,"Dua arah ancaman menurut Chaffey."],
+ [7,"Esther Dyson mendefinisikan Internet governance sebagai…",["Hukum pidana siber","Kontrol untuk mengelola pertumbuhan dan penggunaan Internet","Kepemilikan Internet oleh pemerintah","Standar HTML"],1,"Banyak dijalankan lembaga di atas level negara."],
+ [7,"Paket kuota khusus aplikasi tertentu (zero-rating) memicu perdebatan karena…",["Melanggar hak cipta","Bisa merugikan layanan yang tidak masuk paket, sehingga berkaitan dengan net neutrality","Membuat internet lebih lambat","Dilarang ICANN"],1,"Pertanyaan keadilan bagi startup lokal."],
+ [7,"Penerapan semantic web yang paling terlihat menurut Chaffey adalah…",["Facebook Like","Knowledge Graph Google","Email spam filter","QR code"],1,"Panel informasi di samping hasil pencarian, muncul sejak 2012."],
+ [7,"Argumen tandingan terhadap klaim 'open source itu gratis' adalah…",["Kodenya rahasia","Biaya migrasi, pelatihan, dan dukungan bisa tinggi","Selalu penuh bug","Tidak bisa dipakai bisnis"],1,"Fleksibilitas juga hanya berguna jika organisasi mampu mengubah kodenya."],
+ [7,"Pada 2022, sejumlah layanan global sempat diblokir sementara di Indonesia karena…",["Melanggar net neutrality","Belum mendaftar sebagai Penyelenggara Sistem Elektronik (PSE)","Tidak memakai domain .id","Tidak memakai cloud lokal"],1,"Contoh pemerintah sebagai aktor tata kelola Internet nasional."]
+];
+
+/* ---------------- rubrik umpan balik studi kasus ---------------- */
+var RUB={
+ c1_0:{need:3,cr:[
+  ["Skala pusat data","pusat data|data center|skala|server|murah per|cepat","Bagaimana skala pusat data memberi keunggulan?"],
+  ["Distribusi lewat Android/Chrome","android|chrome|distribusi|akses ke pengguna|default","Apa peran Android dan Chrome?"],
+  ["Data","data|perilaku|pengguna","Bagaimana infrastruktur menghasilkan data bernilai?"],
+  ["Ekosistem / sulit ditiru","ekosistem|ecosystem|sulit ditiru|hambatan masuk|lock","Mengapa pesaing sulit menyamai?"]],
+  self:["Saya menjelaskan mengapa infrastruktur menjadi keunggulan, bukan hanya menyebut komponennya"]},
+ c1_1:{need:3,cr:[
+  ["Kapabilitas internal","internal|kebutuhan sendiri|awalnya|dibangun untuk","Untuk siapa infrastruktur itu awalnya dibangun?"],
+  ["Dijual sebagai layanan","dijual|layanan|service|pelanggan lain|monetisasi|produk","Bagaimana infrastruktur itu dimonetisasi?"],
+  ["Kesamaan dengan AWS","aws|amazon","Bandingkan secara eksplisit dengan AWS."],
+  ["Konsep strategis","diversifikasi|kapasitas berlebih|skala ekonomi|sumber daya","Konsep strategi apa yang tercermin?"]],
+  self:["Saya menyebut kesamaan sekaligus satu perbedaan"]},
+ c1_2:{need:3,cr:[
+  ["Risiko yang dipilih","persaingan|kepercayaan|inovasi|pengiklan","Pilih satu risiko secara tegas."],
+  ["AI generatif","ai|asisten|chatbot|generatif|llm","Kaitkan dengan asisten AI."],
+  ["Mekanisme dampak","klik|iklan|cpc|pendapatan|trafik|tidak mengklik","Bagaimana dampaknya pada model pendapatan?"],
+  ["Konsep disrupsi","disrupsi|disruptif|disruptive|ukuran kinerja","Kaitkan dengan konsep disrupsi (Minggu 2)."]],
+  self:["Saya mempertimbangkan bagaimana Google mungkin merespons"]},
+ c2_0:{need:3,cr:[
+  ["Lapis IV (penyimpanan/server)","lapis iv|storage|penyimpanan|server|fisik","Lapis mana yang diserang langsung?"],
+  ["Lapis II (perangkat lunak sistem)","lapis ii|systems software|perangkat lunak sistem|windows|defender|sistem operasi","Apa yang dilumpuhkan sebelum enkripsi?"],
+  ["Lapis V (data)","lapis v|data|enkripsi|terenkripsi|content","Apa yang terjadi pada data?"],
+  ["Lapis I (aplikasi/layanan)","lapis i\\b|aplikasi|layanan publik|imigrasi|applications","Layanan apa yang terdampak?"]],
+  self:["Saya membedakan lapis yang diserang dan lapis yang terdampak"]},
+ c2_1:{need:3,cr:[
+  ["Backup terpisah","backup|cadangan|salinan|terpisah","Apa prinsip backup yang tercermin?"],
+  ["Single point of failure","single point|titik tunggal|satu tempat|konsentrasi","Apa bahaya menaruh semuanya di satu tempat?"],
+  ["Praktik spesifik","3-2-1|offsite|luar lokasi|media berbeda|offline|uji pemulihan","Sebutkan praktik backup yang spesifik."],
+  ["Bukti dari kasus","43|239|sistem utama|tempat lain","Gunakan angka dari kasus."]],
+  self:["Saya menjelaskan mengapa backup di sistem yang sama tidak melindungi"]},
+ c2_2:{need:4,cr:[
+  ["Availability","availability|ketersediaan|uptime","Target ketersediaan belum disebut."],
+  ["Backup & uji pemulihan","backup|cadangan|pemulihan|restore","Kewajiban backup dan uji pemulihan belum disebut."],
+  ["RTO/RPO","rto|rpo|waktu pemulihan|kehilangan data","Target waktu pemulihan dan batas kehilangan data belum disebut."],
+  ["Keamanan & audit","keamanan|audit|sertifikasi|iso|standar","Standar keamanan belum disebut."],
+  ["Pemberitahuan insiden","insiden|notifikasi|pemberitahuan|lapor","Prosedur pemberitahuan insiden belum disebut."],
+  ["Tanggung jawab & kompensasi","kompensasi|penalti|denda|tanggung jawab|ganti rugi","Konsekuensi bila target tidak tercapai belum disebut."]],
+  self:["Klausul saya terukur (ada angka atau tenggat), bukan sekadar 'harus aman'"]},
+ c2_3:{need:3,cr:[
+  ["Manfaat pemusatan","efisien|skala|standar|biaya|hemat","Apa manfaat pemusatan?"],
+  ["Risiko konsentrasi","konsentrasi|single point|satu titik|risiko","Apa risikonya?"],
+  ["Syarat/mitigasi","redundan|beberapa lokasi|backup|segmentasi|tata kelola|multi","Dengan syarat apa pemusatan bisa diterima?"],
+  ["Posisi yang jelas","untuk|melawan|setuju|tidak setuju|boleh|asalkan","Ambil posisi yang jelas."]],
+  self:["Saya mengaitkan dengan prinsip diversifikasi (strategic agility, Minggu 3)"]},
+ c3_0:{need:3,cr:[
+  ["Ketergantungan nasabah","dana|kebutuhan|harian|gaji|transaksi|bayar","Mengapa nasabah sangat bergantung pada layanan bank?"],
+  ["Availability","availability|ketersediaan|uptime|99|downtime","Kaitkan dengan konsep availability."],
+  ["Soft lock-in / kepercayaan","lock|kepercayaan|trust|pindah|beralih|loyal","Apa yang terjadi pada kepercayaan dan loyalitas?"],
+  ["Perbandingan dengan toko online","toko online|e-commerce|marketplace|belanja|dibanding","Bandingkan secara eksplisit dengan toko online."]],
+  self:["Saya memakai konsep dari Minggu 2 dan Minggu 4 sekaligus"]},
+ c3_1:{need:3,cr:[
+  ["Prinsip komunikasi","transparan|jujur|cepat|terbuka|berkala|akui","Seperti apa komunikasi insiden yang baik?"],
+  ["Isi komunikasi","dampak|langkah|alternatif|pemulihan|informasi","Apa yang harus disampaikan ke pelanggan?"],
+  ["Risiko tidak transparan","kepercayaan|reputasi|rusak|bertentangan|spekulasi","Apa risiko jika tidak transparan?"],
+  ["Regulasi","uu pdp|pelindungan data|ojk|regulasi|kewajiban","Apakah ada kewajiban hukum terkait?"]],
+  self:["Saya mempertimbangkan dilema perusahaan saat fakta insiden belum lengkap"]},
+ c3_2:{need:3,cr:[
+  ["Kesamaan teknis","ransomware|lapis|backup|segmentasi|pemulihan|rto|rpo","Apa pelajaran infrastruktur yang sama?"],
+  ["Konteks bisnis (BSI)","kompetitor|pesaing|nasabah pindah|pasar|ojk|bank lain","Apa yang khas bagi organisasi bisnis?"],
+  ["Konteks pemerintah (PDNS)","publik|warga|negara|pemerintah|layanan publik|tanpa pesaing","Apa yang khas bagi instansi pemerintah?"]],
+  self:["Saya menyebut kesamaan dan perbedaan secara seimbang"]},
+ c4_0:{need:3,cr:[
+  ["Angka TCO opsi A","opsi a|server sendiri|colocation|816|1\\.?152","Sebutkan hasil TCO Opsi A."],
+  ["Angka TCO opsi B","opsi b|cloud|756|1\\.?236","Sebutkan hasil TCO Opsi B."],
+  ["Dua skenario","tetap|tumbuh|naik 5|5x|5 kali|skenario","Bandingkan kedua skenario."],
+  ["Interpretasi","lebih murah|mengejutkan|ternyata|berbalik|selisih","Opsi mana yang lebih murah, dan apa maknanya?"]],
+  self:["Saya menunjukkan cara menghitung, bukan hanya hasilnya"]},
+ c4_1:{need:3,cr:[
+  ["Faktor non-biaya","kecepatan|skalabilitas|fokus|kelincahan|agility|waktu|talenta","Sebutkan faktor non-biaya."],
+  ["SLA/availability","sla|availability|ketersediaan|downtime","Bagaimana dengan jaminan layanan?"],
+  ["Keamanan data","keamanan|data|backup|pdp|lokasi data","Bagaimana dengan keamanan dan lokasi data?"],
+  ["Vendor lock-in","lock-in|lock in|ketergantungan|vendor","Bagaimana dengan ketergantungan pada vendor?"]],
+  self:["Saya menimbang risiko untuk kedua opsi, bukan hanya opsi yang tidak saya pilih"]},
+ c4_2:{need:3,cr:[
+  ["Opsi hibrida","hibrida|hybrid|kombinasi|sebagian","Seperti apa opsi hibrida yang masuk akal?"],
+  ["Kapan pindah dari cloud","stabil|skala besar|terprediksi|biaya cloud tinggi|matang","Kapan pindah ke server sendiri layak dipertimbangkan?"],
+  ["McKinsey","mckinsey|pendanaan|model operasi|sdm|talenta|arora","Kaitkan dengan tiga aksi CEO."],
+  ["Pelajaran PDNS","pdns|backup|konsentrasi|single point","Kaitkan dengan pelajaran kasus PDNS."]],
+  self:["Usulan saya realistis untuk startup dengan 20.000 pengguna"]}
+};
+var CONN=["karena","sehingga","akibatnya","oleh karena itu","maka","sebab","menyebabkan","artinya","dengan demikian","namun","tetapi","sedangkan","jika","agar","membuat","berdampak","because","therefore"];
+var LV=["Belum terlihat","Perlu diperkuat","Cukup","Baik","Sangat baik"];
+
+/* ---------------- glossary ---------------- */
+var GLOSS=[
+ ["Digital business infrastructure","Arsitektur hardware, software, konten, dan data untuk layanan bisnis digital"],
+ ["Client-server","Perangkat pengguna meminta layanan dari server"],
+ ["ISP / Backbone","Penyedia akses Internet / jalur berkecepatan tinggi antarwilayah dan antarnegara"],
+ ["Mobile site / Mobile app","Situs lewat browser ponsel / aplikasi yang diunduh"],
+ ["Geofencing / Beacon","Pagar virtual berbasis lokasi / perangkat Bluetooth jarak pendek"],
+ ["Augmented reality","Penggabungan gambar dunia nyata dengan konten digital"],
+ ["gTLD / ccTLD","Domain tingkat atas generik / kode negara"],
+ ["Cybersquatting","Mendaftarkan domain yang menjadi hak pihak lain"],
+ ["Bandwidth","Kecepatan transfer data, dalam bit per detik (1 byte = 8 bit)"],
+ ["Availability","Persentase waktu layanan dapat diakses"],
+ ["SLA","Service level agreement: kontrak standar layanan"],
+ ["Dedicated / Shared server","Server khusus satu organisasi / dipakai bersama"],
+ ["Application silos","Sistem departemen yang terpisah dan tidak terintegrasi"],
+ ["ERP","Perangkat lunak terintegrasi untuk fungsi utama bisnis"],
+ ["Middleware / EAI","Perangkat lunak penghubung antar-aplikasi"],
+ ["SaaS","Aplikasi yang diakses lewat Internet dengan model berlangganan"],
+ ["Multi-tenancy","Banyak pelanggan berbagi satu instans aplikasi"],
+ ["API","Antarmuka agar sistem lain bisa memakai data atau fungsi suatu layanan"],
+ ["Cloud computing","Penyimpanan dan pemrosesan terdistribusi lewat Internet sebagai layanan"],
+ ["IaaS / PaaS","Infrastruktur sebagai layanan / platform sebagai layanan"],
+ ["Virtualisasi","Satu server fisik menjalankan banyak mesin virtual"],
+ ["TCO","Total biaya kepemilikan sistem"],
+ ["RTO / RPO","Target waktu pemulihan / batas data yang boleh hilang"],
+ ["Internet governance","Kontrol untuk mengelola pertumbuhan dan penggunaan Internet"],
+ ["Net neutrality","Prinsip perlakuan setara atas semua data di Internet"],
+ ["Open-source software","Perangkat lunak dengan kode terbuka yang dikembangkan komunitas"]
+];
+
+/* ================= render: sidebar & plan ================= */
+var NAV=[["grp","Mulai"],["home","Beranda","⌂"],["grp","Komponen Infrastruktur"],["u1"],["u2"],["u3"],["grp","Layanan & Integrasi"],["u4"],["u5"],["grp","Cloud & Tata Kelola"],["u6"],["u7"],["grp","Penerapan & Evaluasi"],["cases","Studi Kasus","📂"],["final","Kuis Akhir","🏁"],["cards","Flashcard","🃏"],["notes","Catatan & Referensi","📝"]];
+function renderSide(){
+  var h="";
+  NAV.forEach(function(n){
+    if(n[0]==="grp"){h+='<div class="grp">'+n[1]+'</div>';return}
+    var u=UNITS.filter(function(x){return x.id===n[0]})[0];
+    if(u){var i=UNITS.indexOf(u)+1;h+='<a href="#'+u.id+'" data-nav="'+u.id+'" class="'+(S.done[u.id]?"done":"")+'"><span class="n">'+(S.done[u.id]?"✓":i)+'</span>'+u.t+'</a>'}
+    else{var dn=(n[0]==="final"&&S.final&&S.final.best>=80)||(n[0]==="cases"&&casesDone()); h+='<a href="#'+n[0]+'" data-nav="'+n[0]+'" class="'+(dn?"done":"")+'"><span class="n ico">'+(dn?"✓":n[2])+'</span>'+n[1]+'</a>'}
+  });
+  $("#side").innerHTML=h; markNav();
+  var pb="";UNITS.forEach(function(u,i){pb+='<tr><td>'+(i+1)+'</td><td><a href="#'+u.id+'">'+u.t+'</a></td><td>'+u.pg+'</td><td class="st '+(S.done[u.id]?"y":"n")+'">'+(S.done[u.id]?"✓ selesai":(S.read[i+1]?"dibaca":"—"))+'</td></tr>'});
+  pb+='<tr><td>'+(UNITS.length+1)+'</td><td><a href="#cases">Studi kasus ("+CASES.length+")</a></td><td>—</td><td class="st '+(casesDone()?"y":"n")+'">'+(casesDone()?"✓ selesai":"—")+'</td></tr>';
+  pb+='<tr><td>'+(UNITS.length+2)+'</td><td><a href="#final">Kuis akhir</a></td><td>—</td><td class="st '+(S.final&&S.final.best>=80?"y":"n")+'">'+(S.final?("terbaik "+S.final.best+"%"):"—")+'</td></tr>';
+  $("#planBody").innerHTML=pb;
+}
+function casesDone(){var n=0;CASES.forEach(function(c){c.qs.forEach(function(q,i){if((S.notes[c.id+"_"+i]||"").trim().length>=40)n++})});var t=0;CASES.forEach(function(c){t+=c.qs.length});return n>=t}
+function updateProgress(){
+  var tot=UNITS.length+2,d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  if(casesDone())d++; if(S.final&&S.final.best>=80)d++;
+  var p=Math.round(d/tot*100);$("#progBar").style.width=p+"%";$("#progLbl").textContent=p+"%";
+}
+
+/* ================= quizzes ================= */
+function seededOrder(key,n){var h=2166136261;for(var c=0;c<key.length;c++){h^=key.charCodeAt(c);h=Math.imul(h,16777619)}var a=[];for(var i=0;i<n;i++)a.push(i);for(var k=n-1;k>0;k--){h=Math.imul(h^(h>>>15),2246822507)>>>0;var r=h%(k+1),x=a[k];a[k]=a[r];a[r]=x}return a}
+function renderQuiz(box,uid){
+  var qs=QZ[uid], h='<div class="lockmsg"><div>🔒 <b>Soal terkunci.</b><br>Baca subbab buku yang ditunjuk, lalu centang "Saya sudah membaca" di atas.</div></div><div class="qbody">';
+  qs.forEach(function(q,i){
+    h+='<div class="q" data-qi="'+i+'"><span class="kind '+(q.k==="r"?"rb":"")+'">'+(q.k==="r"?"📖 Cek bacaan · "+q.pg:"Konsep")+'</span><div class="qt">'+(i+1)+'. '+esc(q.q)+'</div><div class="opts">';
+    seededOrder(uid+"_"+i,q.o.length).forEach(function(j,pos){h+='<button class="opt" data-j="'+j+'"><span class="L">'+"ABCD"[pos]+'</span><span>'+esc(q.o[j])+'</span></button>'});
+    h+='</div><div class="fbx"></div></div>';
+  });
+  h+='<div class="score" id="sc_'+uid+'"></div></div>';
+  box.innerHTML=h;
+  $$(".q",box).forEach(function(qe){
+    var i=+qe.dataset.qi;
+    $$(".opt",qe).forEach(function(b){b.addEventListener("click",function(){answer(uid,i,+b.dataset.j,qe)})});
+    var prev=S.q[uid+"_"+i]; if(prev!=null) paint(uid,i,prev,qe);
+  });
+  lockState(box,uid); scoreUnit(uid);
+}
+function answer(uid,i,j,qe){S.q[uid+"_"+i]=j;paint(uid,i,j,qe);scoreUnit(uid);save();}
+function paint(uid,i,j,qe){
+  var q=QZ[uid][i],ok=j===q.a;
+  $$(".opt",qe).forEach(function(b){var k=+b.dataset.j;b.disabled=true;b.classList.remove("ok","no");if(k===j)b.classList.add(ok?"ok":"no");if(ok&&k===q.a)b.classList.add("ok")});
+  var fb=$(".fbx",qe);
+  fb.innerHTML='<div class="fb '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat.")+'</b>'+(ok?esc(q.e):(q.k==="r"?"Buka kembali "+q.pg+", dan cari bagian yang relevan.":"Baca ulang ringkasan di atas, lalu coba lagi."))+'</div>'+(ok?"":'<button class="retry">Coba lagi</button>');
+  var r=$(".retry",fb); if(r) r.addEventListener("click",function(){delete S.q[uid+"_"+i];save();$$(".opt",qe).forEach(function(b){b.disabled=false;b.classList.remove("ok","no")});fb.innerHTML="";scoreUnit(uid)});
+}
+function scoreUnit(uid){
+  var qs=QZ[uid],c=0;qs.forEach(function(q,i){if(S.q[uid+"_"+i]===q.a)c++});
+  var el=$("#sc_"+uid); if(el) el.textContent=c+" / "+qs.length+" benar"+(c===qs.length?" · Unit selesai ✓":"");
+  var was=!!S.done[uid]; S.done[uid]=c===qs.length;
+  if(S.done[uid]&&!was){toast("Unit selesai! 🎉");} if(was!==S.done[uid]){save();renderSide();}
+}
+function lockState(box,uid){var n=+uid.slice(1);box.classList.toggle("locked",!S.read[n])}
+
+/* ================= classify ================= */
+function renderClassify(el){
+  var key=el.dataset.widget,w=CL[key],h='';
+  w.it.forEach(function(it,i){
+    h+='<div class="it" data-i="'+i+'"><p>'+esc(it[0])+'</p><div class="chips">';
+    w.o.forEach(function(o){h+='<button class="chip" data-o="'+esc(o)+'">'+esc(o)+'</button>'});
+    h+='</div><div class="why"></div></div>';
+  });
+  h+='<div class="score" style="margin-top:10px"></div>';
+  el.insertAdjacentHTML("beforeend",h);
+  $$(".it",el).forEach(function(row){
+    var i=+row.dataset.i;
+    $$(".chip",row).forEach(function(c){c.addEventListener("click",function(){
+      var it=w.it[i],ok=c.dataset.o===it[1];
+      if(ok){S.cls[key+"_"+i]=1;paintCls(row,it,true);save();clsScore(el,key)}
+      else{c.classList.add("no");c.disabled=true;$(".why",row).textContent="Belum tepat. Coba pilihan lain.";}
+    })});
+    if(S.cls[key+"_"+i])paintCls(row,w.it[i],true);
+  });
+  clsScore(el,key);
+}
+function paintCls(row,it,ok){$$(".chip",row).forEach(function(c){c.disabled=true;c.classList.remove("no");if(c.dataset.o===it[1])c.classList.add("ok")});$(".why",row).innerHTML="✓ "+esc(it[2])}
+function clsScore(el,key){var w=CL[key],c=0;w.it.forEach(function(_,i){if(S.cls[key+"_"+i])c++});$(".score",el).textContent=c+" / "+w.it.length+" tepat"}
+
+/* ================= widget topik 4 ================= */
+/* Five-layer model */
+var LAYERS=[
+ ["I","Applications","Aplikasi bisnis yang dipakai pengguna","Modul pengajuan cuti di portal akademik, beserta formulir dan alur persetujuannya.","Kesesuaian dengan kebutuhan pengguna, kemudahan pakai, bug, dan integrasi dengan aplikasi lain (mis. sistem keuangan)."],
+ ["II","Systems software","Sistem operasi, browser, server web, basis data","Browser mahasiswa, sistem operasi server, server web, dan sistem manajemen basis data.","Kompatibilitas versi, pembaruan keamanan (patch), dan lisensi."],
+ ["III","Transport / network","Jaringan: Wi-Fi, ISP, backbone, kabel laut","Wi-Fi kampus atau data seluler, ISP, hingga backbone menuju server.","Bandwidth, latensi, dan ketersediaan jaringan; ketergantungan pada ISP."],
+ ["IV","Storage / physical","Server, memori, media penyimpanan","Server fisik atau virtual di pusat data kampus atau cloud yang menjalankan portal.","Kapasitas, redundansi, backup, lokasi data, dan keamanan fisik."],
+ ["V","Content / data","Konten dan data: dokumen, basis data, metadata","Data mahasiswa, status akademik, riwayat pengajuan, dan dokumen pendukung.","Akurasi, kemutakhiran, hak akses, dan pelindungan data pribadi."]
+];
+function layerTool(){
+  var box=$("#layers");if(!box)return;
+  box.innerHTML=LAYERS.map(function(l,i){return '<button class="lyr" data-i="'+i+'" aria-pressed="false"><b>'+l[0]+'</b><span>'+esc(l[1])+'</span><small>'+esc(l[2])+'</small></button>'}).join("");
+  function show(i){
+    var l=LAYERS[i];
+    $$("#layers .lyr").forEach(function(b){b.setAttribute("aria-pressed",String(+b.dataset.i===i))});
+    $("#layerInfo").innerHTML='<b>Lapis '+l[0]+' · '+esc(l[1])+'</b><br><span class="hint">Dalam contoh:</span> '+esc(l[3])+'<br><span class="hint">Isu manajerial:</span> '+esc(l[4]);
+  }
+  $$("#layers .lyr").forEach(function(b){b.addEventListener("click",function(){show(+b.dataset.i)})});
+  show(0);
+}
+
+/* availability → downtime */
+function fmtDur(h){
+  if(h>=48) return (h/24).toFixed(1).replace(".",",")+" hari";
+  if(h>=1) return h.toFixed(1).replace(".",",")+" jam";
+  var m=h*60; if(m>=1) return Math.round(m)+" menit";
+  return Math.round(m*60)+" detik";
+}
+function availTool(){
+  var inp=$("#avPct");if(!inp)return;
+  function upd(){
+    var p=Math.min(100,Math.max(0,+inp.value||0)),down=(100-p)/100,yr=down*8760,mo=down*730,wk=down*168;
+    var nines=[[99,"dua sembilan"],[99.9,"tiga sembilan"],[99.99,"empat sembilan"],[99.999,"lima sembilan"]];
+    $("#avRes").innerHTML='<big>'+fmtDur(yr)+' / tahun</big>≈ '+fmtDur(mo)+' per bulan · '+fmtDur(wk)+' per minggu'+
+     '<div class="nines">'+nines.map(function(n){return '<button class="chip'+(Math.abs(n[0]-p)<1e-9?" on":"")+'" data-v="'+n[0]+'">'+String(n[0]).replace(".",",")+'%</button>'}).join("")+'</div>'+
+     '<p class="hint" style="margin:6px 0 0">Setiap tambahan "angka sembilan" memangkas downtime 10×, tetapi biaya redundansinya naik tajam. Tidak semua layanan perlu 99,999%: bandingkan toko online kecil dengan sistem pembayaran bank.</p>';
+    $$("#avRes .chip").forEach(function(b){b.addEventListener("click",function(){inp.value=b.dataset.v;upd()})});
+  }
+  inp.addEventListener("input",upd);upd();
+}
+
+/* bandwidth */
+function bwTool(){
+  var a=$("#bwMB"),b=$("#bwMbps"),c=$("#bwUsers");if(!a)return;
+  function upd(){
+    var mb=+a.value||0,mbps=Math.max(1,+b.value||1),u=Math.max(1,Math.round(+c.value||1));
+    var one=mb*8/mbps,all=one*u;
+    $("#bwRes").innerHTML='<big>'+fmtDur(all/3600)+'</big>bila '+u+' pengguna mengunduh bersamaan (bandwidth dibagi rata).<br>Satu pengguna sendirian: '+fmtDur(one/3600)+' ('+mb+' MB × 8 = '+(mb*8).toLocaleString("id-ID")+' Mb ÷ '+mbps+' Mbps).'+
+     (all>10?'<p class="hint" style="margin:6px 0 0">Melewati 10 detik, banyak pengguna akan meninggalkan halaman. Opsi: tambah bandwidth, pakai CDN, atau perkecil file.</p>':'');
+  }
+  [a,b,c].forEach(function(e){e.addEventListener("input",upd)});upd();
+}
+
+/* intranet/extranet evaluation (5 questions, Chaffey) */
+var EVQ=["Tingkat penggunaan: apakah portal benar-benar dipakai oleh semua yang seharusnya?","Efektivitas dan efisiensi: apakah tugas lebih cepat selesai dibanding cara manual?","Kepemilikan: apakah jelas siapa yang bertanggung jawab atas isi dan pengembangannya?","Kualitas layanan: apakah portal cepat, stabil, dan mudah dipakai, termasuk di ponsel?","Kualitas informasi: apakah informasinya mutakhir, akurat, dan mudah dicari?"];
+var EVS=["Penggunaan","Efektivitas","Kepemilikan","Kualitas layanan","Kualitas informasi"];
+function evalTool(){
+  var box=$("#evList");if(!box)return;
+  var sc;try{sc=JSON.parse(S.notes.ev_sc||"[]")}catch(e){sc=[]}
+  box.innerHTML=EVQ.map(function(q,i){return '<div class="evq"><span>'+(i+1)+'. '+esc(q)+'</span><div class="evs">'+[1,2,3,4,5].map(function(v){return '<button data-q="'+i+'" data-v="'+v+'" aria-pressed="'+(sc[i]===v)+'">'+v+'</button>'}).join("")+'</div></div>'}).join("");
+  function upd(){
+    var n=sc.filter(Boolean).length;
+    if(!n){$("#evRes").innerHTML='<span class="hint">Beri nilai pada kelima aspek.</span>';return}
+    var sum=sc.reduce(function(a,b){return a+(b||0)},0),min=6,mi=-1;sc.forEach(function(v,i){if(v&&v<min){min=v;mi=i}});
+    $("#evRes").innerHTML='<b>Skor: '+sum+'/'+(n*5)+'</b> ('+n+'/5 aspek dinilai). '+(mi>=0?'Aspek terlemah: <b>'+EVS[mi]+'</b> ('+min+'/5).':'')+(n===5&&min>=4?' Portal ini relatif sehat; cari satu fitur yang masih memakai cara manual.':'')+(n===5&&min<=2?' Ini tanda bahaya intranet "mati" bila dibiarkan.':'');
+  }
+  $$("#evList button").forEach(function(b){b.addEventListener("click",function(){
+    var i=+b.dataset.q;sc[i]=+b.dataset.v;S.notes.ev_sc=JSON.stringify(sc);save();notesPreview();
+    $$('#evList button[data-q="'+i+'"]').forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});upd();
+  })});
+  upd();
+}
+
+/* TCO 3-year */
+function tcoTool(){
+  var ids=["tA0","tAm","tAs","tAg","tAgm","tBm","tBg","tBs"];if(!$("#tA0"))return;
+  try{var sv=JSON.parse(S.notes.tco_in||"null");if(sv){ids.forEach(function(id){if(sv[id]!=null)$("#"+id).value=sv[id]});$("#tGrow").checked=!!sv.g}}catch(e){}
+  function v(id){return +$("#"+id).value||0}
+  function keep(){var o={g:$("#tGrow").checked};ids.forEach(function(id){o[id]=$("#"+id).value});S.notes.tco_in=JSON.stringify(o);save();notesPreview()}
+  function jt(n){return "Rp"+n.toLocaleString("id-ID",{maximumFractionDigits:1})+" jt"}
+  function upd(){
+    var g=$("#tGrow").checked;
+    var A=v("tA0")+36*(v("tAm")+v("tAs"))+(g?v("tAg")+24*v("tAgm"):0);
+    var B=g?12*(v("tBm")+v("tBs"))+24*(v("tBg")+v("tBs")):36*(v("tBm")+v("tBs"));
+    var mx=Math.max(A,B)||1,cheap=A<B?"A (server sendiri)":B<A?"B (cloud)":"keduanya sama";
+    var yr1A=v("tA0")+12*(v("tAm")+v("tAs")),yr1B=12*(v("tBm")+v("tBs"));
+    S.notes.tco_sum=(g?"Tumbuh 5×":"Pengguna tetap")+": A="+jt(A)+", B="+jt(B);
+    $("#tcoRes").innerHTML='<div class="tbar"><span>Opsi A</span><i style="width:'+(A/mx*100)+'%;background:var(--navy)"></i><b>'+jt(A)+'</b></div><div class="tbar"><span>Opsi B</span><i style="width:'+(B/mx*100)+'%;background:var(--gold-bg)"></i><b>'+jt(B)+'</b></div>'+
+     '<p style="margin:8px 0 0">Skenario <b>'+(g?"pengguna naik 5× mulai tahun ke-2":"pengguna tetap")+'</b>: TCO 3 tahun lebih rendah pada opsi <b>'+cheap+'</b>, selisih '+jt(Math.abs(A-B))+'.</p>'+
+     '<p class="hint" style="margin:4px 0 0">Kas keluar tahun pertama: A '+jt(yr1A)+' vs B '+jt(yr1B)+'. Bagi startup, kebutuhan kas di awal sering lebih menentukan daripada total 3 tahun. '+(g?'Perhatikan juga waktu: server tambahan harus dibeli sebelum lonjakan terjadi, padahal pertumbuhannya belum pasti.':'Coba centang skenario pertumbuhan: apakah urutannya berubah?')+'</p>';
+  }
+  ids.forEach(function(id){$("#"+id).addEventListener("input",function(){upd();keep()})});
+  $("#tGrow").addEventListener("change",function(){upd();keep()});
+  upd();
+}
+
+/* ================= cases ================= */
+function norm(t){return (t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}
+function grade(id){
+  var r=RUB[id],t=norm(S.notes[id]),words=t.split(/\s+/).filter(Boolean).length;
+  var hits=r.cr.map(function(c){return new RegExp(c[1],"i").test(t)}),h=hits.filter(Boolean).length;
+  var conn=CONN.filter(function(w){return new RegExp("(^|[^a-z])"+w+"([^a-z]|$)").test(t)}).length;
+  var cov=Math.min(h,r.need)/r.need,raw=3*cov+(conn>=2?1:conn===1?.5:0),warn=[];
+  if(words<25){raw=Math.min(raw,2);warn.push("Jawaban terlalu singkat ("+words+" kata). Kembangkan penjelasan Anda.")}
+  if(h>=2&&conn===0&&words/h<7){raw=Math.min(raw,1);warn.push("Jawaban tampak seperti daftar kata kunci. Jelaskan hubungan antarkonsep dengan kalimat utuh.")}
+  else if(conn===0) warn.push("Belum ada penalaran sebab-akibat. Gunakan \"karena\", \"sehingga\", atau \"akibatnya\" untuk menunjukkan alur pikir.");
+  return {lv:Math.max(0,Math.min(4,Math.floor(raw+1e-9))),hits:hits,h:h,conn:conn,words:words,warn:warn,len:(S.notes[id]||"").length};
+}
+function renderGrade(id){
+  var box=$('.fbres[data-for="'+id+'"]'),st=S.cs[id];if(!box)return;
+  if(!st){box.innerHTML="";return}
+  var r=RUB[id],g=grade(id),noans=CASES.some(function(c){return c.noans&&id.indexOf(c.id+"_")===0});
+  var h='<div class="gbox"><div class="ghead"><span class="meter">'+[0,1,2,3].map(function(k){return '<i class="'+(k<g.lv?"on":"")+'"></i>'}).join("")+'</span><span class="glv">'+g.lv+'/4 · '+LV[g.lv]+'</span><span class="gnote">umpan balik otomatis, bukan nilai</span></div>';
+  h+='<p class="hint" style="margin:0 0 4px">Konsep kunci ('+g.h+' dari '+r.cr.length+' muncul; minimal '+r.need+' untuk cakupan penuh):</p><ul class="crit">';
+  r.cr.forEach(function(c,k){h+='<li class="'+(g.hits[k]?"y":"n")+'"><span class="m">'+(g.hits[k]?"✓":"")+'</span><span><b>'+esc(c[0])+'</b>'+(g.hits[k]?'':' <span class="h">· '+esc(c[2])+'</span>')+'</span></li>'});
+  h+='</ul><ul class="crit"><li class="'+(g.conn>=2?"y":"n")+'"><span class="m">'+(g.conn>=2?"✓":"")+'</span><span><b>Penalaran</b> <span class="h">· '+g.conn+' penghubung sebab-akibat'+(g.conn<2?" (target ≥ 2)":"")+'</span></span></li></ul>';
+  g.warn.forEach(function(w){h+='<div class="gwarn">⚠️ '+esc(w)+'</div>'});
+  if(st.len!==g.len) h+='<div class="stale">✎ Jawaban sudah diubah sejak dinilai. Klik "Nilai ulang" untuk memperbarui.</div>';
+  h+='<div class="selfc"><b style="font-size:.9rem">Penilaian diri: centang yang benar-benar sudah Anda lakukan</b>';
+  r.self.forEach(function(sx,k){h+='<label><input type="checkbox" data-self="'+id+'" data-k="'+k+'" '+(st.self&&st.self[k]?"checked":"")+'> '+esc(sx)+'</label>'});
+  h+=st.selfDone?'<p class="hint" style="margin:6px 0 0">✓ Penilaian diri tersimpan'+(noans?". Bawa jawaban ini ke diskusi kelas.":". Arah jawaban di bawah sudah terbuka.")+'</p>':'<button class="btn sm" data-selfdone="'+id+'" style="margin-top:6px">'+(noans?"Selesai menilai diri":"Selesai, buka arah jawaban")+'</button>';
+  h+='</div></div>';
+  box.innerHTML=h;
+  $$('[data-self]',box).forEach(function(c){c.addEventListener("change",function(){st.self=st.self||[];st.self[+c.dataset.k]=c.checked;save()})});
+  var sd=$('[data-selfdone]',box);if(sd)sd.addEventListener("click",function(){st.selfDone=true;save();renderGrade(id);refreshAnsLocks();updateCaseSums();var d=$('details.ans[data-for="'+id+'"]');if(d){d.open=true}});
+  var gb=$('[data-grade="'+id+'"]');if(gb)gb.textContent="↻ Nilai ulang";
+}
+function updateCaseSums(){
+  CASES.forEach(function(c){var el=$('[data-csum="'+c.id+'"]');if(!el)return;var n=0,tot=0;c.qs.forEach(function(q,i){var id=c.id+"_"+i;if(S.cs[id]){n++;tot+=grade(id).lv}});
+    el.textContent=n?("umpan balik rata-rata "+(tot/n).toFixed(1).replace(".",",")+"/4 · "+n+"/"+c.qs.length+" dinilai"):"belum dinilai"});
+}
+function renderCases(){
+  S.cs=S.cs||{};
+  var h="";
+  CASES.forEach(function(c){
+    h+='<div class="card"><h3>📂 '+c.t+' <span class="csum" data-csum="'+c.id+'"></span></h3><p class="hint" style="margin-top:-6px">Sumber: '+c.src+'</p>'+c.body;
+    h+='<h4 style="margin-top:18px">'+(c.noans?"Tugas persiapan diskusi kelas":"Pertanyaan diskusi")+'</h4>';
+    c.qs.forEach(function(q,i){
+      var id=c.id+"_"+i;
+      h+='<div class="cq"><b>'+(i+1)+'. '+esc(q[0])+'</b><textarea data-note="'+id+'" placeholder="Tulis jawaban Anda dalam kalimat utuh…"></textarea>';
+      h+='<div class="fbk"><button class="btn sm ghost" data-grade="'+id+'">🔍 Minta umpan balik</button><div class="fbres" data-for="'+id+'"></div></div>';
+      if(!c.noans) h+='<details class="ans" data-for="'+id+'"><summary>🔑 Arah jawaban</summary><div>'+esc(q[1])+'</div></details>';
+      h+='</div>';
+    });
+    if(c.noans) h+='<div class="co book"><b class="t">📝 Catatan.</b> Arah jawaban untuk kasus ini sengaja tidak diberikan dan akan dibahas di kelas. Umpan balik otomatis di sini hanya memeriksa kelengkapan struktur jawaban Anda.</div>';
+    h+='</div>';
+  });
+  $("#caseList").innerHTML=h;
+  $$("[data-grade]").forEach(function(b){b.addEventListener("click",function(){
+    var id=b.dataset.grade,len=(S.notes[id]||"").trim().length;
+    if(len<40){toast("Tulis jawaban Anda dulu (min. 40 karakter)");return}
+    var prev=S.cs[id]||{};S.cs[id]={len:(S.notes[id]||"").length,self:prev.self||[],selfDone:prev.selfDone||false};save();renderGrade(id);updateCaseSums();
+  })});
+  $$("details.ans").forEach(function(d){
+    d.addEventListener("click",function(e){if(d.classList.contains("lock")&&!d.open){e.preventDefault();toast("Minta umpan balik dan selesaikan penilaian diri dulu")}});
+  });
+  Object.keys(S.cs).forEach(renderGrade);
+  refreshAnsLocks();updateCaseSums();
+}
+function refreshAnsLocks(){$$("details.ans").forEach(function(d){var st=S.cs&&S.cs[d.dataset.for];d.classList.toggle("lock",!(st&&st.selfDone))})}
+
+/* ================= notes binding ================= */
+function bindNotes(){
+  $$("textarea[data-note],input[data-note]").forEach(function(t){
+    t.value=S.notes[t.dataset.note]||"";
+    t.addEventListener("input",function(){S.notes[t.dataset.note]=t.value;clearTimeout(t._h);t._h=setTimeout(function(){save();refreshAnsLocks();renderSide();notesPreview();if(S.cs&&S.cs[t.dataset.note])renderGrade(t.dataset.note)},350)});
+  });
+}
+function notesText(){
+  var L=["PENGANTAR BISNIS DIGITAL (DG234101) — TOPIK 04","Manajemen Infrastruktur Bisnis Digital","",(S.notes.identity||"Nama — NRP"),"","== PEMANASAN ==","Pengalaman layanan bermasalah:",S.notes.warm_know||"-","","Tebakan sumber masalah:",S.notes.warm_want||"-",""];
+  var sc;try{sc=JSON.parse(S.notes.ev_sc||"[]")}catch(e){sc=[]}
+  L.push("== EVALUASI PORTAL: "+(S.notes.ev_name||"-")+" ==",EVS.map(function(n,k){return n+": "+(sc[k]||"-")}).join("; "),"Usulan perbaikan: "+(S.notes.ev_fix||"-"),"");
+  L.push("== TCO KOSKITA (hasil kalkulator terakhir) ==",S.notes.tco_sum||"-","");
+  CASES.forEach(function(c){L.push("== "+c.t.toUpperCase()+" ==");c.qs.forEach(function(q,i){L.push((i+1)+". "+q[0]);L.push(S.notes[c.id+"_"+i]||"-");if(S.cs&&S.cs[c.id+"_"+i])L.push("[Umpan balik aplikasi: "+grade(c.id+"_"+i).lv+"/4]");L.push("")})});
+  var d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  L.push("== KEMAJUAN ==","Unit selesai: "+d+"/"+UNITS.length,"Kuis akhir (skor terbaik): "+(S.final?S.final.best+"%":"belum"));
+  return L.join("\n");
+}
+function notesPreview(){var p=$("#notesPrev");if(p)p.textContent=notesText()}
+
+/* ================= self-test (pola serviceman ch05) ================= */
+var quizEl=null, run=null;
+function setupQuiz(){
+  quizEl=$("#finalBox");
+  var best=S.final?S.final.best:null;
+  quizEl.innerHTML='<div class="qz-setup"><p>Soal diambil dari ketujuh unit (Chaffey Bab 3 dan Arora dkk., 2020). Anda mendapat umpan balik setelah setiap jawaban, dan rincian per unit di akhir. Topik dianggap tuntas bila skor ≥ 80%.</p>'+
+   '<div><p class="qz-lbl">Panjang</p><div class="seg" id="qzLen"><button data-n="10" aria-pressed="true">Cepat · 10 soal</button><button data-n="20" aria-pressed="false">Standar · 20</button><button data-n="'+FINAL.length+'" aria-pressed="false">Lengkap · semua '+FINAL.length+'</button></div></div>'+
+   '<div><p class="qz-lbl">Fokus</p><div class="seg" id="qzLo"><button data-lo="0" aria-pressed="true">Semua unit</button>'+Object.keys(LO_NAMES).map(function(k){return '<button data-lo="'+k+'" aria-pressed="false" title="'+LO_NAMES[k]+'">Unit '+k+'</button>'}).join("")+'</div></div>'+
+   '<div class="row"><button class="btn" id="qzStart">Mulai self-test</button>'+(best!=null?'<span class="muted" style="font-family:var(--mono);font-size:.8rem">Skor terbaik di perangkat ini: '+best+'%</span>':'')+'</div></div>';
+  var n=10, lo=0;
+  $$("#qzLen button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLen button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});n=+b.dataset.n})});
+  $$("#qzLo button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLo button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});lo=+b.dataset.lo})});
+  $("#qzStart").addEventListener("click",function(){
+    var pool=FINAL.map(function(q,i){return i}).filter(function(i){return !lo||FINAL[i][0]===lo});
+    pool=shuffle(pool).slice(0,Math.min(n,pool.length));
+    run={qs:pool.map(function(i){var q=FINAL[i],order=shuffle(q[2].map(function(_,j){return j}));return {lo:q[0],text:q[1],opts:order.map(function(j){return q[2][j]}),ans:order.indexOf(q[3]),exp:q[4]}}),i:0,picks:[]};
+    showQ();
+  });
+}
+function showQ(){
+  var r=run,q=r.qs[r.i],picked=r.picks[r.i],sofar=r.picks.filter(function(p,k){return p===r.qs[k].ans}).length;
+  quizEl.innerHTML='<div class="qz-top"><span class="qz-lbl">Soal '+(r.i+1)+' dari '+r.qs.length+' · Unit '+q.lo+' '+LO_NAMES[q.lo]+'</span><span class="muted" style="font-family:var(--mono);font-size:.8rem">'+sofar+' benar sejauh ini</span></div>'+
+   '<div class="qz-prog"><i style="width:'+(r.i/r.qs.length*100)+'%"></i></div>'+
+   '<p class="qz-q">'+esc(q.text)+'</p>'+
+   '<div class="qz-opts">'+q.opts.map(function(o,j){return '<button data-j="'+j+'"><span class="k">'+"ABCD"[j]+'</span><span>'+esc(o)+'</span></button>'}).join("")+'</div>'+
+   '<div id="qzExp"></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzQuit">Keluar</button><button class="btn" id="qzNext" '+(picked==null?"disabled":"")+'>'+(r.i===r.qs.length-1?"Lihat hasil":"Soal berikutnya")+'</button></div>';
+  function lock(j){
+    $$(".qz-opts button",quizEl).forEach(function(b){b.disabled=true;var k=+b.dataset.j;if(k===q.ans)b.classList.add("right");else if(k===j)b.classList.add("wrong")});
+    var ok=j===q.ans;
+    $("#qzExp").innerHTML='<div class="qz-exp '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat. Jawabannya "+"ABCD"[q.ans]+".")+'</b>'+esc(q.exp)+'</div>';
+    $("#qzNext").disabled=false;
+  }
+  if(picked!=null)lock(picked);
+  $$(".qz-opts button",quizEl).forEach(function(b){b.addEventListener("click",function(){var j=+b.dataset.j;r.picks[r.i]=j;lock(j);$("#qzNext").focus()})});
+  $("#qzNext").addEventListener("click",function(){if(r.i<r.qs.length-1){r.i++;showQ()}else results()});
+  $("#qzQuit").addEventListener("click",setupQuiz);
+}
+function results(){
+  var r=run,right=r.qs.filter(function(q,k){return r.picks[k]===q.ans}).length,pct=Math.round(right/r.qs.length*100);
+  S.final={best:Math.max(pct,S.final?S.final.best:0),n:(S.final?S.final.n:0)+1,last:pct};save();renderSide();
+  var by={};r.qs.forEach(function(q,k){by[q.lo]=by[q.lo]||{r:0,t:0};by[q.lo].t++;if(r.picks[k]===q.ans)by[q.lo].r++});
+  var verdict=pct>=80?"Pemahaman kuat. Topik 04 tuntas.":pct>=65?"Fondasi sudah baik. Tinjau unit di bawah 70%.":"Pelajari ulang unit yang lemah (dan halaman bukunya), lalu coba lagi.";
+  quizEl.innerHTML='<div class="res-big"><span class="pct" style="color:'+(pct>=65?"var(--good)":"var(--bad)")+'">'+pct+'%</span><span>'+right+' dari '+r.qs.length+' benar. '+verdict+'</span></div>'+
+   (pct>=80?'<div><span class="badge">🏅 Topik 04 tuntas</span></div>':'')+
+   '<div><p class="qz-lbl">Per unit</p><div class="lo-bars">'+Object.keys(by).sort().map(function(k){var v=by[k],p=Math.round(v.r/v.t*100);return '<div class="lo-row"><span><b style="font-family:var(--mono)">U'+k+'</b> '+LO_NAMES[k]+(p<70?' · <a href="#u'+k+'">tinjau</a>':'')+'</span><span class="b"><i style="width:'+p+'%;background:'+(p>=70?"var(--good)":"var(--bad)")+'"></i></span><span class="v">'+v.r+'/'+v.t+'</span></div>'}).join("")+'</div></div>'+
+   '<div><p class="qz-lbl">Tinjau jawaban Anda</p><div class="review">'+r.qs.map(function(q,k){var ok=r.picks[k]===q.ans;return '<details '+(ok?"":"open")+'><summary><span class="mk '+(ok?"ok":"no")+'">'+(ok?"✓":"✗")+'</span>'+esc(q.text)+'</summary><p><b>Jawaban Anda:</b> '+esc(q.opts[r.picks[k]])+(ok?'':'<br><b>Jawaban benar:</b> '+esc(q.opts[q.ans]))+'</p><p class="muted">'+esc(q.exp)+'</p></details>'}).join("")+'</div></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzNew">Ubah pengaturan</button><button class="btn" id="qzAgain">Ulangi dengan soal baru</button></div>';
+  $("#qzNew").addEventListener("click",setupQuiz);
+  $("#qzAgain").addEventListener("click",function(){setupQuiz();$("#qzStart").click()});
+  quizEl.scrollIntoView({block:"start"});
+}
+
+/* ================= flashcards ================= */
+var deck=[],di=0;
+function buildDeck(){deck=GLOSS.map(function(g,i){return i}).filter(function(i){return !S.known[i]});if(!deck.length){deck=GLOSS.map(function(g,i){return i})}di=0;showCard()}
+function showCard(){var fc=$("#fc");fc.classList.remove("flip");var g=GLOSS[deck[di]];$("#fcF").textContent=g[0];$("#fcB").textContent=g[1];
+  var k=Object.keys(S.known).length;$("#fcCount").textContent="Kartu "+(di+1)+" / "+deck.length+" · dikuasai "+k+" / "+GLOSS.length}
+function cards(){
+  var fc=$("#fc");function flip(){fc.classList.toggle("flip")}
+  fc.addEventListener("click",flip);fc.addEventListener("keydown",function(e){if(e.key===" "||e.key==="Enter"){e.preventDefault();flip()}});
+  $("#fcNext").addEventListener("click",function(){di=(di+1)%deck.length;showCard()});
+  $("#fcPrev").addEventListener("click",function(){di=(di-1+deck.length)%deck.length;showCard()});
+  $("#fcShuffle").addEventListener("click",function(){deck=shuffle(deck);di=0;showCard()});
+  $("#fcKnow").addEventListener("click",function(){S.known[deck[di]]=1;save();deck.splice(di,1);if(!deck.length){toast("Semua kartu dikuasai! 🎉");buildDeck();return}if(di>=deck.length)di=0;showCard()});
+  $("#fcReset").addEventListener("click",function(){S.known={};save();buildDeck()});
+  buildDeck();
+}
+
+/* ================= routing ================= */
+function markNav(){var v=current();$$(".side a").forEach(function(a){a.classList.toggle("on",a.dataset.nav===v)})}
+function current(){var h=(location.hash||"#home").slice(1);return $('[data-view="'+h+'"]')?h:"home"}
+function route(){
+  var v=current();$$(".view").forEach(function(s){s.hidden=s.dataset.view!==v});
+  markNav();$("#side").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");
+  window.scrollTo(0,0);
+  
+  if(v==="notes")notesPreview();
+  
+  document.title=(v==="home"?"Topik 04":($('[data-view="'+v+'"] h2')||{}).textContent)+" · Infrastruktur Bisnis Digital";
+}
+
+/* ================= init ================= */
+$$("[data-quiz]").forEach(function(b){renderQuiz(b,b.dataset.quiz)});
+$$("[data-widget]").forEach(renderClassify);
+$$("[data-readchk]").forEach(function(c){
+  var n=+c.dataset.readchk;c.checked=!!S.read[n];
+  c.addEventListener("change",function(){S.read[n]=c.checked;save();var b=$('[data-quiz="u'+n+'"]');lockState(b,"u"+n);renderSide();if(c.checked)toast("Soal cek pemahaman terbuka ↓")});
+});
+setupQuiz();renderCases();bindNotes();layerTool();availTool();bwTool();evalTool();tcoTool();cards();renderSide();updateProgress();
+window.addEventListener("hashchange",route);route();
+
+$("#menuBtn").addEventListener("click",function(){var o=$("#side").classList.toggle("open");this.setAttribute("aria-expanded",o)});
+$("#themeBtn").addEventListener("click",function(){
+  var r=document.documentElement,cur=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),nx=cur==="dark"?"light":"dark";
+  r.setAttribute("data-theme",nx);try{localStorage.setItem("bisdig-theme",nx)}catch(e){} 
+});
+$("#copyNotes").addEventListener("click",function(){var t=notesText();
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast("Tersalin ke clipboard")},function(){var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("Tersalin")}catch(e){toast("Gagal menyalin")}ta.remove()})});
+$("#dlNotes").addEventListener("click",function(){var b=new Blob([notesText()],{type:"text/plain;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="Topik04_Catatan_"+((S.notes.identity||"mahasiswa").replace(/[^\w]+/g,"_").slice(0,40))+".txt";document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)});
+$("#resetAll").addEventListener("click",function(){
+  if(this.dataset.confirm!=="1"){this.dataset.confirm="1";this.textContent="Klik lagi untuk konfirmasi";var me=this;setTimeout(function(){me.dataset.confirm="";me.textContent="Hapus semua kemajuan"},3000);return}
+  try{localStorage.removeItem(KEY)}catch(e){} location.hash="#home";location.reload();
+});
+})();
+</script>
+</body>
+</html>
