@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pengantar Bisnis Digital · ITS</title>
+<meta name="description" content="Pengantar Bisnis Digital (DG234101), S1 Bisnis Digital ITS: deskripsi mata kuliah, capaian pembelajaran, rencana 16 minggu, penilaian, dan materi belajar mandiri interaktif.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#F3F5FA; --surface:#FFFFFF; --sunk:#E8ECF5; --ink:#0F1B33; --muted:#56627A; --line:#D5DCEA;
+  --navy:#013880; --navy-ink:#FFFFFF; --navy-soft:#E1E9F7;
+  --gold:#B07A00; --gold-bg:#FFC72C; --gold-soft:#FFF4D4;
+  --good:#17784E; --good-soft:#DCF2E6; --bad:#B4372F; --bad-soft:#F9E2DF;
+  --c1:#013880; --c2:#2F6FD0; --c3:#B07A00; --c4:#17784E;
+  --f:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --shadow:0 1px 2px rgba(15,27,51,.06),0 4px 16px rgba(15,27,51,.05);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --c1:#7FA6F0; --c2:#4C8BEA; --c3:#F2C14E; --c4:#52C48F; --shadow:none; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --c1:#7FA6F0; --c2:#4C8BEA; --c3:#F2C14E; --c4:#52C48F; --shadow:none; color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.65}
+a{color:var(--navy)}
+h1,h2,h3{line-height:1.2;margin:0 0 .5em;letter-spacing:-.01em}
+h2{font-size:clamp(1.4rem,1.1rem + 1.2vw,1.9rem);font-weight:800}
+h3{font-size:1.05rem;font-weight:700}
+p{margin:0 0 1em}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold-bg);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+
+/* nav */
+.top{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff}
+:root[data-theme="dark"] .top{background:#0E1A36}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .top{background:#0E1A36}}
+.top .wrap{display:flex;align-items:center;gap:14px;height:56px}
+.top b{font-weight:800;font-size:.95rem;white-space:nowrap}
+.top nav{display:flex;gap:4px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.top nav::-webkit-scrollbar{display:none}
+.top nav a{color:#fff;opacity:.85;text-decoration:none;font-size:.85rem;font-weight:600;padding:6px 10px;border-radius:8px;white-space:nowrap}
+.top nav a:hover{opacity:1;background:rgba(255,255,255,.12)}
+.iconbtn{background:rgba(255,255,255,.12);border:0;border-radius:8px;width:34px;height:34px;color:#fff;flex:none;margin-left:auto}
+.top nav+.iconbtn{margin-left:0}
+@media (max-width:760px){.top nav{display:none}}
+
+/* hero */
+.hero{background:linear-gradient(140deg,#013880 0%,#0a4fa8 60%,#0d5cc2 100%);color:#fff;position:relative;overflow:hidden}
+.hero .wrap{padding-top:56px;padding-bottom:60px;position:relative;z-index:1}
+.hero::before{content:"";position:absolute;right:-90px;top:-80px;width:360px;height:360px;border-radius:50%;border:44px solid rgba(255,199,44,.16)}
+.hero::after{content:"";position:absolute;right:120px;bottom:-110px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.05)}
+.kick{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#FFC72C;margin-bottom:10px}
+.hero h1{font-size:clamp(2rem,1.4rem + 3vw,3.3rem);font-weight:800;margin:0 0 6px}
+.hero .en{font-size:1.05rem;opacity:.8;font-style:italic;margin-bottom:18px}
+.hero .lead{font-size:1.08rem;max-width:62ch;opacity:.95}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 26px}
+.meta span{font-family:var(--mono);font-size:.78rem;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:4px 10px;border-radius:99px}
+.cta{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:11px 18px;font-weight:700;font-size:.93rem;text-decoration:none;background:var(--navy);color:var(--navy-ink)}
+.btn.gold{background:#FFC72C;color:#1b1400}
+.btn.ghostw{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.55)}
+.btn:hover{filter:brightness(1.07)}
+
+section.blk{padding:56px 0;border-bottom:1px solid var(--line)}
+section.blk:last-of-type{border-bottom:0}
+.eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.sub{color:var(--muted);max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:820px){.grid2,.grid3{grid-template-columns:minmax(0,1fr)}}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:-34px;position:relative;z-index:2}
+@media (max-width:700px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+.stat b{display:block;font-size:1.7rem;font-weight:800;line-height:1.1;color:var(--navy)}
+.stat span{font-size:.82rem;color:var(--muted)}
+
+/* about */
+.pillars{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:20px}
+@media (max-width:820px){.pillars{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pill{border-radius:12px;padding:14px;background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--c)}
+.pill small{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.pill b{display:block;margin:2px 0 4px;font-size:.95rem}
+.pill p{font-size:.84rem;color:var(--muted);margin:0}
+
+/* outcomes */
+.cpl{display:grid;gap:8px}
+.cpl div{display:flex;gap:10px;align-items:flex-start;font-size:.92rem}
+.cpl .k{flex:none;font-family:var(--mono);font-size:.75rem;font-weight:500;padding:2px 8px;border-radius:6px;background:var(--navy-soft);color:var(--navy);margin-top:2px}
+.cpmk{display:grid;gap:8px}
+.cpmk button{all:unset;cursor:pointer;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);font-size:.9rem;line-height:1.5}
+.cpmk button:hover{border-color:var(--navy)}
+.cpmk button[aria-pressed="true"]{border-color:var(--navy);background:var(--navy-soft)}
+.cpmk .k{flex:none;font-family:var(--mono);font-size:.75rem;font-weight:500;padding:2px 8px;border-radius:6px;background:var(--gold-soft);color:var(--gold);margin-top:2px}
+.hint{font-size:.82rem;color:var(--muted)}
+
+/* weeks */
+.filter{display:flex;gap:6px;flex-wrap:wrap;margin:18px 0}
+.filter button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 12px;font-size:.82rem;font-weight:600}
+.filter button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.wk{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px;transition:opacity .2s, transform .2s;position:relative;text-decoration:none;color:inherit}
+.wk.dim{opacity:.28}
+a.wk:hover{border-color:var(--navy);transform:translateY(-2px);box-shadow:var(--shadow)}
+.wk .no{display:flex;justify-content:space-between;align-items:center}
+.wk .no b{font-family:var(--mono);font-size:.78rem;color:var(--muted);font-weight:500}
+.wk h3{font-size:1rem;margin:2px 0 0}
+.wk .rd{font-size:.8rem;color:var(--muted)}
+.wk .note{align-self:flex-start;margin-top:2px}
+.badge{font-size:.68rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:6px}
+.badge.ok{background:var(--good-soft);color:var(--good)}
+.badge.soon{background:var(--sunk);color:var(--muted)}
+.badge.ex{background:var(--bad-soft);color:var(--bad)}
+.badge.ms{background:var(--gold-soft);color:var(--gold)}
+.wk .tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+.wk .tags span{font-family:var(--mono);font-size:.68rem;padding:1px 6px;border-radius:5px;background:var(--sunk);color:var(--muted)}
+.wk .pr{height:6px;border-radius:99px;background:var(--sunk);overflow:hidden;margin-top:4px}
+.wk .pr i{display:block;height:100%;background:var(--good);border-radius:99px}
+.wk .prl{font-size:.75rem;color:var(--good);font-weight:700}
+.wk.exam{background:var(--bad-soft);border-color:transparent}
+.wk.avail{border-color:var(--navy)}
+.wk .go{font-size:.82rem;font-weight:700;color:var(--navy)}
+
+/* how */
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:820px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:460px){.steps{grid-template-columns:minmax(0,1fr)}}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.step i{font-style:normal;font-size:1.5rem}
+.step b{display:block;margin:6px 0 2px}
+.step span{font-size:.86rem;color:var(--muted)}
+
+/* assessment */
+.stack{display:flex;height:44px;border-radius:12px;overflow:hidden;margin:18px 0 12px}
+.stack div{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.9rem;min-width:0}
+:root[data-theme="dark"] .stack div{color:#0B1222}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .stack div{color:#0B1222}}
+.legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:620px){.legend{grid-template-columns:minmax(0,1fr)}}
+.legend div{display:flex;gap:10px;align-items:flex-start;font-size:.88rem}
+.legend i{flex:none;width:14px;height:14px;border-radius:4px;margin-top:4px}
+.legend b{display:block}
+.legend span{color:var(--muted)}
+.tl{list-style:none;padding:0;margin:0;position:relative}
+.tl::before{content:"";position:absolute;left:15px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl li{position:relative;padding:0 0 18px 44px}
+.tl li:last-child{padding-bottom:0}
+.tl li::before{content:attr(data-w);position:absolute;left:0;top:0;width:32px;height:32px;border-radius:50%;background:var(--surface);border:2px solid var(--navy);display:grid;place-items:center;font-family:var(--mono);font-size:.72rem;font-weight:500;color:var(--navy)}
+.tl li.ex::before{border-color:var(--bad);color:var(--bad)}
+.tl b{display:block;font-size:.95rem}
+.tl span{font-size:.86rem;color:var(--muted)}
+
+ol.ref{padding-left:1.3em;margin:0}
+ol.ref li{font-size:.88rem;margin:.45em 0}
+.team{display:flex;gap:12px;flex-wrap:wrap}
+.person{display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;flex:1 1 260px}
+.av{width:46px;height:46px;border-radius:50%;background:var(--navy);color:var(--navy-ink);display:grid;place-items:center;font-weight:800}
+.person b{display:block;font-size:.95rem}
+.person span{font-size:.82rem;color:var(--muted)}
+footer{background:var(--navy);color:#fff;padding:28px 0;font-size:.84rem}
+:root[data-theme="dark"] footer{background:#0E1A36}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) footer{background:#0E1A36}}
+footer a{color:#fff}
+footer p{margin:.3em 0;opacity:.88}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <b>Pengantar Bisnis Digital</b>
+  <nav aria-label="Navigasi halaman"><a href="#tentang">Tentang</a><a href="#capaian">Capaian</a><a href="#materi">Materi</a><a href="#cara">Cara belajar</a><a href="#penilaian">Penilaian</a><a href="#referensi">Referensi</a></nav>
+  <button class="iconbtn" id="themeBtn" aria-label="Ganti tema terang/gelap">◐</button>
+</div></header>
+
+<div class="hero"><div class="wrap">
+  <div class="kick">S1 Bisnis Digital · Departemen Manajemen Bisnis · ITS</div>
+  <h1>Pengantar Bisnis Digital</h1>
+  <div class="en">Introduction to Digital Business</div>
+  <p class="lead">Bagaimana teknologi dan media digital mengubah model bisnis, proses operasional, dan cara organisasi bersaing? Mata kuliah ini membangun fondasinya, dari konsep dasar bisnis dan kewirausahaan sampai strategi, pemasaran, rantai pasok, dan pengukuran kinerja digital.</p>
+  <div class="meta"><span>DG234101</span><span>3 SKS</span><span>Semester 1 (Ganjil)</span><span>Rumpun Bisnis Digital</span></div>
+  <div class="cta"><a class="btn gold" href="#materi">Mulai belajar →</a><a class="btn ghostw" href="#tentang">Tentang mata kuliah</a></div>
+</div></div>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat"><b>16</b><span>pertemuan, termasuk UTS dan UAS</span></div>
+    <div class="stat"><b>6</b><span>capaian pembelajaran mata kuliah (CPMK)</span></div>
+    <div class="stat"><b>3</b><span>milestone proyek kelompok dengan perusahaan riil</span></div>
+    <div class="stat"><b id="statAvail">2</b><span>topik belajar mandiri interaktif sudah tersedia</span></div>
+  </div>
+</div>
+
+<!-- TENTANG -->
+<section class="blk" id="tentang"><div class="wrap">
+  <div class="eyebrow">Tentang mata kuliah</div>
+  <h2>Dari fondasi bisnis ke transformasi digital</h2>
+  <div class="grid2" style="margin-top:14px">
+    <div>
+      <p>Pengantar Bisnis Digital adalah mata kuliah dasar yang memberikan pemahaman komprehensif tentang bagaimana teknologi dan media digital secara fundamental mentransformasi model bisnis, proses operasional, dan strategi kompetitif organisasi.</p>
+      <p>Pembelajaran diawali dengan konsep fundamental bisnis dan kewirausahaan, lalu konsep bisnis digital secara holistik: penerapan inovasi digital di seluruh rantai nilai, dari proses internal dan rantai pasok hingga interaksi dengan mitra dan pelanggan.</p>
+    </div>
+    <div>
+      <p>Mahasiswa kemudian menganalisis ekosistem pasar digital dan model bisnis inovatif, mendalami strategi bisnis digital, rantai pasok, pemasaran digital, dan e-CRM, serta tantangan implementasi: manajemen perubahan, pengalaman pelanggan, dan pengukuran kinerja.</p>
+      <p>Mata kuliah dirancang dengan pendekatan <b>problem-based</b> dan <b>project-based learning</b>. Setiap sesi diperkaya studi kasus perusahaan terkemuka, dan proyek semester mengajak mahasiswa merumuskan rekomendasi strategi bagi perusahaan riil.</p>
+    </div>
+  </div>
+  <div class="pillars">
+    <div class="pill" style="--c:var(--c1)"><small>Minggu 1–2</small><b>Fondasi</b><p>Bisnis, kewirausahaan, ruang lingkup bisnis digital dan e-commerce.</p></div>
+    <div class="pill" style="--c:var(--c2)"><small>Minggu 3–7</small><b>Analisis &amp; strategi</b><p>Model bisnis, infrastruktur, analisis makro, strategi, rantai pasok.</p></div>
+    <div class="pill" style="--c:var(--c3)"><small>Minggu 9–10</small><b>Pelanggan</b><p>Pemasaran digital dan manajemen hubungan pelanggan (e-CRM).</p></div>
+    <div class="pill" style="--c:var(--c4)"><small>Minggu 11–15</small><b>Implementasi</b><p>Transformasi, growth hacking, CX, layanan digital, KPI.</p></div>
+  </div>
+</div></section>
+
+<!-- CAPAIAN -->
+<section class="blk" id="capaian"><div class="wrap">
+  <div class="eyebrow">Capaian pembelajaran</div>
+  <h2>Apa yang akan Anda kuasai</h2>
+  <div class="grid2" style="margin-top:14px;align-items:start">
+    <div class="card">
+      <h3>CPL (capaian lulusan yang didukung)</h3>
+      <div class="cpl">
+        <div><span class="k">CPL-a</span><span>Menjelaskan konsep, prinsip, dan lingkup bisnis digital serta kewirausahaan dalam konteks organisasi modern.</span></div>
+        <div><span class="k">CPL-b</span><span>Menganalisis lingkungan bisnis dan pasar digital untuk merumuskan model dan strategi bisnis yang inovatif dan kompetitif.</span></div>
+        <div><span class="k">CPL-c</span><span>Menerapkan teknologi digital pada fungsi manajerial (rantai pasok, pemasaran, hubungan pelanggan) untuk menciptakan nilai.</span></div>
+        <div><span class="k">CPL-d</span><span>Mengelola implementasi inisiatif bisnis digital, termasuk manajemen perubahan dan pengukuran kinerja, secara bertanggung jawab.</span></div>
+      </div>
+    </div>
+    <div>
+      <h3>CPMK (capaian mata kuliah)</h3>
+      <p class="hint" style="margin-top:-4px">Klik satu CPMK untuk menyorot minggu yang membahasnya di bagian Materi.</p>
+      <div class="cpmk" id="cpmkList"></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- MATERI -->
+<section class="blk" id="materi"><div class="wrap">
+  <div class="eyebrow">Materi &amp; rencana mingguan</div>
+  <h2>Rencana 16 minggu</h2>
+  <p class="sub">Topik bertanda <b>Tersedia</b> sudah memiliki web-app belajar mandiri: ringkasan bacaan, soal cek pemahaman, latihan interaktif, studi kasus dengan umpan balik, dan kuis akhir. Topik lain akan dirilis bertahap. Kemajuan Anda di setiap topik tampil di kartu (tersimpan di perangkat ini).</p>
+  <div class="filter" id="filter"></div>
+  <div class="weeks" id="weeks"></div>
+</div></section>
+
+<!-- CARA -->
+<section class="blk" id="cara"><div class="wrap">
+  <div class="eyebrow">Cara belajar</div>
+  <h2>Satu minggu, empat langkah</h2>
+  <p class="sub">Web-app topik mingguan dirancang untuk mendampingi, <b>bukan menggantikan</b>, bacaan wajib. Soal-soalnya sengaja dibuat agar hanya bisa dijawab setelah membaca buku.</p>
+  <div class="steps" style="margin-top:16px">
+    <div class="step"><i>📖</i><b>1. Baca</b><span>Buka bab atau subbab buku yang ditunjuk di setiap unit, dengan pertanyaan pemandu sebagai fokus.</span></div>
+    <div class="step"><i>✅</i><b>2. Cek</b><span>Centang "sudah membaca" untuk membuka soal. Soal berlabel <em>Cek Bacaan</em> menguji detail dari buku.</span></div>
+    <div class="step"><i>🧩</i><b>3. Terapkan</b><span>Kerjakan latihan interaktif dan studi kasus bisnis Indonesia; dapatkan umpan balik otomatis dan nilai diri sendiri.</span></div>
+    <div class="step"><i>💬</i><b>4. Diskusikan</b><span>Bawa jawaban studi kasus ke kelas. Kuis akhir membantu Anda tahu bagian mana yang perlu ditinjau.</span></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <p style="margin:0;font-size:.9rem"><b>Catatan privasi dan perangkat.</b> Semua jawaban dan kemajuan tersimpan hanya di peramban perangkat Anda, tidak dikirim ke server. Jika berganti perangkat atau menghapus data peramban, kemajuan tidak ikut pindah. Gunakan menu <em>Catatan &amp; Referensi</em> di setiap topik untuk mengunduh jawaban Anda. Skor umpan balik di web-app bukan nilai resmi.</p>
+  </div>
+</div></section>
+
+<!-- PENILAIAN -->
+<section class="blk" id="penilaian"><div class="wrap">
+  <div class="eyebrow">Penilaian</div>
+  <h2>Komponen nilai</h2>
+  <div class="stack" role="img" aria-label="Partisipasi dan kuis 15%, proyek kelompok 30%, UTS 25%, UAS 30%">
+    <div style="flex:15;background:var(--c3)">15%</div><div style="flex:30;background:var(--c1)">30%</div><div style="flex:25;background:var(--c2)">25%</div><div style="flex:30;background:var(--c4)">30%</div>
+  </div>
+  <div class="grid2" style="align-items:start">
+    <div class="legend">
+      <div><i style="background:var(--c3)"></i><p style="margin:0"><b>Partisipasi kelas &amp; kuis · 15%</b><span>Kontribusi dalam diskusi kasus, pertanyaan kritis, dan kuis singkat tanpa pemberitahuan tentang bacaan mingguan. CPMK 1–6.</span></p></div>
+      <div><i style="background:var(--c1)"></i><p style="margin:0"><b>Proyek kelompok · 30%</b><span>Analisis strategi bisnis digital perusahaan atau UMKM Indonesia; kelompok 3–4 orang. CPMK 2–6.</span></p></div>
+      <div><i style="background:var(--c2)"></i><p style="margin:0"><b>UTS · 25%</b><span>Ujian tulis 90 menit, materi Minggu 1–7: esai singkat dan analisis kasus mini. CPMK 1–4.</span></p></div>
+      <div><i style="background:var(--c4)"></i><p style="margin:0"><b>UAS · 30%</b><span>Ujian tulis komprehensif 120 menit berbasis studi kasus dan rencana aksi strategis. CPMK 1–6.</span></p></div>
+    </div>
+    <div class="card">
+      <h3>Linimasa proyek &amp; ujian</h3>
+      <ul class="tl">
+        <li data-w="5"><b>Milestone 1: Laporan Analisis Pasar</b><span>Analisis SLEPT, lanskap pasar (marketplace, pesaing, perantara), dan Business Model Canvas.</span></li>
+        <li data-w="8" class="ex"><b>UTS</b><span>Materi Minggu 1–7.</span></li>
+        <li data-w="11"><b>Milestone 2: Laporan Formulasi Strategi</b><span>SWOT, masalah atau peluang digitalisasi, usulan solusi beserta implikasinya pada bauran pemasaran dan rantai pasok.</span></li>
+        <li data-w="15"><b>Laporan Akhir &amp; Presentasi</b><span>Rencana implementasi, tantangan manajemen perubahan, dan kerangka KPI.</span></li>
+        <li data-w="16" class="ex"><b>UAS</b><span>Komprehensif, berbasis studi kasus.</span></li>
+      </ul>
+      <p class="hint" style="margin:14px 0 0">Nilai individu proyek = nilai kelompok × (skor individu ÷ rata-rata skor kelompok), berdasarkan <em>peer assessment</em>: partisipasi, tanggung jawab, kolaborasi, inisiatif dan kreativitas.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- REFERENSI -->
+<section class="blk" id="referensi"><div class="wrap">
+  <div class="eyebrow">Referensi</div>
+  <h2>Bacaan</h2>
+  <div class="grid2" style="margin-top:14px;align-items:start">
+    <div class="card">
+      <h3>Utama</h3>
+      <ol class="ref">
+        <li>Chaffey, D., Hemphill, T., &amp; Edmundson-Bird, D. (2019). <em>Digital business and e-commerce management</em> (7th ed.). Pearson.</li>
+        <li>Ebert, R. J., &amp; Griffin, R. W. (2020). <em>Business essentials</em> (12th ed., Global ed.). Pearson Education Limited.</li>
+      </ol>
+      <h3 style="margin-top:18px">Media pembelajaran</h3>
+      <p style="font-size:.88rem;margin:0">MyITS Classroom, Microsoft Office / Google Workspace, alat Business Model Canvas, Miro/Mural untuk kolaborasi, dan web-app belajar mandiri di halaman ini.</p>
+    </div>
+    <div class="card">
+      <h3>Pendukung</h3>
+      <ol class="ref" start="3">
+        <li>Wade, Joshi, &amp; Teracino (2021). <em>6 Principles to Build Your Company's Strategic Agility</em>. HBR. <span class="hint">· Minggu 3</span></li>
+        <li>BDC (n.d.). <em>A short guide to using the Business Model Canvas for an e-commerce website</em>. <span class="hint">· Minggu 3</span></li>
+        <li>Gottlieb &amp; Rifkin (2023). <em>Three actions CEOs can take to get value from cloud computing</em>. McKinsey. <span class="hint">· Minggu 4</span></li>
+        <li>Liu &amp; Li (2023). Using the PESTEL analysis to determine the effectiveness of new digital media strategies. <span class="hint">· Minggu 5</span></li>
+        <li>Kane dkk. (2015). <em>Strategy, not technology, drives digital transformation</em>. MIT Sloan Management Review. <span class="hint">· Minggu 6</span></li>
+        <li>Di Maria, Bettiol, &amp; De Marchi (2022). <em>Digital supply chain and Industry 4.0 technologies</em>. Emerald. <span class="hint">· Minggu 7</span></li>
+        <li>DiDomencio (2025). <em>Top trends in digital marketing for 2025</em>. Wake Forest SPS. <span class="hint">· Minggu 9</span></li>
+        <li>Kassem, Asfoura, &amp; Al-Haj (2022). Social customer relationship management: A process model approach. <em>TEM Journal</em>. <span class="hint">· Minggu 10</span></li>
+        <li>HBS Online (2020). <em>5 critical steps in the change management process</em>. <span class="hint">· Minggu 11</span></li>
+        <li>Cpluz (2025). <em>UX design India: 3 successful case studies for e-commerce websites</em>. <span class="hint">· Minggu 12</span></li>
+        <li>Forecast.app (n.d.). <em>The difference between agile and waterfall</em>. <span class="hint">· Minggu 13</span></li>
+        <li>McKinsey (2014). <em>Big data: Getting a better read on performance</em>. <span class="hint">· Minggu 14</span></li>
+      </ol>
+    </div>
+  </div>
+
+  <h3 style="margin-top:32px">Tim pengajar</h3>
+  <div class="team">
+    <div class="person"><div class="av">IB</div><div><b>Imam Baihaqi, S.T., M.Sc., Ph.D.</b><span>Pengembang &amp; koordinator mata kuliah</span></div></div>
+    <div class="person"><div class="av">PS</div><div><b>Dr. Puti Sinansari</b><span>Tim pengajar</span></div></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <p><a href="https://www.its.ac.id/mb" target="_blank" rel="noopener">Departemen Manajemen Bisnis | INSTITUT TEKNOLOGI SEPULUH NOPEMBER</a></p>
+  <p>Developed by <a href="https://its.id/baihaqi" target="_blank" rel="noopener">Imam Baihaqi</a>, assisted by Claude.ai</p>
+  <p>Ringkasan dan materi di situs ini adalah adaptasi untuk keperluan pembelajaran. Mahasiswa tetap wajib membaca sumber aslinya.</p>
+</div></footer>
+
+<script>
+(function(){
+"use strict";
+function $(s){return document.querySelector(s)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+try{var th=localStorage.getItem("bisdig-theme");if(th)document.documentElement.setAttribute("data-theme",th)}catch(e){}
+$("#themeBtn").addEventListener("click",function(){var r=document.documentElement,cur=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),nx=cur==="dark"?"light":"dark";r.setAttribute("data-theme",nx);try{localStorage.setItem("bisdig-theme",nx)}catch(e){}});
+
+var CPMK=[
+ ["CPMK1","Menjelaskan konsep fundamental bisnis, kewirausahaan, serta lingkup bisnis digital dan e-commerce, sekaligus mengidentifikasi peluang dan tantangannya.","CPL-a"],
+ ["CPMK2","Menganalisis lingkungan bisnis digital, termasuk pasar online dan faktor makro (PESTLE), serta merumuskan model bisnis digital yang inovatif.","CPL-b"],
+ ["CPMK3","Merumuskan strategi bisnis digital yang komprehensif, dari analisis situasi hingga penetapan tujuan dan pemilihan opsi strategis.","CPL-b"],
+ ["CPMK4","Menganalisis peran teknologi digital dalam transformasi manajemen rantai pasok dan e-procurement.","CPL-c"],
+ ["CPMK5","Merancang kerangka pemasaran digital dan strategi e-CRM untuk akuisisi dan retensi pelanggan.","CPL-c"],
+ ["CPMK6","Mengidentifikasi tantangan implementasi, termasuk manajemen perubahan dan customer experience, serta menerapkan pengukuran kinerja untuk optimisasi berkelanjutan.","CPL-d"]
+];
+/* [minggu, topik, bacaan, cpmk[], url|null, storageKey|null, jumlahUnit, tipe, catatan] */
+var WEEKS=[
+ [1,"Pengantar Bisnis & Kewirausahaan","Ebert & Griffin (2020), Bab 1 & 3",[1],"topic01/","bisdig-t01-v1",8],
+ [2,"Konsep Bisnis Digital & E-commerce","Chaffey dkk. (2019), Bab 1",[1],"topic02/","bisdig-t02-v1",7],
+ [3,"Analisis Peluang Bisnis Digital & E-commerce","Chaffey Bab 2; Wade dkk. (2021); BDC",[1,2],null,null,0,"","Kasus: BMC Uber"],
+ [4,"Manajemen Infrastruktur Bisnis Digital","Chaffey Bab 3; Gottlieb & Rifkin (2023)",[2],null,null,0],
+ [5,"Isu Kunci Lingkungan Digital: Analisis Makro","Chaffey Bab 4; Liu & Li (2023)",[2],null,null,0,"ms","Milestone 1"],
+ [6,"Perumusan Strategi Bisnis Digital","Chaffey Bab 5; Kane dkk. (2015)",[3],null,null,0],
+ [7,"Manajemen Rantai Pasok & Permintaan Digital","Chaffey Bab 6; Di Maria dkk. (2022)",[4],null,null,0],
+ [8,"Ujian Tengah Semester","Materi Minggu 1–7 · 90 menit",[1,2,3,4],null,null,0,"ex"],
+ [9,"Strategi Pemasaran Digital","Chaffey Bab 7; DiDomencio (2025)",[5],null,null,0],
+ [10,"Manajemen Hubungan Pelanggan (e-CRM)","Chaffey Bab 8; Kassem dkk. (2022)",[5],null,null,0],
+ [11,"Transformasi Bisnis Digital & Growth Hacking","Chaffey Bab 10; HBS Online (2020)",[6],null,null,0,"ms","Milestone 2"],
+ [12,"Pengalaman Pelanggan & Perancangan Layanan","Chaffey Bab 9; Cpluz (2025)",[6],null,null,0],
+ [13,"Implementasi & Optimisasi Layanan Digital","Chaffey Bab 10; Forecast.app",[6],null,null,0],
+ [14,"Pengukuran Kinerja & Optimisasi","McKinsey (2014)",[6],null,null,0],
+ [15,"Presentasi Proyek Akhir & Tinjauan","Tinjauan Minggu 1–14",[1,2,3,4,5,6],null,null,0,"ms","Luaran akhir"],
+ [16,"Ujian Akhir Semester","Komprehensif · 120 menit",[1,2,3,4,5,6],null,null,0,"ex"]
+];
+function progress(key,n){
+  try{var s=JSON.parse(localStorage.getItem(key)||"null");if(!s)return null;var d=0;for(var k in (s.done||{}))if(s.done[k])d++;return {d:d,n:n,best:s.final?s.final.best:null}}catch(e){return null}
+}
+var sel=0;
+function renderWeeks(){
+  var h="";
+  WEEKS.forEach(function(w){
+    var on=!sel||w[3].indexOf(sel)>=0,avail=!!w[4],ex=w[7]==="ex",cls="wk"+(avail?" avail":"")+(ex?" exam":"")+(on?"":" dim");
+    var badge=avail?'<span class="badge ok">Tersedia</span>':ex?'<span class="badge ex">Ujian</span>':'<span class="badge soon">Segera</span>';
+    var extra=w[8]?'<span class="badge ms note">'+(w[7]==="ms"?"🎯 ":"🧩 ")+esc(w[8])+'</span>':'';
+    var pr="";
+    if(avail){var p=progress(w[5],w[6]);if(p&&(p.d||p.best!=null)){var pct=Math.round(p.d/p.n*100);pr='<div class="pr"><i style="width:'+pct+'%"></i></div><span class="prl">'+p.d+'/'+p.n+' unit selesai'+(p.best!=null?' · kuis terbaik '+p.best+'%':'')+'</span>'}else pr='<span class="go">Buka topik →</span>'}
+    var inner='<div class="no"><b>MINGGU '+String(w[0]).padStart(2,"0")+'</b>'+badge+'</div><h3>'+esc(w[1])+'</h3><span class="rd">📖 '+esc(w[2])+'</span>'+extra+pr+'<div class="tags">'+w[3].map(function(c){return '<span>CPMK'+c+'</span>'}).join("")+'</div>';
+    h+=avail?'<a class="'+cls+'" href="'+w[4]+'">'+inner+'</a>':'<div class="'+cls+'">'+inner+'</div>';
+  });
+  $("#weeks").innerHTML=h;
+  $("#statAvail").textContent=WEEKS.filter(function(w){return w[4]}).length;
+}
+function setSel(n){
+  sel=n;renderWeeks();
+  Array.prototype.forEach.call(document.querySelectorAll("[data-c]"),function(b){b.setAttribute("aria-pressed",String(+b.dataset.c===n))});
+}
+$("#cpmkList").innerHTML=CPMK.map(function(c,i){return '<button data-c="'+(i+1)+'" aria-pressed="false"><span class="k">'+c[0]+'</span><span>'+esc(c[1])+' <span class="hint">('+c[2]+')</span></span></button>'}).join("");
+$("#filter").innerHTML='<button data-c="0" aria-pressed="true">Semua</button>'+CPMK.map(function(c,i){return '<button data-c="'+(i+1)+'" aria-pressed="false">'+c[0]+'</button>'}).join("");
+Array.prototype.forEach.call(document.querySelectorAll("[data-c]"),function(b){b.addEventListener("click",function(){var n=+b.dataset.c;if(b.closest("#cpmkList")){setSel(sel===n?0:n);document.getElementById("materi").scrollIntoView()}else setSel(n)})});
+renderWeeks();
+})();
+</script>
+</body>
+</html>
