@@ -1,0 +1,1376 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Topik 10 · Manajemen Hubungan Pelanggan (e-CRM)</title>
+<meta name="description" content="Web-app belajar mandiri Pengantar Bisnis Digital (DG234101) ITS — Topik 10: Manajemen Hubungan Pelanggan (e-CRM dan Social CRM: akuisisi, retensi, ekstensi), berbasis Chaffey et al. (2019) Bab 8, dengan kasus Indonesia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#F3F5FA; --surface:#FFFFFF; --sunk:#E8ECF5; --ink:#0F1B33; --muted:#56627A; --line:#D5DCEA;
+  --navy:#013880; --navy-ink:#FFFFFF; --navy-soft:#E1E9F7;
+  --gold:#B07A00; --gold-bg:#FFC72C; --gold-soft:#FFF4D4;
+  --good:#17784E; --good-soft:#DCF2E6; --bad:#B4372F; --bad-soft:#F9E2DF;
+  --dig:#5B3FB0; --dig-soft:#ECE7FA;
+  --idn:#B4372F; --idn-soft:#FBEAE8;
+  --f:"Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  --r:12px;
+  --shadow:0 1px 2px rgba(15,27,51,.06), 0 4px 16px rgba(15,27,51,.05);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.65}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:var(--navy)}
+h1,h2,h3,h4{line-height:1.2;margin:0 0 .5em;letter-spacing:-.01em}
+h2{font-size:clamp(1.45rem,1.1rem + 1.3vw,1.95rem);font-weight:800}
+h3{font-size:1.12rem;font-weight:700;margin-top:1.6em}
+p{margin:0 0 1em}
+em{font-style:italic}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold-bg);outline-offset:2px;border-radius:6px}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;padding-top:max(10px,env(safe-area-inset-top))}
+:root[data-theme="dark"] .top{background:#0E1A36}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .top{background:#0E1A36}}
+.top .brand{display:flex;flex-direction:column;line-height:1.2;min-width:0;flex:1}
+.top .brand b{font-size:.95rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .brand small{font-size:.72rem;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog{display:flex;align-items:center;gap:8px;font-size:.78rem;white-space:nowrap}
+.prog .bar{width:110px;height:8px;border-radius:99px;background:rgba(255,255,255,.22);overflow:hidden}
+.prog .bar i{display:block;height:100%;background:#FFC72C;border-radius:99px;width:0;transition:width .4s}
+.iconbtn{background:rgba(255,255,255,.12);border:0;border-radius:8px;width:34px;height:34px;display:grid;place-items:center;color:#fff;flex:none}
+.iconbtn:hover{background:rgba(255,255,255,.22)}
+.menubtn{display:none}
+@media (max-width:899px){.menubtn{display:grid}.prog .bar{width:64px}}
+@media (max-width:420px){.prog .lbl{display:none}}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1200px;margin:0 auto}
+@media (max-width:899px){.shell{grid-template-columns:minmax(0,1fr)}}
+nav.side{position:sticky;top:54px;align-self:start;height:calc(100vh - 54px);overflow:auto;padding:20px 12px 40px 16px;border-right:1px solid var(--line)}
+@media (max-width:899px){
+  nav.side{position:fixed;inset:54px 0 0 0;height:auto;background:var(--bg);z-index:15;border:0;transform:translateX(-100%);transition:transform .25s;padding:16px}
+  nav.side.open{transform:none}
+}
+.side .grp{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 8px 6px}
+.side .grp:first-child{margin-top:0}
+.side a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;text-decoration:none;color:var(--ink);font-size:.9rem;font-weight:500;line-height:1.3}
+.side a:hover{background:var(--sunk)}
+.side a.on{background:var(--navy-soft);color:var(--navy);font-weight:700}
+.side a .n{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk);color:var(--muted);border:1.5px solid var(--line)}
+.side a.done .n{background:var(--good);border-color:var(--good);color:#fff}
+.side a.on .n{border-color:var(--navy)}
+.side a .n.ico{font-size:.8rem}
+
+main{padding:28px 16px 80px;min-width:0}
+@media (min-width:900px){main{padding:36px 40px 100px}}
+.view{max-width:760px;margin:0 auto;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tag{display:inline-block;font-family:var(--mono);font-size:.7rem;font-weight:500;letter-spacing:0;text-transform:none;padding:2px 8px;border-radius:99px;background:var(--sunk);color:var(--muted)}
+.lead{font-size:1.05rem;color:var(--muted)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:18px 0;box-shadow:var(--shadow)}
+.card h3:first-child,.card h4:first-child{margin-top:0}
+
+/* reading box */
+.read{border:2px solid var(--navy);background:var(--navy-soft);border-radius:var(--r);padding:16px 18px;margin:20px 0}
+.read .hd{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.read .pg{font-family:var(--mono);font-size:.82rem;background:var(--navy);color:var(--navy-ink);padding:2px 9px;border-radius:6px}
+.read ul{margin:.3em 0 .8em;padding-left:1.2em}
+.read li{margin:.2em 0}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--line);cursor:pointer;font-weight:600;font-size:.92rem}
+.chk input{width:20px;height:20px;accent-color:var(--good);margin:1px 0 0;flex:none}
+
+/* callouts */
+.co{border-left:4px solid var(--dig);background:var(--dig-soft);padding:12px 16px;border-radius:0 10px 10px 0;margin:16px 0;font-size:.95rem}
+.co b.t{color:var(--dig)}
+.co.idn{border-color:var(--idn);background:var(--idn-soft)}
+.co.idn b.t{color:var(--idn)}
+.co.book{border-color:var(--gold);background:var(--gold-soft)}
+.co.book b.t{color:var(--gold)}
+.co p:last-child{margin:0}
+
+/* tables */
+.tw{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--sunk);font-weight:700;font-size:.8rem;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+
+.terms{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.terms span{font-size:.78rem;padding:3px 10px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-style:italic}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:.92rem;background:var(--navy);color:var(--navy-ink);text-decoration:none}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn.gold{background:var(--gold-bg);color:#1b1400}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:36px;padding-top:20px;border-top:1px solid var(--line)}
+
+/* quiz */
+.qwrap{position:relative}
+.qwrap.locked .qbody{filter:blur(3px);pointer-events:none;user-select:none;opacity:.6}
+.lockmsg{display:none;position:absolute;inset:0;z-index:2;align-items:center;justify-content:center;text-align:center;padding:16px}
+.qwrap.locked .lockmsg{display:flex}
+.lockmsg div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px;max-width:380px;box-shadow:0 6px 30px rgba(0,0,0,.12);font-size:.92rem}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0;background:var(--surface)}
+.q .qt{font-weight:600;margin-bottom:10px}
+.q .kind{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:5px;margin-bottom:6px;background:var(--sunk);color:var(--muted)}
+.q .kind.rb{background:var(--gold-soft);color:var(--gold)}
+.opts{display:grid;gap:7px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;padding:9px 12px;border-radius:9px;border:1.5px solid var(--line);background:var(--bg);font-size:.92rem;line-height:1.45}
+.opt:hover:not([disabled]){border-color:var(--navy)}
+.opt .L{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk)}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.ok .L{background:var(--good);color:#fff}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)}
+.opt.no .L{background:var(--bad);color:#fff}
+.opt.sel{border-color:var(--navy);background:var(--navy-soft)}
+.opt[disabled]{cursor:default}
+.fb{margin-top:10px;font-size:.88rem;padding:9px 12px;border-radius:8px}
+.fb.ok{background:var(--good-soft);color:var(--ink)}
+.fb.no{background:var(--bad-soft);color:var(--ink)}
+.fb b{margin-right:4px}
+.retry{margin-top:8px;font-size:.82rem;background:none;border:0;color:var(--navy);font-weight:700;padding:0;text-decoration:underline}
+
+/* classify widget */
+.cls .it{padding:12px 0;border-bottom:1px dashed var(--line)}
+.cls .it:last-child{border-bottom:0}
+.cls .it p{margin:0 0 8px;font-size:.93rem;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--line);background:var(--bg);border-radius:99px;padding:5px 12px;font-size:.8rem;font-weight:600}
+.chip:hover:not([disabled]){border-color:var(--navy)}
+.chip.ok{background:var(--good);border-color:var(--good);color:#fff}
+.chip.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.chip[disabled]{cursor:default}
+.cls .why{font-size:.84rem;color:var(--muted);margin-top:6px}
+.score{font-size:.85rem;font-weight:700;color:var(--muted)}
+
+/* simulator */
+.sim svg{width:100%;height:auto;display:block}
+.sim .ctl{display:grid;gap:10px;margin-top:10px}
+.sim input[type=range]{width:100%;accent-color:var(--navy)}
+.sim .out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.sim .out div{background:var(--sunk);border-radius:9px;padding:8px 10px;font-size:.78rem;color:var(--muted)}
+.sim .out b{display:block;font-size:1.05rem;color:var(--ink)}
+.state{font-weight:800;padding:8px 12px;border-radius:9px;text-align:center}
+.state.sh{background:var(--bad-soft);color:var(--bad)}
+.state.su{background:var(--gold-soft);color:var(--gold)}
+.state.eq{background:var(--good-soft);color:var(--good)}
+.tog{display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600}
+.tog input{width:18px;height:18px;accent-color:var(--dig)}
+
+/* calc */
+.calc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.calc{grid-template-columns:minmax(0,1fr)}}
+.calc label{font-size:.8rem;font-weight:600;color:var(--muted);display:grid;gap:4px}
+.calc input{font:inherit;font-size:.95rem;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.res{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--sunk);font-size:.92rem}
+.res big{font-size:1.4rem;font-weight:800;display:block}
+
+/* case */
+details.ans{margin-top:10px;border-radius:10px;border:1px dashed var(--gold);background:var(--gold-soft)}
+details.ans summary{cursor:pointer;padding:10px 14px;font-weight:700;color:var(--gold);font-size:.9rem}
+details.ans>div{padding:0 14px 12px;font-size:.92rem}
+details.ans.lock summary{color:var(--muted);cursor:not-allowed}
+textarea{font:inherit;font-size:.92rem;width:100%;min-height:92px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+textarea:focus{border-color:var(--navy);outline:none}
+.cq{margin:18px 0}
+.cq>b{display:block;margin-bottom:6px;font-size:.95rem}
+.hint{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+/* flashcards */
+.fc{perspective:1200px;margin:16px 0}
+.fc .inner{position:relative;min-height:230px;transition:transform .5s;transform-style:preserve-3d;cursor:pointer}
+.fc.flip .inner{transform:rotateY(180deg)}
+.fc .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;padding:24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border:1px solid var(--line);box-shadow:var(--shadow)}
+.fc .front{background:var(--navy);color:#fff}
+:root[data-theme="dark"] .fc .front{background:#1C2B4D;color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fc .front{background:#1C2B4D;color:var(--ink)}}
+.fc .front b{font-size:1.5rem;font-style:italic}
+.fc .back{background:var(--surface);transform:rotateY(180deg);font-size:1.02rem}
+.fc small{opacity:.7;font-size:.75rem;margin-top:10px}
+
+/* final */
+.big{font-size:2.6rem;font-weight:800;line-height:1}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--gold-bg);color:#1b1400;font-weight:800;padding:6px 14px;border-radius:99px}
+
+/* home */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+@media (max-width:620px){.steps{grid-template-columns:minmax(0,1fr)}}
+.steps div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.steps>div>b{display:block;font-size:1rem;margin-bottom:2px}
+.steps span{font-size:.85rem;color:var(--muted)}
+.steps i{font-style:normal;font-size:1.4rem}
+.plan td:nth-child(3){font-family:var(--mono);font-size:.8rem;white-space:nowrap}
+.plan .st{font-size:.75rem;font-weight:700;white-space:nowrap}
+.st.y{color:var(--good)}.st.n{color:var(--muted)}
+.hero{background:linear-gradient(135deg,#013880 0%,#0a4fa8 100%);color:#fff;border-radius:16px;padding:24px 22px;margin-bottom:20px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(1.6rem,1.2rem + 1.8vw,2.3rem);font-weight:800;margin:4px 0 8px}
+.hero p{opacity:.92;margin:0;max-width:56ch}
+.hero .eyebrow{color:#FFC72C}
+.hero::after{content:"";position:absolute;right:-40px;bottom:-60px;width:220px;height:220px;border-radius:50%;border:28px solid rgba(255,199,44,.18)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:.88rem;font-weight:600;z-index:40;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.foot{font-size:.78rem;color:var(--muted);margin-top:40px}
+ol.ref li{margin:.4em 0;font-size:.9rem}
+/* self-test (pola serviceman) */
+.quiz{scroll-margin-top:70px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow)}
+.qz-setup{display:flex;flex-direction:column;gap:14px}
+.qz-setup p{margin:0}
+.qz-lbl{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;font-size:.88rem;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.qz-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.qz-top .qz-lbl{margin:0}
+.qz-prog{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.qz-prog i{display:block;height:100%;background:var(--navy);width:0;transition:width .3s}
+.qz-q{font-size:1.18rem;font-weight:700;margin:0;line-height:1.4}
+.qz-opts{display:flex;flex-direction:column;gap:8px}
+.qz-opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;font-size:.95rem;line-height:1.45}
+.qz-opts button .k{font-family:var(--mono);font-size:.8rem;color:var(--muted);flex:none;padding-top:2px}
+.qz-opts button:hover:not(:disabled){border-color:var(--navy)}
+.qz-opts button:disabled{cursor:default}
+.qz-opts button.right{border-color:var(--good);background:var(--good-soft)}
+.qz-opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.qz-exp{border-radius:10px;padding:12px 14px;font-size:.93rem}
+.qz-exp.ok{background:var(--good-soft)}.qz-exp.no{background:var(--bad-soft)}
+.qz-exp b{display:block;margin-bottom:2px}
+.qz-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.res-big{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.res-big .pct{font-weight:800;font-size:3.4rem;line-height:1}
+.lo-bars{display:flex;flex-direction:column;gap:8px}
+.lo-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 44px;gap:10px;align-items:center;font-size:.86rem}
+@media (max-width:520px){.lo-row{grid-template-columns:minmax(0,1fr) 70px 40px}}
+.lo-row .b{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.lo-row .b i{display:block;height:100%}
+.lo-row .v{font-family:var(--mono);font-size:.78rem;text-align:right}
+.review{display:flex;flex-direction:column;gap:8px}
+.review details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.review summary{cursor:pointer;font-size:.92rem}
+.review .mk{font-family:var(--mono);font-weight:700;margin-right:6px}
+.review .mk.ok{color:var(--good)}.review .mk.no{color:var(--bad)}
+.review p{font-size:.88rem;margin:6px 0 0}
+.muted{color:var(--muted)}
+/* umpan balik studi kasus */
+.btn.sm{padding:7px 12px;font-size:.84rem}
+.fbk{margin-top:8px}
+.fbres{margin-top:10px}
+.gbox{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px}
+.ghead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.meter{display:flex;gap:4px}
+.meter i{width:22px;height:10px;border-radius:3px;background:var(--sunk)}
+.meter i.on{background:var(--navy)}
+.glv{font-weight:800}
+.gnote{font-size:.72rem;color:var(--muted);margin-left:auto}
+.crit{list-style:none;padding:0;margin:6px 0;display:grid;gap:5px}
+.crit li{font-size:.86rem;display:flex;gap:8px;align-items:flex-start}
+.crit li .m{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:.7rem;font-weight:800;margin-top:2px}
+.crit li.y .m{background:var(--good);color:#fff}
+.crit li.n .m{background:var(--sunk);color:var(--muted);border:1.5px dashed var(--muted)}
+.crit li.n span.h{color:var(--muted)}
+.gwarn{font-size:.84rem;background:var(--gold-soft);border-radius:8px;padding:8px 10px;margin-top:8px}
+.selfc{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.selfc label{display:flex;gap:8px;align-items:flex-start;font-size:.88rem;margin:6px 0;cursor:pointer}
+.selfc input{width:18px;height:18px;accent-color:var(--navy);flex:none;margin-top:2px}
+.stale{font-size:.8rem;color:var(--gold);font-weight:700;margin-top:6px}
+.csum{font-family:var(--mono);font-size:.75rem;font-weight:500;background:var(--sunk);color:var(--muted);padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle}
+
+/* widget topik 10 */
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:.8rem;font-weight:600;color:var(--ink)}
+.chip:hover{border-color:var(--navy)}
+.vsbar{height:12px;border-radius:6px;background:var(--surface);overflow:hidden;margin-top:8px;border:1px solid var(--line)}
+.vsbar i{display:block;height:100%;background:var(--good)}
+.calc3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.calc3{grid-template-columns:minmax(0,1fr)}}
+.calc3 fieldset{border:1px solid var(--line);border-radius:10px;padding:8px 10px 10px;margin:0;display:grid;gap:6px;align-content:start}
+.calc3 legend{font-size:.78rem;font-weight:800;color:var(--navy);padding:0 4px}
+.calc3 label{display:grid;gap:2px;font-size:.75rem;font-weight:600;color:var(--muted)}
+.calc3 input[type=number]{font:inherit;font-size:.88rem;padding:6px 8px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.tbar{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:.86rem;margin:6px 0 0}
+.tbar i{display:block;height:14px;border-radius:7px;min-width:4px}
+.calc3 select{font:inherit;font-size:.85rem;padding:6px 8px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+
+
+/* logo ITS & tombol beranda */
+.top .logo{display:flex;align-items:center;flex:none;line-height:0}
+.top .logo img{height:44px;width:auto;display:block}
+.top .logo .mk{display:none}
+@media (max-width:640px){.top .logo .full{display:none}.top .logo .mk{display:block;height:34px}}
+.homebtn{flex:none;display:inline-flex;align-items:center;gap:6px;background:#FFC72C;color:#013880;font-weight:800;font-size:.82rem;line-height:1;text-decoration:none;padding:9px 13px;border-radius:9px;box-shadow:0 0 0 2px rgba(255,255,255,.28);white-space:nowrap}
+.homebtn:hover{background:#FFD65C}
+.homebtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+@media (max-width:560px){.homebtn .t{display:none}.homebtn{padding:9px 11px;font-size:.95rem}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <button class="iconbtn menubtn" id="menuBtn" aria-label="Buka menu" aria-expanded="false">☰</button>
+  <a class="logo" href="../" aria-label="Beranda mata kuliah Pengantar Bisnis Digital, ITS"><img class="full" src="../assets/its-logo-white.png" alt="Institut Teknologi Sepuluh Nopember" width="77" height="44"><img class="mk" src="../assets/its-mark-white.png" alt="ITS" width="23" height="34"></a>
+  <div class="brand"><b>Topik 10 · Manajemen Hubungan Pelanggan (e-CRM)</b><small>Pengantar Bisnis Digital (DG234101) · ITS</small></div>
+  <div class="prog" title="Kemajuan belajar"><span class="lbl" id="progLbl">0%</span><span class="bar"><i id="progBar"></i></span></div>
+  <a class="homebtn" href="../" title="Kembali ke beranda mata kuliah"><span aria-hidden="true">⌂</span><span class="t">Beranda</span></a>
+  <button class="iconbtn" id="themeBtn" aria-label="Ganti tema terang/gelap">◐</button>
+</header>
+
+<div class="shell">
+<nav class="side" id="side" aria-label="Navigasi materi"></nav>
+<main id="main">
+
+<!-- ================= HOME ================= -->
+<section class="view" data-view="home">
+  <div class="hero">
+    <div class="eyebrow">Minggu 10 · Belajar Mandiri</div>
+    <h1>Manajemen Hubungan Pelanggan (e-CRM)</h1>
+    <p>Mendapatkan pelanggan baru itu mahal. Menurut riset yang dikutip buku, mempertahankan 5% lebih banyak pelanggan bisa menaikkan laba 25% sampai 95%. Topik ini membahas cara teknologi digital dipakai untuk memilih, mendapatkan, mempertahankan, dan mengembangkan pelanggan, termasuk evolusinya menjadi Social CRM.</p>
+  </div>
+
+  <div class="card">
+    <h3>🎯 Sub-CPMK 9 <span class="tag">CPMK5</span></h3>
+    <p style="margin:0">Mahasiswa mampu menjelaskan konsep e-CRM dan evolusinya menjadi Social CRM, serta strategi akuisisi, retensi, dan pengembangan pelanggan.</p>
+  </div>
+
+  <h3>Cara memakai aplikasi ini</h3>
+  <p>Aplikasi ini <b>bukan pengganti buku</b>. Ringkasan di sini sengaja dibuat padat; detail, gambar, dan kasus ada di buku. Setiap unit mengikuti tiga langkah:</p>
+  <div class="steps">
+    <div><i>📖</i><b>1. Baca</b><span>Buka subbab Chaffey Bab 8 yang ditunjuk, dengan pertanyaan pemandu sebagai fokus.</span></div>
+    <div><i>✅</i><b>2. Cek</b><span>Centang "sudah membaca" untuk membuka soal. Soal berlabel <span style="font-weight:700">Cek Bacaan</span> hanya bisa dijawab dari buku.</span></div>
+    <div><i>🧩</i><b>3. Terapkan</b><span>Hitung Net Promoter Score, biaya akuisisi dan ROI kampanye, serta skor RFM pelanggan; analisis kasus Indonesia.</span></div>
+  </div>
+  <p class="hint">Kemajuan Anda tersimpan otomatis di peramban ini (bukan di server). Gunakan menu <b>Catatan &amp; Referensi</b> untuk menyalin atau mengunduh semua jawaban Anda.</p>
+
+  <h3>Rencana belajar (± 4 jam)</h3>
+  <div class="tw"><table class="plan">
+    <thead><tr><th>#</th><th>Unit</th><th>Bacaan</th><th>Status</th></tr></thead>
+    <tbody id="planBody"></tbody>
+  </table></div>
+  <p class="hint">Bacaan utama: Chaffey, D., Hemphill, T., &amp; Edmundson-Bird, D. (2019). <em>Digital Business and E-Commerce Management</em> (7th ed.). Pearson. Bab 8: <em>Customer relationship management</em>. Rujukan memakai <b>nama subbab</b> serta nomor <b>Gambar, Tabel, Box, dan Case Study</b>.</p>
+
+  <div class="co idn"><b class="t">🇮🇩 Kasus Indonesia minggu ini.</b> Selain Case Study 8.2 dari buku (Tesco.com dan komunikasi yang dipicu peristiwa), Anda akan menganalisis <b>Sociolla</b>, yang memadukan e-commerce, ulasan, dan komunitas di aplikasi SOCO, serta <b>Livin' by Mandiri</b>, tempat 91% rekening baru dibuka secara digital. Latihan kelompoknya: merancang strategi e-CRM berbasis RFM dan pemicu otomatis untuk sebuah UMKM.</div>
+
+  <h3>🔥 Pemanasan (5 menit)</h3>
+  <div class="card">
+    <p>Pikirkan satu aplikasi atau toko online yang paling sering Anda pakai ulang.</p>
+    <div class="cq"><b>Pesan apa saja yang Anda terima darinya setelah membeli (email, notifikasi, WhatsApp, voucher)? Mana yang terasa berguna, mana yang mengganggu?</b><textarea data-note="warm_know" placeholder="Aplikasi: … Pesan yang berguna: … Pesan yang mengganggu: …"></textarea></div>
+    <div class="cq"><b>Apakah Anda merasa "punya hubungan" dengan merek itu, atau sekadar bertransaksi? Simpan jawaban ini; Anda akan menimbangnya lagi di Unit 1.</b><textarea data-note="warm_want" placeholder="Menurut saya…"></textarea></div>
+  </div>
+  <div class="pager"><span></span><a class="btn" href="#u1">Mulai Unit 1 →</a></div>
+</section>
+
+<!-- ================= UNIT 1 ================= -->
+<section class="view" data-view="u1" data-unit="1">
+  <div class="eyebrow">Unit 1 <span class="tag">LO Bab 8</span><span class="tag">± 30 menit</span></div>
+  <h2>CRM, e-CRM, dan Siklus Hidup Pelanggan</h2>
+  <div class="read" data-read="1">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 8 · Introduction · Gambar 8.1 · Marketing applications of CRM · Case Study 8.1 · What is eCRM?</span></div>
+    <p style="margin:0 0 4px">Bagian pembuka Bab 8, empat aktivitas CRM (Gambar 8.1), aplikasi pemasaran CRM, Case Study 8.1 (Warby Parker), dan definisi eCRM. Cari jawaban:</p>
+    <ul>
+      <li>Menurut Reichheld dan Schefter (2000), berapa lebih mahal mengakuisisi pelanggan online di ritel, dan apa efek menaikkan retensi 5%?</li>
+      <li>Apa temuan Reinartz dan Kumar (2002) yang mempertanyakan hubungan loyalitas dan profitabilitas?</li>
+      <li>Bagaimana Warby Parker mengubah masalah saat peluncuran menjadi peluang layanan pelanggan?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="1"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b>Customer relationship management (CRM)</b> adalah pendekatan untuk membangun dan mempertahankan bisnis jangka panjang dengan pelanggan. Sistem CRM menyatukan informasi pelanggan dari email, situs, toko fisik, call centre, dan kampanye. Argumen ekonominya: mengakuisisi pelanggan online di ritel 20–30% lebih mahal daripada bisnis tradisional, tetapi menaikkan retensi 5% bisa menaikkan laba 25–95% (Reichheld &amp; Schefter, 2000). Buku juga menyajikan kritiknya: Reinartz dan Kumar (2002) tidak menemukan bukti kuat bahwa pelanggan setia selalu lebih murah dilayani atau kurang sensitif harga.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Aktivitas CRM (Gambar 8.1)</th><th>Inti</th></tr></thead>
+    <tbody>
+      <tr><td><b>Seleksi</b> (select)</td><td>Menentukan jenis pelanggan yang dituju, termasuk segmentasi berdasarkan nilai dan siklus hidup</td></tr>
+      <tr><td><b>Akuisisi</b> (acquire)</td><td>Membentuk hubungan dengan pelanggan baru dengan biaya akuisisi minimal dan menyasar pelanggan bernilai tinggi</td></tr>
+      <tr><td><b>Retensi</b> (retain)</td><td>Mempertahankan pelanggan yang ada dengan tawaran yang relevan sesuai posisinya dalam siklus hidup</td></tr>
+      <tr><td><b>Ekstensi</b> (extend)</td><td>Memperdalam atau memperluas produk yang dibeli: <em>re-sell, cross-sell, up-sell</em>, reaktivasi, dan rujukan</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="ext"><h4>🧩 Latihan: teknik ekstensi pelanggan</h4></div>
+  <p><b>eCRM</b> adalah CRM yang memakai teknologi komunikasi digital untuk memaksimalkan penjualan ke pelanggan yang ada dan mendorong pemakaian layanan online yang berkelanjutan. Buku mencatat batas CRM dan eCRM kini kabur: "sekarang semuanya CRM". Aplikasi pemasaran CRM mencakup <em>salesforce automation</em>, manajemen layanan pelanggan, pengelolaan proses penjualan, manajemen kampanye, dan analisis (data warehouse, data mining).</p>
+  <div class="co"><b class="t">💡 Kritik "saya tidak mau punya hubungan".</b> Konsumen bisa saja memandang interaksinya dengan perusahaan sebagai pertukaran biasa. O'Malley dan Tynan (2001) mencatat konsep hubungan jangka panjang lebih mudah diterapkan di B2B daripada di pasar konsumen. Bandingkan dengan jawaban pemanasan Anda.</div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Program anggota di jaringan ritel, kedai kopi, dan aplikasi belanja di Indonesia biasanya menjalankan keempat aktivitas sekaligus: memilih segmen (mis. mahasiswa), mengakuisisi lewat voucher pengguna baru, mempertahankan lewat poin dan notifikasi, lalu mengembangkan lewat rekomendasi produk lain. Pertanyaan kritis dari Reinartz dan Kumar tetap berlaku: apakah anggota setia itu benar-benar lebih menguntungkan, atau hanya lebih sering memakai voucher?</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u1"></div>
+  <div class="pager"><a class="btn ghost" href="#home">← Beranda</a><a class="btn" href="#u2">Unit 2 →</a></div>
+</section>
+
+<!-- ================= UNIT 2 ================= -->
+<section class="view" data-view="u2" data-unit="2">
+  <div class="eyebrow">Unit 2 <span class="tag">LO Bab 8</span><span class="tag">± 35 menit</span></div>
+  <h2>Dari eCRM ke Social CRM</h2>
+  <div class="read" data-read="2">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 8 · From eCRM to social CRM · Gambar 8.4 · Focus on Social media and social CRM strategy · Gambar 8.18 · Box 8.3–8.5 · Mini Case Study 8.3</span></div>
+    <p style="margin:0 0 4px">Subbab <em>From eCRM to social CRM</em> (Gambar 8.4), lalu <em>Focus on Social media and social CRM strategy</em>: kerangka POST, live chat, enam area social CRM (Gambar 8.18), lima M, komunitas, aturan 90-9-1, dan micro-influencer. Cari jawaban:</p>
+    <ul>
+      <li>Apa beda eCRM dan social CRM menurut Gambar 8.4?</li>
+      <li>Apa empat langkah POST, dan mengapa teknologi diputuskan paling akhir?</li>
+      <li>Berapa tingkat kepuasan live chat dibanding email dan telepon (eDigital Research, 2014)?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="2"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b>Social CRM</b> adalah proses mengelola percakapan antar-pelanggan untuk melibatkan pelanggan, prospek, dan pemangku kepentingan lain dengan merek. Menurut Campbell (2013), social CRM melengkapi kapabilitas eCRM: eCRM mengelola interaksi satu-ke-satu yang dikendalikan merek, sedangkan social CRM masuk ke percakapan yang terjadi di media sosial, ulasan, dan forum. Imbal hasil terbesar datang dari memadukan keduanya.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Kerangka</th><th>Isi</th></tr></thead>
+    <tbody>
+      <tr><td><b>POST</b> (Forrester, 2007)</td><td><b>P</b>eople (adopsi media sosial di audiens), <b>O</b>bjectives (tujuan per tahap siklus hidup), <b>S</b>trategy (bagaimana mencapainya), <b>T</b>echnology (platform, diputuskan terakhir). Versi ringkas SOSTAC.</td></tr>
+      <tr><td><b>Enam area social CRM</b> (Altimeter, 2010)</td><td>Pemasaran (social listening), penjualan, layanan dan dukungan, inovasi, kolaborasi internal, pengalaman pelanggan</td></tr>
+      <tr><td><b>Lima M</b> (Altimeter, 2010)</td><td>Monitoring, Mapping, Management, Middleware, Measurement</td></tr>
+      <tr><td><b>Jenis komunitas</b></td><td>Purpose (tujuan sama), position (situasi hidup sama), interest (minat sama), profession (B2B)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="community"><h4>🧩 Latihan: jenis komunitas online</h4></div>
+  <p>Komunitas bisa gagal karena <b>kosong</b> (tidak ada anggota), <b>sunyi</b> (anggota tidak berbicara), atau <b>kritis</b> (menyerang merek). Aturan <b>90-9-1</b> (Nielsen) mengingatkan: 90% pengguna hanya membaca, 9% sesekali berkontribusi, dan 1% menghasilkan sebagian besar konten. Soal pengaruh, buku menyajikan dua pandangan: influencer yang sangat terhubung, atau, menurut Watts dan Dodds (2007), "orang yang mudah dipengaruhi memengaruhi orang lain yang mudah dipengaruhi". Box 8.5 menunjukkan tingkat <em>like</em> turun seiring jumlah pengikut, sehingga <b>micro-influencer</b> sering lebih efektif.</p>
+  <div class="co"><b class="t">💡 Layanan omnichannel (Box 8.3).</b> Rata-rata pelanggan memakai empat kanal untuk urusan layanan, dan "dilempar antar-agen" adalah hal paling menjengkelkan. Live chat punya kepuasan tertinggi (73%) dibanding email (61%) dan telepon (44%).</div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Banyak merek Indonesia menangani keluhan lewat DM Instagram, X, dan WhatsApp sekaligus. Tanpa integrasi, pelanggan harus mengulang ceritanya di tiap kanal, persis frustrasi yang disebut Box 8.3. Studi Kasus 2 membahas Sociolla, yang memadukan ulasan, komunitas, dan belanja dalam satu aplikasi.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u2"></div>
+  <div class="pager"><a class="btn ghost" href="#u1">← Unit 1</a><a class="btn" href="#u3">Unit 3 →</a></div>
+</section>
+
+<!-- ================= UNIT 3 ================= -->
+<section class="view" data-view="u3" data-unit="3">
+  <div class="eyebrow">Unit 3 <span class="tag">LO Bab 8</span><span class="tag">± 40 menit</span></div>
+  <h2>Permission Marketing, Konversi, Proses Membeli, dan NPS</h2>
+  <div class="read" data-read="3">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 8 · Benefits of eCRM · Permission marketing · Customer profiling · Conversion marketing · Box 8.1 · The online buying process · Gambar 8.8 · The net promoter score</span></div>
+    <p style="margin:0 0 4px">Subbab manfaat eCRM, keterlibatan pelanggan, permission marketing, profil pelanggan (IDIC), conversion marketing dan RACE (Box 8.1), proses membeli online, model kepercayaan (Gambar 8.8), dan Net Promoter Score. Cari jawaban:</p>
+    <ul>
+      <li>Apa lima langkah "berkencan" dengan pelanggan menurut Godin (1999)?</li>
+      <li>Menurut Agrawal dkk. (2001), pengungkit mana yang paling besar pengaruhnya terhadap nilai sekarang bersih (NPV) situs e-commerce?</li>
+      <li>Bagaimana NPS dihitung, dan apa kritik Kirby dan Samson (2008)?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="3"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b>Permission marketing</b> (Godin, 1999): pelanggan setuju (<em>opt-in</em>) dilibatkan dalam pemasaran, biasanya karena insentif, kebalikan dari <em>interruption marketing</em>. Godin mengibaratkannya berkencan: beri insentif, ajari pelanggan tentang produk dari waktu ke waktu, perkuat insentif, minta izin lebih, lalu ubah perilaku menuju laba. Peppers dan Rogers (1999) menawarkan <b>IDIC</b>: identifikasi pelanggan, diferensiasi lewat profil, interaksi, dan kustomisasi. Saran praktisnya: tunda pendaftaran selama mungkin karena registrasi adalah penghalang.</p>
+  <p><b>Conversion marketing</b> mengukur konversi dari audiens ke pengunjung, pengunjung terlibat, prospek, pelanggan, hingga pelanggan berulang. Kerangka <b>RACE</b> (Smart Insights) merangkumnya: <b>Reach</b> (membangun kesadaran dan lalu lintas), <b>Act</b> (mengajak berinteraksi), <b>Convert</b> (prospek atau penjualan), <b>Engage</b> (hubungan jangka panjang). Agrawal dkk. (2001) menemukan perusahaan pandai menarik pengunjung tetapi buruk mengubah pembeli sesekali menjadi pembeli rutin; kenaikan 10% tingkat konversi pelanggan berulang mengubah NPV 9,49%, jauh di atas biaya akuisisi pengunjung (0,74%).</p>
+  <div class="card cls" data-widget="race"><h4>🧩 Latihan: tahap RACE yang mana?</h4></div>
+  <p>Perilaku membeli online beragam. Lewis dan Lewis (1997) membedakan pencari informasi terarah, pencari informasi tak terarah (<em>surfer</em>), pembeli terarah, pemburu diskon, dan pencari hiburan. Karena pembeli online tidak punya kepastian fisik, mereka mencari <b>isyarat kepercayaan</b>: Bart dkk. (2005) memetakan delapan pendorong kepercayaan dari 6.831 konsumen di 25 situs.</p>
+  <p><b>Net Promoter Score (NPS)</b> (Reichheld, 2006) bertanya "Seberapa mungkin Anda merekomendasikan kami?" pada skala 0–10. NPS = % promoter (9–10) − % detraktor (0–6); skor 7–8 adalah pasif. Menurut Reichheld, bagi Dell rata-rata pelanggan bernilai $210, detraktor merugikan $57, dan promoter menghasilkan $328.</p>
+
+  <div class="card" id="npsTool">
+    <h4>📣 Kalkulator Net Promoter Score</h4>
+    <div class="calc3">
+      <fieldset><legend>Promoter (9–10)</legend><label>Jumlah responden<input type="number" id="npP" value="55" min="0"></label></fieldset>
+      <fieldset><legend>Pasif (7–8)</legend><label>Jumlah responden<input type="number" id="npN" value="25" min="0"></label></fieldset>
+      <fieldset><legend>Detraktor (0–6)</legend><label>Jumlah responden<input type="number" id="npD" value="20" min="0"></label></fieldset>
+    </div>
+    <div class="row" style="gap:6px;margin-top:8px"><span class="hint" style="margin:0">Kritik Kirby &amp; Samson:</span><button class="chip" data-np="a">70% promoter, 30% detraktor</button><button class="chip" data-np="b">40% promoter, 0% detraktor</button></div>
+    <div class="res" id="npRes"></div>
+  </div>
+
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Survei "Seberapa mungkin Anda merekomendasikan…" setelah pesanan selesai atau setelah chat dengan layanan pelanggan adalah praktik NPS yang umum di aplikasi Indonesia. Pelajaran dari kritik buku: NPS yang sama bisa menyembunyikan komposisi pelanggan yang sangat berbeda, dan niat merekomendasikan belum tentu menjadi rujukan nyata.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u3"></div>
+  <div class="pager"><a class="btn ghost" href="#u2">← Unit 2</a><a class="btn" href="#u4">Unit 4 →</a></div>
+</section>
+
+<!-- ================= UNIT 4 ================= -->
+<section class="view" data-view="u4" data-unit="4">
+  <div class="eyebrow">Unit 4 <span class="tag">LO Bab 8</span><span class="tag">± 40 menit</span></div>
+  <h2>Akuisisi Pelanggan: Komunikasi Interaktif, Pengukuran, dan Search Marketing</h2>
+  <div class="read" data-read="4">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 8 · Customer acquisition management · The characteristics of interactive marketing communications · Assessing marketing communications effectiveness · Gambar 8.10 · Search engine marketing · Box 8.2</span></div>
+    <p style="margin:0 0 4px">Subbab manajemen akuisisi pelanggan, delapan karakteristik komunikasi interaktif, pengukuran efektivitas (Gambar 8.10, VQVC), dan search engine marketing: cara kerja Google, SEO, paid search, serta penipuan klik dan iklan. Cari jawaban:</p>
+    <ul>
+      <li>Apa dua makna "akuisisi pelanggan" dalam konteks digital?</li>
+      <li>Pada contoh bank online, bagaimana CPA £20 dihitung?</li>
+      <li>Menurut Box 8.2, berapa persen klik yang didapat hasil pencarian peringkat pertama untuk kata kunci bermerek dan tidak bermerek?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="4"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Dalam konteks digital, <b>akuisisi pelanggan</b> punya dua makna: mendapatkan pelanggan baru sebagai prospek yang lalu dikonversi, dan memindahkan pelanggan lama ke kanal online (contoh: kampanye "Go Paperless" American Express). Buku merangkum delapan karakteristik komunikasi interaktif: dari push ke pull, dari monolog ke dialog, dari satu-ke-banyak ke satu-ke-sebagian dan satu-ke-satu, komunikasi banyak-ke-banyak, dari <em>lean-back</em> ke <em>lean-forward</em>, perubahan sifat alat komunikasi standar seperti iklan, bertambahnya perantara komunikasi, dan integrasi tetap penting.</p>
+  <p>Efektivitas diukur bertingkat (Gambar 8.10, disingkat <b>VQVC</b>: Volume, Quality, Value, Cost): jumlah pengunjung unik, tingkat konversi, biaya per klik (CPC), <b>biaya per akuisisi (CPA)</b>, ROI, metrik merek, hingga ROI berbasis nilai seumur hidup. Manajer perlu menetapkan <b>allowable CPA</b>, biaya akuisisi maksimum yang masih menguntungkan. Buku memakai dua rumus: ROI = laba dari sumber rujukan ÷ belanja iklan, dan ROAS = pendapatan dari sumber rujukan ÷ belanja iklan.</p>
+
+  <div class="card" id="cpaTool">
+    <h4>🎯 Kalkulator CPA, ROAS, dan ROI kampanye</h4>
+    <div class="calc">
+      <label>Pengunjung dari kampanye<input type="number" id="cpV" value="10000" min="0" step="100"></label>
+      <label>Tingkat konversi ke penjualan (%)<input type="number" id="cpC" value="2" min="0" step="0.1"></label>
+      <label>Biaya per klik, CPC (Rp)<input type="number" id="cpK" value="1500" min="0" step="100"></label>
+      <label>Nilai pesanan rata-rata (Rp)<input type="number" id="cpO" value="150000" min="0" step="1000"></label>
+      <label>Margin laba kotor (%)<input type="number" id="cpM" value="30" min="0" max="100"></label>
+      <label>Allowable CPA (Rp)<input type="number" id="cpA" value="60000" min="0" step="1000"></label>
+    </div>
+    <div class="row" style="gap:6px;margin-top:8px"><button class="chip" data-cp="bank">Contoh bank online (buku)</button><button class="chip" data-cp="umkm">Iklan UMKM di media sosial</button></div>
+    <div class="res" id="cpRes"></div>
+  </div>
+
+  <p><b>Search engine marketing</b> mencakup <b>SEO</b> (posisi di hasil alami) dan <b>paid search/PPC</b> (iklan teks yang dibayar per klik). Google melakukan <em>crawling, indexing, ranking</em>, dan menyajikan hasil, dengan lebih dari 200 sinyal. Faktor SEO yang dibahas buku: konten yang relevan secara semantik, tautan masuk (page rank), pengalaman mobile-first dan kecepatan, tag judul, meta-tag, dan teks alternatif gambar. Peringkat iklan PPC tidak hanya ditentukan tawaran tertinggi, tetapi juga <em>quality score</em> yang memperhitungkan tingkat klik. Waspadai klik palsu dan penipuan iklan oleh bot.</p>
+  <div class="card cls" data-widget="vqvc"><h4>🧩 Latihan: ukuran efektivitas kampanye (Gambar 8.10)</h4></div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Untuk UMKM yang beriklan di media sosial atau marketplace, CPA dan ROAS adalah angka paling praktis. Iklan dengan ROAS tinggi belum tentu untung bila margin produknya tipis: ROAS 3 dengan margin 20% berarti laba kotor hanya 0,6 kali belanja iklan, alias rugi sebelum ongkos lain. Kalkulator di atas menunjukkan perbedaan ini.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u4"></div>
+  <div class="pager"><a class="btn ghost" href="#u3">← Unit 3</a><a class="btn" href="#u5">Unit 5 →</a></div>
+</section>
+
+<!-- ================= UNIT 5 ================= -->
+<section class="view" data-view="u5" data-unit="5">
+  <div class="eyebrow">Unit 5 <span class="tag">LO Bab 8</span><span class="tag">± 35 menit</span></div>
+  <h2>Saluran Akuisisi: Digital PR, Kemitraan, Iklan, Email, dan Viral</h2>
+  <div class="read" data-read="5">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 8 · Digital PR · Online partnerships · Digital advertising · Email marketing · Social media marketing · Tabel 8.1 · Mini Case Study 8.1, 8.2, 8.4, 8.5</span></div>
+    <p style="margin:0 0 4px">Sisa subbab komunikasi pemasaran untuk akuisisi: digital PR, kemitraan online (afiliasi, sponsorship), iklan digital (efek pengganda media, XMOS, programmatic), email marketing, social media dan viral marketing, serta Tabel 8.1. Cari jawaban:</p>
+    <ul>
+      <li>Mengapa affiliate marketing disebut "zero-risk advertising"?</li>
+      <li>Menurut riset MAD (2007), apa respons paling umum orang setelah melihat iklan online yang menarik?</li>
+      <li>Berapa pertumbuhan database email Malibu dan berapa open rate email pasca-acara yang dipersonalisasi (Mini Case Study 8.4)?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="5"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <div class="tw"><table>
+    <thead><tr><th>Saluran (Tabel 8.1)</th><th>Kekuatan utama</th><th>Kelemahan utama</th></tr></thead>
+    <tbody>
+      <tr><td><b>SEO</b></td><td>Sangat tertarget, biaya per klik rendah, dianggap kredibel</td><td>Persaingan ketat, algoritma berubah</td></tr>
+      <tr><td><b>PPC</b></td><td>Tertarget dengan biaya akuisisi terkendali</td><td>Mahal di sektor kompetitif, volume lebih kecil dari SEO</td></tr>
+      <tr><td><b>Digital PR</b></td><td>Biaya relatif rendah, membantu SEO lewat backlink</td><td>Mencari influencer memakan waktu; perlu memantau komentar</td></tr>
+      <tr><td><b>Afiliasi</b></td><td>Bayar sesuai hasil</td><td>Biaya jaringan afiliasi; perubahan algoritma memengaruhi volume</td></tr>
+      <tr><td><b>Sponsorship online</b></td><td>Efektif bila jangka panjang dengan situs yang sinergis</td><td>Menaikkan kesadaran, belum tentu penjualan</td></tr>
+      <tr><td><b>Iklan interaktif</b></td><td>Respons langsung; efek pengganda media untuk merek</td><td>Tingkat respons turun (<em>banner blindness</em>)</td></tr>
+      <tr><td><b>Email</b></td><td>Media push yang tak bisa diabaikan di kotak masuk</td><td>Butuh opt-in; lebih cocok untuk retensi daripada akuisisi</td></tr>
+      <tr><td><b>Media sosial/viral</b></td><td>Menjangkau banyak orang dengan biaya rendah</td><td>Sulit membuat konsep viral; risiko merusak merek</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="channel"><h4>🧩 Latihan: saluran akuisisi yang mana?</h4></div>
+  <p><b>Digital PR</b> memaksimalkan sebutan positif di situs pihak ketiga dan mengelola reputasi online. <b>Affiliate marketing</b> membayar komisi hanya bila ada penjualan atau prospek; banyak e-retailer memperoleh lebih dari 20% penjualan online dari afiliasi. Iklan online punya <b>efek pengganda media</b>: menurut riset MAD (2007), lebih banyak orang mencari di mesin pencari setelah melihat iklan daripada mengklik banner itu sendiri. Studi XMOS menunjukkan porsi online optimal untuk produk keterlibatan rendah 10–15% dari belanja iklan. Email diukur dengan <em>delivery rate</em>, <em>open rate</em>, dan <em>clickthrough rate</em>. Kampanye viral butuh tiga hal (Kirby, 2003): materi kreatif (agen viral), <em>seeding</em>, dan pelacakan.</p>
+  <div class="co"><b class="t">💡 Malibu (Mini Case Study 8.4).</b> Aplikasi acara pop-up menjadi tiket masuk sekaligus alat pendaftaran. Setiap langkah pengunjung dicatat ke database email secara real-time dan langsung diberi voucher. Database tumbuh dari 9.000 menjadi hampir 40.000 pelanggan dalam lima bulan, dan email pasca-acara yang dipersonalisasi mencapai open rate 68%.</div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Program afiliasi marketplace di Indonesia, di mana kreator mendapat komisi dari penjualan lewat tautannya, adalah wujud affiliate marketing yang "bayar sesuai hasil". Risikonya sama dengan yang dicatat buku: ketergantungan pada algoritma platform, serta perlunya memantau apa yang dikatakan afiliasi tentang merek Anda.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u5"></div>
+  <div class="pager"><a class="btn ghost" href="#u4">← Unit 4</a><a class="btn" href="#u6">Unit 6 →</a></div>
+</section>
+
+<!-- ================= UNIT 6 ================= -->
+<section class="view" data-view="u6" data-unit="6">
+  <div class="eyebrow">Unit 6 <span class="tag">LO Bab 8</span><span class="tag">± 40 menit</span></div>
+  <h2>Retensi Pelanggan, Nilai Seumur Hidup, dan Kualitas Layanan</h2>
+  <div class="read" data-read="6">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 8 · Customer retention management · Gambar 8.23–8.26 · Tabel 8.2 · Mini Case Study 8.6 · Lifetime-value modelling · Focus on Excelling in e-commerce service quality · Mini Case Study 8.7</span></div>
+    <p style="margin:0 0 4px">Subbab manajemen retensi: hubungan kepuasan dan loyalitas (Gambar 8.23), pendorong loyalitas Dell (Tabel 8.2), personalisasi dan mass customisation, extranet, email opt-in, segmentasi aktivitas (Gambar 8.24), metrik retensi, nilai seumur hidup (Gambar 8.25–8.26), dan kualitas layanan e-commerce (SERVQUAL, Barclays). Cari jawaban:</p>
+    <ul>
+      <li>Apa tiga pendorong loyalitas Dell dan metrik masing-masing?</li>
+      <li>Berapa kenaikan clickthrough banner HSBC yang dipersonalisasi dibanding yang tidak (Mini Case Study 8.6)?</li>
+      <li>Menurut Feinberg dkk. (2000), berapa persen pelanggan pergi karena pengalaman layanan yang buruk?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="6"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Retensi di e-commerce punya dua sasaran: mempertahankan pelanggan (pembelian ulang) dan mempertahankan pemakaian kanal online (kunjungan ulang). Kepuasan mendorong loyalitas, dan loyalitas mendorong profitabilitas (Gambar 8.23), tetapi sebagian besar pelanggan tidak berada di "zona kasih sayang". Alat retensi: <b>personalisasi</b> (konten untuk individu) dan <b>mass customisation</b> (konten untuk kelompok berminat sama), extranet untuk pelanggan kunci, komunitas, promosi, dan <b>email opt-in</b> (newsletter rutin, terkait peristiwa, atau rangkaian email).</p>
+  <p>Untuk layanan yang perlu registrasi (mis. perbankan online), pelanggan bisa disegmentasi menurut aktivitas: <b>baru, aktif, dorman, dan tidak aktif</b> (Gambar 8.24), masing-masing dengan sasaran dan taktik. <b>Lifetime value (LTV)</b> adalah total manfaat bersih seorang pelanggan selama hubungannya, dihitung sebagai nilai sekarang bersih. LTV menjawab pertanyaan kunci: berapa yang sanggup kita keluarkan untuk mengakuisisi satu pelanggan? Gambar 8.26 membagi pelanggan menjadi perunggu, perak, emas, dan platinum menurut nilai kini dan nilai masa depannya, dengan strategi berbeda.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Dimensi SERVQUAL</th><th>Penerapan online menurut buku</th></tr></thead>
+    <tbody>
+      <tr><td><b>Tangibles</b></td><td>Kemudahan pakai dan daya tarik visual situs</td></tr>
+      <tr><td><b>Reliability</b></td><td>Ketersediaan situs dan keandalan respons email</td></tr>
+      <tr><td><b>Responsiveness</b></td><td>Kecepatan respons (praktik terbaik: dalam satu hari kerja), kecepatan situs, pemenuhan pesanan</td></tr>
+      <tr><td><b>Assurance</b></td><td>Kualitas jawaban, privasi dan keamanan data</td></tr>
+      <tr><td><b>Empathy</b></td><td>Respons yang personal, fasilitas personalisasi</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="servqual"><h4>🧩 Latihan: dimensi SERVQUAL</h4></div>
+  <p>Mengelola kualitas layanan online butuh tiga tahap: memahami ekspektasi, menetapkan dan mengomunikasikan janji layanan (lebih baik <em>under-promise</em> daripada <em>over-promise</em>), lalu menepatinya. Menurut Feinberg dkk. (2000), lebih dari 68% pelanggan pergi karena pengalaman layanan yang buruk, jauh di atas harga (10%) dan masalah produk (17%).</p>
+  <div class="co"><b class="t">💡 Barclays (Mini Case Study 8.7).</b> Layanan "Ask a question" menjawab lebih dari setengah juta pertanyaan pada tahun pertama, dan hanya 8% yang diteruskan ke call centre. Pertanyaan pelanggan kemudian dipakai untuk menayangkan penawaran yang relevan, dengan respons 12%: layanan mandiri sekaligus alat <em>cross-selling</em>.</div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Aplikasi perbankan Indonesia menghadapi persoalan segmentasi aktivitas yang sama: banyak nasabah sudah mendaftar tetapi jarang atau tidak pernah bertransaksi. Studi Kasus 3 membahas Livin' by Mandiri, termasuk tantangan menjaga stabilitas layanan saat lonjakan transaksi, yaitu dimensi reliability dalam SERVQUAL.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u6"></div>
+  <div class="pager"><a class="btn ghost" href="#u5">← Unit 5</a><a class="btn" href="#u7">Unit 7 →</a></div>
+</section>
+
+<!-- ================= UNIT 7 ================= -->
+<section class="view" data-view="u7" data-unit="7">
+  <div class="eyebrow">Unit 7 <span class="tag">LO Bab 8</span><span class="tag">± 40 menit</span></div>
+  <h2>Ekstensi Pelanggan, RFM, dan Teknologi CRM</h2>
+  <div class="read" data-read="7">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 8 · Customer extension · Gambar 8.27–8.29 · Mini Case Study 8.8 · Sense, Respond, Adjust · RFM analysis · Technology solutions for CRM · Case Study 8.2</span></div>
+    <p style="margin:0 0 4px">Subbab ekstensi pelanggan: segmentasi lanjutan lima lapis, Euroffice (Mini Case Study 8.8), Sense-Respond-Adjust, analisis RFM, latency, hurdle rate, propensity modelling, solusi teknologi CRM (data, marketing automation, integrasi, kualitas data), dan Case Study 8.2 (Tesco.com). Cari jawaban:</p>
+    <ul>
+      <li>Apa tiga kelompok pelanggan Euroffice dan berapa nilai pesanan rata-rata "Crown Jewels" dibanding pelanggan percobaan?</li>
+      <li>Menurut Novo (2004), mengapa recency adalah prediktor paling kuat?</li>
+      <li>Apa tiga peristiwa pemicu dalam strategi kontak Tesco.com, dan apa tujuan masing-masing?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="7"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b>Ekstensi pelanggan</b> memperdalam hubungan lewat interaksi dan transaksi yang lebih banyak, untuk menaikkan nilai seumur hidup. Godin mengingatkan fokus pada <b>share of customer</b>, bukan pangsa pasar. E-retailer melapis lima elemen segmentasi: kelompok siklus hidup (Gambar 8.27), karakteristik profil, perilaku respons dan pembelian, preferensi kanal (<em>right-channelling</em>), dan preferensi nada dan gaya pesan. Siklusnya <b>Sense → Respond → Adjust</b>: pantau perilaku, kirim pesan yang sesuai, pantau responsnya.</p>
+  <p><b>Analisis RFM</b> (Recency, Frequency, Monetary value; juga disebut FRAC dengan tambahan Category) menilai pelanggan dari kebaruan tindakan, frekuensi, dan nilai belanja. Menurut Novo (2004), <b>recency</b> adalah prediktor terkuat bahwa pelanggan akan mengulang tindakan. Konsep terkait: <b>latency</b> (rata-rata jarak antar-peristiwa) dan <b>hurdle rate</b> (persentase pelanggan dalam kelompok yang sudah melakukan suatu tindakan). <b>Propensity modelling</b> merekomendasikan "next-best product".</p>
+
+  <div class="card" id="rfmTool">
+    <h4>🧮 Penilai RFM (skala contoh buku)</h4>
+    <div class="calc3">
+      <fieldset><legend>Recency (pembelian terakhir)</legend><label>Skor<select id="rfR"><option value="1">1 · lebih dari 12 bulan</option><option value="2">2 · dalam 12 bulan</option><option value="3">3 · dalam 6 bulan</option><option value="4" selected>4 · dalam 3 bulan</option><option value="5">5 · dalam 1 bulan</option></select></label></fieldset>
+      <fieldset><legend>Frequency</legend><label>Skor<select id="rfF"><option value="1">1 · kurang dari tiap 6 bulan</option><option value="2" selected>2 · tiap 6 bulan</option><option value="3">3 · tiap 3 bulan</option><option value="4">4 · tiap 2 bulan</option><option value="5">5 · tiap bulan</option></select></label></fieldset>
+      <fieldset><legend>Monetary (nilai belanja)</legend><label>Skor<select id="rfM"><option value="1">1 · sangat rendah</option><option value="2">2 · rendah</option><option value="3" selected>3 · sedang</option><option value="4">4 · tinggi</option><option value="5">5 · sangat tinggi</option></select></label></fieldset>
+    </div>
+    <p class="hint" style="margin:6px 0 0">Buku memakai ambang poundsterling (&lt;£10 hingga &gt;£200). Sesuaikan ambang nilai dengan bisnis Anda.</p>
+    <div class="row" style="gap:6px;margin-top:8px"><button class="chip" data-rf="new">Pelanggan baru</button><button class="chip" data-rf="vip">Pelanggan terbaik</button><button class="chip" data-rf="lapse">Pelanggan hampir hilang</button></div>
+    <div class="res" id="rfRes"></div>
+  </div>
+
+  <p><b>Teknologi CRM</b> berpusat pada basis data dengan tiga jenis data: profil, transaksi, dan komunikasi. <b>Marketing automation</b> mengirim pesan otomatis berdasarkan pemicu (mis. produk hampir habis, polis hampir berakhir). Namun 60–70% proyek CRM dilaporkan gagal (Mello, 2001), lebih karena perubahan proses dan dampaknya pada staf daripada konsepnya. Isu teknis utama: jenis aplikasi, integrasi dengan sistem lama (<em>legacy</em>), pilihan satu vendor atau banyak vendor, dan <b>kualitas data</b> (pemilik bisnis, validasi saat input, perbaikan terus-menerus, satu pandangan pelanggan, kebijakan kualitas data).</p>
+  <div class="card cls" data-widget="tesco"><h4>🧩 Latihan: pemicu komunikasi Tesco.com (Case Study 8.2)</h4></div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Notifikasi "keranjangmu masih menunggu", "voucher khusus karena sudah lama tidak belanja", dan "produk yang biasa kamu beli sedang diskon" di aplikasi belanja Indonesia adalah wujud komunikasi berbasis pemicu dan RFM seperti Tesco.com. Pertanyaan pentingnya: apakah pemicu itu didasarkan pada perilaku nyata pelanggan, atau dikirim ke semua orang sehingga berubah menjadi <em>interruption marketing</em>?</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u7"></div>
+  <div class="pager"><a class="btn ghost" href="#u6">← Unit 6</a><a class="btn" href="#cases">Studi Kasus →</a></div>
+</section>
+
+<!-- ================= CASES ================= -->
+<section class="view" data-view="cases">
+  <div class="eyebrow">Penerapan <span class="tag">± 90 menit</span></div>
+  <h2>Studi Kasus</h2>
+  <p class="lead">Satu kasus dari buku, dua kasus Indonesia, dan satu latihan kelompok. Alur setiap pertanyaan: <b>tulis jawaban → minta umpan balik aplikasi → nilai diri dengan checklist → buka arah jawaban</b>.</p>
+  <div class="co book"><b class="t">ℹ️ Tentang umpan balik otomatis.</b> Aplikasi memeriksa apakah konsep kunci dan penalaran ("karena", "sehingga") muncul dalam jawaban Anda. Aplikasi <b>tidak</b> bisa menilai apakah argumen Anda benar atau tajam. Skor 0–4 ini hanya umpan balik belajar, <b>bukan nilai</b>. Checklist penilaian diri menilai bagian yang tidak bisa diukur mesin.</div>
+  <div id="caseList"></div>
+  <div class="pager"><a class="btn ghost" href="#u7">← Unit 7</a><a class="btn" href="#final">Kuis Akhir →</a></div>
+</section>
+
+<!-- ================= FINAL ================= -->
+<section class="view" data-view="final">
+  <div class="eyebrow">Self-test</div>
+  <h2>Kuis Akhir: Uji Pemahaman</h2>
+  <div class="quiz" id="finalBox"></div>
+</section>
+
+<!-- ================= FLASH ================= -->
+<section class="view" data-view="cards">
+  <div class="eyebrow">Penguatan</div>
+  <h2>Flashcard Istilah Kunci</h2>
+  <p class="lead">Ketuk kartu untuk membalik. Tandai yang sudah Anda kuasai; sisanya akan muncul lagi.</p>
+  <div class="row" style="justify-content:space-between"><span class="score" id="fcCount"></span><button class="btn ghost" id="fcShuffle" style="padding:6px 12px">⤮ Acak</button></div>
+  <div class="fc" id="fc" tabindex="0" role="button" aria-label="Balik kartu"><div class="inner"><div class="face front"><b id="fcF"></b><small>ketuk untuk membalik</small></div><div class="face back"><div id="fcB"></div></div></div></div>
+  <div class="row" style="justify-content:center">
+    <button class="btn ghost" id="fcPrev">←</button>
+    <button class="btn gold" id="fcKnow">✓ Sudah hafal</button>
+    <button class="btn ghost" id="fcNext">→</button>
+  </div>
+  <p class="hint" style="text-align:center;margin-top:10px"><button class="retry" id="fcReset">Ulang semua kartu</button></p>
+</section>
+
+<!-- ================= NOTES & REFS ================= -->
+<section class="view" data-view="notes">
+  <div class="eyebrow">Rangkuman</div>
+  <h2>Catatan Saya &amp; Referensi</h2>
+  <div class="card">
+    <h3>📝 Semua jawaban Anda</h3>
+    <p class="hint">Gabungan pemanasan, hasil kalkulator, dan studi kasus. Salin atau unduh untuk dikumpulkan di MyITS Classroom bila diminta dosen.</p>
+    <div class="cq"><b>Nama &amp; NRP</b><textarea data-note="identity" style="min-height:44px" placeholder="Nama — NRP"></textarea></div>
+    <div class="row"><button class="btn" id="copyNotes">📋 Salin</button><button class="btn ghost" id="dlNotes">⬇ Unduh .txt</button><button class="btn ghost" id="resetAll" style="border-color:var(--bad);color:var(--bad)">Hapus semua kemajuan</button></div>
+    <pre id="notesPrev" style="white-space:pre-wrap;font-family:var(--f);font-size:.85rem;background:var(--sunk);padding:12px;border-radius:10px;margin-top:14px;max-height:300px;overflow:auto"></pre>
+  </div>
+
+  <h3>🧩 Ringkasan</h3>
+  <ul>
+    <li>CRM bertujuan menaikkan loyalitas demi profitabilitas, lewat empat aktivitas: seleksi, akuisisi, retensi, dan ekstensi. Hubungan loyalitas-laba tidak otomatis (Reinartz &amp; Kumar).</li>
+    <li>eCRM memakai komunikasi digital untuk interaksi satu-ke-satu; social CRM mengelola percakapan antar-pelanggan. Keduanya saling melengkapi.</li>
+    <li>Permission marketing (opt-in dan insentif) adalah fondasi hubungan online. Konversi dikelola dengan RACE; kepercayaan dan rekomendasi (NPS) memengaruhi pembelian.</li>
+    <li>Akuisisi diukur dengan VQVC, CPA, ROI, dan ROAS, lalu dijalankan lewat SEO, PPC, digital PR, afiliasi, iklan, email, dan media sosial.</li>
+    <li>Retensi bertumpu pada kepuasan, personalisasi, email opt-in, segmentasi aktivitas, nilai seumur hidup, dan kualitas layanan (SERVQUAL).</li>
+    <li>Ekstensi memakai segmentasi siklus hidup, RFM, pemicu otomatis (Sense-Respond-Adjust), dan rekomendasi produk. Teknologi CRM sering gagal karena masalah proses, integrasi, dan kualitas data.</li>
+  </ul>
+  <div class="co book"><b class="t">➡️ Minggu 11: Manajemen Transformasi Bisnis Digital &amp; Growth Hacking.</b> Bab 10 membahas mengapa perubahan organisasi lebih sulit daripada implementasi teknologi, termasuk alasan kegagalan proyek seperti CRM yang disebut di topik ini.</div>
+
+  <h3>Referensi</h3>
+  <ol class="ref">
+    <li>Chaffey, D., Hemphill, T., &amp; Edmundson-Bird, D. (2019). <em>Digital business and e-commerce management</em> (7th ed.). Pearson. Bab 8: <em>Customer relationship management</em>, termasuk Case Study 8.1–8.2 dan Mini Case Study 8.1–8.8.</li>
+    <li><a href="https://momsmoney.kontan.co.id/news/social-bella-perbaharui-aplikasi-soco-jawab-kebutuhan-pelanggan" target="_blank" rel="noopener">Kontan/MomsMoney. (2025, 28 Juli). Social Bella perbaharui aplikasi SOCO jawab kebutuhan pelanggan.</a></li>
+    <li><a href="https://selular.id/2025/09/sociolla-gabungkan-data-dan-suara-publik-untuk-penghargaan-2025/" target="_blank" rel="noopener">Selular.ID. (2025, 29 September). Sociolla gabungkan data dan suara publik untuk penghargaan 2025.</a></li>
+    <li><a href="https://mediaasuransinews.co.id/perbankan/bank-mandiri-bmri-catat-super-app-livin-by-mandiri-tumbuh-27-di-semester-i-2025/" target="_blank" rel="noopener">Media Asuransi. (2025, 19 September). Bank Mandiri (BMRI) catat super app Livin' by Mandiri tumbuh 27% di semester I 2025.</a></li>
+    <li><a href="https://keuangan.kontan.co.id/news/bank-mandiri-targetkan-jumlah-pengguna-livin-by-mandiri-tembus-60-juta-pada-2026" target="_blank" rel="noopener">Kontan. (2025, 10 Desember). Bank Mandiri targetkan jumlah pengguna Livin' by Mandiri tembus 60 juta pada 2026.</a></li>
+  </ol>
+  <p class="foot">Materi ini adalah ringkasan dan adaptasi untuk keperluan pembelajaran Pengantar Bisnis Digital (DG234101), Departemen Manajemen Bisnis ITS. Mahasiswa tetap wajib membaca bab asli pada buku acuan. Pengembang mata kuliah: Imam Baihaqi, Ph.D.</p>
+</section>
+
+</main>
+
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+/* ---------------- storage (safe) ---------------- */
+var KEY="bisdig-t10-v1", S={read:{},q:{},done:{},cls:{},notes:{},final:null,known:{},cs:{}};
+try{var raw=localStorage.getItem(KEY); if(raw){var o=JSON.parse(raw); for(var k in o) S[k]=o[k];}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} updateProgress();}
+try{var th=localStorage.getItem("bisdig-theme"); if(th) document.documentElement.setAttribute("data-theme",th);}catch(e){}
+
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove("on")},1800)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=a[i];a[i]=a[j];a[j]=x;}return a}
+var rp=function(n){return "Rp"+Math.round(n).toLocaleString("id-ID")};
+/* ---------------- units meta ---------------- */
+var UNITS=[
+ {id:"u1",t:"CRM, eCRM & Siklus Hidup",pg:"Gambar 8.1 · CS 8.1"},
+ {id:"u2",t:"Dari eCRM ke Social CRM",pg:"Gambar 8.4, 8.18 · Box 8.3–8.5"},
+ {id:"u3",t:"Permission, Konversi, NPS",pg:"Box 8.1 · Gambar 8.8"},
+ {id:"u4",t:"Akuisisi: Pengukuran & SEM",pg:"Gambar 8.10 · Box 8.2"},
+ {id:"u5",t:"Saluran Akuisisi Lain",pg:"Tabel 8.1 · Mini CS 8.1–8.5"},
+ {id:"u6",t:"Retensi, LTV & Kualitas Layanan",pg:"Gambar 8.23–8.26 · Tabel 8.2"},
+ {id:"u7",t:"Ekstensi, RFM & Teknologi CRM",pg:"Gambar 8.27–8.29 · CS 8.2"}
+];
+
+/* ---------------- unit quizzes ---------------- */
+var QZ={
+u1:[
+ {k:"c",q:"Menjual produk yang lebih mahal kepada pelanggan yang ada disebut…",o:["Re-sell","Cross-sell","Up-sell","Reaktivasi"],a:2,e:"Up-sell adalah bagian dari cross-sell, khusus untuk produk yang lebih mahal."},
+ {k:"r",pg:"Introduction (Reichheld & Schefter, 2000)",q:"Menurut riset yang dirangkum Reichheld dan Schefter (2000), menaikkan retensi pelanggan 5% dapat menaikkan laba perusahaan online sebesar…",o:["2–5%","10–15%","25–95%","Lebih dari 200%"],a:2,e:"Mengakuisisi pelanggan online di ritel juga 20–30% lebih mahal daripada bisnis tradisional."},
+ {k:"r",pg:"Case Study 8.1",q:"Setelah diliput GQ, apa yang dilakukan pendiri Warby Parker terhadap 20.000 orang di daftar tunggu?",o:["Membatalkan semua pesanan","Menulis email personal untuk meminta maaf dan menjelaskan masalahnya","Memberi diskon 50%","Mengabaikan mereka sampai stok tersedia"],a:1,e:"Pendekatan terbuka dan jujur itu tetap menjadi gaya layanan pelanggan mereka."},
+ {k:"r",pg:"Introduction (Reinartz & Kumar, 2002)",q:"Reinartz dan Kumar (2002) menemukan bahwa pelanggan yang setia…",o:["Selalu paling menguntungkan","Tidak terbukti lebih murah dilayani, kurang sensitif harga, atau efektif membawa pelanggan baru","Selalu membawa pelanggan baru","Tidak pernah membeli ulang"],a:1,e:"Fokus buta pada pelanggan setia bisa melewatkan pelanggan lain yang berpotensi menguntungkan."}
+],
+u2:[
+ {k:"c",q:"Langkah terakhir dalam kerangka POST adalah…",o:["People","Objectives","Strategy","Technology"],a:3,e:"Tentukan tujuan sebelum memilih teknologi, lalu tentukan cara mengukurnya."},
+ {k:"r",pg:"Focus on Social media and social CRM strategy (Live chat)",q:"Menurut eDigital Research (2014), tingkat kepuasan live chat dibanding email dan telepon adalah…",o:["44% vs 61% vs 73%","73% vs 61% vs 44%","61% vs 73% vs 44%","50% vs 50% vs 50%"],a:1,e:"Live chat juga memungkinkan satu agen menangani beberapa percakapan sekaligus."},
+ {k:"r",pg:"Mini Case Study 8.3",q:"Menurut aturan 90-9-1 Jakob Nielsen, 1% pengguna komunitas online adalah…",o:["Yang tidak pernah berkunjung","Yang berpartisipasi sangat aktif dan menyumbang sebagian besar kontribusi","Yang hanya membaca","Moderator berbayar"],a:1,e:"90% hanya membaca (lurker), 9% sesekali berkontribusi."}
+],
+u3:[
+ {k:"c",q:"NPS dihitung sebagai…",o:["% promoter + % pasif","% promoter − % detraktor","Rata-rata skor 0–10","% detraktor − % promoter"],a:1,e:"Promoter 9–10, pasif 7–8, detraktor 0–6."},
+ {k:"r",pg:"Conversion marketing (Agrawal dkk., 2001)",q:"Menurut model Agrawal dkk. (2001), perubahan 10% pada pengungkit mana yang paling besar memengaruhi NPV situs e-commerce?",o:["Biaya akuisisi pengunjung","Pertumbuhan pengunjung","Tingkat konversi pelanggan berulang","Pendapatan per pelanggan"],a:2,e:"9,49%, dibanding biaya akuisisi pengunjung 0,74%."},
+ {k:"r",pg:"The net promoter score (Kumar dkk., 2007)",q:"Riset Kumar dkk. (2007) yang dikutip Kirby dan Samson menemukan bahwa dari pelanggan yang berniat merekomendasikan…",o:["Semua benar-benar merekomendasikan","Hanya sekitar sepertiga yang benar-benar melakukannya, dan sekitar 13% rujukan itu menghasilkan pelanggan baru","Separuh menjadi detraktor","Tidak ada yang merekomendasikan"],a:1,e:"Niat merekomendasikan belum tentu menjadi rujukan yang menghasilkan pelanggan."}
+],
+u4:[
+ {k:"c",q:"Biaya maksimum yang masih menguntungkan untuk mendapatkan satu prospek atau pelanggan disebut…",o:["CPC","Allowable cost per acquisition","Bounce rate","CPM"],a:1,e:"Contoh buku: £30 untuk prospek bisnis, £50 untuk pendaftaran kartu kredit."},
+ {k:"r",pg:"Assessing marketing communications effectiveness",q:"Pada contoh bank online di buku, CPA £20 berasal dari…",o:["£2 CPC dan konversi 10%","£20 CPC dan konversi 100%","£10 CPC dan konversi 50%","£1 CPC dan konversi 5%"],a:0,e:"Hanya satu dari sepuluh pengunjung yang bertindak, sehingga CPA = £2 ÷ 10%."},
+ {k:"r",pg:"Box 8.2",q:"Menurut Box 8.2, hasil peringkat pertama untuk pencarian kata kunci bermerek memperoleh sekitar…",o:["35% klik","48% klik","80% klik","94% klik"],a:2,e:"Untuk kata kunci tidak bermerek, peringkat pertama memperoleh sekitar 35%."}
+],
+u5:[
+ {k:"c",q:"Mengapa affiliate marketing disebut 'zero-risk advertising' bagi pengiklan?",o:["Karena gratis selamanya","Karena pengiklan baru membayar setelah ada penjualan atau prospek","Karena tidak memerlukan situs","Karena dijamin viral"],a:1,e:"Amazon meluncurkan Associates Program pada Juli 1996."},
+ {k:"r",pg:"Digital advertising (MAD, 2007)",q:"Menurut riset MAD (2007), respons paling banyak setelah melihat iklan online yang menarik adalah…",o:["Mengklik banner","Mencari istilah umum terkait iklan di mesin pencari","Mengunjungi toko fisik","Mengabaikannya"],a:1,e:"31% mencari istilah umum, dibanding 26% yang mengklik banner."},
+ {k:"r",pg:"Mini Case Study 8.4",q:"Menurut Mini Case Study 8.4, berapa open rate email pasca-acara Malibu yang dipersonalisasi?",o:["8%","30%","68%","95%"],a:2,e:"Database tumbuh dari 9.000 menjadi hampir 40.000 pelanggan dalam lima bulan."}
+],
+u6:[
+ {k:"c",q:"Konten yang disesuaikan untuk sekelompok pengguna berminat sama, bukan per individu, disebut…",o:["Personalisasi","Mass customisation","Spam","Interruption marketing"],a:1,e:"Personalisasi dalam arti ketat berlaku untuk tingkat individu."},
+ {k:"r",pg:"Mini Case Study 8.6",q:"Menurut Mini Case Study 8.6, clickthrough banner HSBC yang dipersonalisasi dibanding yang tidak dipersonalisasi adalah…",o:["Sama saja","6,88% vs 3,67% (sekitar 87,5% lebih tinggi)","3,67% vs 6,88%","1% vs 0,5%"],a:1,e:"Pembukaan rekening tabungan via internet banking juga naik 30%."},
+ {k:"r",pg:"Focus on Excelling in e-commerce service quality",q:"Menurut Feinberg dkk. (2000), alasan terbesar pelanggan meninggalkan perusahaan adalah…",o:["Harga (lebih dari 68%)","Pengalaman layanan yang buruk (lebih dari 68%)","Masalah produk (lebih dari 68%)","Lokasi"],a:1,e:"Harga hanya 10% dan masalah produk 17%."}
+],
+u7:[
+ {k:"c",q:"Rata-rata jarak waktu antar-peristiwa pelanggan (mis. antar-pembelian) disebut…",o:["Recency","Latency","Hurdle rate","Monetary value"],a:1,e:"Latency yang memendek bisa menandakan minat membeli lagi."},
+ {k:"r",pg:"Mini Case Study 8.8",q:"Menurut Mini Case Study 8.8, pelanggan 'Crown Jewels' Euroffice rata-rata belanja per pesanan sebesar…",o:["£55","£90","£135","£250"],a:2,e:"Dibanding £55 untuk pelanggan percobaan; peluang memesan ulang dalam enam bulan 90%."},
+ {k:"r",pg:"Case Study 8.2",q:"Dalam strategi kontak Tesco.com, apa yang dikirim dua hari setelah pelanggan mendaftar tetapi belum membeli?",o:["Tagihan","Email yang menawarkan bantuan telepon dan diskon £5 untuk pembelian pertama","Katalog cetak","Survei kepuasan pengemudi"],a:1,e:"Tujuannya mengubah pengunjung menjadi pembeli (trigger event 1)."},
+ {k:"r",pg:"Technology solutions for CRM (Mello, 2001)",q:"Riset Gartner dan Butler Group yang dikutip buku menyebut berapa persen proyek CRM gagal?",o:["5–10%","20–30%","60–70%","Hampir 100%"],a:2,e:"Penyebabnya terutama perubahan proses dan dampaknya pada staf, bukan kelemahan konsep CRM."}
+]
+};
+
+/* ---------------- classify drills ---------------- */
+var CL={
+ext:{o:["Re-sell","Cross-sell","Up-sell","Reaktivasi","Rujukan"],it:[
+ ["Mengingatkan pelanggan membeli ulang tinta printer yang sama.","Re-sell","Produk serupa yang dibeli lagi."],
+ ["Menawarkan casing dan pelindung layar setelah pelanggan membeli ponsel.","Cross-sell","Produk tambahan yang terkait."],
+ ["Menawarkan paket langganan premium kepada pengguna paket dasar.","Up-sell","Produk yang lebih mahal."],
+ ["Voucher 'kami rindu kamu' untuk pelanggan yang enam bulan tidak belanja.","Reaktivasi","Mengaktifkan pelanggan yang lapsed."],
+ ["Kode undangan yang memberi saldo bagi pengundang dan teman yang mendaftar.","Rujukan","Penjualan dari rekomendasi pelanggan."]
+]},
+community:{o:["Purpose","Position","Interest","Profession"],it:[
+ ["Forum orang yang sedang membandingkan dan meriset mobil sebelum membeli.","Purpose","Sedang menjalani proses yang sama."],
+ ["Grup ibu baru yang berbagi pengalaman mengasuh bayi.","Position","Berada dalam situasi hidup yang sama."],
+ ["Komunitas penggemar sepak bola klub lokal.","Interest","Minat atau hobi yang sama."],
+ ["Forum insinyur sipil yang membahas standar konstruksi.","Profession","Komunitas profesi, penting untuk B2B."],
+ ["Komunitas pelari yang berbagi rute dan catatan latihan.","Interest","Minat yang sama."],
+ ["Forum calon pembeli rumah pertama yang membahas KPR.","Purpose","Sedang menjalani proses yang sama."]
+]},
+race:{o:["Reach","Act","Convert","Engage"],it:[
+ ["Iklan video di media sosial untuk memperkenalkan merek kepada audiens baru.","Reach","Membangun kesadaran dan lalu lintas."],
+ ["Mengajak pengunjung memakai kuis 'cari warna foundation yang cocok'.","Act","Mendorong interaksi di situs."],
+ ["Pengunjung menyelesaikan pembayaran pesanan pertamanya.","Convert","Mencapai sasaran penjualan."],
+ ["Email bulanan berisi tips dan penawaran khusus anggota.","Engage","Hubungan jangka panjang untuk retensi."],
+ ["Optimasi SEO agar artikel muncul di halaman pertama Google.","Reach","Mendatangkan pengunjung."],
+ ["Pengunjung mengisi formulir untuk mengunduh e-book gratis.","Convert","Prospek (lead) adalah sasaran konversi."]
+]},
+vqvc:{o:["Volume","Quality (konversi)","Cost (CPC/CPA)","ROI/ROAS","Metrik merek","ROI berbasis LTV"],it:[
+ ["Jumlah pengunjung unik per bulan.","Volume","Langkah 0."],
+ ["Persentase pengunjung yang meminta penawaran harga.","Quality (konversi)","Langkah 1; termasuk bounce rate."],
+ ["Biaya untuk mendapatkan satu pelanggan baru dari iklan pencarian.","Cost (CPC/CPA)","Langkah 2–3."],
+ ["Pendapatan dari kampanye dibagi belanja iklannya.","ROI/ROAS","Langkah 4 (ROAS)."],
+ ["Kenaikan kesadaran merek dan niat membeli setelah kampanye display.","Metrik merek","Langkah 5."],
+ ["Nilai pelanggan asuransi selama lima tahun, dikurangi biaya akuisisi dan klaim.","ROI berbasis LTV","Langkah 6."]
+]},
+channel:{o:["SEO","PPC","Digital PR","Afiliasi","Iklan display","Email","Media sosial/viral"],it:[
+ ["Menulis panduan mendalam agar halaman naik di hasil pencarian alami.","SEO","Posisi di hasil organik."],
+ ["Iklan teks yang muncul saat orang mengetik 'sepatu lari' dan dibayar per klik.","PPC","Paid search."],
+ ["Rilis berita dikirim ke media online dan blogger agar merek disebut dan ditautkan.","Digital PR","Sebutan positif dan backlink."],
+ ["Kreator mendapat komisi 10% dari setiap penjualan lewat tautannya.","Afiliasi","Bayar sesuai hasil."],
+ ["Banner bergambar di situs berita yang membangun kesadaran merek.","Iklan display","Juga punya efek pengganda media."],
+ ["Newsletter mingguan ke pelanggan yang sudah opt-in.","Email","Media push untuk retensi."],
+ ["Tantangan video yang diharapkan dibagikan ulang oleh pengguna.","Media sosial/viral","Butuh agen viral, seeding, dan pelacakan."]
+]},
+servqual:{o:["Tangibles","Reliability","Responsiveness","Assurance","Empathy"],it:[
+ ["Tampilan aplikasi yang rapi dan mudah dipakai.","Tangibles","Desain visual dan kemudahan pakai."],
+ ["Aplikasi tetap bisa diakses saat lonjakan transaksi di akhir tahun.","Reliability","Ketersediaan layanan yang konsisten."],
+ ["Email keluhan dibalas dalam satu hari kerja.","Responsiveness","Kecepatan respons."],
+ ["Pernyataan privasi yang jelas dan sertifikasi keamanan data.","Assurance","Kepercayaan dan keamanan."],
+ ["Agen layanan menyapa dengan nama dan memahami riwayat masalah pelanggan.","Empathy","Perhatian personal."],
+ ["Jawaban email yang benar-benar menjawab ketiga pertanyaan pelanggan.","Assurance","Kualitas jawaban."]
+]},
+tesco:{o:["Pemicu 1: daftar tapi belum beli","Pemicu 2: pembelian pertama","Pemicu 3: lama tidak membeli"],it:[
+ ["Email dua hari setelah registrasi berisi tawaran bantuan telepon dan diskon £5.","Pemicu 1: daftar tapi belum beli","Mengubah pengunjung menjadi pembeli."],
+ ["Konfirmasi pesanan langsung setelah transaksi.","Pemicu 2: pembelian pertama","AR1 dari pemicu 2."],
+ ["Survei kepuasan tentang pengemudi dan pemilih barang lima hari setelah pembelian.","Pemicu 2: pembelian pertama","Memantau kualitas layanan."],
+ ["Surat tips memakai layanan dan diskon £5 dua minggu setelah pembelian pertama.","Pemicu 2: pembelian pertama","Mendorong pemakaian ulang."],
+ ["Email reaktivasi berisi survei pengalaman dan insentif £5 saat dormansi terdeteksi.","Pemicu 3: lama tidak membeli","Mengaktifkan kembali pelanggan."]
+]}
+};
+
+/* ---------------- cases ---------------- */
+var CASES=[
+ {id:"c1",t:"Studi Kasus 1 — Tesco.com: komunikasi berbasis pemicu untuk mendukung CRM",src:"Chaffey et al., Bab 8, Case Study 8.2",
+  body:"<p>Tesco, peritel bahan pangan terbesar Inggris, juga pelopor belanja online. Situs Tesco.com menjadi portal bagi sebagian besar produknya: bahan pangan, nonpangan, layanan keuangan, telekomunikasi, serta layanan mitra seperti program diet, liburan, unduhan musik, dan sewa DVD. Untuk menarik pelanggan ke kanal online, Tesco.com mengandalkan iklan di toko dan basis pelanggan program loyalitas <b>Clubcard</b>; untuk pelanggan yang sudah ada, email dan surat langsung berisi penawaran khusus.</p><p>Menurut Humby dan Hunt (2003), Tesco memakai <b>segmentasi berbasis komitmen</b> (\"tangga loyalitas\") berdasarkan recency, frequency, dan nilai belanja, dengan enam kategori: <em>logged-on, cautionary, developing, established, dedicated</em>, dan <em>logged-off</em> (yang ingin dimenangkan kembali). Tesco lalu memakai <b>pesan otomatis yang dipicu peristiwa</b>:</p><ul><li><b>Pemicu 1, daftar tetapi belum membeli:</b> dua hari kemudian, email menawarkan bantuan telepon dan diskon £5 untuk pembelian pertama.</li><li><b>Pemicu 2, pembelian pertama:</b> konfirmasi pesanan; survei kepuasan lima hari kemudian; surat berisi tips dan diskon £5 setelah dua minggu; newsletter bulanan; peringatan dua mingguan dengan penawaran personal; diskon £5 setelah dua bulan; kupon tiap triwulan.</li><li><b>Pemicu 3, lama tidak membeli:</b> email reaktivasi dengan survei pengalaman dan insentif £5, lalu diskon lanjutan.</li></ul><p>Di bawah CEO Laura Wade-Gery, penjualan Tesco.com naik 24% menjadi £719 juta dalam setahun. Waktu yang dibutuhkan pelanggan baru untuk menyelesaikan pesanan pertama turun dari lebih dari satu jam menjadi 35 menit berkat perbaikan usability. Tesco juga memperluas layanan (eDiets, unduhan musik, sewa DVD) yang dipromosikan lewat Clubcard ke 10 juta pelanggan per tahun. Diperkirakan £1 dari setiap £8 belanja bahan pangan di Inggris dibelanjakan di Tesco.</p>",
+  qs:[
+   ["Rangkum pendekatan strategis yang membuat Tesco.com berhasil online. Kaitkan dengan empat aktivitas CRM: seleksi, akuisisi, retensi, dan ekstensi.","Seleksi: segmentasi tangga loyalitas berbasis RFM. Akuisisi: memanfaatkan basis Clubcard dan iklan di toko (biaya akuisisi rendah karena pelanggan sudah ada), plus iklan kata kunci untuk nonpangan. Retensi: rangkaian pesan otomatis setelah pembelian pertama, survei kepuasan, perbaikan usability (pesanan pertama dari lebih dari satu jam menjadi 35 menit). Ekstensi: perluasan produk dan layanan mitra (eDiets, musik, DVD) yang dipromosikan lewat Clubcard untuk menaikkan share of wallet. Semua ditopang data dan integrasi online-offline."],
+   ["Analisis strategi kontak Tesco.com dengan konsep Sense-Respond-Adjust dan RFM. Mengapa insentif £5 dipakai di setiap tahap?","Sistem 'merasakan' peristiwa (registrasi tanpa pembelian, pembelian pertama, dormansi), 'merespons' dengan pesan yang sesuai, lalu menyesuaikan berdasarkan respons berikutnya. Tangga loyalitas memakai recency, frequency, dan nilai untuk menentukan kategori dan pesan. Insentif £5 sejalan dengan permission marketing Godin: insentif diberikan di awal dan diperkuat sepanjang hubungan untuk mengubah perilaku (mencoba, membeli lagi, kembali). Risikonya: pelanggan belajar menunggu voucher, sehingga perlu diuji efek tambahannya."],
+   ["Apa risiko dan batasan strategi Tesco ini bila diterapkan sekarang? Pertimbangkan permission dan privasi, kualitas data, serta kritik terhadap hubungan loyalitas-laba.","Butuh opt-in yang sah dan transparansi pemakaian data (perlindungan data). Pemicu yang salah sasaran karena data buruk akan terasa sebagai spam (interruption marketing). Kualitas data dan integrasi sistem lama penting; banyak proyek CRM gagal karena proses. Reinartz dan Kumar mengingatkan pelanggan setia belum tentu paling menguntungkan, sehingga insentif perlu diukur terhadap LTV. Pelanggan juga mungkin tidak menginginkan 'hubungan', hanya kenyamanan."]
+  ]},
+ {id:"c2",t:"Studi Kasus 2 — 🇮🇩 Sociolla: e-commerce, ulasan, dan komunitas dalam satu ekosistem",src:"Kontan/MomsMoney (28 Juli 2025); Selular.ID (29 September 2025)",
+  body:"<p>Sociolla, peritel kecantikan milik Social Bella, merayakan ulang tahun ke-10 pada 2025. Aplikasi <b>SOCO</b>, dirilis pada 2018, kini disebut <em>superapp</em> yang menggabungkan e-commerce, ulasan, dan komunitas. Menurut perusahaan, SOCO memuat lebih dari <b>3,5 juta ulasan produk</b> dari penggemar kecantikan, pembeli, dan ahli (penata rias, dokter kulit, penata rambut). Fitur lainnya: <b>Personalized Beauty Profile</b>, yang menyesuaikan rekomendasi dengan minat, preferensi, dan riwayat belanja serta mempertemukan pengguna dengan profil serupa, dan <b>fitur pindai</b> barcode produk di toko mana pun. Konsumen intinya Gen Z (54%) dan milenial (46%).</p><p>Komunitas <b>SOCO Network</b> memiliki sekitar 5.000 anggota aktif dan meluas dari kecantikan ke fesyen, makanan, olahraga, dan budaya Korea. Seorang anggota yang bergabung lebih dari delapan tahun menyebut jaringan itu fondasi kariernya sebagai kreator konten. Social Bella menyatakan terhubung dengan lebih dari <b>7,6 juta anggota SOCO</b> dan mengoperasikan lebih dari <b>125 toko di lebih dari 55 kota</b>. Penghargaan tahunan Sociolla Award 2025 memakai ulasan pengguna nyata (rating minimal 4,5 dari pembeli dengan transaksi riil), kinerja merek, dan analisis data internal.</p>",
+  qs:[
+   ["Mengapa model Sociolla bisa disebut perpaduan eCRM dan social CRM? Tunjukkan unsur masing-masing dengan memakai Gambar 8.4.","Unsur eCRM: data profil dan riwayat belanja anggota, rekomendasi personal (Personalized Beauty Profile), komunikasi satu-ke-satu ke 7,6 juta anggota, toko dan aplikasi yang terintegrasi. Unsur social CRM: 3,5 juta ulasan dari pengguna dan ahli (percakapan antar-pelanggan), komunitas SOCO Network, kreator dan micro-influencer. Ulasan memperkuat konversi dan menjadi data untuk inovasi dan penghargaan (salah satu area Altimeter). Nilainya muncul dari perpaduan keduanya, sesuai Campbell (2013)."],
+   ["Analisis komunitas SOCO Network dengan konsep buku: jenis komunitas, aturan 90-9-1, micro-influencer, dan risiko komunitas (kosong, sunyi, kritis).","Komunitas ini terutama berjenis interest (minat kecantikan dan gaya hidup), sebagian purpose (meriset produk sebelum membeli). 5.000 anggota aktif jauh lebih kecil daripada 7,6 juta anggota, sesuai pola 90-9-1: mayoritas hanya membaca ulasan. Anggota aktif berperan seperti micro-influencer yang engagement-nya tinggi. Risiko: komunitas sunyi bila kontributor tidak diberi insentif dan pengakuan; ulasan kritis terhadap merek mitra perlu dikelola tanpa sensor agar tetap kredibel; serta ulasan palsu atau berbayar yang merusak kepercayaan."],
+   ["Apa risiko dan tanggung jawab Sociolla dalam memakai data 7,6 juta anggota dan jutaan ulasan? Kaitkan dengan permission marketing, kualitas data, dan kepercayaan.","Butuh opt-in dan transparansi pemakaian data (UU PDP); personalisasi yang terlalu jauh bisa terasa invasif. Kualitas data: profil kecantikan berubah, perlu diperbarui; ulasan harus diverifikasi transaksi nyata (seperti syarat Sociolla Award) agar tidak dimanipulasi. Kepercayaan (Bart dkk.) bergantung pada ulasan yang jujur, termasuk yang negatif. Konflik kepentingan juga mungkin muncul karena Sociolla menjual produk yang diulas, sehingga independensi ulasan harus dijaga."]
+  ]},
+ {id:"c3",t:"Studi Kasus 3 — 🇮🇩 Livin' by Mandiri: memindahkan nasabah ke kanal digital",src:"Media Asuransi (19 Sep 2025); Kontan (10 Des 2025)",
+  body:"<p>Livin' by Mandiri adalah aplikasi <em>super app</em> perbankan Bank Mandiri. Per akhir Juni 2025, penggunanya <b>32,9 juta</b> (naik 27% dibanding tahun sebelumnya), dengan <b>2,23 miliar transaksi</b> (naik 26%) senilai Rp2.097 triliun (naik 11%). Menurut Direktur Keuangan dan Strategi Novita Widya Anggraini, Livin' telah menjadi pusat aktivitas perbankan nasabah: <b>91% rekening baru dibuka secara digital</b>, dan 87% dana tabungan nasabah terhubung ke Livin'.</p><p>Per September 2025, pengguna melampaui 35 juta, frekuensi transaksi naik 25%, nilai transaksi mencapai Rp3.220 triliun, dan pendapatan berbasis komisi digital Rp5,48 triliun (naik 13,3%). Selain transfer dan pembayaran, aplikasi menyediakan tabungan dan deposito digital, pembayaran QR dengan berbagai sumber dana, penautan e-wallet, pembayaran nirsentuh, dan layanan gaya hidup <b>Sukha</b> (perjalanan, hiburan, pembelian produk). Bank menargetkan 50–60 juta pengguna pada 2026. VP Digital Retail Banking Harry Sofri Putranda menyatakan nasabah membutuhkan layanan yang cepat dan praktis, dan bank akan terus meningkatkan stabilitas fitur saat volume transaksi tinggi.</p>",
+  qs:[
+   ["Gunakan dua makna 'akuisisi pelanggan' di buku untuk menganalisis Livin' by Mandiri. Ukuran apa yang menunjukkan keberhasilan masing-masing?","Makna pertama, nasabah baru: 91% rekening baru dibuka secara digital, sehingga aplikasi menjadi kanal akuisisi utama. Makna kedua, memindahkan nasabah lama ke kanal online (seperti kampanye Go Paperless American Express atau First Direct): 87% dana tabungan terhubung ke Livin' dan pengguna 32,9–35 juta. Ukuran: jumlah pengguna, porsi pembukaan rekening digital, porsi dana atau nasabah yang aktif di aplikasi, serta biaya per akuisisi dibanding cabang."],
+   ["Rancang segmentasi aktivitas (Gambar 8.24) untuk pengguna Livin' dan taktik untuk tiap segmen. Mengapa jumlah pengguna saja tidak cukup sebagai ukuran?","Segmen: baru, aktif (mis. bertransaksi dalam 30 hari), dorman (pernah aktif lalu berhenti), tidak aktif (terdaftar tetapi belum pernah memakai). Taktik: panduan dan insentif transaksi pertama untuk pengguna baru; penawaran personal dan fitur gaya hidup untuk yang aktif; reaktivasi lewat notifikasi, email, atau petugas cabang untuk yang dorman; aktivasi untuk yang tidak aktif. Jumlah pengguna terdaftar bisa menyesatkan karena banyak yang dorman; ukuran yang lebih baik adalah persentase aktif, frekuensi, dan hurdle rate."],
+   ["Bagaimana Livin' dapat dipakai untuk ekstensi pelanggan, dan apa risikonya terhadap kualitas layanan (SERVQUAL)?","Ekstensi: cross-sell deposito digital, produk investasi atau asuransi, dan layanan gaya hidup Sukha berdasarkan data transaksi (propensity modelling, next-best product), seperti Barclays yang menayangkan penawaran relevan di layanan mandirinya. Pendapatan komisi digital yang tumbuh menunjukkan potensinya. Risiko: penawaran berlebihan terasa mengganggu; gangguan sistem saat lonjakan transaksi merusak reliability dan responsiveness; keamanan data memengaruhi assurance. Janji layanan harus ditepati sebelum memperbanyak tawaran."]
+  ]},
+ {id:"c4",t:"Studi Kasus 4 — 🇮🇩 Latihan kelompok: strategi e-CRM untuk UMKM kopi",src:"Skenario rekaan untuk diskusi kelas",noans:true,
+  body:"<p>\"Kopi Ronde\" adalah kedai kopi dengan tiga gerai di Surabaya dan toko online di aplikasi pesan-antar. Mereka punya data 8.000 pelanggan yang mendaftar lewat WhatsApp untuk mengumpulkan stempel digital (nama, nomor, tanggal dan nilai setiap pembelian). Pemilik melihat bahwa banyak pelanggan hanya membeli sekali saat promo pembukaan, sementara sekelompok kecil membeli hampir setiap hari. Anggaran pemasaran terbatas, dan satu-satunya kanal komunikasi langsung adalah WhatsApp.</p><p>Gunakan <b>penilai RFM (Unit 7)</b>, <b>kalkulator CPA (Unit 4)</b>, dan <b>kalkulator NPS (Unit 3)</b> untuk mendukung argumen kelompok Anda.</p>",
+  qs:[
+   ["Seleksi: bagaimana kelompok Anda menyegmentasi 8.000 pelanggan dengan RFM? Tetapkan ambang R, F, dan M yang masuk akal untuk kedai kopi dan sebutkan 3–4 segmen prioritas.",""],
+   ["Retensi dan ekstensi: rancang strategi kontak berbasis pemicu (minimal tiga pemicu) seperti Tesco.com, lengkap dengan waktu, pesan, insentif, dan cara mencegahnya menjadi spam.",""],
+   ["Pengukuran: metrik apa yang akan dipakai (CPA, tingkat pembelian ulang, NPS, hurdle rate, LTV), dan bagaimana kelompok Anda memutuskan apakah program ini layak dilanjutkan?",""]
+  ]}
+];
+
+var LO_NAMES={1:"CRM, eCRM & siklus hidup",2:"Dari eCRM ke social CRM",3:"Permission, konversi, NPS",4:"Akuisisi: pengukuran & SEM",5:"Saluran akuisisi lain",6:"Retensi, LTV & kualitas layanan",7:"Ekstensi, RFM & teknologi CRM"};
+
+/* ---------------- self-test bank ---------------- */
+var FINAL=[
+ [1,"Empat aktivitas pemasaran klasik CRM (Gambar 8.1) adalah…",["Riset, desain, produksi, distribusi","Seleksi, akuisisi, retensi, ekstensi","Reach, act, convert, engage","Product, price, place, promotion"],1,"Buku disusun mengikuti siklus hidup pelanggan ini."],
+ [1,"Menurut Reichheld dan Schefter (2000), mengakuisisi pelanggan online di ritel dibanding bisnis tradisional…",["Lebih murah 50%","20–30% lebih mahal","Sama saja","Gratis"],1,"Sehingga perusahaan baru bisa merugi dua sampai tiga tahun."],
+ [1,"Menghubungi pelanggan yang sudah lama tidak membeli agar membeli lagi disebut…",["Re-sell","Reaktivasi","Up-sell","Referral"],1,"Salah satu teknik ekstensi."],
+ [1,"Payne (2008) mendefinisikan eCRM sebagai pendekatan bisnis untuk menciptakan dan meningkatkan hubungan dengan pelanggan yang dipilih secara cermat demi…",["Mengurangi jumlah pelanggan","Meningkatkan nilai pelanggan, profitabilitas, dan nilai pemegang saham","Menghapus kanal offline","Menaikkan harga"],1,"Fokusnya pelanggan yang ditargetkan dengan cermat."],
+ [1,"O'Malley dan Tynan (2001) menyatakan konsep hubungan jangka panjang lebih mudah diterapkan di…",["Pasar konsumen","Pemasaran B2B","Pemasaran viral","Lelang online"],1,"Konsumen bisa saja berkata 'saya tidak mau punya hubungan'."],
+ [1,"Aplikasi CRM yang mendukung tenaga penjual mencatat kunjungan dan pertanyaan pelanggan adalah…",["Campaign management","Salesforce automation (SFA)","Data mining","Email marketing"],1,"Lima aplikasi: SFA, layanan pelanggan, proses penjualan, kampanye, analisis."],
+ [2,"Social CRM didefinisikan sebagai…",["Mengirim email massal","Mengelola percakapan antar-pelanggan untuk melibatkan pelanggan dan pemangku kepentingan dengan merek","Membeli pengikut media sosial","Iklan di televisi"],1,"Melengkapi interaksi satu-ke-satu eCRM."],
+ [2,"Kerangka POST adalah versi ringkas dari…",["RACE","SOSTAC","SERVQUAL","RFM"],1,"People, Objectives, Strategy, Technology (Forrester, 2007)."],
+ [2,"Mana yang BUKAN salah satu dari enam area social CRM menurut Altimeter (2010)?",["Pemasaran","Layanan dan dukungan","Inovasi","Produksi pabrik"],3,"Enam area: pemasaran, penjualan, layanan, inovasi, kolaborasi, pengalaman pelanggan."],
+ [2,"Komunitas yang anggotanya berada dalam situasi hidup yang sama (mis. orang tua baru) disebut komunitas…",["Purpose","Position","Interest","Profession"],1,"Contoh buku: Mumsnet."],
+ [2,"Watts dan Dodds (2007) berpendapat sebagian besar perubahan sosial didorong oleh…",["Selebritas","Orang yang mudah dipengaruhi yang memengaruhi orang lain yang mudah dipengaruhi","Iklan TV","Pemerintah"],1,"Menantang 'hipotesis influencer'."],
+ [2,"Menurut Box 8.5 (Markerly, 2017), seiring bertambahnya jumlah pengikut influencer Instagram, tingkat like…",["Naik","Turun","Tetap","Tidak bisa diukur"],1,"Kurang dari 1.000 pengikut sekitar 8%; 1–10 juta pengikut sekitar 1,7%."],
+ [2,"Menurut Box 8.3, aspek layanan pelanggan yang paling menjengkelkan di berbagai negara adalah…",["Harga mahal","Dilempar dari satu agen ke agen lain","Situs berwarna gelap","Email terlalu panjang"],1,"Karena itu layanan omnichannel harus saling mendukung."],
+ [3,"Pemasaran yang menginterupsi aktivitas konsumen disebut Godin sebagai…",["Permission marketing","Interruption marketing","Inbound marketing","Viral marketing"],1,"Godin: dari 500 menjadi lebih dari 3.000 pesan pemasaran per hari."],
+ [3,"Pelanggan secara proaktif setuju menerima informasi lanjutan disebut…",["Opt-out","Opt-in","Spam","Cookie"],1,"Banyak undang-undang perlindungan data mewajibkan opt-in."],
+ [3,"IDIC (Peppers dan Rogers) adalah singkatan dari…",["Identify, Differentiate, Interact, Customise","Inform, Deliver, Invoice, Collect","Index, Design, Implement, Control","Ideate, Develop, Iterate, Commercialise"],0,"Kerangka membangun hubungan satu-ke-satu."],
+ [3,"Saran buku tentang registrasi pelanggan di situs adalah…",["Wajibkan di halaman pertama","Tunda selama mungkin karena registrasi menjadi penghalang","Jangan pernah meminta data","Minta data selengkap mungkin di awal"],1,"Berdasarkan studi Nielsen (2000)."],
+ [3,"Tahap RACE yang bertujuan membangun hubungan jangka panjang untuk retensi adalah…",["Reach","Act","Convert","Engage"],3,"RACE berkembang dari kerangka REAN."],
+ [3,"Pengguna yang online untuk membeli produk tertentu dan memakai situs perbandingan termasuk tipe…",["Undirected information-seeker","Directed buyer","Entertainment seeker","Bargain hunter"],1,"Lewis dan Lewis (1997)."],
+ [3,"Dalam NPS, responden yang memberi skor 7–8 adalah…",["Promoter","Pasif","Detraktor","Tidak dihitung sama sekali"],1,"Pasif tidak dikurangkan maupun ditambahkan."],
+ [3,"Kirby dan Samson (2008) mengkritik NPS karena…",["Terlalu rumit dihitung","Skor yang sama bisa menyembunyikan komposisi promoter dan detraktor yang sangat berbeda","Tidak bisa dipakai online","Hanya untuk B2B"],1,"Contoh: 70% promoter dan 30% detraktor vs 40% promoter dan 0% detraktor."],
+ [4,"Arti kedua 'akuisisi pelanggan' dalam konteks digital adalah…",["Membeli perusahaan pesaing","Mendorong pelanggan yang ada beralih ke kanal online","Membeli database email","Merekrut tenaga penjual"],1,"Contoh: kampanye Go Paperless American Express."],
+ [4,"Media yang membuat pengunjung memberi perhatian penuh dan ingin memegang kendali disebut…",["Lean-back","Lean-forward","Push","Broadcast"],1,"Salah satu dari delapan karakteristik komunikasi interaktif."],
+ [4,"Persentase pengunjung yang langsung pergi setelah melihat satu halaman disebut…",["Conversion rate","Bounce rate","Open rate","Churn rate"],1,"Dipakai menilai relevansi halaman pendaratan."],
+ [4,"Menurut buku, ROAS dihitung sebagai…",["Laba ÷ belanja iklan","Total pendapatan dari sumber rujukan ÷ belanja iklan","Jumlah klik ÷ tayangan","Biaya ÷ jumlah pelanggan"],1,"ROAS tidak memperhitungkan profitabilitas; ROI memakai laba."],
+ [4,"Peringkat iklan paid search ditentukan oleh…",["Hanya tawaran CPC tertinggi","Tawaran CPC dan quality score yang memperhitungkan tingkat klik","Usia situs","Jumlah halaman situs"],1,"Iklan yang jarang diklik bisa turun meski tawarannya tinggi."],
+ [4,"Proses mesin pencari secara berurutan adalah…",["Ranking, crawling, indexing, serving","Crawling, indexing, ranking, query dan penyajian hasil","Indexing, serving, crawling, ranking","Serving, ranking, indexing, crawling"],1,"Gambar 8.12."],
+ [5,"CIPR menyatakan public relations pada dasarnya tentang…",["Penjualan langsung","Reputasi","Harga","Distribusi"],1,"Digital PR memaksimalkan sebutan positif di situs pihak ketiga."],
+ [5,"Efek ketika paparan iklan display menaikkan respons di media lain disebut…",["Bullwhip effect","Media multiplier atau halo effect","Long tail","Network effect"],1,"Contoh: orang mencari merek di Google setelah melihat banner."],
+ [5,"Studi XMOS menunjukkan porsi belanja iklan online yang optimal untuk produk keterlibatan rendah sekitar…",["Kurang dari 1%","10–15%","50%","90%"],1,"Dove: menaikkan porsi digital ke 15% akan menaikkan metrik merek 8%."],
+ [5,"Tiga hal yang dibutuhkan kampanye viral menurut Kirby (2003) adalah…",["Harga, produk, tempat","Materi kreatif (agen viral), seeding, dan pelacakan","Logo, slogan, warna","Email, SMS, telepon"],1,"Tanpa pelacakan, imbal hasilnya tidak bisa dinilai."],
+ [5,"Email berisi tawaran dari perusahaan yang dikirim bersama merek lain yang sudah dipercaya penerima disebut…",["Cold email","Co-branded email","Spam","Third-party e-newsletter"],1,"Lebih 'hangat' daripada cold email."],
+ [5,"Menurut Tabel 8.1, kelemahan utama email marketing untuk akuisisi adalah…",["Tidak bisa diukur","Butuh opt-in dan lebih cocok untuk retensi","Terlalu murah","Tidak bisa dipersonalisasi"],1,"Pesan juga bisa tenggelam di antara email lain."],
+ [6,"Dua sasaran retensi di e-commerce adalah…",["Menaikkan harga dan mengurangi produk","Mempertahankan pelanggan (pembelian ulang) dan mempertahankan pemakaian kanal online (kunjungan ulang)","Menambah staf dan cabang","Mengurangi iklan dan promosi"],1,"Sejajar dengan dua makna akuisisi."],
+ [6,"Menurut Tabel 8.2, metrik Dell untuk pendorong loyalitas 'layanan purnajual' adalah…",["Ship to target","Initial field incident rate","On-time, first-time fix","Net promoter score"],2,"Persentase masalah yang selesai pada kunjungan pertama tepat waktu."],
+ [6,"Pengguna yang mendaftar layanan online tetapi belum pernah memakainya termasuk segmen…",["Aktif","Dorman","Tidak aktif (non-activated)","Baru dan aktif"],2,"Dorman berarti pernah aktif lalu berhenti."],
+ [6,"Lifetime value (LTV) adalah…",["Nilai pembelian pertama","Total manfaat bersih pelanggan selama seluruh hubungannya dengan perusahaan","Jumlah kunjungan per bulan","Harga produk termahal"],1,"Dihitung sebagai nilai sekarang bersih dengan tingkat diskonto."],
+ [6,"Dalam Gambar 8.26, strategi untuk pelanggan platinum adalah…",["Mengurangi biaya komunikasi","Memahami preferensi komunikasinya dan tidak berlebihan menghubungi, kecuali ada tanda akan pergi","Membiarkan mereka pergi","Selalu memberi diskon terbesar"],1,"Sebagian pelanggan perunggu dibiarkan bila tidak menguntungkan."],
+ [6,"Dimensi SERVQUAL yang terkait privasi dan keamanan data pelanggan adalah…",["Tangibles","Reliability","Assurance","Empathy"],2,"Termasuk sertifikasi independen."],
+ [6,"Saran buku tentang janji layanan adalah…",["Selalu berjanji lebih cepat dari pesaing","Lebih baik under-promise daripada over-promise","Jangan pernah menyebut waktu pengiriman","Janji tidak penting"],1,"Pengiriman dua hari dari janji tiga hari lebih membangun loyalitas."],
+ [7,"Fokus pada share of customer menurut Godin berarti…",["Mengejar pangsa pasar terbesar","Memperbesar porsi belanja tiap pelanggan dalam suatu kategori","Menambah pelanggan sebanyak mungkin","Mengurangi harga"],1,"'Fire 70% of your customers and watch your profits go up!'"],
+ [7,"Menurut Novo (2004), prediktor paling kuat bahwa pelanggan akan mengulang tindakan adalah…",["Monetary value","Recency","Usia pelanggan","Lokasi"],1,"Itu sebabnya katalog dikirim lagi segera setelah pembelian pertama."],
+ [7,"Persentase pelanggan dalam suatu kelompok yang sudah melakukan suatu tindakan disebut…",["Latency","Hurdle rate","Bounce rate","Churn"],1,"Contoh: 30% mengklik email dalam setahun."],
+ [7,"Memakai komunikasi murah untuk pelanggan yang suka kanal online dan komunikasi mahal untuk yang suka kanal tradisional disebut…",["Right-channelling","Disintermediasi","Spamming","Sponsorship"],0,"Juga disebut right-touching."],
+ [7,"Tiga jenis data pelanggan dalam basis data CRM adalah…",["Profil, transaksi, komunikasi","Gaji, alamat, hobi","Produk, harga, stok","Iklan, PR, sponsor"],0,"Data transaksi dan komunikasi sangat penting untuk penargetan."],
+ [7,"Mana yang BUKAN langkah mengelola kualitas data CRM menurut buku?",["Menetapkan pemilik bisnis","Mengoptimalkan kualitas saat input","Menuju satu pandangan pelanggan","Menghapus semua data lama setiap bulan"],3,"Langkah lain: perbaikan terus-menerus dan kebijakan kualitas data."]
+];
+
+var RUB={
+ c1_0:{need:3,cr:[
+  ["Seleksi","seleksi|segmen|tangga loyalitas|rfm","Bagaimana Tesco memilih dan menyegmentasi?"],
+  ["Akuisisi","akuisisi|clubcard|toko|iklan","Bagaimana Tesco mengakuisisi pelanggan online?"],
+  ["Retensi","retensi|pemicu|trigger|survei|usability|35 menit","Bagaimana Tesco mempertahankan pelanggan?"],
+  ["Ekstensi","ekstensi|ediets|musik|dvd|share of wallet|cross","Bagaimana Tesco memperluas pembelian?"]],
+  self:["Saya memakai keempat aktivitas CRM dengan bukti dari kasus"]},
+ c1_1:{need:3,cr:[
+  ["Sense-Respond-Adjust","sense|respond|adjust|pantau|merespons","Jelaskan siklus Sense-Respond-Adjust."],
+  ["RFM","rfm|recency|frequency|nilai|monetary","Kaitkan dengan RFM."],
+  ["Insentif & permission","insentif|godin|permission|izin|£5","Mengapa insentif dipakai?"],
+  ["Risiko insentif","menunggu voucher|risiko|uji|biaya","Apa risiko insentif yang terus-menerus?"]],
+  self:["Saya menjelaskan logika di balik urutan pesan, bukan hanya mendaftarnya"]},
+ c1_2:{need:3,cr:[
+  ["Privasi/opt-in","opt-in|privasi|perlindungan data|pdp|izin","Apa isu permission dan privasi?"],
+  ["Kualitas data","kualitas data|data buruk|integrasi|legacy|sistem lama","Apa peran kualitas data?"],
+  ["Kritik loyalitas","reinartz|kumar|loyal|ltv|lifetime","Kaitkan dengan kritik loyalitas-laba."],
+  ["Spam/interupsi","spam|interruption|mengganggu","Kapan pemicu menjadi spam?"]],
+  self:["Saya menimbang risiko secara konkret, bukan umum"]},
+ c2_0:{need:3,cr:[
+  ["Unsur eCRM","profil|riwayat|rekomendasi|personal|satu-ke-satu","Unsur eCRM apa yang ada?"],
+  ["Unsur social CRM","ulasan|review|komunitas|antar-pelanggan|kreator","Unsur social CRM apa yang ada?"],
+  ["Perpaduan","perpaduan|melengkapi|campbell|integrasi|gabung","Mengapa nilainya dari perpaduan?"],
+  ["Gambar 8.4","gambar 8.4|altimeter|inovasi|percakapan","Gunakan kerangka buku."]],
+  self:["Saya memisahkan dengan jelas unsur eCRM dan social CRM"]},
+ c2_1:{need:3,cr:[
+  ["Jenis komunitas","interest|purpose|minat|position","Jenis komunitas apa?"],
+  ["90-9-1","90-9-1|lurker|membaca|5.000|5000","Kaitkan dengan aturan 90-9-1."],
+  ["Micro-influencer","micro|influencer|kreator|engagement","Apa peran anggota aktif?"],
+  ["Risiko komunitas","sunyi|kosong|kritis|palsu|insentif","Apa risikonya?"]],
+  self:["Saya memakai angka dari kasus untuk mendukung analisis"]},
+ c2_2:{need:3,cr:[
+  ["Permission/privasi","opt-in|privasi|pdp|transparan|izin","Apa tanggung jawab soal data?"],
+  ["Kualitas & verifikasi","verifikasi|transaksi nyata|kualitas data|palsu|manipulasi","Bagaimana menjaga keaslian ulasan?"],
+  ["Kepercayaan","kepercayaan|trust|bart|kredibel|negatif","Kaitkan dengan kepercayaan."],
+  ["Konflik kepentingan","konflik|independen|menjual produk","Apa konflik kepentingannya?"]],
+  self:["Saya menyebut tanggung jawab yang bisa diterapkan, bukan sekadar risiko"]},
+ c3_0:{need:3,cr:[
+  ["Nasabah baru","91|rekening baru|nasabah baru","Bagaimana akuisisi nasabah baru?"],
+  ["Migrasi kanal","87|beralih|kanal online|go paperless|first direct|memindahkan","Bagaimana nasabah lama dipindahkan ke online?"],
+  ["Ukuran","ukuran|metrik|jumlah pengguna|porsi|cpa|aktif","Ukuran apa yang tepat?"]],
+  self:["Saya membedakan dengan jelas dua makna akuisisi"]},
+ c3_1:{need:3,cr:[
+  ["Empat segmen","baru|aktif|dorman|tidak aktif","Sebutkan segmen aktivitasnya."],
+  ["Taktik","taktik|notifikasi|insentif|reaktivasi|aktivasi","Apa taktik per segmen?"],
+  ["Kritik jumlah pengguna","terdaftar|menyesatkan|persentase aktif|hurdle|frekuensi","Mengapa jumlah pengguna tidak cukup?"]],
+  self:["Taktik saya berbeda untuk tiap segmen"]},
+ c3_2:{need:3,cr:[
+  ["Ekstensi","cross|deposito|investasi|asuransi|sukha|next-best|propensity","Produk apa yang bisa ditawarkan?"],
+  ["Contoh buku","barclays|first direct|hsbc","Kaitkan dengan contoh buku."],
+  ["SERVQUAL","reliability|responsiveness|assurance|servqual|stabilitas|gangguan","Apa risikonya bagi kualitas layanan?"],
+  ["Kebisingan","berlebihan|mengganggu|spam|relevan","Bagaimana mencegah tawaran berlebihan?"]],
+  self:["Saya menimbang manfaat ekstensi dengan risiko layanan"]},
+ c4_0:{need:3,cr:[
+  ["Ambang RFM","recency|frequency|monetary|hari|minggu|bulan|rp","Tetapkan ambang RFM."],
+  ["Segmen","segmen|vip|baru|hampir hilang|sekali beli|setia","Sebutkan segmen prioritas."],
+  ["Alasan","karena|nilai|potensi|lifetime","Jelaskan alasan prioritasnya."]],
+  self:["Ambang saya cocok untuk kebiasaan membeli kopi"]},
+ c4_1:{need:3,cr:[
+  ["Pemicu","pemicu|trigger|setelah|hari","Rancang pemicunya."],
+  ["Pesan & insentif","pesan|insentif|voucher|gratis|diskon","Apa pesan dan insentifnya?"],
+  ["Anti-spam","opt-in|frekuensi|spam|berhenti|izin","Bagaimana mencegah spam?"]],
+  self:["Setiap pemicu punya tujuan perilaku yang jelas"]},
+ c4_2:{need:3,cr:[
+  ["Metrik","cpa|nps|pembelian ulang|hurdle|ltv|retensi","Metrik apa yang dipakai?"],
+  ["Target","target|%|persen|bulan","Apa targetnya?"],
+  ["Keputusan","lanjut|hentikan|uji|bandingkan|kontrol","Bagaimana memutuskan kelayakan?"]],
+  self:["Kriteria keputusan saya bisa diukur"]}
+};
+var CONN=["karena","sehingga","akibatnya","oleh karena itu","maka","sebab","menyebabkan","artinya","dengan demikian","namun","tetapi","sedangkan","jika","agar","membuat","berdampak","because","therefore"];
+var LV=["Belum terlihat","Perlu diperkuat","Cukup","Baik","Sangat baik"];
+
+/* ---------------- glossary ---------------- */
+var GLOSS=[
+ ["CRM","Pendekatan membangun dan mempertahankan bisnis jangka panjang dengan pelanggan"],
+ ["eCRM","Memakai komunikasi digital untuk memaksimalkan penjualan ke pelanggan yang ada"],
+ ["Customer lifecycle","Tahap hubungan pelanggan: seleksi, akuisisi, retensi, ekstensi"],
+ ["Re-sell / cross-sell / up-sell","Produk serupa / produk terkait / produk lebih mahal"],
+ ["Social CRM","Mengelola percakapan antar-pelanggan untuk memperkuat hubungan dengan merek"],
+ ["Sense and respond","Komunikasi tepat waktu berdasarkan pemantauan perilaku pelanggan"],
+ ["Customer engagement","Interaksi berulang yang memperkuat investasi emosional pelanggan pada merek"],
+ ["Permission marketing","Pelanggan setuju (opt-in) dilibatkan dalam pemasaran, biasanya karena insentif"],
+ ["Opt-in / opt-out","Setuju menerima informasi / menolak menerima informasi"],
+ ["IDIC","Identify, Differentiate, Interact, Customise (Peppers & Rogers)"],
+ ["Conversion marketing","Memaksimalkan konversi audiens menjadi pelanggan dan pelanggan berulang"],
+ ["RACE","Reach, Act, Convert, Engage"],
+ ["Net promoter score","% promoter (9–10) − % detraktor (0–6)"],
+ ["POST","People, Objectives, Strategy, Technology"],
+ ["90-9-1","90% hanya membaca, 9% sesekali berkontribusi, 1% sangat aktif"],
+ ["Micro-influencer","Akun dengan pengikut organik yang lebih kecil tetapi keterlibatannya tinggi"],
+ ["CPA / allowable CPA","Biaya per akuisisi / batas maksimum yang masih menguntungkan"],
+ ["ROI / ROAS","Laba ÷ belanja iklan / pendapatan ÷ belanja iklan"],
+ ["Quality score","Penilaian iklan paid search yang bersama tawaran menentukan peringkat"],
+ ["Digital PR","Memaksimalkan sebutan positif tentang merek di situs pihak ketiga"],
+ ["Affiliate marketing","Komisi untuk situs yang merujuk penjualan atau prospek"],
+ ["Media multiplier","Satu media menaikkan respons di media lain (halo effect)"],
+ ["Personalisasi / mass customisation","Konten untuk individu / untuk kelompok berminat sama"],
+ ["Lifetime value (LTV)","Total manfaat bersih pelanggan selama seluruh hubungannya"],
+ ["SERVQUAL","Tangibles, reliability, responsiveness, assurance, empathy"],
+ ["Share of customer","Porsi belanja pelanggan dalam suatu kategori yang didapat satu perusahaan"],
+ ["RFM / FRAC","Recency, Frequency, Monetary value (+ Category)"],
+ ["Latency / hurdle rate","Jarak rata-rata antar-peristiwa / % kelompok yang sudah bertindak"],
+ ["Propensity modelling","Merekomendasikan next-best product berdasarkan perilaku"],
+ ["Marketing automation","Perangkat lunak yang mengirim pesan otomatis berdasarkan pemicu"]
+];
+
+/* ================= render: sidebar & plan ================= */
+var NAV=[["grp","Mulai"],["home","Beranda","⌂"],["grp","CRM & Social CRM"],["u1"],["u2"],["grp","Konversi & Akuisisi"],["u3"],["u4"],["u5"],["grp","Retensi & Ekstensi"],["u6"],["u7"],["grp","Penerapan & Evaluasi"],["cases","Studi Kasus","📂"],["final","Kuis Akhir","🏁"],["cards","Flashcard","🃏"],["notes","Catatan & Referensi","📝"]];
+function renderSide(){
+  var h="";
+  NAV.forEach(function(n){
+    if(n[0]==="grp"){h+='<div class="grp">'+n[1]+'</div>';return}
+    var u=UNITS.filter(function(x){return x.id===n[0]})[0];
+    if(u){var i=UNITS.indexOf(u)+1;h+='<a href="#'+u.id+'" data-nav="'+u.id+'" class="'+(S.done[u.id]?"done":"")+'"><span class="n">'+(S.done[u.id]?"✓":i)+'</span>'+u.t+'</a>'}
+    else{var dn=(n[0]==="final"&&S.final&&S.final.best>=80)||(n[0]==="cases"&&casesDone()); h+='<a href="#'+n[0]+'" data-nav="'+n[0]+'" class="'+(dn?"done":"")+'"><span class="n ico">'+(dn?"✓":n[2])+'</span>'+n[1]+'</a>'}
+  });
+  $("#side").innerHTML=h; markNav();
+  var pb="";UNITS.forEach(function(u,i){pb+='<tr><td>'+(i+1)+'</td><td><a href="#'+u.id+'">'+u.t+'</a></td><td>'+u.pg+'</td><td class="st '+(S.done[u.id]?"y":"n")+'">'+(S.done[u.id]?"✓ selesai":(S.read[i+1]?"dibaca":"—"))+'</td></tr>'});
+  pb+='<tr><td>'+(UNITS.length+1)+'</td><td><a href="#cases">Studi kasus ('+CASES.length+')</a></td><td>—</td><td class="st '+(casesDone()?"y":"n")+'">'+(casesDone()?"✓ selesai":"—")+'</td></tr>';
+  pb+='<tr><td>'+(UNITS.length+2)+'</td><td><a href="#final">Kuis akhir</a></td><td>—</td><td class="st '+(S.final&&S.final.best>=80?"y":"n")+'">'+(S.final?("terbaik "+S.final.best+"%"):"—")+'</td></tr>';
+  $("#planBody").innerHTML=pb;
+}
+function casesDone(){var n=0;CASES.forEach(function(c){c.qs.forEach(function(q,i){if((S.notes[c.id+"_"+i]||"").trim().length>=40)n++})});var t=0;CASES.forEach(function(c){t+=c.qs.length});return n>=t}
+function updateProgress(){
+  var tot=UNITS.length+2,d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  if(casesDone())d++; if(S.final&&S.final.best>=80)d++;
+  var p=Math.round(d/tot*100);$("#progBar").style.width=p+"%";$("#progLbl").textContent=p+"%";
+}
+
+/* ================= quizzes ================= */
+function seededOrder(key,n){var h=2166136261;for(var c=0;c<key.length;c++){h^=key.charCodeAt(c);h=Math.imul(h,16777619)}var a=[];for(var i=0;i<n;i++)a.push(i);for(var k=n-1;k>0;k--){h=Math.imul(h^(h>>>15),2246822507)>>>0;var r=h%(k+1),x=a[k];a[k]=a[r];a[r]=x}return a}
+function renderQuiz(box,uid){
+  var qs=QZ[uid], h='<div class="lockmsg"><div>🔒 <b>Soal terkunci.</b><br>Baca subbab buku yang ditunjuk, lalu centang "Saya sudah membaca" di atas.</div></div><div class="qbody">';
+  qs.forEach(function(q,i){
+    h+='<div class="q" data-qi="'+i+'"><span class="kind '+(q.k==="r"?"rb":"")+'">'+(q.k==="r"?"📖 Cek bacaan · "+q.pg:"Konsep")+'</span><div class="qt">'+(i+1)+'. '+esc(q.q)+'</div><div class="opts">';
+    seededOrder(uid+"_"+i,q.o.length).forEach(function(j,pos){h+='<button class="opt" data-j="'+j+'"><span class="L">'+"ABCD"[pos]+'</span><span>'+esc(q.o[j])+'</span></button>'});
+    h+='</div><div class="fbx"></div></div>';
+  });
+  h+='<div class="score" id="sc_'+uid+'"></div></div>';
+  box.innerHTML=h;
+  $$(".q",box).forEach(function(qe){
+    var i=+qe.dataset.qi;
+    $$(".opt",qe).forEach(function(b){b.addEventListener("click",function(){answer(uid,i,+b.dataset.j,qe)})});
+    var prev=S.q[uid+"_"+i]; if(prev!=null) paint(uid,i,prev,qe);
+  });
+  lockState(box,uid); scoreUnit(uid);
+}
+function answer(uid,i,j,qe){S.q[uid+"_"+i]=j;paint(uid,i,j,qe);scoreUnit(uid);save();}
+function paint(uid,i,j,qe){
+  var q=QZ[uid][i],ok=j===q.a;
+  $$(".opt",qe).forEach(function(b){var k=+b.dataset.j;b.disabled=true;b.classList.remove("ok","no");if(k===j)b.classList.add(ok?"ok":"no");if(ok&&k===q.a)b.classList.add("ok")});
+  var fb=$(".fbx",qe);
+  fb.innerHTML='<div class="fb '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat.")+'</b>'+(ok?esc(q.e):(q.k==="r"?"Buka kembali "+q.pg+", dan cari bagian yang relevan.":"Baca ulang ringkasan di atas, lalu coba lagi."))+'</div>'+(ok?"":'<button class="retry">Coba lagi</button>');
+  var r=$(".retry",fb); if(r) r.addEventListener("click",function(){delete S.q[uid+"_"+i];save();$$(".opt",qe).forEach(function(b){b.disabled=false;b.classList.remove("ok","no")});fb.innerHTML="";scoreUnit(uid)});
+}
+function scoreUnit(uid){
+  var qs=QZ[uid],c=0;qs.forEach(function(q,i){if(S.q[uid+"_"+i]===q.a)c++});
+  var el=$("#sc_"+uid); if(el) el.textContent=c+" / "+qs.length+" benar"+(c===qs.length?" · Unit selesai ✓":"");
+  var was=!!S.done[uid]; S.done[uid]=c===qs.length;
+  if(S.done[uid]&&!was){toast("Unit selesai! 🎉");} if(was!==S.done[uid]){save();renderSide();}
+}
+function lockState(box,uid){var n=+uid.slice(1);box.classList.toggle("locked",!S.read[n])}
+
+/* ================= classify ================= */
+function renderClassify(el){
+  var key=el.dataset.widget,w=CL[key],h='';
+  w.it.forEach(function(it,i){
+    h+='<div class="it" data-i="'+i+'"><p>'+esc(it[0])+'</p><div class="chips">';
+    w.o.forEach(function(o){h+='<button class="chip" data-o="'+esc(o)+'">'+esc(o)+'</button>'});
+    h+='</div><div class="why"></div></div>';
+  });
+  h+='<div class="score" style="margin-top:10px"></div>';
+  el.insertAdjacentHTML("beforeend",h);
+  $$(".it",el).forEach(function(row){
+    var i=+row.dataset.i;
+    $$(".chip",row).forEach(function(c){c.addEventListener("click",function(){
+      var it=w.it[i],ok=c.dataset.o===it[1];
+      if(ok){S.cls[key+"_"+i]=1;paintCls(row,it,true);save();clsScore(el,key)}
+      else{c.classList.add("no");c.disabled=true;$(".why",row).textContent="Belum tepat. Coba pilihan lain.";}
+    })});
+    if(S.cls[key+"_"+i])paintCls(row,w.it[i],true);
+  });
+  clsScore(el,key);
+}
+function paintCls(row,it,ok){$$(".chip",row).forEach(function(c){c.disabled=true;c.classList.remove("no");if(c.dataset.o===it[1])c.classList.add("ok")});$(".why",row).innerHTML="✓ "+esc(it[2])}
+function clsScore(el,key){var w=CL[key],c=0;w.it.forEach(function(_,i){if(S.cls[key+"_"+i])c++});$(".score",el).textContent=c+" / "+w.it.length+" tepat"}
+
+/* ================= widget topik 10 ================= */
+function n2(x,d){return x.toLocaleString("id-ID",{maximumFractionDigits:d==null?1:d})}
+function rp(x){return "Rp"+n2(Math.round(x),0)}
+/* Net Promoter Score */
+function npsTool(){
+  if(!$("#npP"))return;
+  var ids=["npP","npN","npD"],P={a:[70,0,30],b:[40,60,0]};
+  function v(id){return Math.max(0,+$("#"+id).value||0)}
+  function upd(){
+    var p=v("npP"),n=v("npN"),d=v("npD"),t=p+n+d;
+    if(!t){$("#npRes").innerHTML="Isi jumlah responden.";return}
+    var pp=p/t*100,pn=n/t*100,pd=d/t*100,nps=pp-pd;
+    function bar(l,x,c){return '<div class="tbar"><span>'+l+'</span><i style="width:'+Math.max(1,x)+'%;background:'+c+'"></i><b>'+n2(x,0)+'%</b></div>'}
+    var msg=pd>=25?'Detraktor cukup banyak. Buku menyarankan proses <em>closed-loop</em>: telusuri akar masalah yang membuat pelanggan menjadi detraktor, pantau komentar negatif, dan respons dengan cepat dan terbuka.':pn>=40?'Banyak pelanggan pasif: tidak kecewa, tetapi juga tidak antusias. Mereka mudah pindah ke pesaing.':'Komposisi relatif sehat. Fasilitasi advokasi: opsi berbagi atau rekomendasi, ajakan memberi ulasan, dan tampilkan pengalaman positif.';
+    $("#npRes").innerHTML='<big>NPS = '+(nps>0?'+':'')+n2(nps,0)+'</big>'+bar("Promoter",pp,"var(--good)")+bar("Pasif",pn,"var(--muted)")+bar("Detraktor",pd,"var(--bad)")+
+      '<p style="margin:6px 0 0">'+msg+'</p><p class="hint" style="margin:4px 0 0">Kritik Kirby &amp; Samson (2008): 70% promoter + 30% detraktor dan 40% promoter + 0% detraktor sama-sama menghasilkan NPS 40, padahal risikonya jauh berbeda. Kumar dkk. (2007): hanya sekitar sepertiga yang berniat merekomendasikan benar-benar melakukannya.</p>';
+    S.notes.nps_sum="NPS "+n2(nps,0)+" (promoter "+n2(pp,0)+"%, pasif "+n2(pn,0)+"%, detraktor "+n2(pd,0)+"%)";
+  }
+  $$("#npsTool [data-np]").forEach(function(b){b.addEventListener("click",function(){var q=P[b.dataset.np];ids.forEach(function(id,i){$("#"+id).value=q[i]});upd();save();notesPreview()})});
+  ids.forEach(function(id){$("#"+id).addEventListener("input",function(){upd();save();notesPreview()})});
+  upd();
+}
+/* CPA, ROAS, ROI */
+function cpaTool(){
+  if(!$("#cpV"))return;
+  var ids=["cpV","cpC","cpK","cpO","cpM","cpA"],P={bank:[1000000,10,2,0,0,0],umkm:[5000,1.5,1200,120000,25,40000]};
+  function v(id){return Math.max(0,+$("#"+id).value||0)}
+  function upd(){
+    var V=v("cpV"),C=v("cpC")/100,K=v("cpK"),O=v("cpO"),M=v("cpM")/100,A=v("cpA"),cost=V*K,conv=V*C,rev=conv*O,prof=rev*M;
+    if(!V||!C){$("#cpRes").innerHTML="Isi jumlah pengunjung dan tingkat konversi (lebih dari 0).";return}
+    var cpa=cost/conv,roas=cost?rev/cost:0,roi=cost?prof/cost:0,bank=(V===1000000&&C===0.1&&K===2&&!O);
+    var cur=bank?function(x){return "£"+n2(x,2)}:rp;
+    var h='<big>CPA '+cur(cpa)+' per penjualan</big>'+n2(conv,0)+' konversi dari '+n2(V,0)+' pengunjung; total biaya klik '+cur(cost)+'.';
+    if(A)h+='<p style="margin:6px 0 0">'+(cpa<=A?'✅ Di bawah allowable CPA '+cur(A)+': kampanye ini layak dari sisi biaya akuisisi.':'⚠️ Di atas allowable CPA '+cur(A)+': setiap pelanggan baru terlalu mahal. Perbaiki konversi halaman tujuan, penargetan kata kunci, atau CPC.')+'</p>';
+    if(O)h+='<p style="margin:6px 0 0">Pendapatan '+rp(rev)+' → <b>ROAS '+n2(roas,2)+'×</b>. Laba kotor '+rp(prof)+' → <b>ROI '+n2(roi,2)+'×</b> (laba ÷ belanja iklan). '+(roi<1?'ROI di bawah 1: laba kotor belum menutup biaya iklan, meskipun ROAS-nya '+n2(roas,1)+'×.':'Laba kotor melebihi biaya iklan.')+'</p>';
+    else h+='<p class="hint" style="margin:6px 0 0">Contoh buku: 1 juta pengunjung, konversi 10%, CPC £2, sehingga CPA £20. Isi nilai pesanan untuk menghitung ROAS dan ROI.</p>';
+    h+='<p class="hint" style="margin:4px 0 0">Ukuran tertinggi di Gambar 8.10 adalah ROI berbasis nilai seumur hidup: pelanggan yang membeli berulang kali bisa membenarkan CPA yang lebih tinggi dari laba pesanan pertamanya.</p>';
+    $("#cpRes").innerHTML=h;
+    S.notes.cpa_sum="CPA "+cur(cpa)+(O?", ROAS "+n2(roas,2)+"×, ROI "+n2(roi,2)+"×":"");
+  }
+  $$("#cpaTool [data-cp]").forEach(function(b){b.addEventListener("click",function(){var q=P[b.dataset.cp];ids.forEach(function(id,i){$("#"+id).value=q[i]});upd();save();notesPreview()})});
+  ids.forEach(function(id){$("#"+id).addEventListener("input",function(){upd();save();notesPreview()})});
+  upd();
+}
+/* RFM scorer */
+function rfmTool(){
+  if(!$("#rfR"))return;
+  var ids=["rfR","rfF","rfM"],P={"new":[5,1,2],vip:[5,5,5],lapse:[1,4,4]};
+  function upd(){
+    var r=+$("#rfR").value,f=+$("#rfF").value,m=+$("#rfM").value,code=""+r+f+m,seg,act;
+    if(r>=4&&f>=4&&m>=4){seg="Pelanggan terbaik (setara platinum/Crown Jewels)";act="Jangan berlebihan menghubungi. Beri layanan istimewa dan alat yang memudahkan pemesanan ulang (soft lock-in). Jangan beri diskon yang tak perlu: mereka sudah aktif membeli."}
+    else if(r>=4&&f<=2){seg="Pelanggan baru atau baru aktif kembali";act="Rangkaian sambutan (seperti pemicu 2 Tesco): konfirmasi, survei kepuasan, tips, dan insentif pembelian kedua. Perhatikan lonjakan putus dari pembelian ketiga ke keempat (Euroffice)."}
+    else if(r<=2&&f>=3){seg="Pelanggan berharga yang hampir hilang";act="Prioritas reaktivasi: tanyakan pengalamannya (survei), beri insentif kembali, dan pertimbangkan kontak personal. Recency yang turun adalah tanda bahaya terkuat (Novo, 2004)."}
+    else if(r<=2&&f<=2){seg="Pelanggan tidur bernilai rendah";act="Komunikasi berbiaya rendah saja. Bila tak merespons, terima bila mereka pergi (seperti sebagian pelanggan perunggu di Gambar 8.26)."}
+    else{seg="Pelanggan menengah yang bisa dikembangkan";act="Ekstensi: cross-sell dan up-sell berbasis riwayat kategori (next-best product), serta dorong frekuensi lewat pengingat yang relevan."}
+    $("#rfRes").innerHTML='<big>Skor RFM '+code+' · total '+(r+f+m)+'/15</big><b>'+seg+'.</b> '+act+
+      '<p class="hint" style="margin:6px 0 0">Right-channelling: pelanggan yang aktif di kanal online cukup dihubungi lewat email atau notifikasi yang murah; kanal mahal (telepon, surat) disimpan untuk yang lebih menyukainya atau bernilai tinggi.</p>';
+    S.notes.rfm_sum="RFM "+code+" → "+seg;
+  }
+  $$("#rfmTool [data-rf]").forEach(function(b){b.addEventListener("click",function(){var q=P[b.dataset.rf];ids.forEach(function(id,i){$("#"+id).value=q[i]});upd();save();notesPreview()})});
+  ids.forEach(function(id){$("#"+id).addEventListener("change",function(){upd();save();notesPreview()})});
+  upd();
+}
+
+/* ================= cases ================= */
+function norm(t){return (t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}
+function grade(id){
+  var r=RUB[id],t=norm(S.notes[id]),words=t.split(/\s+/).filter(Boolean).length;
+  var hits=r.cr.map(function(c){return new RegExp(c[1],"i").test(t)}),h=hits.filter(Boolean).length;
+  var conn=CONN.filter(function(w){return new RegExp("(^|[^a-z])"+w+"([^a-z]|$)").test(t)}).length;
+  var cov=Math.min(h,r.need)/r.need,raw=3*cov+(conn>=2?1:conn===1?.5:0),warn=[];
+  if(words<25){raw=Math.min(raw,2);warn.push("Jawaban terlalu singkat ("+words+" kata). Kembangkan penjelasan Anda.")}
+  if(h>=2&&conn===0&&words/h<7){raw=Math.min(raw,1);warn.push("Jawaban tampak seperti daftar kata kunci. Jelaskan hubungan antarkonsep dengan kalimat utuh.")}
+  else if(conn===0) warn.push("Belum ada penalaran sebab-akibat. Gunakan \"karena\", \"sehingga\", atau \"akibatnya\" untuk menunjukkan alur pikir.");
+  return {lv:Math.max(0,Math.min(4,Math.floor(raw+1e-9))),hits:hits,h:h,conn:conn,words:words,warn:warn,len:(S.notes[id]||"").length};
+}
+function renderGrade(id){
+  var box=$('.fbres[data-for="'+id+'"]'),st=S.cs[id];if(!box)return;
+  if(!st){box.innerHTML="";return}
+  var r=RUB[id],g=grade(id),noans=CASES.some(function(c){return c.noans&&id.indexOf(c.id+"_")===0});
+  var h='<div class="gbox"><div class="ghead"><span class="meter">'+[0,1,2,3].map(function(k){return '<i class="'+(k<g.lv?"on":"")+'"></i>'}).join("")+'</span><span class="glv">'+g.lv+'/4 · '+LV[g.lv]+'</span><span class="gnote">umpan balik otomatis, bukan nilai</span></div>';
+  h+='<p class="hint" style="margin:0 0 4px">Konsep kunci ('+g.h+' dari '+r.cr.length+' muncul; minimal '+r.need+' untuk cakupan penuh):</p><ul class="crit">';
+  r.cr.forEach(function(c,k){h+='<li class="'+(g.hits[k]?"y":"n")+'"><span class="m">'+(g.hits[k]?"✓":"")+'</span><span><b>'+esc(c[0])+'</b>'+(g.hits[k]?'':' <span class="h">· '+esc(c[2])+'</span>')+'</span></li>'});
+  h+='</ul><ul class="crit"><li class="'+(g.conn>=2?"y":"n")+'"><span class="m">'+(g.conn>=2?"✓":"")+'</span><span><b>Penalaran</b> <span class="h">· '+g.conn+' penghubung sebab-akibat'+(g.conn<2?" (target ≥ 2)":"")+'</span></span></li></ul>';
+  g.warn.forEach(function(w){h+='<div class="gwarn">⚠️ '+esc(w)+'</div>'});
+  if(st.len!==g.len) h+='<div class="stale">✎ Jawaban sudah diubah sejak dinilai. Klik "Nilai ulang" untuk memperbarui.</div>';
+  h+='<div class="selfc"><b style="font-size:.9rem">Penilaian diri: centang yang benar-benar sudah Anda lakukan</b>';
+  r.self.forEach(function(sx,k){h+='<label><input type="checkbox" data-self="'+id+'" data-k="'+k+'" '+(st.self&&st.self[k]?"checked":"")+'> '+esc(sx)+'</label>'});
+  h+=st.selfDone?'<p class="hint" style="margin:6px 0 0">✓ Penilaian diri tersimpan'+(noans?". Bawa jawaban ini ke diskusi kelas.":". Arah jawaban di bawah sudah terbuka.")+'</p>':'<button class="btn sm" data-selfdone="'+id+'" style="margin-top:6px">'+(noans?"Selesai menilai diri":"Selesai, buka arah jawaban")+'</button>';
+  h+='</div></div>';
+  box.innerHTML=h;
+  $$('[data-self]',box).forEach(function(c){c.addEventListener("change",function(){st.self=st.self||[];st.self[+c.dataset.k]=c.checked;save()})});
+  var sd=$('[data-selfdone]',box);if(sd)sd.addEventListener("click",function(){st.selfDone=true;save();renderGrade(id);refreshAnsLocks();updateCaseSums();var d=$('details.ans[data-for="'+id+'"]');if(d){d.open=true}});
+  var gb=$('[data-grade="'+id+'"]');if(gb)gb.textContent="↻ Nilai ulang";
+}
+function updateCaseSums(){
+  CASES.forEach(function(c){var el=$('[data-csum="'+c.id+'"]');if(!el)return;var n=0,tot=0;c.qs.forEach(function(q,i){var id=c.id+"_"+i;if(S.cs[id]){n++;tot+=grade(id).lv}});
+    el.textContent=n?("umpan balik rata-rata "+(tot/n).toFixed(1).replace(".",",")+"/4 · "+n+"/"+c.qs.length+" dinilai"):"belum dinilai"});
+}
+function renderCases(){
+  S.cs=S.cs||{};
+  var h="";
+  CASES.forEach(function(c){
+    h+='<div class="card"><h3>📂 '+c.t+' <span class="csum" data-csum="'+c.id+'"></span></h3><p class="hint" style="margin-top:-6px">Sumber: '+c.src+'</p>'+c.body;
+    h+='<h4 style="margin-top:18px">'+(c.noans?"Tugas persiapan diskusi kelas":"Pertanyaan diskusi")+'</h4>';
+    c.qs.forEach(function(q,i){
+      var id=c.id+"_"+i;
+      h+='<div class="cq"><b>'+(i+1)+'. '+esc(q[0])+'</b><textarea data-note="'+id+'" placeholder="Tulis jawaban Anda dalam kalimat utuh…"></textarea>';
+      h+='<div class="fbk"><button class="btn sm ghost" data-grade="'+id+'">🔍 Minta umpan balik</button><div class="fbres" data-for="'+id+'"></div></div>';
+      if(!c.noans) h+='<details class="ans" data-for="'+id+'"><summary>🔑 Arah jawaban</summary><div>'+esc(q[1])+'</div></details>';
+      h+='</div>';
+    });
+    if(c.noans) h+='<div class="co book"><b class="t">📝 Catatan.</b> Arah jawaban untuk kasus ini sengaja tidak diberikan dan akan dibahas di kelas. Umpan balik otomatis di sini hanya memeriksa kelengkapan struktur jawaban Anda.</div>';
+    h+='</div>';
+  });
+  $("#caseList").innerHTML=h;
+  $$("[data-grade]").forEach(function(b){b.addEventListener("click",function(){
+    var id=b.dataset.grade,len=(S.notes[id]||"").trim().length;
+    if(len<40){toast("Tulis jawaban Anda dulu (min. 40 karakter)");return}
+    var prev=S.cs[id]||{};S.cs[id]={len:(S.notes[id]||"").length,self:prev.self||[],selfDone:prev.selfDone||false};save();renderGrade(id);updateCaseSums();
+  })});
+  $$("details.ans").forEach(function(d){
+    d.addEventListener("click",function(e){if(d.classList.contains("lock")&&!d.open){e.preventDefault();toast("Minta umpan balik dan selesaikan penilaian diri dulu")}});
+  });
+  Object.keys(S.cs).forEach(renderGrade);
+  refreshAnsLocks();updateCaseSums();
+}
+function refreshAnsLocks(){$$("details.ans").forEach(function(d){var st=S.cs&&S.cs[d.dataset.for];d.classList.toggle("lock",!(st&&st.selfDone))})}
+
+/* ================= notes binding ================= */
+function bindNotes(){
+  $$("textarea[data-note],input[data-note]").forEach(function(t){
+    t.value=S.notes[t.dataset.note]||"";
+    t.addEventListener("input",function(){S.notes[t.dataset.note]=t.value;clearTimeout(t._h);t._h=setTimeout(function(){save();refreshAnsLocks();renderSide();notesPreview();if(S.cs&&S.cs[t.dataset.note])renderGrade(t.dataset.note)},350)});
+  });
+}
+function notesText(){
+  var L=["PENGANTAR BISNIS DIGITAL (DG234101) — TOPIK 10","Manajemen Hubungan Pelanggan (e-CRM)","",(S.notes.identity||"Nama — NRP"),"","== PEMANASAN ==","Pesan setelah membeli:",S.notes.warm_know||"-","","Hubungan atau transaksi:",S.notes.warm_want||"-",""];
+  L.push("== HASIL KALKULATOR (terakhir) ==","NPS: "+(S.notes.nps_sum||"-"),"CPA/ROI: "+(S.notes.cpa_sum||"-"),"RFM: "+(S.notes.rfm_sum||"-"),"");
+  CASES.forEach(function(c){L.push("== "+c.t.toUpperCase()+" ==");c.qs.forEach(function(q,i){L.push((i+1)+". "+q[0]);L.push(S.notes[c.id+"_"+i]||"-");if(S.cs&&S.cs[c.id+"_"+i])L.push("[Umpan balik aplikasi: "+grade(c.id+"_"+i).lv+"/4]");L.push("")})});
+  var d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  L.push("== KEMAJUAN ==","Unit selesai: "+d+"/"+UNITS.length,"Kuis akhir (skor terbaik): "+(S.final?S.final.best+"%":"belum"));
+  return L.join("\n");
+}
+function notesPreview(){var p=$("#notesPrev");if(p)p.textContent=notesText()}
+
+/* ================= self-test (pola serviceman ch05) ================= */
+var quizEl=null, run=null;
+function setupQuiz(){
+  quizEl=$("#finalBox");
+  var best=S.final?S.final.best:null;
+  quizEl.innerHTML='<div class="qz-setup"><p>Soal diambil dari ketujuh unit (Chaffey Bab 8). Anda mendapat umpan balik setelah setiap jawaban, dan rincian per unit di akhir. Topik dianggap tuntas bila skor ≥ 80%.</p>'+
+   '<div><p class="qz-lbl">Panjang</p><div class="seg" id="qzLen"><button data-n="10" aria-pressed="true">Cepat · 10 soal</button><button data-n="20" aria-pressed="false">Standar · 20</button><button data-n="'+FINAL.length+'" aria-pressed="false">Lengkap · semua '+FINAL.length+'</button></div></div>'+
+   '<div><p class="qz-lbl">Fokus</p><div class="seg" id="qzLo"><button data-lo="0" aria-pressed="true">Semua unit</button>'+Object.keys(LO_NAMES).map(function(k){return '<button data-lo="'+k+'" aria-pressed="false" title="'+LO_NAMES[k]+'">Unit '+k+'</button>'}).join("")+'</div></div>'+
+   '<div class="row"><button class="btn" id="qzStart">Mulai self-test</button>'+(best!=null?'<span class="muted" style="font-family:var(--mono);font-size:.8rem">Skor terbaik di perangkat ini: '+best+'%</span>':'')+'</div></div>';
+  var n=10, lo=0;
+  $$("#qzLen button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLen button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});n=+b.dataset.n})});
+  $$("#qzLo button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLo button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});lo=+b.dataset.lo})});
+  $("#qzStart").addEventListener("click",function(){
+    var pool=FINAL.map(function(q,i){return i}).filter(function(i){return !lo||FINAL[i][0]===lo});
+    pool=shuffle(pool).slice(0,Math.min(n,pool.length));
+    run={qs:pool.map(function(i){var q=FINAL[i],order=shuffle(q[2].map(function(_,j){return j}));return {lo:q[0],text:q[1],opts:order.map(function(j){return q[2][j]}),ans:order.indexOf(q[3]),exp:q[4]}}),i:0,picks:[]};
+    showQ();
+  });
+}
+function showQ(){
+  var r=run,q=r.qs[r.i],picked=r.picks[r.i],sofar=r.picks.filter(function(p,k){return p===r.qs[k].ans}).length;
+  quizEl.innerHTML='<div class="qz-top"><span class="qz-lbl">Soal '+(r.i+1)+' dari '+r.qs.length+' · Unit '+q.lo+' '+LO_NAMES[q.lo]+'</span><span class="muted" style="font-family:var(--mono);font-size:.8rem">'+sofar+' benar sejauh ini</span></div>'+
+   '<div class="qz-prog"><i style="width:'+(r.i/r.qs.length*100)+'%"></i></div>'+
+   '<p class="qz-q">'+esc(q.text)+'</p>'+
+   '<div class="qz-opts">'+q.opts.map(function(o,j){return '<button data-j="'+j+'"><span class="k">'+"ABCD"[j]+'</span><span>'+esc(o)+'</span></button>'}).join("")+'</div>'+
+   '<div id="qzExp"></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzQuit">Keluar</button><button class="btn" id="qzNext" '+(picked==null?"disabled":"")+'>'+(r.i===r.qs.length-1?"Lihat hasil":"Soal berikutnya")+'</button></div>';
+  function lock(j){
+    $$(".qz-opts button",quizEl).forEach(function(b){b.disabled=true;var k=+b.dataset.j;if(k===q.ans)b.classList.add("right");else if(k===j)b.classList.add("wrong")});
+    var ok=j===q.ans;
+    $("#qzExp").innerHTML='<div class="qz-exp '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat. Jawabannya "+"ABCD"[q.ans]+".")+'</b>'+esc(q.exp)+'</div>';
+    $("#qzNext").disabled=false;
+  }
+  if(picked!=null)lock(picked);
+  $$(".qz-opts button",quizEl).forEach(function(b){b.addEventListener("click",function(){var j=+b.dataset.j;r.picks[r.i]=j;lock(j);$("#qzNext").focus()})});
+  $("#qzNext").addEventListener("click",function(){if(r.i<r.qs.length-1){r.i++;showQ()}else results()});
+  $("#qzQuit").addEventListener("click",setupQuiz);
+}
+function results(){
+  var r=run,right=r.qs.filter(function(q,k){return r.picks[k]===q.ans}).length,pct=Math.round(right/r.qs.length*100);
+  S.final={best:Math.max(pct,S.final?S.final.best:0),n:(S.final?S.final.n:0)+1,last:pct};save();renderSide();
+  var by={};r.qs.forEach(function(q,k){by[q.lo]=by[q.lo]||{r:0,t:0};by[q.lo].t++;if(r.picks[k]===q.ans)by[q.lo].r++});
+  var verdict=pct>=80?"Pemahaman kuat. Topik 10 tuntas.":pct>=65?"Fondasi sudah baik. Tinjau unit di bawah 70%.":"Pelajari ulang unit yang lemah (dan halaman bukunya), lalu coba lagi.";
+  quizEl.innerHTML='<div class="res-big"><span class="pct" style="color:'+(pct>=65?"var(--good)":"var(--bad)")+'">'+pct+'%</span><span>'+right+' dari '+r.qs.length+' benar. '+verdict+'</span></div>'+
+   (pct>=80?'<div><span class="badge">🏅 Topik 10 tuntas</span></div>':'')+
+   '<div><p class="qz-lbl">Per unit</p><div class="lo-bars">'+Object.keys(by).sort().map(function(k){var v=by[k],p=Math.round(v.r/v.t*100);return '<div class="lo-row"><span><b style="font-family:var(--mono)">U'+k+'</b> '+LO_NAMES[k]+(p<70?' · <a href="#u'+k+'">tinjau</a>':'')+'</span><span class="b"><i style="width:'+p+'%;background:'+(p>=70?"var(--good)":"var(--bad)")+'"></i></span><span class="v">'+v.r+'/'+v.t+'</span></div>'}).join("")+'</div></div>'+
+   '<div><p class="qz-lbl">Tinjau jawaban Anda</p><div class="review">'+r.qs.map(function(q,k){var ok=r.picks[k]===q.ans;return '<details '+(ok?"":"open")+'><summary><span class="mk '+(ok?"ok":"no")+'">'+(ok?"✓":"✗")+'</span>'+esc(q.text)+'</summary><p><b>Jawaban Anda:</b> '+esc(q.opts[r.picks[k]])+(ok?'':'<br><b>Jawaban benar:</b> '+esc(q.opts[q.ans]))+'</p><p class="muted">'+esc(q.exp)+'</p></details>'}).join("")+'</div></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzNew">Ubah pengaturan</button><button class="btn" id="qzAgain">Ulangi dengan soal baru</button></div>';
+  $("#qzNew").addEventListener("click",setupQuiz);
+  $("#qzAgain").addEventListener("click",function(){setupQuiz();$("#qzStart").click()});
+  quizEl.scrollIntoView({block:"start"});
+}
+
+/* ================= flashcards ================= */
+var deck=[],di=0;
+function buildDeck(){deck=GLOSS.map(function(g,i){return i}).filter(function(i){return !S.known[i]});if(!deck.length){deck=GLOSS.map(function(g,i){return i})}di=0;showCard()}
+function showCard(){var fc=$("#fc");fc.classList.remove("flip");var g=GLOSS[deck[di]];$("#fcF").textContent=g[0];$("#fcB").textContent=g[1];
+  var k=Object.keys(S.known).length;$("#fcCount").textContent="Kartu "+(di+1)+" / "+deck.length+" · dikuasai "+k+" / "+GLOSS.length}
+function cards(){
+  var fc=$("#fc");function flip(){fc.classList.toggle("flip")}
+  fc.addEventListener("click",flip);fc.addEventListener("keydown",function(e){if(e.key===" "||e.key==="Enter"){e.preventDefault();flip()}});
+  $("#fcNext").addEventListener("click",function(){di=(di+1)%deck.length;showCard()});
+  $("#fcPrev").addEventListener("click",function(){di=(di-1+deck.length)%deck.length;showCard()});
+  $("#fcShuffle").addEventListener("click",function(){deck=shuffle(deck);di=0;showCard()});
+  $("#fcKnow").addEventListener("click",function(){S.known[deck[di]]=1;save();deck.splice(di,1);if(!deck.length){toast("Semua kartu dikuasai! 🎉");buildDeck();return}if(di>=deck.length)di=0;showCard()});
+  $("#fcReset").addEventListener("click",function(){S.known={};save();buildDeck()});
+  buildDeck();
+}
+
+/* ================= routing ================= */
+function markNav(){var v=current();$$(".side a").forEach(function(a){a.classList.toggle("on",a.dataset.nav===v)})}
+function current(){var h=(location.hash||"#home").slice(1);return $('[data-view="'+h+'"]')?h:"home"}
+function route(){
+  var v=current();$$(".view").forEach(function(s){s.hidden=s.dataset.view!==v});
+  markNav();$("#side").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");
+  window.scrollTo(0,0);
+  
+  if(v==="notes")notesPreview();
+  
+  document.title=(v==="home"?"Topik 10":($('[data-view="'+v+'"] h2')||{}).textContent)+" · Manajemen Hubungan Pelanggan (e-CRM)";
+}
+
+/* ================= init ================= */
+$$("[data-quiz]").forEach(function(b){renderQuiz(b,b.dataset.quiz)});
+$$("[data-widget]").forEach(renderClassify);
+$$("[data-readchk]").forEach(function(c){
+  var n=+c.dataset.readchk;c.checked=!!S.read[n];
+  c.addEventListener("change",function(){S.read[n]=c.checked;save();var b=$('[data-quiz="u'+n+'"]');lockState(b,"u"+n);renderSide();if(c.checked)toast("Soal cek pemahaman terbuka ↓")});
+});
+setupQuiz();renderCases();bindNotes();npsTool();cpaTool();rfmTool();cards();renderSide();updateProgress();
+window.addEventListener("hashchange",route);route();
+
+$("#menuBtn").addEventListener("click",function(){var o=$("#side").classList.toggle("open");this.setAttribute("aria-expanded",o)});
+$("#themeBtn").addEventListener("click",function(){
+  var r=document.documentElement,cur=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),nx=cur==="dark"?"light":"dark";
+  r.setAttribute("data-theme",nx);try{localStorage.setItem("bisdig-theme",nx)}catch(e){} 
+});
+$("#copyNotes").addEventListener("click",function(){var t=notesText();
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast("Tersalin ke clipboard")},function(){var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("Tersalin")}catch(e){toast("Gagal menyalin")}ta.remove()})});
+$("#dlNotes").addEventListener("click",function(){var b=new Blob([notesText()],{type:"text/plain;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="Topik10_Catatan_"+((S.notes.identity||"mahasiswa").replace(/[^\w]+/g,"_").slice(0,40))+".txt";document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)});
+$("#resetAll").addEventListener("click",function(){
+  if(this.dataset.confirm!=="1"){this.dataset.confirm="1";this.textContent="Klik lagi untuk konfirmasi";var me=this;setTimeout(function(){me.dataset.confirm="";me.textContent="Hapus semua kemajuan"},3000);return}
+  try{localStorage.removeItem(KEY)}catch(e){} location.hash="#home";location.reload();
+});
+})();
+</script>
+</body>
+</html>
