@@ -1,0 +1,1394 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Topik 13 · Implementasi dan Optimisasi Layanan Digital</title>
+<meta name="description" content="Web-app belajar mandiri Pengantar Bisnis Digital (DG234101) ITS — Topik 13: Implementasi dan Optimisasi Layanan Digital (agile vs waterfall, pengujian dan peluncuran, Scrum, CRO, analisis heuristik, evaluasi), berbasis Chaffey et al. (2019) Bab 10 dan artikel Agile vs Waterfall, dengan kasus Indonesia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#F3F5FA; --surface:#FFFFFF; --sunk:#E8ECF5; --ink:#0F1B33; --muted:#56627A; --line:#D5DCEA;
+  --navy:#013880; --navy-ink:#FFFFFF; --navy-soft:#E1E9F7;
+  --gold:#B07A00; --gold-bg:#FFC72C; --gold-soft:#FFF4D4;
+  --good:#17784E; --good-soft:#DCF2E6; --bad:#B4372F; --bad-soft:#F9E2DF;
+  --dig:#5B3FB0; --dig-soft:#ECE7FA;
+  --idn:#B4372F; --idn-soft:#FBEAE8;
+  --f:"Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  --r:12px;
+  --shadow:0 1px 2px rgba(15,27,51,.06), 0 4px 16px rgba(15,27,51,.05);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.65}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:var(--navy)}
+h1,h2,h3,h4{line-height:1.2;margin:0 0 .5em;letter-spacing:-.01em}
+h2{font-size:clamp(1.45rem,1.1rem + 1.3vw,1.95rem);font-weight:800}
+h3{font-size:1.12rem;font-weight:700;margin-top:1.6em}
+p{margin:0 0 1em}
+em{font-style:italic}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold-bg);outline-offset:2px;border-radius:6px}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;padding-top:max(10px,env(safe-area-inset-top))}
+:root[data-theme="dark"] .top{background:#0E1A36}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .top{background:#0E1A36}}
+.top .brand{display:flex;flex-direction:column;line-height:1.2;min-width:0;flex:1}
+.top .brand b{font-size:.95rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .brand small{font-size:.72rem;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog{display:flex;align-items:center;gap:8px;font-size:.78rem;white-space:nowrap}
+.prog .bar{width:110px;height:8px;border-radius:99px;background:rgba(255,255,255,.22);overflow:hidden}
+.prog .bar i{display:block;height:100%;background:#FFC72C;border-radius:99px;width:0;transition:width .4s}
+.iconbtn{background:rgba(255,255,255,.12);border:0;border-radius:8px;width:34px;height:34px;display:grid;place-items:center;color:#fff;flex:none}
+.iconbtn:hover{background:rgba(255,255,255,.22)}
+.menubtn{display:none}
+@media (max-width:899px){.menubtn{display:grid}.prog .bar{width:64px}}
+@media (max-width:420px){.prog .lbl{display:none}}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1200px;margin:0 auto}
+@media (max-width:899px){.shell{grid-template-columns:minmax(0,1fr)}}
+nav.side{position:sticky;top:54px;align-self:start;height:calc(100vh - 54px);overflow:auto;padding:20px 12px 40px 16px;border-right:1px solid var(--line)}
+@media (max-width:899px){
+  nav.side{position:fixed;inset:54px 0 0 0;height:auto;background:var(--bg);z-index:15;border:0;transform:translateX(-100%);transition:transform .25s;padding:16px}
+  nav.side.open{transform:none}
+}
+.side .grp{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 8px 6px}
+.side .grp:first-child{margin-top:0}
+.side a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;text-decoration:none;color:var(--ink);font-size:.9rem;font-weight:500;line-height:1.3}
+.side a:hover{background:var(--sunk)}
+.side a.on{background:var(--navy-soft);color:var(--navy);font-weight:700}
+.side a .n{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk);color:var(--muted);border:1.5px solid var(--line)}
+.side a.done .n{background:var(--good);border-color:var(--good);color:#fff}
+.side a.on .n{border-color:var(--navy)}
+.side a .n.ico{font-size:.8rem}
+
+main{padding:28px 16px 80px;min-width:0}
+@media (min-width:900px){main{padding:36px 40px 100px}}
+.view{max-width:760px;margin:0 auto;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tag{display:inline-block;font-family:var(--mono);font-size:.7rem;font-weight:500;letter-spacing:0;text-transform:none;padding:2px 8px;border-radius:99px;background:var(--sunk);color:var(--muted)}
+.lead{font-size:1.05rem;color:var(--muted)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:18px 0;box-shadow:var(--shadow)}
+.card h3:first-child,.card h4:first-child{margin-top:0}
+
+/* reading box */
+.read{border:2px solid var(--navy);background:var(--navy-soft);border-radius:var(--r);padding:16px 18px;margin:20px 0}
+.read .hd{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.read .pg{font-family:var(--mono);font-size:.82rem;background:var(--navy);color:var(--navy-ink);padding:2px 9px;border-radius:6px}
+.read ul{margin:.3em 0 .8em;padding-left:1.2em}
+.read li{margin:.2em 0}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--line);cursor:pointer;font-weight:600;font-size:.92rem}
+.chk input{width:20px;height:20px;accent-color:var(--good);margin:1px 0 0;flex:none}
+
+/* callouts */
+.co{border-left:4px solid var(--dig);background:var(--dig-soft);padding:12px 16px;border-radius:0 10px 10px 0;margin:16px 0;font-size:.95rem}
+.co b.t{color:var(--dig)}
+.co.idn{border-color:var(--idn);background:var(--idn-soft)}
+.co.idn b.t{color:var(--idn)}
+.co.book{border-color:var(--gold);background:var(--gold-soft)}
+.co.book b.t{color:var(--gold)}
+.co p:last-child{margin:0}
+
+/* tables */
+.tw{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--sunk);font-weight:700;font-size:.8rem;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+
+.terms{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.terms span{font-size:.78rem;padding:3px 10px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-style:italic}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:.92rem;background:var(--navy);color:var(--navy-ink);text-decoration:none}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn.gold{background:var(--gold-bg);color:#1b1400}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:36px;padding-top:20px;border-top:1px solid var(--line)}
+
+/* quiz */
+.qwrap{position:relative}
+.qwrap.locked .qbody{filter:blur(3px);pointer-events:none;user-select:none;opacity:.6}
+.lockmsg{display:none;position:absolute;inset:0;z-index:2;align-items:center;justify-content:center;text-align:center;padding:16px}
+.qwrap.locked .lockmsg{display:flex}
+.lockmsg div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px;max-width:380px;box-shadow:0 6px 30px rgba(0,0,0,.12);font-size:.92rem}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0;background:var(--surface)}
+.q .qt{font-weight:600;margin-bottom:10px}
+.q .kind{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:5px;margin-bottom:6px;background:var(--sunk);color:var(--muted)}
+.q .kind.rb{background:var(--gold-soft);color:var(--gold)}
+.opts{display:grid;gap:7px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;padding:9px 12px;border-radius:9px;border:1.5px solid var(--line);background:var(--bg);font-size:.92rem;line-height:1.45}
+.opt:hover:not([disabled]){border-color:var(--navy)}
+.opt .L{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk)}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.ok .L{background:var(--good);color:#fff}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)}
+.opt.no .L{background:var(--bad);color:#fff}
+.opt.sel{border-color:var(--navy);background:var(--navy-soft)}
+.opt[disabled]{cursor:default}
+.fb{margin-top:10px;font-size:.88rem;padding:9px 12px;border-radius:8px}
+.fb.ok{background:var(--good-soft);color:var(--ink)}
+.fb.no{background:var(--bad-soft);color:var(--ink)}
+.fb b{margin-right:4px}
+.retry{margin-top:8px;font-size:.82rem;background:none;border:0;color:var(--navy);font-weight:700;padding:0;text-decoration:underline}
+
+/* classify widget */
+.cls .it{padding:12px 0;border-bottom:1px dashed var(--line)}
+.cls .it:last-child{border-bottom:0}
+.cls .it p{margin:0 0 8px;font-size:.93rem;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--line);background:var(--bg);border-radius:99px;padding:5px 12px;font-size:.8rem;font-weight:600}
+.chip:hover:not([disabled]){border-color:var(--navy)}
+.chip.ok{background:var(--good);border-color:var(--good);color:#fff}
+.chip.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.chip[disabled]{cursor:default}
+.cls .why{font-size:.84rem;color:var(--muted);margin-top:6px}
+.score{font-size:.85rem;font-weight:700;color:var(--muted)}
+
+/* simulator */
+.sim svg{width:100%;height:auto;display:block}
+.sim .ctl{display:grid;gap:10px;margin-top:10px}
+.sim input[type=range]{width:100%;accent-color:var(--navy)}
+.sim .out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.sim .out div{background:var(--sunk);border-radius:9px;padding:8px 10px;font-size:.78rem;color:var(--muted)}
+.sim .out b{display:block;font-size:1.05rem;color:var(--ink)}
+.state{font-weight:800;padding:8px 12px;border-radius:9px;text-align:center}
+.state.sh{background:var(--bad-soft);color:var(--bad)}
+.state.su{background:var(--gold-soft);color:var(--gold)}
+.state.eq{background:var(--good-soft);color:var(--good)}
+.tog{display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600}
+.tog input{width:18px;height:18px;accent-color:var(--dig)}
+
+/* calc */
+.calc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.calc{grid-template-columns:minmax(0,1fr)}}
+.calc label{font-size:.8rem;font-weight:600;color:var(--muted);display:grid;gap:4px}
+.calc input{font:inherit;font-size:.95rem;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.res{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--sunk);font-size:.92rem}
+.res big{font-size:1.4rem;font-weight:800;display:block}
+
+/* case */
+details.ans{margin-top:10px;border-radius:10px;border:1px dashed var(--gold);background:var(--gold-soft)}
+details.ans summary{cursor:pointer;padding:10px 14px;font-weight:700;color:var(--gold);font-size:.9rem}
+details.ans>div{padding:0 14px 12px;font-size:.92rem}
+details.ans.lock summary{color:var(--muted);cursor:not-allowed}
+textarea{font:inherit;font-size:.92rem;width:100%;min-height:92px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+textarea:focus{border-color:var(--navy);outline:none}
+.cq{margin:18px 0}
+.cq>b{display:block;margin-bottom:6px;font-size:.95rem}
+.hint{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+/* flashcards */
+.fc{perspective:1200px;margin:16px 0}
+.fc .inner{position:relative;min-height:230px;transition:transform .5s;transform-style:preserve-3d;cursor:pointer}
+.fc.flip .inner{transform:rotateY(180deg)}
+.fc .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;padding:24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border:1px solid var(--line);box-shadow:var(--shadow)}
+.fc .front{background:var(--navy);color:#fff}
+:root[data-theme="dark"] .fc .front{background:#1C2B4D;color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fc .front{background:#1C2B4D;color:var(--ink)}}
+.fc .front b{font-size:1.5rem;font-style:italic}
+.fc .back{background:var(--surface);transform:rotateY(180deg);font-size:1.02rem}
+.fc small{opacity:.7;font-size:.75rem;margin-top:10px}
+
+/* final */
+.big{font-size:2.6rem;font-weight:800;line-height:1}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--gold-bg);color:#1b1400;font-weight:800;padding:6px 14px;border-radius:99px}
+
+/* home */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+@media (max-width:620px){.steps{grid-template-columns:minmax(0,1fr)}}
+.steps div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.steps>div>b{display:block;font-size:1rem;margin-bottom:2px}
+.steps span{font-size:.85rem;color:var(--muted)}
+.steps i{font-style:normal;font-size:1.4rem}
+.plan td:nth-child(3){font-family:var(--mono);font-size:.8rem;white-space:nowrap}
+.plan .st{font-size:.75rem;font-weight:700;white-space:nowrap}
+.st.y{color:var(--good)}.st.n{color:var(--muted)}
+.hero{background:linear-gradient(135deg,#013880 0%,#0a4fa8 100%);color:#fff;border-radius:16px;padding:24px 22px;margin-bottom:20px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(1.6rem,1.2rem + 1.8vw,2.3rem);font-weight:800;margin:4px 0 8px}
+.hero p{opacity:.92;margin:0;max-width:56ch}
+.hero .eyebrow{color:#FFC72C}
+.hero::after{content:"";position:absolute;right:-40px;bottom:-60px;width:220px;height:220px;border-radius:50%;border:28px solid rgba(255,199,44,.18)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:.88rem;font-weight:600;z-index:40;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.foot{font-size:.78rem;color:var(--muted);margin-top:40px}
+ol.ref li{margin:.4em 0;font-size:.9rem}
+/* self-test (pola serviceman) */
+.quiz{scroll-margin-top:70px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow)}
+.qz-setup{display:flex;flex-direction:column;gap:14px}
+.qz-setup p{margin:0}
+.qz-lbl{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;font-size:.88rem;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.qz-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.qz-top .qz-lbl{margin:0}
+.qz-prog{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.qz-prog i{display:block;height:100%;background:var(--navy);width:0;transition:width .3s}
+.qz-q{font-size:1.18rem;font-weight:700;margin:0;line-height:1.4}
+.qz-opts{display:flex;flex-direction:column;gap:8px}
+.qz-opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;font-size:.95rem;line-height:1.45}
+.qz-opts button .k{font-family:var(--mono);font-size:.8rem;color:var(--muted);flex:none;padding-top:2px}
+.qz-opts button:hover:not(:disabled){border-color:var(--navy)}
+.qz-opts button:disabled{cursor:default}
+.qz-opts button.right{border-color:var(--good);background:var(--good-soft)}
+.qz-opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.qz-exp{border-radius:10px;padding:12px 14px;font-size:.93rem}
+.qz-exp.ok{background:var(--good-soft)}.qz-exp.no{background:var(--bad-soft)}
+.qz-exp b{display:block;margin-bottom:2px}
+.qz-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.res-big{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.res-big .pct{font-weight:800;font-size:3.4rem;line-height:1}
+.lo-bars{display:flex;flex-direction:column;gap:8px}
+.lo-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 44px;gap:10px;align-items:center;font-size:.86rem}
+@media (max-width:520px){.lo-row{grid-template-columns:minmax(0,1fr) 70px 40px}}
+.lo-row .b{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.lo-row .b i{display:block;height:100%}
+.lo-row .v{font-family:var(--mono);font-size:.78rem;text-align:right}
+.review{display:flex;flex-direction:column;gap:8px}
+.review details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.review summary{cursor:pointer;font-size:.92rem}
+.review .mk{font-family:var(--mono);font-weight:700;margin-right:6px}
+.review .mk.ok{color:var(--good)}.review .mk.no{color:var(--bad)}
+.review p{font-size:.88rem;margin:6px 0 0}
+.muted{color:var(--muted)}
+/* umpan balik studi kasus */
+.btn.sm{padding:7px 12px;font-size:.84rem}
+.fbk{margin-top:8px}
+.fbres{margin-top:10px}
+.gbox{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px}
+.ghead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.meter{display:flex;gap:4px}
+.meter i{width:22px;height:10px;border-radius:3px;background:var(--sunk)}
+.meter i.on{background:var(--navy)}
+.glv{font-weight:800}
+.gnote{font-size:.72rem;color:var(--muted);margin-left:auto}
+.crit{list-style:none;padding:0;margin:6px 0;display:grid;gap:5px}
+.crit li{font-size:.86rem;display:flex;gap:8px;align-items:flex-start}
+.crit li .m{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:.7rem;font-weight:800;margin-top:2px}
+.crit li.y .m{background:var(--good);color:#fff}
+.crit li.n .m{background:var(--sunk);color:var(--muted);border:1.5px dashed var(--muted)}
+.crit li.n span.h{color:var(--muted)}
+.gwarn{font-size:.84rem;background:var(--gold-soft);border-radius:8px;padding:8px 10px;margin-top:8px}
+.selfc{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.selfc label{display:flex;gap:8px;align-items:flex-start;font-size:.88rem;margin:6px 0;cursor:pointer}
+.selfc input{width:18px;height:18px;accent-color:var(--navy);flex:none;margin-top:2px}
+.stale{font-size:.8rem;color:var(--gold);font-weight:700;margin-top:6px}
+.csum{font-family:var(--mono);font-size:.75rem;font-weight:500;background:var(--sunk);color:var(--muted);padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle}
+
+/* widget topik 13 */
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:.8rem;font-weight:600;color:var(--ink)}
+.chip:hover{border-color:var(--navy)}
+.vsbar{height:12px;border-radius:6px;background:var(--surface);overflow:hidden;margin-top:8px;border:1px solid var(--line)}
+.vsbar i{display:block;height:100%;background:var(--good)}
+.calc3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.calc3{grid-template-columns:minmax(0,1fr)}}
+.calc3 fieldset{border:1px solid var(--line);border-radius:10px;padding:8px 10px 10px;margin:0;display:grid;gap:6px;align-content:start}
+.calc3 legend{font-size:.78rem;font-weight:800;color:var(--navy);padding:0 4px}
+.calc3 label{display:grid;gap:2px;font-size:.75rem;font-weight:600;color:var(--muted)}
+.calc3 input[type=number]{font:inherit;font-size:.88rem;padding:6px 8px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.tbar{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:.86rem;margin:6px 0 0}
+.tbar i{display:block;height:14px;border-radius:7px;min-width:4px}
+.calc3 select{font:inherit;font-size:.85rem;padding:6px 8px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+
+
+/* logo ITS & tombol beranda */
+.top .logo{display:flex;align-items:center;flex:none;line-height:0}
+.top .logo img{height:44px;width:auto;display:block}
+.top .logo .mk{display:none}
+@media (max-width:640px){.top .logo .full{display:none}.top .logo .mk{display:block;height:34px}}
+.homebtn{flex:none;display:inline-flex;align-items:center;gap:6px;background:#FFC72C;color:#013880;font-weight:800;font-size:.82rem;line-height:1;text-decoration:none;padding:9px 13px;border-radius:9px;box-shadow:0 0 0 2px rgba(255,255,255,.28);white-space:nowrap}
+.homebtn:hover{background:#FFD65C}
+.homebtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+@media (max-width:560px){.homebtn .t{display:none}.homebtn{padding:9px 11px;font-size:.95rem}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <button class="iconbtn menubtn" id="menuBtn" aria-label="Buka menu" aria-expanded="false">☰</button>
+  <a class="logo" href="../" aria-label="Beranda mata kuliah Pengantar Bisnis Digital, ITS"><img class="full" src="../assets/its-logo-white.png" alt="Institut Teknologi Sepuluh Nopember" width="77" height="44"><img class="mk" src="../assets/its-mark-white.png" alt="ITS" width="23" height="34"></a>
+  <div class="brand"><b>Topik 13 · Implementasi dan Optimisasi Layanan Digital</b><small>Pengantar Bisnis Digital (DG234101) · ITS</small></div>
+  <div class="prog" title="Kemajuan belajar"><span class="lbl" id="progLbl">0%</span><span class="bar"><i id="progBar"></i></span></div>
+  <a class="homebtn" href="../" title="Kembali ke beranda mata kuliah"><span aria-hidden="true">⌂</span><span class="t">Beranda</span></a>
+  <button class="iconbtn" id="themeBtn" aria-label="Ganti tema terang/gelap">◐</button>
+</header>
+
+<div class="shell">
+<nav class="side" id="side" aria-label="Navigasi materi"></nav>
+<main id="main">
+
+<!-- ================= HOME ================= -->
+<section class="view" data-view="home">
+  <div class="hero">
+    <div class="eyebrow">Minggu 13 · Belajar Mandiri</div>
+    <h1>Implementasi dan Optimisasi Layanan Digital</h1>
+    <p>Rencana dan desain yang bagus baru bernilai setelah layanan diluncurkan dan dipakai. Topik ini membahas cara membawa layanan digital dari pengembangan ke pengujian dan peluncuran: memilih pendekatan waterfall, agile, atau hibrida, lalu terus mengoptimalkannya setelah rilis lewat data, pengujian, dan evaluasi.</p>
+  </div>
+
+  <div class="card">
+    <h3>🎯 Sub-CPMK 12 <span class="tag">CPMK6</span></h3>
+    <p style="margin:0">Mahasiswa mampu menjelaskan proses implementasi layanan digital, dari pengujian hingga peluncuran, dan pentingnya optimisasi berkelanjutan.</p>
+  </div>
+
+  <h3>Cara memakai aplikasi ini</h3>
+  <p>Aplikasi ini <b>bukan pengganti bacaan</b>. Ringkasan di sini sengaja dibuat padat; detail, gambar, dan kasus ada di sumber aslinya. Setiap unit mengikuti tiga langkah:</p>
+  <div class="steps">
+    <div><i>📖</i><b>1. Baca</b><span>Buka bagian Chaffey Bab 10 atau artikel agile vs waterfall yang ditunjuk, dengan pertanyaan pemandu sebagai fokus.</span></div>
+    <div><i>✅</i><b>2. Cek</b><span>Centang "sudah membaca" untuk membuka soal. Soal berlabel <span style="font-weight:700">Cek Bacaan</span> hanya bisa dijawab dari bacaan.</span></div>
+    <div><i>🧩</i><b>3. Terapkan</b><span>Pilih pendekatan proyek, diagnosis konversi per segmen, hitung laba operasional e-commerce; analisis kasus Indonesia.</span></div>
+  </div>
+  <p class="hint">Kemajuan Anda tersimpan otomatis di peramban ini (bukan di server). Gunakan menu <b>Catatan &amp; Referensi</b> untuk menyalin atau mengunduh semua jawaban Anda.</p>
+
+  <h3>Rencana belajar (± 4 jam)</h3>
+  <div class="tw"><table class="plan">
+    <thead><tr><th>#</th><th>Unit</th><th>Bacaan</th><th>Status</th></tr></thead>
+    <tbody id="planBody"></tbody>
+  </table></div>
+  <p class="hint">Bacaan: (1) Chaffey, D., Hemphill, T., &amp; Edmundson-Bird, D. (2019). <em>Digital Business and E-Commerce Management</em> (7th ed.). Pearson. Bab 10, terutama bagian implementasi, Scrum, CRO, dan <em>Focus on Web analytics</em>, ditambah rujukan silang Box 7.5 dan Box 9.5. (2) Artikel <em>Agile vs. Waterfall</em> yang dirujuk RPS sebagai Forecast.app (n.d.); tautannya kini diarahkan ke blog Accelo (Frazier, 2025). Rujukan buku memakai <b>nama subbab</b> serta nomor <b>Gambar, Tabel, Box, dan Case Study</b>.</p>
+
+  <div class="co book"><b class="t">ℹ️ Hubungan dengan Topik 11.</b> Topik 11 juga memakai Bab 10, dengan fokus transformasi digital dan growth hacking. Topik ini memakai bagian bab yang sama dari sudut lain: <b>bagaimana layanan diimplementasikan dan terus diperbaiki setelah diluncurkan</b>. Beberapa konsep (Scrum, A/B testing, CRO) muncul lagi di sini dengan penekanan pada proses kerjanya, bukan definisinya.</div>
+
+  <div class="co idn"><b class="t">🇮🇩 Kasus Indonesia minggu ini.</b> Selain Case Study 10.2 dari buku (budaya metrik dan eksperimen Amazon), Anda akan menganalisis peluncuran <b>Coretax DJP</b> pada 1 Januari 2025, yang akhirnya dijalankan paralel dengan sistem lama, dan peralihan <b>PeduliLindungi menjadi SATUSEHAT Mobile</b> pada 1 Maret 2023. Latihannya, sesuai RPS: argumentasi pilihan agile atau waterfall untuk proyek e-commerce.</div>
+
+  <h3>🔥 Pemanasan (5 menit)</h3>
+  <div class="card">
+    <p>Ingat satu aplikasi atau sistem (kampus, bank, pemerintah, belanja) yang baru diluncurkan atau diperbarui besar-besaran lalu bermasalah di hari-hari pertama.</p>
+    <div class="cq"><b>Apa yang terjadi, dan bagaimana penyelenggara menanganinya?</b><textarea data-note="warm_know" placeholder="Sistem: … Masalah: … Penanganan: …"></textarea></div>
+    <div class="cq"><b>Menurut Anda, masalah itu seharusnya bisa dicegah di tahap mana: perencanaan, pengujian, cara peluncuran, atau setelah rilis? Simpan jawaban ini; Anda akan menimbangnya lagi di Unit 3.</b><textarea data-note="warm_want" placeholder="Menurut saya…"></textarea></div>
+  </div>
+  <div class="pager"><span></span><a class="btn" href="#u1">Mulai Unit 1 →</a></div>
+</section>
+
+<!-- ================= UNIT 1 ================= -->
+<section class="view" data-view="u1" data-unit="1">
+  <div class="eyebrow">Unit 1 <span class="tag">Accelo · Bab 10</span><span class="tag">± 35 menit</span></div>
+  <h2>Waterfall dan Agile: Dua Logika Implementasi</h2>
+  <div class="read" data-read="1">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Artikel Agile vs. Waterfall: bagian perbedaan, tabel perbandingan, apa itu Agile, apa itu Waterfall · Chaffey Bab 10 · Use of Scrum, an agile methodology, in digital marketing · Gambar 10.4 · Box 9.5 (poin 4, 5, 9)</span></div>
+    <p style="margin:0 0 4px">Bagian awal artikel agile vs waterfall (definisi, tabel perbandingan, cara kerja, kelebihan dan kekurangan masing-masing), subbab Bab 10 tentang Scrum dalam pemasaran digital, dan Box 9.5 tentang bentrokan tim agile dengan organisasi waterfall. Cari jawaban:</p>
+    <ul>
+      <li>Apa tahapan khas waterfall, dan apa langkah siklus kerja agile menurut artikel?</li>
+      <li>Menurut Forrester (2013) yang dikutip Chaffey, berapa persen pemimpin pemasaran B2B yang menilai kondisi berubah terlalu cepat untuk rencana tahunan?</li>
+      <li>Apa beda pendekatan "lari estafet" dan "rugby" dalam pengembangan produk?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="1"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b>Waterfall</b> bergerak melalui tahap-tahap berurutan yang ditetapkan di awal: kebutuhan, perencanaan, desain, pengembangan, pengujian, penyerahan, dan pemeliharaan. Satu tahap selesai sebelum tahap berikutnya dimulai. <b>Agile</b> bekerja dalam siklus pendek yang berulang dan bertahap: tetapkan tujuan, prioritaskan pekerjaan, selesaikan iterasi singkat, tinjau dan kumpulkan umpan balik, sesuaikan, lalu ulangi. Scrum dan Kanban adalah kerangka agile yang umum. Artikel menegaskan <b>tidak ada yang selalu lebih baik</b>; pilihannya bergantung pada kejelasan kebutuhan, kompleksitas, jadwal, anggaran, pemangku kepentingan, dan toleransi terhadap perubahan.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Aspek</th><th>Waterfall</th><th>Agile</th></tr></thead>
+    <tbody>
+      <tr><td><b>Struktur</b></td><td>Tahap berurutan</td><td>Iterasi pendek berulang</td></tr>
+      <tr><td><b>Perencanaan &amp; kebutuhan</b></td><td>Rinci di awal; kebutuhan dianggap stabil</td><td>Bertahap; kebutuhan berkembang</td></tr>
+      <tr><td><b>Penyerahan nilai</b></td><td>Di akhir proyek</td><td>Sedikit demi sedikit sejak awal</td></tr>
+      <tr><td><b>Umpan balik &amp; pengujian</b></td><td>Terlambat, setelah pengembangan</td><td>Sering, di setiap iterasi</td></tr>
+      <tr><td><b>Ruang lingkup &amp; anggaran</b></td><td>Tetap; lebih mudah dianggarkan di awal</td><td>Lentur; prakiraan jangka panjang lebih sulit</td></tr>
+      <tr><td><b>Dokumentasi</b></td><td>Rinci</td><td>Secukupnya</td></tr>
+      <tr><td><b>Kelemahan khas</b></td><td>Kurang lentur, penemuan masalah yang terlambat dan mahal</td><td>Ruang lingkup kurang pasti, rawan <em>scope creep</em>, butuh keterlibatan pemangku kepentingan</td></tr>
+    </tbody>
+  </table></div>
+  <p class="hint">Ringkasan dari tabel dan daftar kelebihan dan kekurangan dalam artikel Accelo (Frazier, 2025). Artikel juga mengutip dua statistik dari pihak lain: 86% organisasi pemasaran berencana memindahkan sebagian departemennya ke agile (AgileSherpas), dan 39% organisasi yang memakai agile mencapai kinerja lebih tinggi (PMI).</p>
+  <div class="card cls" data-widget="aw"><h4>🧩 Latihan: ciri waterfall atau agile?</h4></div>
+  <p>Chaffey membawa logika yang sama ke pemasaran digital. Forrester (2013) menemukan 69% pemimpin pemasaran B2B menilai kondisi berubah terlalu cepat untuk menjaga rencana tahunan tetap relevan. Pemasar kini memakai loop <b>"test, learn and commit"</b>: alih-alih satu ide besar, mereka menjalankan serangkaian optimasi dan uji kecil (Gambar 10.4). Pengembangan produk tradisional seperti <b>lari estafet</b> (satu tim spesialis menyerahkan tongkat ke tim berikutnya); Scrum seperti <b>rugby</b> (satu tim bekerja bersama dari awal sampai akhir, mengoper bola ke depan dan ke belakang).</p>
+  <div class="co book"><b class="t">📌 Rujukan silang Box 9.5.</b> Dua dari 14 alasan bisnis gagal di UX berkaitan langsung dengan topik ini: tim UX dan desain mencoba bekerja agile sementara bagian lain bisnis bekerja waterfall dengan brief yang sangat rinci, dan perjalanan pengguna yang rusak dibiarkan lama karena proses waterfall menghalangi tim melakukan iterasi.</div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Banyak proyek sistem informasi instansi pemerintah dan BUMN di Indonesia dikontrak dengan spesifikasi, nilai, dan tenggat tetap sejak awal. Struktur kontrak seperti itu cenderung mendorong waterfall, walau tim pengembangnya bekerja dalam sprint. Ini bentuk hibrida yang dibahas di Unit 2.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u1"></div>
+  <div class="pager"><a class="btn ghost" href="#home">← Beranda</a><a class="btn" href="#u2">Unit 2 →</a></div>
+</section>
+
+<!-- ================= UNIT 2 ================= -->
+<section class="view" data-view="u2" data-unit="2">
+  <div class="eyebrow">Unit 2 <span class="tag">Accelo · Bab 10</span><span class="tag">± 35 menit</span></div>
+  <h2>Memilih Pendekatan: Agile, Waterfall, atau Hibrida</h2>
+  <div class="read" data-read="2">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Artikel Agile vs. Waterfall: delapan perbedaan utama, kapan memakai masing-masing, contoh, model hibrida, tantangan umum, biaya · Chaffey Bab 10 · The process of resourcing and planning · The design of the transformation · The process of deployment</span></div>
+    <p style="margin:0 0 4px">Bagian artikel tentang kapan memakai agile, waterfall, atau hibrida beserta tantangan masing-masing, dan subbab Bab 10 tentang perancangan dan penerapan (deployment) proyek transformasi. Cari jawaban:</p>
+    <ul>
+      <li>Kondisi proyek seperti apa yang cocok untuk waterfall, agile, dan hibrida?</li>
+      <li>Apa tantangan umum agile dan waterfall menurut artikel?</li>
+      <li>Menurut Chaffey, kapan manajemen proyek tradisional masuk akal, dan prinsip agile mana yang cocok dengan transformasi digital?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="2"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <div class="tw"><table>
+    <thead><tr><th>Pendekatan</th><th>Cocok bila</th><th>Tantangan umum</th></tr></thead>
+    <tbody>
+      <tr><td><b>Waterfall</b></td><td>Kebutuhan stabil; anggaran dan tenggat tetap; dokumentasi ketat atau regulasi; tahap saling bergantung berurutan (mis. konstruksi, rekayasa)</td><td>Kebutuhan tidak lengkap, perubahan di akhir, umpan balik terlambat, ketergantungan diremehkan, risiko tidak dinilai ulang</td></tr>
+      <tr><td><b>Agile</b></td><td>Kebutuhan berkembang; ketidakpastian tinggi; butuh umpan balik sering dan penyerahan bertahap</td><td>Prioritas buruk, <em>scope creep</em> tak terkendali, partisipasi pemangku kepentingan rendah, terlalu mengejar kecepatan, perencanaan sumber daya lemah</td></tr>
+      <tr><td><b>Hibrida</b></td><td>Syarat komersial dan tonggak (milestone) tetap, tetapi pekerjaan sehari-hari berjalan iteratif</td><td>Butuh visibilitas kapasitas, anggaran, dan profitabilitas lintas model</td></tr>
+    </tbody>
+  </table></div>
+  <p>Artikel juga menekankan bahwa <b>tidak ada metode yang pada dasarnya lebih mahal</b>: waterfall memudahkan penganggaran di awal tetapi penemuan masalah di akhir mahal; agile memudahkan koreksi tetapi biaya total lebih sulit diprakirakan.</p>
+
+  <div class="card" id="fitTool">
+    <h4>🧭 Alat bantu memilih pendekatan</h4>
+    <p class="hint">Nilai proyek Anda pada enam kondisi yang disebut artikel. Ini alat bantu diskusi, bukan aturan baku.</p>
+    <div class="calc3">
+      <fieldset><legend>Kebutuhan</legend><label>Seberapa jelas dan stabil?<select id="fq1"><option value="1">1 · sangat kabur, akan banyak berubah</option><option value="2">2</option><option value="3" selected>3 · sebagian jelas</option><option value="4">4</option><option value="5">5 · rinci dan stabil</option></select></label></fieldset>
+      <fieldset><legend>Ketidakpastian</legend><label>Pasar atau teknologi baru?<select id="fq2"><option value="1">1 · sangat dikenal</option><option value="2">2</option><option value="3" selected>3 · sedang</option><option value="4">4</option><option value="5">5 · sangat baru</option></select></label></fieldset>
+      <fieldset><legend>Regulasi &amp; dokumentasi</legend><label>Seberapa ketat?<select id="fq3"><option value="1">1 · longgar</option><option value="2">2</option><option value="3" selected>3 · sedang</option><option value="4">4</option><option value="5">5 · sangat ketat, wajib audit</option></select></label></fieldset>
+      <fieldset><legend>Anggaran &amp; tenggat</legend><label>Seberapa tetap?<select id="fq4"><option value="1">1 · lentur</option><option value="2">2</option><option value="3" selected>3 · sedang</option><option value="4">4</option><option value="5">5 · kontrak tetap</option></select></label></fieldset>
+      <fieldset><legend>Pemangku kepentingan</legend><label>Bisa memberi umpan balik rutin?<select id="fq5"><option value="1">1 · jarang tersedia</option><option value="2">2</option><option value="3" selected>3 · kadang</option><option value="4">4</option><option value="5">5 · terlibat tiap iterasi</option></select></label></fieldset>
+      <fieldset><legend>Ketergantungan</legend><label>Tahap harus berurutan?<select id="fq6"><option value="1">1 · bisa paralel</option><option value="2">2</option><option value="3" selected>3 · sebagian</option><option value="4">4</option><option value="5">5 · sangat berurutan</option></select></label></fieldset>
+    </div>
+    <div class="row" style="gap:6px;margin-top:8px"><button class="chip" data-fit="umkm">Toko online UMKM baru</button><button class="chip" data-fit="reg">Sistem pelaporan pajak</button><button class="chip" data-fit="corp">Replatform e-commerce korporat</button></div>
+    <div class="res" id="fitRes"></div>
+  </div>
+
+  <div class="card cls" data-widget="pick"><h4>🧩 Latihan: pendekatan mana yang paling cocok?</h4></div>
+  <p>Chaffey membahas hal yang sama untuk proyek transformasi digital. Setelah peta jalan selesai, organisasi perlu memikirkan <b>desain transformasi</b> (rencana induk implementasi; karena harus cepat, proyek dan rencananya sebaiknya relatif kecil) dan <b>program perubahan</b>. Saat <b>deployment</b>, manajemen proyek tradisional masuk akal untuk hal yang sangat besar, tetapi proyek yang lebih kecil, cepat, dan responsif bisa memakai <b>pengembangan agile</b>. Dari <b>12 prinsip agile</b> (Beck, 2001), yang paling cocok dengan transformasi digital adalah kolaborasi dengan pengguna akhir dan pelanggan, tim kecil yang mengatur dirinya sendiri, dan kesiapan merespons perubahan. <b>Hackathon</b> juga dipakai untuk menerapkan proyek transformasi kecil (Grijpink dkk., 2015).</p>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Coretax DJP menggantikan sistem inti administrasi perpajakan sekaligus untuk jutaan wajib pajak. Proyek seperti ini punya regulasi ketat, tenggat tetap, dan banyak ketergantungan, ciri yang mendorong perencanaan ala waterfall. Pertanyaannya ada di cara peluncurannya, yang dibahas di Unit 3 dan Studi Kasus 2.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u2"></div>
+  <div class="pager"><a class="btn ghost" href="#u1">← Unit 1</a><a class="btn" href="#u3">Unit 3 →</a></div>
+</section>
+
+<!-- ================= UNIT 3 ================= -->
+<section class="view" data-view="u3" data-unit="3">
+  <div class="eyebrow">Unit 3 <span class="tag">Bab 10 · Bab 7</span><span class="tag">± 35 menit</span></div>
+  <h2>Dari Pengujian hingga Peluncuran</h2>
+  <div class="read" data-read="3">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 7 · Box 7.5 (bagian Actions dan Implementation) · Bab 10 · 1 Product/market fit (create an MVP) · Gambar 10.7 · A programme for change · The process of living with, and evaluating, digital transformation</span></div>
+    <p style="margin:0 0 4px">Box 7.5 (kerangka rencana pemasaran digital, khususnya daftar tugas implementasi), subbab product/market fit dan MVP di Bab 10, lean start-up (Gambar 10.7), program perubahan, dan evaluasi transformasi. Cari jawaban:</p>
+    <ul>
+      <li>Tugas pengembangan utama apa saja yang tercantum di bagian Implementation Box 7.5?</li>
+      <li>Apa itu MVP, dan mengapa produk perlu mencapai product/market fit sebelum diluncurkan untuk ditingkatkan skalanya?</li>
+      <li>Menurut Chaffey, apa inti setiap kasus manajemen perubahan yang berhasil?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="3"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Box 7.5 merangkum tugas pengembangan utama dalam implementasi layanan digital: <b>analisis kebutuhan bisnis dan audiens</b>, <b>desain berbasis skenario</b>, <b>pengembangan konten</b>, <b>integrasi basis data</b>, <b>migrasi data</b>, <b>pengujian</b>, dan <b>changeover</b> (peralihan ke sistem baru). Di sekitarnya ada manajemen proyek dan perubahan, organisasi dan tanggung jawab tim, penilaian risiko, isu hukum, serta proses pengembangan dan pemeliharaan. Setelah itu tahap <b>Control</b>: proses dan metrik pengukuran.</p>
+  <div class="card cls" data-widget="stage"><h4>🧩 Latihan: tugas implementasi yang mana?</h4></div>
+  <p><b>MVP (minimum viable product)</b> adalah produk dasar atau versi beta tanpa fitur tambahan. Dalam pendekatan growth hacking, produk dibangun secepat mungkin sebagai MVP, lalu diletakkan di depan calon pelanggan untuk mendapat umpan balik lewat survei, pengujian, dan iterasi (lean start-up, Gambar 10.7). Pertumbuhan berkelanjutan hanya mungkin bila banyak orang menganggap produk itu "wajib punya", dan ini sulit dicapai tanpa umpan balik dan perbaikan <b>sebelum peluncuran resmi untuk memperbesar skala</b>. Prinsipnya: <em>fail fast, fail cheap</em>.</p>
+  <div class="co book"><b class="t">ℹ️ Strategi changeover.</b> Bab 10 edisi ini hanya menyebut "testing and changeover" tanpa merinci caranya. Dalam praktik manajemen proyek TI dikenal beberapa strategi peralihan: <b>langsung</b> (<em>big bang</em>: sistem lama dimatikan, sistem baru dipakai serentak), <b>paralel</b> (lama dan baru berjalan bersamaan untuk sementara), <b>bertahap</b> (per modul atau per kelompok pengguna), dan <b>pilot</b> (diuji di satu unit sebelum diperluas). Makin besar risiko kegagalan, makin besar alasan memilih paralel, bertahap, atau pilot, dengan biaya menjalankan dua sistem sekaligus. Penjelasan ini tambahan dari luar bacaan; gunakan untuk menganalisis Studi Kasus 2 dan 3.</div>
+  <p>Implementasi bukan hanya soal teknologi. <b>Program perubahan</b> mencakup literasi dan kompetensi digital staf (pelatihan, rekrutmen keterampilan baru) dan, yang lebih sulit, budaya organisasi. Menurut Chaffey, setiap kasus manajemen perubahan yang berhasil kembali ke gagasan yang sama: <b>komunikasikan semuanya dan utamakan karyawan</b>. Setelah peluncuran, organisasi "hidup dengan" perubahan itu: memantau lewat <em>check-in</em> rutin, lalu mengevaluasi apakah teknologi, budaya, atau proses baru sudah <b>stabil, permanen, dan andal</b>, serta apakah risikonya sudah diidentifikasi dan ditangani dengan tepat.</p>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Saat PeduliLindungi beralih menjadi SATUSEHAT Mobile, pengguna lama cukup memperbarui aplikasi tanpa mendaftar ulang; profil, sertifikat, dan tiket vaksin disinkronkan otomatis. Peluncurannya bertahap: iOS lebih dulu, Android menyusul. Ini contoh migrasi data dan changeover yang dirancang dari sudut pengguna. Studi Kasus 3 membahas apa yang tetap terjadi di hari pertama.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u3"></div>
+  <div class="pager"><a class="btn ghost" href="#u2">← Unit 2</a><a class="btn" href="#u4">Unit 4 →</a></div>
+</section>
+
+<!-- ================= UNIT 4 ================= -->
+<section class="view" data-view="u4" data-unit="4">
+  <div class="eyebrow">Unit 4 <span class="tag">Bab 10</span><span class="tag">± 30 menit</span></div>
+  <h2>Mengelola Iterasi: Sprint, Siklus 90 Hari, dan Aturan 70:20:10</h2>
+  <div class="read" data-read="4">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 10 · Scrum meetings · Tabel 10.1 · Gambar 10.5 · Sprint planning · Daily Scrum · Box 10.7 · Sprint review and retrospective · Developing agile marketing campaigns · Gambar 10.6</span></div>
+    <p style="margin:0 0 4px">Subbab mekanisme pertemuan Scrum, templat perencanaan 90 hari (Tabel 10.1), Box 10.7 (Scrum di tim pemasaran), dan aturan 70:20:10 untuk kampanye agile. Cari jawaban:</p>
+    <ul>
+      <li>Berapa batas waktu sprint planning untuk sprint dua minggu, dan berapa lama Daily Scrum?</li>
+      <li>Apa tiga pertanyaan Daily Scrum dan dua pertanyaan sprint retrospective?</li>
+      <li>Apa isi aturan 70:20:10, dan apa contoh Specsavers di Gambar 10.6?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="4"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Praktik terbaik menyarankan <b>siklus perencanaan maksimal 90 hari</b> (Tabel 10.1). Di dalamnya, pekerjaan berjalan dalam sprint. Topik 11 sudah membahas peran Scrum; di sini fokusnya mekanisme yang menjaga implementasi tetap terkendali:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Pertemuan</th><th>Yang terjadi</th></tr></thead>
+    <tbody>
+      <tr><td><b>Sprint planning</b></td><td>Memilih pekerjaan dari product backlog dan menyusun sprint backlog; batas empat jam untuk sprint dua minggu</td></tr>
+      <tr><td><b>Daily Scrum</b></td><td>Rapat berdiri maksimal 15 menit, di waktu dan tempat yang sama. Tiga pertanyaan: apa yang saya kerjakan kemarin, apa yang akan saya kerjakan hari ini, adakah hambatan. Hambatan dicatat Scrum Master di papan Scrum; diskusi rinci dilakukan di luar rapat</td></tr>
+      <tr><td><b>Sprint review</b></td><td>Meninjau pekerjaan yang selesai dan yang direncanakan tetapi belum selesai</td></tr>
+      <tr><td><b>Retrospective</b></td><td>Apa yang berjalan baik? Apa yang bisa diperbaiki di sprint berikutnya? Lalu sepakati tindakan perbaikan proses</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>Box 10.7</b> mengingatkan: rapat tinjauan bisa terlalu lama untuk tim delapan orang atau lebih, sprint satu bulan mungkin terlalu panjang untuk pemasaran karena jadwal tidak bisa diprediksi, dan estimasi tugas butuh waktu untuk dipelajari. Proyek pemasaran sebaiknya dijalankan dalam siklus pengembangan mini yang <b>tidak lebih dari sebulan</b>.</p>
+  <p>Untuk kampanye, buku memberi aturan praktis <b>70:20:10</b>: 70% aktivitas terencana, 20% pemasaran otomatis yang merespons tindakan pengguna (mis. <em>programmatic marketing</em>), dan 10% sepenuhnya agile, bereaksi terhadap berita dan peristiwa saat terjadi, seperti iklan Specsavers yang menyesuaikan slogannya dengan hasil referendum Brexit. Syaratnya: tim kreatif yang cepat, alat pemantau media sosial, dan budaya yang terbuka pada eksperimen.</p>
+  <div class="card cls" data-widget="mix"><h4>🧩 Latihan: 70, 20, atau 10?</h4></div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Merek Indonesia yang cepat menanggapi momen viral, pertandingan timnas, atau tren di media sosial dengan konten hari itu juga sedang menjalankan porsi "10" dari aturan 70:20:10. Porsi ini hanya aman bila 70% sisanya sudah terencana dan ada aturan persetujuan konten yang cepat.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u4"></div>
+  <div class="pager"><a class="btn ghost" href="#u3">← Unit 3</a><a class="btn" href="#u5">Unit 5 →</a></div>
+</section>
+
+<!-- ================= UNIT 5 ================= -->
+<section class="view" data-view="u5" data-unit="5">
+  <div class="eyebrow">Unit 5 <span class="tag">Bab 10</span><span class="tag">± 35 menit</span></div>
+  <h2>Budaya Optimisasi Berkelanjutan</h2>
+  <div class="read" data-read="5">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 10 · Measuring implementation success · Focus on Web analytics (bagian pembuka) · 3 Conversion rate optimisation · Key CRO elements · Gambar 10.10 · Tabel 10.2 · A/B and multivariate testing · Tabel 10.3 · Mini Case Study 10.9</span></div>
+    <p style="margin:0 0 4px">Bagian pembuka <em>Focus on Web analytics</em> (budaya pengukuran di berbagai perusahaan dan definisi web analytics), elemen CRO, loop optimisasi konversi (Gambar 10.10), 30 faktor optimisasi (Tabel 10.2), serta A/B dan multivariate testing. Cari jawaban:</p>
+    <ul>
+      <li>Apa sebutan proses optimisasi di Alliance &amp; Leicester, Hewlett-Packard, dan Jim Sterne?</li>
+      <li>Apa tiga elemen utama CRO, dan apa empat kelompok faktor dalam Tabel 10.2?</li>
+      <li>Berapa A/B atau multivariate test per bulan yang dibutuhkan untuk pertumbuhan penjualan yang jauh lebih tinggi?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="5"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Peluncuran adalah awal, bukan akhir. Pendekatan agile untuk menguji dan mengoptimalkan hanya bisa berjalan bila kinerja dipantau dan hasilnya ditindaklanjuti. Perusahaan yang sukses di e-commerce mengalokasikan sumber daya untuk memantau dan <b>terus</b> memperbaiki kanal digitalnya:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Organisasi</th><th>Nama prosesnya</th></tr></thead>
+    <tbody>
+      <tr><td>Alliance &amp; Leicester (Santander)</td><td>Test, Learn, Refine</td></tr>
+      <tr><td>Hewlett-Packard</td><td>Measure, Report, Analyse, Optimise</td></tr>
+      <tr><td>Amazon</td><td>The Culture of Metrics (Case Study 10.2)</td></tr>
+      <tr><td>Jim Sterne, <em>Web Metrics</em></td><td>TIMITI: Try It! Measure It! Tweak It!, yaitu perbaikan terus-menerus, bukan berkala atau ad hoc</td></tr>
+    </tbody>
+  </table></div>
+  <p>Chaffey mendefinisikan <b>web analytics</b> sebagai evaluasi efektivitas pemasaran berbasis internet yang berpusat pada pelanggan, untuk meningkatkan kontribusi bisnis kanal online. <b>Conversion rate optimisation (CRO)</b> memakai pengujian terstruktur untuk meningkatkan efektivitas situs, bergerak dari data ke wawasan lalu ke uang (loop optimisasi konversi, Gambar 10.10). Tiga elemen CRO: <b>tools</b> (wawasan, pembuatan halaman, personalisasi, otomasi kampanye), <b>people</b> (wawasan, manajemen, eksekusi kreatif, penyiapan uji, implementasi, alih daya), dan <b>process</b> (merencanakan dan membuat iklan dan konten baru, mengoptimalkan yang lama).</p>
+  <div class="card cls" data-widget="eis"><h4>🧩 Latihan: kelompok faktor optimisasi (Tabel 10.2)</h4></div>
+  <p>Tujuh area untuk meningkatkan konversi dan penjualan: A/B dan multivariate testing, pendekatan terstruktur, analisis perjalanan pelanggan, optimasi teks, survei dan umpan balik pelanggan, analisis keranjang yang ditinggalkan, dan segmentasi. Uji A/B membandingkan halaman kontrol dengan satu perubahan (Tabel 10.3: judul baru, tombol baru, atau teks baru, satu per satu); <b>multivariate testing</b> menguji kombinasi banyak elemen sekaligus. Untuk pertumbuhan penjualan yang jauh lebih tinggi, perusahaan perlu menjalankan <b>enam sampai tujuh uji per bulan</b>.</p>
+  <div class="co"><b class="t">💡 National Express (Mini Case Study 10.9).</b> Halaman pemilihan tarif, langkah kedua terakhir pemesanan, diuji dengan multivariate testing tanpa mengubah struktur halaman atau identitas merek. Sebanyak 3.500 kombinasi diuji pada pengunjung nyata; kombinasi yang kalah dikeluarkan selama pengujian. Setelah valid secara statistik, kombinasi terbaik menaikkan konversi halaman itu 14,11%.</div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Perhatikan aplikasi yang Anda pakai setiap hari: letak tombol, teks promo, atau urutan menu sering berbeda dari aplikasi teman Anda. Banyak aplikasi besar di Indonesia menjalankan uji seperti ini setelah rilis, sehingga "peluncuran" sebenarnya adalah titik awal rangkaian eksperimen.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u5"></div>
+  <div class="pager"><a class="btn ghost" href="#u4">← Unit 4</a><a class="btn" href="#u6">Unit 6 →</a></div>
+</section>
+
+<!-- ================= UNIT 6 ================= -->
+<section class="view" data-view="u6" data-unit="6">
+  <div class="eyebrow">Unit 6 <span class="tag">Bab 10</span><span class="tag">± 40 menit</span></div>
+  <h2>Mendiagnosis Masalah: Heuristik, Path Analysis, dan Segmentasi</h2>
+  <div class="read" data-read="6">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 10 · 2 User data analysis · Box 10.8 · Forward path analysis · Clickstream analysis and visitor segmentation · Tabel 10.4 · On-site search effectiveness · Reverse path analysis · Visitor segmentation</span></div>
+    <p style="margin:0 0 4px">Lima area pengujian pengguna, analisis heuristik untuk e-commerce (Box 10.8, Phillips, 2016), analisis clickstream dan jalur (Tabel 10.4), efektivitas pencarian di situs, dan segmentasi pengunjung. Cari jawaban:</p>
+    <ul>
+      <li>Apa empat langkah analisis heuristik e-commerce menurut Phillips (2016)?</li>
+      <li>Apa beda forward path analysis dan reverse path analysis, dan halaman apa yang cocok untuk masing-masing?</li>
+      <li>Metrik apa yang dipakai untuk menilai efektivitas pencarian di situs?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="6"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Optimisasi dimulai dari diagnosis. Analisis data pengguna memadukan data kuantitatif dan kualitatif lewat lima area: analisis teknologi (mis. konversi per peramban), analisis heuristik, web analytics, survei kualitatif (mis. survei keluar), dan uji usability (mis. rekaman sesi). <b>Analisis heuristik</b> e-commerce (Phillips, 2016, Box 10.8) punya empat langkah: (1) tentukan konversi per jenis perangkat; (2) segmentasikan konversi penting menurut dimensi kunci seperti kanal pemasaran; (3) identifikasi <em>bounce rate</em> halaman pendaratan; (4) identifikasi <em>exit rate</em> halaman penting seperti login, pembelian, pengiriman, dan ringkasan pesanan.</p>
+
+  <div class="card" id="segTool">
+    <h4>📱 Kalkulator konversi per segmen (langkah 1–2 heuristik)</h4>
+    <div class="calc3">
+      <fieldset><legend>Desktop</legend><label>Kunjungan<input type="number" id="sgV1" value="20000" min="0"></label><label>Pesanan<input type="number" id="sgO1" value="600" min="0"></label></fieldset>
+      <fieldset><legend>Web mobile</legend><label>Kunjungan<input type="number" id="sgV2" value="60000" min="0"></label><label>Pesanan<input type="number" id="sgO2" value="480" min="0"></label></fieldset>
+      <fieldset><legend>Aplikasi</legend><label>Kunjungan<input type="number" id="sgV3" value="40000" min="0"></label><label>Pesanan<input type="number" id="sgO3" value="1000" min="0"></label></fieldset>
+    </div>
+    <div class="calc" style="margin-top:8px"><label>Nilai rata-rata pesanan (Rp)<input type="number" id="sgA" value="150000" min="0" step="1000"></label></div>
+    <div class="row" style="gap:6px;margin-top:8px"><button class="chip" data-sg="mob">Web mobile bocor</button><button class="chip" data-sg="even">Merata</button></div>
+    <div class="res" id="sgRes"></div>
+  </div>
+
+  <p><b>Clickstream analysis</b> menganalisis perilaku pengunjung secara rinci untuk mendiagnosis masalah dan peluang (Tabel 10.4). Laporan "top paths" agregat sering tidak berguna (beranda → keluar), sehingga analisis lebih bermakna dalam konteks satu halaman. <b>Forward path analysis</b> meninjau kombinasi klik <em>dari</em> sebuah halaman, cocok untuk beranda, halaman produk, dan direktori. <b>Reverse path analysis</b> menunjukkan kombinasi halaman yang paling sering <em>menuju</em> sebuah halaman, cocok untuk halaman transaksi seperti halaman checkout pertama atau formulir "hubungi kami". <b>Pencarian di situs</b> dinilai dari jumlah pencarian, persentase pencarian tanpa hasil, persentase keluar dari halaman hasil, persentase hasil yang diklik dan yang berujung konversi, serta istilah terpopuler. <b>Segmentasi</b> membandingkan, misalnya, pengunjung baru dan lama, sumber rujukan, yang berkonversi dan tidak, atau tahap terjauh yang dicapai (MyTravel: dari <em>site flirt</em> dua halaman atau kurang hingga melihat konfirmasi pemesanan).</p>
+  <div class="card cls" data-widget="diag"><h4>🧩 Latihan: analisis mana yang menjawab pertanyaan ini?</h4></div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Di Indonesia sebagian besar akses internet lewat ponsel, sehingga langkah pertama heuristik, membandingkan konversi per perangkat, hampir selalu relevan. Konversi web mobile yang jauh di bawah aplikasi bisa menandakan halaman yang berat untuk kuota dan sinyal terbatas, formulir yang sulit diisi di layar kecil, atau pengguna yang sengaja diarahkan ke aplikasi.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u6"></div>
+  <div class="pager"><a class="btn ghost" href="#u5">← Unit 5</a><a class="btn" href="#u7">Unit 7 →</a></div>
+</section>
+
+<!-- ================= UNIT 7 ================= -->
+<section class="view" data-view="u7" data-unit="7">
+  <div class="eyebrow">Unit 7 <span class="tag">Bab 10</span><span class="tag">± 40 menit</span></div>
+  <h2>Kematangan CRO, Anggaran, dan Evaluasi Implementasi</h2>
+  <div class="read" data-read="7">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 10 · Gambar 10.11 (model kematangan CRO, Parizek 2013) · Budgeting · Activity 10.2 · User testing prioritisation · The process of living with, and evaluating, digital transformation</span></div>
+    <p style="margin:0 0 4px">Model kematangan CRO dengan tujuh pilar, subbab Budgeting (model laba operasional Hanson dan pendekatan anggaran Bayne), prioritisasi temuan uji pengguna, dan pertanyaan evaluasi transformasi. Cari jawaban:</p>
+    <ul>
+      <li>Apa tujuh pilar model kematangan CRO menurut Parizek (2013)?</li>
+      <li>Bagaimana Hanson (2000) menghitung laba operasional e-commerce?</li>
+      <li>Pendekatan apa saja yang disarankan Bayne (1997) untuk menetapkan anggaran, dan mana yang dianjurkan untuk anggaran pertama?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="7"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b>Model kematangan CRO</b> (Parizek, 2013, Gambar 10.11) bertumpu pada tujuh pilar: <b>people</b> (kualitas dan jumlah tim), <b>knowledge</b> (dari dasar pemasaran online hingga pengujian, UX, analitik, dan copywriting; tidak mungkin dikuasai satu orang), <b>activities</b> (riset kuantitatif dan kualitatif), <b>tests</b> (dari uji ad hoc, ke peta jalan pengujian, lalu uji iteratif), <b>processes</b> (kerja sama antardepartemen, dokumentasi peta jalan dan pembelajaran), <b>sponsor</b> (petinggi yang mendukung dan memperjuangkan anggaran), dan <b>tools</b> (analitik, heatmap, survei, alat pengujian).</p>
+  <div class="card cls" data-widget="crom"><h4>🧩 Latihan: pilar kematangan CRO</h4></div>
+  <p><b>Anggaran.</b> Untuk menghitung ROI peningkatan situs e-commerce, Hanson (2000) menghubungkan pendapatan situs dengan biaya situs dan biaya call centre yang mendukungnya:</p>
+  <div class="co book" style="font-size:.9rem"><b>Laba operasional</b> = pendapatan bersih penjualan − biaya situs − biaya call centre<br><b>Pendapatan bersih</b> = (harga − biaya unit) × penjualan − biaya tetap produk<br><b>Biaya situs</b> = biaya tetap situs + (% kontak dukungan situs × biaya per kontak situs × penjualan)<br><b>Biaya call centre</b> = biaya tetap CC + (% kontak CC × biaya per kontak CC × penjualan)</div>
+
+  <div class="card" id="hanTool">
+    <h4>💰 Kalkulator laba operasional e-commerce (Hanson, 2000)</h4>
+    <div class="calc3">
+      <fieldset><legend>Penjualan</legend><label>Harga per unit (Rp)<input type="number" id="hnP" value="200000" min="0" step="1000"></label><label>Biaya per unit (Rp)<input type="number" id="hnU" value="140000" min="0" step="1000"></label><label>Unit terjual<input type="number" id="hnS" value="10000" min="0" step="100"></label><label>Biaya tetap produk (Rp)<input type="number" id="hnF" value="100000000" min="0" step="1000000"></label></fieldset>
+      <fieldset><legend>Situs</legend><label>Biaya tetap situs (Rp)<input type="number" id="hnSF" value="150000000" min="0" step="1000000"></label><label>% pesanan yang butuh dukungan di situs<input type="number" id="hnSP" value="20" min="0" max="100"></label><label>Biaya per kontak situs (Rp)<input type="number" id="hnSC" value="2000" min="0" step="500"></label></fieldset>
+      <fieldset><legend>Call centre</legend><label>Biaya tetap call centre (Rp)<input type="number" id="hnCF" value="100000000" min="0" step="1000000"></label><label>% pesanan yang menghubungi call centre<input type="number" id="hnCP" value="40" min="0" max="100"></label><label>Biaya per kontak CC (Rp)<input type="number" id="hnCC" value="25000" min="0" step="1000"></label></fieldset>
+    </div>
+    <div class="row" style="gap:6px;margin-top:8px"><button class="chip" data-hn="base">Sebelum optimisasi</button><button class="chip" data-hn="faq">Setelah perbaikan FAQ dan pelacakan pesanan</button></div>
+    <div class="res" id="hnRes"></div>
+  </div>
+
+  <p>Bayne (1997) mendaftar cara menetapkan anggaran: anggaran tahun lalu, persentase penjualan, persentase total anggaran pemasaran (biasanya mulai kecil, di bawah 5% atau bahkan 1%), realokasi dana pemasaran, mengikuti pesaing, "membayar berapa pun" untuk kehadiran online yang efektif, rencana bertahap yang dikaitkan dengan hasil terukur, atau kombinasi. Karena anggaran pertama banyak berisi hal tak berwujud, buku menyarankan <b>kombinasi</b> beberapa metode dengan opsi pengeluaran tinggi, sedang, dan rendah beserta hasil yang diharapkan. Temuan uji pengguna perlu <b>dicatat, diberi solusi, lalu diprioritaskan</b>.</p>
+  <p><b>Evaluasi implementasi.</b> Chaffey mencatat laporan Gale (2016): hanya satu dari delapan transformasi digital yang dianggap sepenuhnya berhasil, dan lebih dari separuh dianggap gagal total. Evaluasi meninjau kembali tujuan awal: apakah bisnis tumbuh dengan pelanggan lama atau baru, apakah pendapatan sesuai perkiraan, apakah nilai yang diinginkan pelanggan tercipta, dan apakah ide kecil berhasil diperbesar skalanya.</p>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Bagi toko online di Indonesia, pertanyaan "di mana status pesanan saya?" lewat WhatsApp atau call centre adalah biaya dukungan yang nyata. Fitur pelacakan pesanan dan FAQ yang jelas di situs memindahkan kontak ke kanal yang jauh lebih murah. Kalkulator di atas menunjukkan logika Hanson: optimisasi bisa menaikkan laba tanpa menambah penjualan.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u7"></div>
+  <div class="pager"><a class="btn ghost" href="#u6">← Unit 6</a><a class="btn" href="#cases">Studi Kasus →</a></div>
+</section>
+
+<!-- ================= CASES ================= -->
+<section class="view" data-view="cases">
+  <div class="eyebrow">Penerapan <span class="tag">± 90 menit</span></div>
+  <h2>Studi Kasus</h2>
+  <p class="lead">Satu kasus dari buku, dua kasus Indonesia, dan satu latihan debat. Alur setiap pertanyaan: <b>tulis jawaban → minta umpan balik aplikasi → nilai diri dengan checklist → buka arah jawaban</b>.</p>
+  <div class="co book"><b class="t">ℹ️ Tentang umpan balik otomatis.</b> Aplikasi memeriksa apakah konsep kunci dan penalaran ("karena", "sehingga") muncul dalam jawaban Anda. Aplikasi <b>tidak</b> bisa menilai apakah argumen Anda benar atau tajam. Skor 0–4 ini hanya umpan balik belajar, <b>bukan nilai</b>. Checklist penilaian diri menilai bagian yang tidak bisa diukur mesin.</div>
+  <div id="caseList"></div>
+  <div class="pager"><a class="btn ghost" href="#u7">← Unit 7</a><a class="btn" href="#final">Kuis Akhir →</a></div>
+</section>
+
+<!-- ================= FINAL ================= -->
+<section class="view" data-view="final">
+  <div class="eyebrow">Self-test</div>
+  <h2>Kuis Akhir: Uji Pemahaman</h2>
+  <div class="quiz" id="finalBox"></div>
+</section>
+
+<!-- ================= FLASH ================= -->
+<section class="view" data-view="cards">
+  <div class="eyebrow">Penguatan</div>
+  <h2>Flashcard Istilah Kunci</h2>
+  <p class="lead">Ketuk kartu untuk membalik. Tandai yang sudah Anda kuasai; sisanya akan muncul lagi.</p>
+  <div class="row" style="justify-content:space-between"><span class="score" id="fcCount"></span><button class="btn ghost" id="fcShuffle" style="padding:6px 12px">⤮ Acak</button></div>
+  <div class="fc" id="fc" tabindex="0" role="button" aria-label="Balik kartu"><div class="inner"><div class="face front"><b id="fcF"></b><small>ketuk untuk membalik</small></div><div class="face back"><div id="fcB"></div></div></div></div>
+  <div class="row" style="justify-content:center">
+    <button class="btn ghost" id="fcPrev">←</button>
+    <button class="btn gold" id="fcKnow">✓ Sudah hafal</button>
+    <button class="btn ghost" id="fcNext">→</button>
+  </div>
+  <p class="hint" style="text-align:center;margin-top:10px"><button class="retry" id="fcReset">Ulang semua kartu</button></p>
+</section>
+
+<!-- ================= NOTES & REFS ================= -->
+<section class="view" data-view="notes">
+  <div class="eyebrow">Rangkuman</div>
+  <h2>Catatan Saya &amp; Referensi</h2>
+  <div class="card">
+    <h3>📝 Semua jawaban Anda</h3>
+    <p class="hint">Gabungan pemanasan, hasil kalkulator, dan studi kasus. Salin atau unduh untuk dikumpulkan di MyITS Classroom bila diminta dosen.</p>
+    <div class="cq"><b>Nama &amp; NRP</b><textarea data-note="identity" style="min-height:44px" placeholder="Nama — NRP"></textarea></div>
+    <div class="row"><button class="btn" id="copyNotes">📋 Salin</button><button class="btn ghost" id="dlNotes">⬇ Unduh .txt</button><button class="btn ghost" id="resetAll" style="border-color:var(--bad);color:var(--bad)">Hapus semua kemajuan</button></div>
+    <pre id="notesPrev" style="white-space:pre-wrap;font-family:var(--f);font-size:.85rem;background:var(--sunk);padding:12px;border-radius:10px;margin-top:14px;max-height:300px;overflow:auto"></pre>
+  </div>
+
+  <h3>🧩 Ringkasan</h3>
+  <ul>
+    <li>Waterfall bergerak lewat tahap berurutan dengan rencana rinci di awal; agile bekerja dalam iterasi pendek dengan umpan balik sering. Tidak ada yang selalu lebih baik.</li>
+    <li>Pilihan pendekatan bergantung pada kestabilan kebutuhan, ketidakpastian, regulasi, kepastian anggaran, keterlibatan pemangku kepentingan, dan ketergantungan antartahap. Hibrida menggabungkan tonggak tetap dengan kerja iteratif.</li>
+    <li>Implementasi mencakup analisis, desain, konten, integrasi dan migrasi data, pengujian, dan changeover, ditambah program perubahan bagi manusia dan budaya. MVP dan umpan balik mendahului peluncuran berskala besar.</li>
+    <li>Sprint, Daily Scrum, review, dan retrospective menjaga iterasi tetap terkendali; aturan 70:20:10 menyeimbangkan rencana dan kelincahan.</li>
+    <li>Optimisasi berkelanjutan (Test, Learn, Refine; TIMITI) memakai CRO, A/B dan multivariate testing, analisis heuristik, path analysis, dan segmentasi.</li>
+    <li>Kematangan CRO bertumpu pada tujuh pilar. Anggaran dan ROI optimisasi bisa dihitung dengan model Hanson, dan implementasi dievaluasi terhadap tujuan awal serta stabilitas, permanensi, dan keandalannya.</li>
+  </ul>
+  <div class="co book"><b class="t">➡️ Minggu 14: Pengukuran Kinerja dan Optimisasi.</b> Topik berikutnya membahas kerangka pengukuran kinerja digital, KPI, dan pemakaian data untuk optimisasi, termasuk Case Study 1.2 tentang Amazon.</div>
+
+  <h3>Referensi</h3>
+  <ol class="ref">
+    <li>Chaffey, D., Hemphill, T., &amp; Edmundson-Bird, D. (2019). <em>Digital business and e-commerce management</em> (7th ed.). Pearson. Bab 10: <em>Managing digital business transformation and growth hacking</em>, termasuk Case Study 10.2 dan Mini Case Study 10.9; rujukan silang Box 7.5 (Bab 7) dan Box 9.5 (Bab 9).</li>
+    <li><a href="https://www.accelo.com/blog/difference-between-agile-waterfall" target="_blank" rel="noopener">Frazier, S. W. (2025, diperbarui 2026). Agile vs. Waterfall: Key differences, pros &amp; cons, and when to use each. Accelo.</a> Dirujuk RPS sebagai Forecast.app (n.d.), <em>The difference between Agile and Waterfall</em>; tautan lamanya kini dialihkan ke artikel ini.</li>
+    <li><a href="https://ikpi.or.id/dirjen-pajak-akui-sistem-coretax-terkendala-kami-terus-pantau-dan-selesaikan-masalahnya" target="_blank" rel="noopener">IKPI. (2025, 6 Januari). Dirjen Pajak akui sistem Coretax terkendala: kami terus pantau dan selesaikan masalahnya.</a></li>
+    <li><a href="https://katadata.co.id/finansial/makro/6780eb5fd0689/ditjen-pajak-minta-maaf-atas-gangguan-sistem-coretax-janjikan-perbaikan-layanan" target="_blank" rel="noopener">Katadata. (2025, 10 Januari). Ditjen Pajak minta maaf atas gangguan sistem Coretax, janjikan perbaikan layanan.</a></li>
+    <li><a href="https://ekonomi.bisnis.com/read/20250211/259/1838498/e-filing-dan-e-faktur-sistem-perpajakan-lama-yang-kembali-dibuka-ditjen-pajak" target="_blank" rel="noopener">Bisnis.com. (2025, 11 Februari). e-Filing dan e-Faktur, sistem perpajakan lama yang kembali dibuka Ditjen Pajak.</a></li>
+    <li><a href="https://ikpi.or.id/djp-resmi-izinkan-seluruh-pkp-gunakan-e-faktur/" target="_blank" rel="noopener">IKPI. (2025, 13 Februari). DJP resmi izinkan seluruh PKP gunakan e-Faktur.</a></li>
+    <li><a href="https://www.kemkes.go.id/id/besok-pedulilindungi-resmi-bertransformasi-menjadi-satusehat-mobile" target="_blank" rel="noopener">Kementerian Kesehatan RI. (2023, 28 Februari). Besok, PeduliLindungi resmi bertransformasi menjadi SATUSEHAT Mobile.</a></li>
+    <li><a href="https://inet.detik.com/mobile-apps/d-6591839/bukan-besok-pedulilindungi-jadi-satusehat-mobile-1-maret-2023" target="_blank" rel="noopener">detikInet. (2023, 27 Februari). Bukan besok, PeduliLindungi jadi SatuSehat Mobile 1 Maret 2023.</a></li>
+    <li><a href="https://teknologi.bisnis.com/read/20230301/84/1632894/aplikasi-satu-sehat-mobile-jebol-ini-jawaban-kemenkes" target="_blank" rel="noopener">Bisnis.com. (2023, 1 Maret). Aplikasi Satu Sehat Mobile jebol, ini jawaban Kemenkes.</a></li>
+  </ol>
+  <p class="foot">Materi ini adalah ringkasan dan adaptasi untuk keperluan pembelajaran Pengantar Bisnis Digital (DG234101), Departemen Manajemen Bisnis ITS. Mahasiswa tetap wajib membaca bab asli pada buku acuan. Pengembang mata kuliah: Imam Baihaqi, Ph.D.</p>
+</section>
+
+</main>
+
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+/* ---------------- storage (safe) ---------------- */
+var KEY="bisdig-t13-v1", S={read:{},q:{},done:{},cls:{},notes:{},final:null,known:{},cs:{}};
+try{var raw=localStorage.getItem(KEY); if(raw){var o=JSON.parse(raw); for(var k in o) S[k]=o[k];}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} updateProgress();}
+try{var th=localStorage.getItem("bisdig-theme"); if(th) document.documentElement.setAttribute("data-theme",th);}catch(e){}
+
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove("on")},1800)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=a[i];a[i]=a[j];a[j]=x;}return a}
+var rp=function(n){return "Rp"+Math.round(n).toLocaleString("id-ID")};
+/* ---------------- units meta ---------------- */
+var UNITS=[
+ {id:"u1",t:"Waterfall & Agile: Dua Logika Implementasi",pg:"Accelo · Gambar 10.4 · Box 9.5"},
+ {id:"u2",t:"Memilih Pendekatan: Agile, Waterfall, Hibrida",pg:"Accelo · The process of deployment"},
+ {id:"u3",t:"Dari Pengujian hingga Peluncuran",pg:"Box 7.5 · Gambar 10.7"},
+ {id:"u4",t:"Sprint, Siklus 90 Hari & 70:20:10",pg:"Tabel 10.1 · Box 10.7 · Gambar 10.5–10.6"},
+ {id:"u5",t:"Budaya Optimisasi Berkelanjutan",pg:"Gambar 10.10 · Tabel 10.2–10.3 · Mini CS 10.9"},
+ {id:"u6",t:"Diagnosis: Heuristik, Path & Segmentasi",pg:"Box 10.8 · Tabel 10.4"},
+ {id:"u7",t:"Kematangan CRO, Anggaran & Evaluasi",pg:"Gambar 10.11 · Budgeting"}
+];
+
+/* ---------------- unit quizzes ---------------- */
+var QZ={
+u1:[
+ {k:"c",q:"Pendekatan yang bergerak lewat tahap berurutan yang ditetapkan di awal (kebutuhan, desain, pengembangan, pengujian, penyerahan) adalah…",o:["Agile","Waterfall","Kanban","Growth hacking"],a:1,e:"Satu tahap selesai sebelum tahap berikutnya dimulai."},
+ {k:"c",q:"Kelemahan khas waterfall adalah…",o:["Ruang lingkup tidak pasti","Umpan balik terlambat sehingga masalah yang ditemukan di akhir mahal diperbaiki","Butuh rapat harian","Tidak ada dokumentasi"],a:1,e:"Ruang lingkup yang tidak pasti adalah kelemahan khas agile."},
+ {k:"r",pg:"Chaffey Bab 10 · Use of Scrum, an agile methodology, in digital marketing",q:"Menurut Forrester (2013) yang dikutip Chaffey, berapa persen pemimpin pemasaran B2B yang menilai kondisi berubah terlalu cepat untuk menjaga rencana tetap relevan?",o:["19%","39%","69%","86%"],a:2,e:"Karena itu rencana tahunan tradisional disebut 'ripe for extinction'."},
+ {k:"r",pg:"Chaffey Bab 10 · Use of Scrum (pendekatan relay vs rugby)",q:"Chaffey mengibaratkan Scrum seperti…",o:["Lari estafet: satu tim menyerahkan tongkat ke tim berikutnya","Rugby: satu tim bekerja bersama dari awal sampai akhir","Maraton: satu orang bekerja sendiri","Catur: satu langkah per giliran"],a:1,e:"Lari estafet menggambarkan pengembangan produk tradisional."}
+],
+u2:[
+ {k:"c",q:"Proyek dengan kebutuhan stabil, tenggat dan anggaran tetap, serta kewajiban dokumentasi regulasi paling cocok dengan…",o:["Agile murni","Waterfall","Hackathon","Tanpa perencanaan"],a:1,e:"Artikel menyebut konstruksi dan rekayasa sebagai contoh ketergantungan berurutan."},
+ {k:"r",pg:"Artikel Agile vs. Waterfall · Combining Agile and Waterfall",q:"Menurut artikel, model hibrida biasanya menggabungkan…",o:["Dua tim yang saling bersaing","Syarat komersial dan tonggak yang tetap dengan pekerjaan sehari-hari yang iteratif","Kanban dan Scrum","Dokumentasi tanpa pengujian"],a:1,e:"Sering dipakai perusahaan jasa profesional."},
+ {k:"r",pg:"Chaffey Bab 10 · The process of deployment",q:"Menurut Chaffey, prinsip agile (Beck, 2001) yang paling cocok dengan transformasi digital adalah…",o:["Dokumentasi lengkap sebelum mulai","Kolaborasi dengan pengguna akhir dan pelanggan, tim kecil yang mengatur diri, dan merespons perubahan","Kontrak harga tetap","Satu peluncuran besar di akhir"],a:1,e:"Hackathon juga disebut sebagai cara menerapkan proyek transformasi kecil."}
+],
+u3:[
+ {k:"c",q:"Produk dasar atau versi beta tanpa fitur tambahan, dipakai untuk mendapat umpan balik pelanggan, disebut…",o:["ERP","MVP (minimum viable product)","KPI","CMS"],a:1,e:"Prinsipnya fail fast, fail cheap."},
+ {k:"r",pg:"Box 7.5 · Implementation",q:"Mana yang TIDAK tercantum sebagai tugas pengembangan utama di bagian Implementation Box 7.5?",o:["Migrasi data","Pengujian dan changeover","Integrasi basis data","Penetapan harga lelang"],a:3,e:"Harga termasuk bagian bauran pemasaran, bukan tugas pengembangan."},
+ {k:"r",pg:"Chaffey Bab 10 · A programme for change",q:"Menurut Chaffey, setiap kasus manajemen perubahan yang berhasil kembali ke gagasan…",o:["Teknologi terbaru dulu","Komunikasikan semuanya dan utamakan karyawan","Kurangi jumlah karyawan","Rahasiakan rencana sampai peluncuran"],a:1,e:"Perubahan yang dikelola buruk bisa berdampak sebaliknya."},
+ {k:"r",pg:"Chaffey Bab 10 · The process of living with, and evaluating, digital transformation",q:"Saat mengevaluasi teknologi, budaya, atau proses baru, Chaffey menanyakan apakah hal itu sudah…",o:["Murah, cepat, viral","Stabil, permanen, dan andal","Populer di media sosial","Disetujui vendor"],a:1,e:"Juga apakah risikonya teridentifikasi dan penangkalnya tepat."}
+],
+u4:[
+ {k:"c",q:"Rapat berdiri harian maksimal 15 menit dalam Scrum disebut…",o:["Sprint review","Daily Scrum","Retrospective","Sprint planning"],a:1,e:"Diadakan di waktu dan tempat yang sama setiap hari."},
+ {k:"r",pg:"Chaffey Bab 10 · Sprint planning",q:"Menurut buku, batas waktu sprint planning untuk sprint dua minggu adalah…",o:["15 menit","1 jam","4 jam","2 hari"],a:2,e:"Paruh pertama memilih item product backlog, paruh kedua menyusun sprint backlog."},
+ {k:"r",pg:"Box 10.7",q:"Menurut Box 10.7, proyek pemasaran sebaiknya dijalankan dalam siklus pengembangan mini yang…",o:["Tidak lebih dari sebulan","Minimal tiga bulan","Satu tahun","Tanpa batas waktu"],a:0,e:"Sprint satu bulan pun mungkin terlalu panjang untuk pemasaran."},
+ {k:"r",pg:"Chaffey Bab 10 · Developing agile marketing campaigns",q:"Dalam aturan 70:20:10, porsi 20% adalah…",o:["Aktivitas terencana","Pemasaran otomatis yang merespons tindakan pengguna, mis. programmatic","Reaksi spontan terhadap berita","Anggaran cadangan"],a:1,e:"70% terencana, 10% sepenuhnya agile."}
+],
+u5:[
+ {k:"c",q:"Pengujian yang membandingkan halaman kontrol dengan satu versi yang diubah adalah…",o:["Multivariate testing","A/B testing","Path analysis","Card sorting"],a:1,e:"Multivariate testing menguji kombinasi banyak elemen sekaligus."},
+ {k:"r",pg:"Focus on Web analytics (pembuka)",q:"Jim Sterne merangkum pendekatan optimisasi web sebagai TIMITI, yaitu…",o:["Test It, Market It, Track It","Try It! Measure It! Tweak It!","Time Is Money In The Internet","Target, Inform, Measure, Improve, Test, Invest"],a:1,e:"Konten online ditinjau terus-menerus, bukan berkala atau ad hoc."},
+ {k:"r",pg:"Key CRO elements · Tabel 10.2",q:"Tabel 10.2 (Eisenberg dkk., 2011) mengelompokkan 30 faktor optimisasi ke dalam…",o:["Product, price, place, promotion","Planning, structure, momentum, communication","People, process, tools","Reach, act, convert, engage"],a:1,e:"Tiga elemen CRO (tools, people, process) adalah daftar lain di subbab yang sama."},
+ {k:"r",pg:"A/B and multivariate testing",q:"Menurut buku, berapa A/B atau multivariate test per bulan yang perlu dijalankan untuk pertumbuhan penjualan yang jauh lebih tinggi?",o:["Satu","Dua sampai tiga","Enam sampai tujuh","Lima puluh"],a:2,e:"Ditunjukkan juga lewat contoh kampanye Obama."}
+],
+u6:[
+ {k:"c",q:"Analisis kombinasi halaman yang paling sering MENUJU halaman checkout pertama adalah…",o:["Forward path analysis","Reverse path analysis","Cohort analysis","Effort duration analysis"],a:1,e:"Forward path meninjau klik DARI sebuah halaman."},
+ {k:"r",pg:"Box 10.8",q:"Langkah pertama analisis heuristik e-commerce menurut Phillips (2016) adalah…",o:["Mengukur exit rate halaman login","Menentukan tingkat konversi untuk jenis perangkat yang berbeda","Menghitung K-factor","Membuat persona"],a:1,e:"Lalu segmentasi menurut kanal, bounce rate halaman pendaratan, dan exit rate halaman penting."},
+ {k:"r",pg:"Visitor segmentation (MyTravel)",q:"Dalam segmentasi MyTravel yang dikutip buku, 'site flirt' adalah pengunjung yang…",o:["Melihat dua halaman atau kurang","Melihat hasil pencarian","Melihat detail pembayaran","Menyelesaikan pemesanan"],a:0,e:"Site browse: lebih dari dua halaman."}
+],
+u7:[
+ {k:"c",q:"Dalam model kematangan CRO, petinggi yang mendukung tim, memperjuangkan anggaran, dan menyampaikan hasil ke manajemen puncak adalah pilar…",o:["Tools","Sponsor","Knowledge","Activities"],a:1,e:"Tujuh pilar: people, knowledge, activities, tests, processes, sponsor, tools."},
+ {k:"r",pg:"Budgeting (Hanson, 2000)",q:"Dalam model Hanson, laba operasional dihitung sebagai…",o:["Penjualan × harga","Pendapatan bersih penjualan − biaya situs − biaya call centre","Kunjungan × konversi","Biaya tetap + biaya variabel"],a:1,e:"Biaya situs dan call centre masing-masing terdiri dari biaya tetap dan biaya per kontak dukungan."},
+ {k:"r",pg:"Budgeting (Bayne, 1997)",q:"Untuk anggaran pertama yang banyak berisi hal tak berwujud, buku menyarankan…",o:["Mengikuti pesaing saja","Kombinasi beberapa metode dengan opsi pengeluaran tinggi, sedang, dan rendah","Anggaran tahun lalu","Nol rupiah sampai terbukti berhasil"],a:1,e:"Sertakan hasil yang diharapkan untuk setiap opsi biaya."},
+ {k:"r",pg:"The process of living with, and evaluating (Gale, 2016)",q:"Menurut Gale (2016) yang dikutip Chaffey, berapa transformasi digital yang dianggap sepenuhnya berhasil?",o:["Satu dari dua","Satu dari empat","Satu dari delapan","Satu dari seratus"],a:2,e:"Lebih dari separuh dianggap gagal total."}
+]
+};
+
+/* ---------------- classify drills ---------------- */
+var CL={
+aw:{o:["Waterfall","Agile"],it:[
+ ["Seluruh kebutuhan ditulis rinci dan disetujui sebelum desain dimulai.","Waterfall","Perencanaan di awal."],
+ ["Versi kecil yang bisa dipakai dirilis setiap dua minggu.","Agile","Penyerahan bertahap."],
+ ["Pengguna pertama kali mencoba sistem setelah semua modul selesai dibangun.","Waterfall","Umpan balik terlambat."],
+ ["Prioritas pekerjaan ditinjau ulang setelah setiap iterasi berdasarkan umpan balik.","Agile","Adaptasi terhadap perubahan."],
+ ["Anggaran total dan jadwal lebih mudah dipastikan sejak kontrak ditandatangani.","Waterfall","Kelebihan khas waterfall."],
+ ["Risiko utamanya scope creep bila pemangku kepentingan terus menambah permintaan.","Agile","Tantangan khas agile."],
+ ["Dokumentasi rinci menjadi hasil kerja penting di setiap tahap.","Waterfall","Dokumentasi tebal."]
+]},
+pick:{o:["Waterfall","Agile","Hibrida"],it:[
+ ["Aplikasi pemesanan untuk start-up yang belum yakin fitur apa yang dibutuhkan pelanggan.","Agile","Ketidakpastian tinggi, kebutuhan berkembang."],
+ ["Sistem pelaporan wajib ke regulator dengan format yang ditetapkan peraturan dan tenggat pasti.","Waterfall","Kebutuhan stabil, regulasi ketat."],
+ ["Proyek situs e-commerce untuk klien korporat dengan kontrak nilai dan tanggal tetap, tetapi desain halamannya diuji dan diperbaiki per sprint.","Hibrida","Tonggak tetap, kerja iteratif."],
+ ["Instalasi jaringan dan pusat data untuk gedung baru.","Waterfall","Ketergantungan berurutan seperti konstruksi."],
+ ["Kampanye pemasaran digital yang diuji dan disesuaikan setiap minggu.","Agile","Test, learn and commit."],
+ ["Portal klien yang dikembangkan bertahap dengan masukan klien setiap iterasi.","Agile","Contoh agile di artikel."],
+ ["Program konsultan dengan tahapan dan pembayaran per tonggak, tetapi analisis dikerjakan iteratif bersama klien.","Hibrida","Contoh hibrida di artikel."]
+]},
+stage:{o:["Analisis kebutuhan","Desain berbasis skenario","Migrasi data","Pengujian","Changeover"],it:[
+ ["Mewawancarai pelanggan dan unit bisnis tentang apa yang harus bisa dilakukan sistem baru.","Analisis kebutuhan","Analisis kebutuhan bisnis dan audiens."],
+ ["Menyusun alur 'pelanggan lama memesan ulang' lengkap dengan skenario alternatifnya.","Desain berbasis skenario","Desain dari skenario pengguna."],
+ ["Memindahkan data pelanggan dan riwayat pesanan dari sistem lama ke basis data baru.","Migrasi data","Bagian dari integrasi data."],
+ ["Mensimulasikan 50.000 pengguna masuk bersamaan untuk melihat apakah server bertahan.","Pengujian","Uji beban sebelum peluncuran."],
+ ["Pengguna nyata dari unit bisnis mencoba sistem dan menyatakan menerima hasilnya.","Pengujian","Uji penerimaan pengguna."],
+ ["Memutuskan apakah sistem lama dimatikan serentak atau dijalankan berdampingan sementara.","Changeover","Strategi peralihan."],
+ ["Mengaktifkan sistem baru untuk satu kantor cabang dulu sebelum seluruh cabang.","Changeover","Peralihan pilot."]
+]},
+mix:{o:["70% terencana","20% otomatis","10% agile"],it:[
+ ["Kalender konten bulanan dan kampanye Ramadan yang disiapkan tiga bulan sebelumnya.","70% terencana","Aktivitas yang direncanakan."],
+ ["Email pengingat otomatis saat pelanggan meninggalkan keranjang.","20% otomatis","Merespons tindakan pengguna."],
+ ["Iklan display yang dibeli lewat lelang real-time untuk pengguna tertentu.","20% otomatis","Programmatic marketing."],
+ ["Unggahan cepat yang menanggapi kemenangan timnas pada malam yang sama.","10% agile","Bereaksi terhadap peristiwa."],
+ ["Iklan Specsavers yang menyesuaikan slogan dengan hasil referendum Brexit.","10% agile","Contoh di Gambar 10.6."],
+ ["Rangkaian email sambutan untuk pelanggan baru.","20% otomatis","Dipicu pendaftaran."]
+]},
+eis:{o:["Planning","Structure","Momentum","Communication"],it:[
+ ["Proposisi nilai yang unik dan 'apa untungnya bagi saya' (WIIFM).","Planning","Elemen perencanaan."],
+ ["Usability, kemudahan pencarian, dan pencegahan kesalahan.","Structure","Elemen struktur."],
+ ["Kecepatan muat halaman, kepercayaan, dan tombol ajakan bertindak.","Momentum","Menjaga pengunjung bergerak menuju konversi."],
+ ["Penulisan persuasif, judul, keterbacaan, dan bahasa yang berfokus pada pelanggan.","Communication","Elemen komunikasi."],
+ ["Penyajian produk, up-sell dan cross-sell.","Momentum","Termasuk momentum."],
+ ["Kompatibilitas peramban dan tata letak yang jelas secara visual.","Structure","Termasuk struktur."]
+]},
+diag:{o:["Forward path analysis","Reverse path analysis","Analisis pencarian di situs","Segmentasi pengunjung"],it:[
+ ["Ke mana pengunjung paling sering mengklik setelah membuka beranda?","Forward path analysis","Klik dari sebuah halaman."],
+ ["Halaman apa yang paling sering dilihat sebelum pengunjung mengisi formulir 'hubungi kami'?","Reverse path analysis","Jalur menuju halaman transaksi."],
+ ["Berapa persen pencarian yang tidak menghasilkan produk apa pun?","Analisis pencarian di situs","Metrik efektivitas pencarian."],
+ ["Apakah pengunjung dari iklan berbayar berkonversi lebih baik daripada dari pencarian organik?","Segmentasi pengunjung","Segmentasi menurut sumber rujukan."],
+ ["Istilah apa yang paling sering diketik pengunjung?","Analisis pencarian di situs","Istilah pencarian terpopuler."],
+ ["Bagaimana perilaku pengunjung baru dibanding pengunjung yang kembali?","Segmentasi pengunjung","Pengunjung baru vs lama."]
+]},
+crom:{o:["People","Knowledge","Tests","Processes","Sponsor","Tools"],it:[
+ ["Perusahaan merekrut analis data dan copywriter untuk tim optimisasi.","People","Kualitas dan jumlah tim."],
+ ["Anggota tim belajar dasar web analytics dan prinsip UX.","Knowledge","Pengetahuan yang dibutuhkan."],
+ ["Uji tidak lagi ad hoc, tetapi mengikuti peta jalan pengujian.","Tests","Kematangan strategi dan frekuensi uji."],
+ ["Ringkasan hasil uji dan pelajaran didokumentasikan dan dibagikan ke departemen lain.","Processes","Proses dan kerja sama."],
+ ["Seorang direktur membela anggaran CRO dan melaporkan hasilnya ke dewan direksi.","Sponsor","Advokat di level atas."],
+ ["Perusahaan memasang alat heatmap dan platform A/B testing.","Tools","Alat analisis dan pengujian."]
+]}
+};
+
+/* ---------------- cases ---------------- */
+var CASES=[
+ {id:"c1",t:"Studi Kasus 1 — Amazon: budaya metrik dan eksperimen",src:"Chaffey et al., Bab 10, Case Study 10.2",
+  body:"<p>Pada 1997, Jeff Bezos menyatakan kepada para eksekutifnya: \"At Amazon, we will have a Culture of Metrics.\" Surat kepada pemegang saham tahun itu, yang dikutip ulang di laporan tahunan 2013, berjanji mengukur program dan investasi secara analitis, menghentikan yang tidak memberi hasil memadai, dan menambah investasi pada yang paling berhasil.</p><p>Menurut Matt Round, direktur personalisasi Amazon (E-metrics 2004), dulu rapat Jumat tentang konten beranda \"terlalu lama, terlalu keras, dan kurang data kinerja\". Kini <b>\"data trumps intuition\"</b>: eksperimen real-time menjawab pertanyaan itu. Uji A/B dipakai untuk desain beranda, letak fitur, algoritma rekomendasi, dan peringkat pencarian. Versi baru diuji terhadap kontrol selama beberapa hari atau seminggu, dan <b>biasanya diluncurkan bila metrik yang diinginkan lebih baik secara signifikan secara statistik</b>. Tantangannya: distribusi data tidak normal (banyak sesi tanpa pembelian), uji yang berjalan bersamaan bisa saling tumpang tindih, fitur bisa terasa \"keren\" hanya di dua minggu pertama, dan perubahan navigasi bisa menurunkan kinerja sementara. Platform eksperimen internal <b>Weblab</b> menjalankan 546 eksperimen pada 2011, 1.092 pada 2012, dan 1.976 pada 2013.</p><p>Teknologi mendukung budaya ini lewat <b>\"distributed development and deployment\"</b>: halaman seperti beranda terdiri atas <em>pods</em> atau slot yang memanggil layanan web, sehingga konten dan letaknya mudah diubah. Amazon juga memantau ketersediaan dan kecepatan situs, memasang alarm bila pendapatan per menit turun di bawah batas tertentu (contoh: US$10.000 per menit), dan menetapkan standar layanan internal bahwa halaman harus tampil dalam X detik untuk T% waktu.</p>",
+  qs:[
+   ["Bagaimana pendekatan Amazon mengubah \"peluncuran\" menjadi optimisasi berkelanjutan? Kaitkan dengan Test, Learn, Refine atau TIMITI, prinsip \"data trumps intuition\", dan pertumbuhan Weblab.","Di Amazon, peluncuran fitur adalah hasil eksperimen, bukan keputusan opini: setiap perubahan diuji terhadap kontrol, diluncurkan bila terbukti lebih baik, lalu terus diukur. Ini wujud TIMITI dan Test, Learn, Refine. Weblab yang hampir berlipat dua tiap tahun (546 → 1.092 → 1.976) menunjukkan eksperimen menjadi proses rutin, bukan proyek sesekali, sejalan dengan saran buku menjalankan banyak uji per bulan."],
+   ["Amazon meluncurkan fitur bila hasilnya signifikan secara statistik. Mengapa tantangan yang disebut kasus (uji tumpang tindih, efek 'keren dua minggu', penurunan sementara setelah perubahan navigasi) penting bagi keputusan peluncuran? Apa pelajarannya bagi toko online yang jauh lebih kecil?","Tantangan itu bisa membuat hasil uji menyesatkan: kenaikan bisa karena efek kebaruan, penurunan bisa karena pengguna sedang beradaptasi, dan dua uji bisa saling memengaruhi. Maka uji perlu durasi cukup (mencakup siklus bisnis), satu perubahan jelas per uji, kontrol yang tepat, dan pemantauan setelah peluncuran. Toko kecil punya lalu lintas jauh lebih sedikit, sehingga perlu memprioritaskan uji berdampak besar, memenuhi ukuran sampel minimum, dan menjalankan uji lebih lama, bukan meniru volume eksperimen Amazon."],
+   ["Apa yang memungkinkan Amazon bereksperimen sebanyak itu? Analisis dari sisi teknologi (pods, deployment terdistribusi, pemantauan) dan organisasi, lalu hubungkan dengan pilar model kematangan CRO.","Teknologi: halaman modular (pods) dan deployment terdistribusi membuat perubahan murah dan cepat dirilis; alarm pendapatan per menit dan standar waktu tampil halaman mendeteksi masalah setelah rilis. Organisasi: komitmen pimpinan sejak 1997 (sponsor), keputusan berbasis data menggantikan perdebatan (processes), dan uji yang menjadi rutinitas iteratif (tests). Pilar CRO yang tampak: sponsor, tools, tests, processes, dan people/knowledge."]
+  ]},
+ {id:"c2",t:"Studi Kasus 2 — 🇮🇩 Coretax DJP: peluncuran sistem inti perpajakan",src:"IKPI (6 Jan 2025); Katadata (10 Jan 2025); Bisnis.com (11 Feb 2025); IKPI (13 Feb 2025)",
+  body:"<p>Coretax, sistem inti administrasi perpajakan Direktorat Jenderal Pajak (DJP), diluncurkan pada 31 Desember 2024 dan mulai dipakai sejak <b>1 Januari 2025</b>. Pada hari-hari pertama, wajib pajak kesulitan mengakses sistem dan membuat faktur pajak. Direktur Jenderal Pajak Suryo Utomo mengakui kendala itu pada 6 Januari 2025. Menurutnya, banyak wajib pajak langsung melakukan transaksi sungguhan, bukan sekadar mencoba, sehingga beban sistem naik, dan di awal implementasi ada kendala vendor: token yang dikirim tidak sampai ke tujuan. Tim kantor pusat bekerja 24 jam, 7 hari.</p><p>Pada 10 Januari 2025, DJP meminta maaf dan melaporkan perbaikan: menambah jaringan dan kapasitas bandwidth, menunjuk penanggung jawab pembuatan faktur, menerima unggahan hingga 100 faktur per kiriman, dan memperbaiki pendaftaran (reset kata sandi, pemadanan NIK-NPWP). Per 9 Januari, 126.590 wajib pajak telah memperoleh sertifikat elektronik dan 34.401 wajib pajak membuat 845.514 faktur.</p><p>Pada 10 Februari 2025, Komisi XI DPR meminta DJP memakai kembali sistem lama sebagai mitigasi, tidak memberi sanksi kepada wajib pajak yang terkendala, dan menyusun peta jalan Coretax berbasis risiko. DJP lalu membuka kembali e-Filing untuk SPT sebelum tahun pajak 2025 dan mengizinkan e-Faktur Desktop, mula-mula hanya untuk PKP besar (KEP-24/PJ/2025), lalu untuk seluruh PKP mulai 12 Februari 2025 (KEP-54/PJ/2025). DJP menegaskan Coretax <b>tidak ditunda</b>, tetapi <b>dijalankan secara paralel</b>.</p>",
+  qs:[
+   ["Petakan peluncuran Coretax ke tahap implementasi Box 7.5 (khususnya pengujian dan changeover). Strategi peralihan apa yang dipakai pada 1 Januari 2025, menjadi apa pada Februari 2025, dan mengapa berubah?","Awalnya mendekati big bang: Coretax dipakai serentak sebagai sistem utama sejak 1 Januari. Masalah beban, token vendor, dan pembuatan faktur mengganggu layanan yang wajib berjalan, sehingga atas permintaan Komisi XI DJP beralih ke changeover paralel: e-Filing dan e-Faktur lama dibuka lagi sebagai kanal tambahan sementara Coretax disempurnakan. Paralel menurunkan risiko penerimaan negara dan beban wajib pajak, dengan biaya menjalankan dan mendukung dua sistem sekaligus."],
+   ["Pengujian apa yang bisa mengantisipasi masalah hari pertama? Gunakan perbandingan agile vs waterfall: apakah peluncuran bertahap atau pilot masuk akal untuk sistem dengan regulasi dan tenggat seketat ini?","Uji beban dengan transaksi sungguhan dalam volume puncak, uji integrasi end-to-end dengan vendor (pengiriman token, sertifikat elektronik), dan uji penerimaan pengguna dengan wajib pajak dan konsultan nyata. Regulasi dan tenggat membuat perencanaan cenderung waterfall, tetapi peluncurannya bisa dibuat bertahap atau pilot (per kelompok wajib pajak atau per modul) dengan sistem lama sebagai cadangan sejak awal. Ini pendekatan hibrida: tonggak tetap, rilis dan umpan balik bertahap."],
+   ["Nilai respons DJP setelah peluncuran dengan konsep 'living with and evaluating' dan program perubahan Chaffey. Apa yang sudah tepat, apa yang kurang, dan apa yang harus diukur ke depan?","Tepat: mengakui masalah dan meminta maaf (komunikasi), tim 24/7, perbaikan bertahap yang dilaporkan dengan angka, tidak memberi sanksi, dan peta jalan berbasis risiko. Kurang: mitigasi sistem lama baru dibuka setelah tekanan DPR, bukan direncanakan sejak awal; kesiapan pengguna (literasi dan pelatihan) dan vendor belum memadai. Yang perlu diukur: tingkat keberhasilan login dan pembuatan faktur, waktu proses, volume keluhan, porsi transaksi lewat Coretax vs sistem lama, serta stabilitas, permanensi, dan keandalan sistem."]
+  ]},
+ {id:"c3",t:"Studi Kasus 3 — 🇮🇩 PeduliLindungi menjadi SATUSEHAT Mobile",src:"Kemenkes (28 Feb 2023); detikInet (27 Feb 2023); Bisnis.com (1 Mar 2023)",
+  body:"<p>Pada <b>1 Maret 2023</b>, Kementerian Kesehatan mengubah aplikasi PeduliLindungi menjadi <b>SATUSEHAT Mobile</b>. Menurut Setiaji, Chief Digital Transformation Office Kemenkes, pengguna cukup memperbarui aplikasi di Play Store atau App Store; aplikasi tidak perlu dihapus atau didaftarkan ulang. Setelah menyetujui syarat dan ketentuan dan masuk dengan nomor telepon atau email terdaftar, profil anggota, sertifikat, dan tiket vaksin COVID-19 <b>tersinkronisasi otomatis</b>. Peluncurannya <b>bertahap</b>: pengguna iOS lebih dulu, Android menyusul \"dalam waktu dekat\". Tanggal peralihan sempat diumumkan 28 Februari sebelum dikoreksi menjadi 1 Maret.</p><p>Fitur lama (riwayat vaksinasi, hasil tes antigen dan PCR, pindai QR) dibawa serta. Fitur baru \"diari kesehatan\" (tinggi dan berat badan, tekanan darah, gula darah, denyut jantung) disebut segera hadir, dan fitur yang terhubung dengan rekam medis elektronik lewat Platform SATUSEHAT akan ditambahkan bertahap seiring makin banyak fasilitas kesehatan yang terhubung. Kemenkes ingin SATUSEHAT menjadi platform kesehatan utama dan mengurangi layanan serupa yang tumpang tindih, serta menyatakan telah berkoordinasi dengan BSSN soal keamanan.</p><p>Pada hari pertama, pengguna ramai mengeluh di media sosial: kode OTP tidak terkirim saat masuk dengan nomor telepon, masuk lewat email lambat dan OTP sering dinyatakan tidak valid. Kemenkes meminta maaf, menyebut penyebabnya \"peningkatan aktivitas secara bersamaan\", dan menyatakan tim teknis sedang menanganinya.</p>",
+  qs:[
+   ["Identifikasi keputusan implementasi dalam peralihan ini: migrasi data, cara changeover, peluncuran bertahap, dan pengembangan fitur. Mana yang menunjukkan pendekatan yang berpusat pada pengguna?","Migrasi data otomatis (profil, sertifikat, tiket vaksin tersinkron) dan changeover lewat pembaruan aplikasi tanpa daftar ulang mengurangi usaha pengguna. Peluncuran bertahap iOS lalu Android membatasi risiko. Fitur inti lama dipertahankan sementara fitur baru (diari kesehatan, rekam medis) dirilis bertahap, mirip MVP yang diperluas. Semua ini berpusat pada pengguna karena pengguna lama tidak kehilangan apa pun dan tidak harus belajar ulang dari nol."],
+   ["Coretax dan SATUSEHAT Mobile sama-sama bermasalah di proses masuk (token atau OTP) saat lonjakan pengguna di hari pertama. Apa pelajarannya tentang pengujian dan cara peluncuran?","Lonjakan serentak di hari peralihan bisa diprediksi, terutama bila semua pengguna dipaksa masuk ulang. Pelajarannya: uji beban pada titik paling kritis (autentikasi dan pengiriman OTP lewat pihak ketiga), libatkan vendor dalam pengujian end-to-end, sebarkan beban (pembaruan bertahap atau per kelompok, sesi lama tetap berlaku), siapkan jalur cadangan, dan komunikasikan jadwal dengan jelas. Perbedaannya: SATUSEHAT berisiko lebih rendah karena fitur lama tetap ada dan tidak terkait tenggat kewajiban hukum."],
+   ["Susun rencana optimisasi 90 hari setelah peluncuran untuk meningkatkan pemakaian fitur baru (mis. diari kesehatan). Metrik apa yang dipantau, uji apa yang dijalankan, dan segmen mana yang dibandingkan?","Metrik: keberhasilan login, aktivasi fitur baru (persen pengguna yang mengisi diari), retensi mingguan, exit rate di layar onboarding. Uji A/B: teks ajakan, letak menu diari, pengingat notifikasi. Segmentasi: pengguna iOS vs Android, pengguna baru vs bekas PeduliLindungi, usia atau wilayah bila tersedia. Proses: siklus test, learn, refine dalam sprint dua minggu, dengan dokumentasi pelajaran dan sponsor di level pimpinan."]
+  ]},
+ {id:"c4",t:"Studi Kasus 4 — 🇮🇩 Latihan debat: agile atau waterfall untuk proyek e-commerce?",src:"Latihan sesuai RPS Minggu 13",noans:true,
+  body:"<p><b>Skenario (fiktif).</b> \"Wastra Kita\", merek fesyen lokal dengan 40 toko fisik di Jawa dan Bali, ingin meluncurkan situs dan aplikasi e-commerce sendiri dalam <b>6 bulan</b>, sebelum Harbolnas 12.12. Anggaran sudah disetujui direksi dan tidak bisa ditambah. Sistem harus terhubung dengan kasir (POS) dan stok di 40 toko, payment gateway, serta jasa pengiriman, dan harus mematuhi UU Pelindungan Data Pribadi. Direktur pemasaran ingin fitur \"lihat-coba-beli\" dan rekomendasi gaya yang belum pernah diuji ke pelanggan. Vendor TI menawarkan kontrak harga tetap dengan spesifikasi lengkap di awal.</p><p>Anda ditunjuk ke salah satu sisi debat kelas (agile, waterfall, atau hibrida). Gunakan <b>alat bantu memilih pendekatan (Unit 2)</b> sebagai titik awal, lalu bangun argumen Anda.</p>",
+  qs:[
+   ["Pilih satu pendekatan (agile, waterfall, atau hibrida) dan bela pilihan itu dengan minimal empat kriteria dari bacaan (kestabilan kebutuhan, ketidakpastian, regulasi, anggaran dan tenggat, keterlibatan pemangku kepentingan, ketergantungan).",""],
+   ["Tuliskan argumen terkuat dari pihak lawan, lalu jawab argumen itu. Risiko apa dari pilihan Anda sendiri yang harus dikelola, dan bagaimana caranya?",""],
+   ["Rancang rencana peluncuran dan 90 hari pertama: strategi changeover, pengujian yang wajib sebelum 12.12, dan tiga metrik optimisasi yang akan Anda pantau setelah rilis.",""]
+  ]}
+];
+
+var LO_NAMES={1:"Waterfall & agile",2:"Memilih pendekatan",3:"Pengujian hingga peluncuran",4:"Sprint & 70:20:10",5:"Budaya optimisasi",6:"Diagnosis heuristik & path",7:"Kematangan CRO, anggaran & evaluasi"};
+
+/* ---------------- self-test bank ---------------- */
+var FINAL=[
+ [1,"Menurut artikel agile vs waterfall, mana yang benar?",["Agile selalu lebih baik","Waterfall selalu lebih murah","Tidak ada yang selalu lebih baik; pilihan bergantung pada kondisi proyek","Keduanya tidak bisa digabung"],2,"Faktor: kebutuhan, kompleksitas, jadwal, anggaran, pemangku kepentingan, toleransi perubahan."],
+ [1,"Urutan tahap waterfall yang khas adalah…",["Pengujian → desain → kebutuhan","Kebutuhan → perencanaan → desain → pengembangan → pengujian → penyerahan → pemeliharaan","Sprint → review → retrospective","Trigger → action → reward"],1,"Satu tahap selesai sebelum berikutnya."],
+ [1,"Kelebihan agile menurut artikel adalah…",["Ruang lingkup paling pasti","Nilai diserahkan lebih awal, umpan balik sering, dan masalah terdeteksi lebih awal","Dokumentasi paling rinci","Tidak butuh pemangku kepentingan"],1,"Kekurangannya: ruang lingkup kurang pasti dan rawan scope creep."],
+ [1,"Kerangka agile yang disebut artikel selain Scrum adalah…",["PRINCE2","Kanban","Six Sigma","PESTLE"],1,"Scrum dan Kanban adalah kerangka agile yang umum."],
+ [1,"Loop kerja pemasar modern menurut Chaffey adalah…",["Plan, do, wait","Test, learn and commit","Reach, act, convert","Analyse, design, build"],1,"Serangkaian optimasi kecil, bukan satu ide besar."],
+ [1,"Box 9.5 menyebut perjalanan pengguna yang rusak dibiarkan lama karena…",["Kekurangan server","Proses waterfall menghalangi tim melakukan iterasi","Pelanggan tidak mengeluh","Regulasi melarang perubahan"],1,"Juga bentrokan tim UX agile dengan bisnis yang waterfall."],
+ [2,"Proyek konstruksi dan rekayasa dengan tahap yang saling bergantung berurutan paling cocok dengan…",["Agile","Waterfall","Hackathon","Growth hacking"],1,"Ketergantungan berurutan adalah ciri waterfall."],
+ [2,"Tantangan umum agile menurut artikel adalah…",["Kebutuhan tidak lengkap di awal","Prioritas buruk dan scope creep tak terkendali","Umpan balik terlambat","Dokumentasi berlebihan"],1,"Kebutuhan tidak lengkap dan umpan balik terlambat adalah tantangan waterfall."],
+ [2,"Tantangan umum waterfall menurut artikel adalah…",["Perubahan di akhir dan ketergantungan yang diremehkan","Rapat harian terlalu sering","Terlalu banyak rilis","Pemangku kepentingan terlalu terlibat"],0,"Juga risiko yang tidak dinilai ulang."],
+ [2,"Menurut artikel, dari sisi biaya…",["Agile selalu lebih mahal","Waterfall selalu lebih mahal","Tidak ada metode yang pada dasarnya lebih mahal","Biaya tidak relevan"],2,"Keduanya punya trade-off penganggaran."],
+ [2,"Menurut Chaffey, rencana desain transformasi digital sebaiknya…",["Sangat besar dan berjangka sepuluh tahun","Relatif kecil karena harus diimplementasikan cepat","Tidak perlu ada","Dibuat vendor saja"],1,"Dibanding tujuan bisnis tradisional."],
+ [2,"Menurut Chaffey, manajemen proyek tradisional paling masuk akal untuk proyek yang…",["Sangat kecil dan cepat","Sangat besar","Eksperimental","Tanpa anggaran"],1,"Proyek kecil, cepat, dan responsif bisa memakai agile."],
+ [3,"Dalam Box 7.5, tahap setelah Actions dan implementasi adalah…",["Situation analysis","Control: proses dan metrik pengukuran","Objectives","Strategy"],1,"Urutan Box 7.5: situation analysis, objectives, strategy, tactics, actions, control."],
+ [3,"Product/market fit berarti…",["Produk termurah di pasar","Penawaran yang benar-benar memenuhi kebutuhan segmen tertentu sehingga tercipta basis pengguna yang loyal","Produk dengan iklan terbanyak","Produk yang sudah diekspor"],1,"Syarat sebelum memperbesar skala."],
+ [3,"Menurut Peter Thiel yang dikutip buku…",["Iklan adalah kunci semua produk","Bila produk butuh iklan atau tenaga penjual untuk menjual, produk itu belum cukup baik","Produk harus mahal","MVP tidak berguna"],1,"Lihat subbab product/market fit."],
+ [3,"Program perubahan dalam transformasi digital mencakup…",["Hanya pembelian perangkat keras","Literasi dan kompetensi digital staf serta budaya organisasi","Hanya iklan","Hanya perubahan logo"],1,"Budaya adalah bagian yang paling sulit."],
+ [3,"Menurut Chaffey, 'hidup dengan' transformasi berarti…",["Membiarkannya berjalan tanpa pemantauan","Mengevaluasi proses saat berjalan, termasuk check-in rutin dengan tim dan karyawan","Menunggu lima tahun lalu menilai","Menyerahkan semuanya ke vendor"],1,"Agar koreksi bisa segera dilakukan."],
+ [3,"Pertanyaan evaluasi transformasi menurut Chaffey mencakup…",["Apakah logo berubah?","Apakah tercipta nilai yang diinginkan pelanggan dan apakah ide kecil berhasil diperbesar?","Berapa jumlah rapat?","Apakah vendor puas?"],1,"Juga pertumbuhan pelanggan dan pendapatan."],
+ [4,"Siklus perencanaan kampanye yang disarankan praktik terbaik di buku adalah maksimal…",["7 hari","30 hari","90 hari","1 tahun"],2,"Templat 90 hari Smart Insights di Tabel 10.1."],
+ [4,"Hambatan yang muncul di Daily Scrum…",["Dibahas tuntas saat itu juga","Dicatat Scrum Master di papan Scrum dan diselesaikan di luar rapat","Diabaikan","Dilaporkan ke klien"],1,"Diskusi rinci tidak dilakukan di Daily Scrum."],
+ [4,"Dua pertanyaan sprint retrospective adalah…",["Berapa biayanya dan siapa yang salah","Apa yang berjalan baik dan apa yang bisa diperbaiki di sprint berikutnya","Kapan rilis dan berapa harganya","Siapa pelanggan dan apa produknya"],1,"Lalu sepakati tindakan perbaikan proses."],
+ [4,"Menurut Box 10.7, rapat tinjauan bisa terlalu lama untuk tim berukuran…",["Dua orang","Delapan orang atau lebih","Tiga orang","Satu orang"],1,"Estimasi tugas juga butuh waktu untuk dipelajari."],
+ [4,"Syarat agar porsi 10% agile dalam aturan 70:20:10 berjalan adalah…",["Budaya yang menghindari risiko","Tim kreatif yang cepat, alat pemantau media sosial, dan budaya terbuka pada eksperimen","Anggaran iklan TV besar","Persetujuan berlapis selama sebulan"],1,"Media sosial cocok karena responsif real-time."],
+ [5,"Definisi web analytics menurut Chaffey menekankan…",["Analisis demi analisis","Evaluasi berpusat pada pelanggan untuk meningkatkan kontribusi bisnis kanal online","Hanya menghitung hits","Hanya statistik server"],1,"Chaffey mengkritik definisi yang tidak menekankan tujuan bisnis."],
+ [5,"Proses optimisasi Hewlett-Packard disebut…",["Test, Learn, Refine","Measure, Report, Analyse, Optimise","Culture of Metrics","TIMITI"],1,"Test, Learn, Refine milik Alliance & Leicester."],
+ [5,"Tiga elemen utama CRO adalah…",["Price, place, promotion","Tools, people, process","Volume, quality, value","Trigger, action, reward"],1,"Lihat Key CRO elements."],
+ [5,"Dalam Tabel 10.3, setiap uji A/B mengubah…",["Semua elemen sekaligus","Satu elemen (judul, tombol, atau teks) terhadap halaman kontrol","Hanya warna latar","Hanya harga"],1,"Agar penyebab perubahan hasil jelas."],
+ [5,"Membandingkan dua versi baru dengan halaman kontrol sekaligus disebut…",["ABC test","Path test","Heuristic test","Card test"],0,"Lihat subbab A/B testing."],
+ [5,"Pada National Express (Mini CS 10.9), kombinasi yang berkinerja buruk selama uji…",["Dibiarkan sampai akhir","Dikeluarkan untuk memaksimalkan konversi di setiap tahap","Dijadikan versi utama","Dijual ke pesaing"],1,"Hasil akhirnya konversi halaman naik 14,11%."],
+ [6,"Lima area utama uji pengguna menurut buku adalah analisis teknologi, analisis heuristik, web analytics, survei kualitatif, dan…",["Uji usability","Uji beban server","Audit keuangan","Analisis PESTLE"],0,"Contoh: rekaman sesi pengguna."],
+ [6,"Langkah ketiga analisis heuristik Phillips (2016) adalah…",["Konversi per perangkat","Bounce rate halaman pendaratan","Exit rate halaman login","Persona"],1,"Lalu exit rate halaman penting."],
+ [6,"Exit rate adalah…",["Persentase orang yang meninggalkan situs di halaman tersebut","Persentase pembeli","Jumlah halaman per kunjungan","Biaya per klik"],0,"Exit rate tinggi di halaman login atau pengiriman layak diuji."],
+ [6,"Mengapa laporan 'top paths' agregat sering kurang berguna?",["Datanya terlalu sedikit","Jalur teratas biasanya trivial seperti beranda lalu keluar","Tidak bisa dibuat","Melanggar privasi"],1,"Lebih bermakna dalam konteks satu halaman."],
+ [6,"Metrik efektivitas pencarian di situs antara lain…",["Jumlah karyawan","Persentase pencarian tanpa hasil dan persentase hasil yang berujung konversi","Harga saham","Jumlah server"],1,"Juga istilah pencarian terpopuler."],
+ [6,"Segmentasi pengunjung sulit dihubungkan dengan data pelanggan karena…",["Tidak ada pengunjung","Data web analytics sering tidak terintegrasi dengan data pelanggan dan pembelian","Dilarang hukum","Tidak ada alatnya"],1,"Sistem canggih seperti Adobe Analytics dan Mixpanel bisa melakukannya."],
+ [7,"Dalam model kematangan CRO, uji yang paling matang dijalankan secara…",["Ad hoc","Iteratif","Setahun sekali","Tidak pernah"],1,"Dari ad hoc, ke peta jalan pengujian, lalu iteratif."],
+ [7,"Menurut Parizek, mengapa CRO membutuhkan tim?",["Karena satu orang tidak mungkin ahli di semua bidang: pengujian, UX, analitik, copywriting","Karena aturan perusahaan","Karena alatnya mahal","Karena tidak ada data"],0,"Pilar knowledge."],
+ [7,"Dalam pendekatan anggaran Bayne, persentase total anggaran pemasaran untuk digital biasanya…",["Mulai besar lalu turun","Mulai kecil (di bawah 5% atau bahkan 1%) lalu naik seiring dampaknya","Selalu 50%","Selalu nol"],1,"Pendekatan yang umum dipakai."],
+ [7,"Dalam model Hanson, mengurangi persentase pelanggan yang menghubungi call centre akan…",["Menurunkan laba","Menurunkan biaya call centre sehingga laba operasional naik bila biaya per kontak situs lebih murah","Tidak berpengaruh","Menaikkan harga produk"],1,"Optimisasi bisa menaikkan laba tanpa menambah penjualan."],
+ [7,"Temuan dari uji pengguna sebaiknya…",["Disimpan saja","Dicatat, diberi solusi, lalu diprioritaskan","Langsung dihapus","Dikirim ke pesaing"],1,"Lihat User testing prioritisation."]
+];
+
+var RUB={
+ c1_0:{need:3,cr:[
+  ["Eksperimen","eksperimen|uji|a/b|weblab|kontrol","Bagaimana Amazon bereksperimen?"],
+  ["TIMITI/TLR","timiti|test, learn|tweak|berkelanjutan|terus-menerus|refine","Kaitkan dengan TIMITI atau Test, Learn, Refine."],
+  ["Data trumps intuition","data trumps|intuisi|opini|data","Apa peran data dibanding opini?"],
+  ["Angka Weblab","546|1.092|1092|1.976|1976|berlipat","Gunakan angka pertumbuhan Weblab."]],
+  self:["Saya menjelaskan peluncuran sebagai titik awal, bukan akhir"]},
+ c1_1:{need:3,cr:[
+  ["Signifikansi","signifikan|statistik|sampel","Mengapa signifikansi statistik penting?"],
+  ["Efek kebaruan","keren|kebaruan|dua minggu|novelty|sementara","Bahas efek 'keren dua minggu' atau penurunan sementara."],
+  ["Tumpang tindih","tumpang tindih|bersamaan|overlap|saling","Bahas uji yang saling memengaruhi."],
+  ["Pelajaran toko kecil","kecil|lalu lintas|prioritas|durasi|lebih lama","Apa pelajaran bagi toko kecil?"]],
+  self:["Saya menyesuaikan pelajaran dengan skala bisnis yang lebih kecil"]},
+ c1_2:{need:3,cr:[
+  ["Teknologi modular","pod|slot|modular|deployment|terdistribusi","Bagaimana teknologi mendukung eksperimen?"],
+  ["Pemantauan","alarm|pantau|monitor|10.000|waktu tampil|sla","Bagaimana masalah setelah rilis dideteksi?"],
+  ["Organisasi","bezos|pimpinan|budaya|sponsor|komitmen","Apa peran organisasi dan pimpinan?"],
+  ["Pilar CRO","pilar|sponsor|tools|tests|processes|kematangan","Hubungkan dengan pilar kematangan CRO."]],
+  self:["Saya membedakan faktor teknologi dan organisasi"]},
+ c2_0:{need:3,cr:[
+  ["Tahap implementasi","pengujian|changeover|box 7.5|migrasi|integrasi","Petakan ke tahap Box 7.5."],
+  ["Big bang","big bang|serentak|langsung|1 januari","Strategi awal apa?"],
+  ["Paralel","paralel|e-faktur|e-filing|sistem lama","Menjadi strategi apa?"],
+  ["Alasan","beban|token|vendor|faktur|penerimaan|dpr|komisi xi","Mengapa berubah?"]],
+  self:["Saya menyebut biaya dan manfaat changeover paralel"]},
+ c2_1:{need:3,cr:[
+  ["Uji beban","beban|load|volume|puncak|transaksi sungguhan","Uji apa untuk beban?"],
+  ["Uji integrasi/vendor","integrasi|vendor|token|end-to-end|sertifikat","Uji apa untuk integrasi?"],
+  ["Uji pengguna","penerimaan|pengguna|wajib pajak|konsultan|uat","Bagaimana pengguna dilibatkan?"],
+  ["Agile/waterfall/bertahap","agile|waterfall|hibrida|bertahap|pilot","Kaitkan dengan pilihan pendekatan."]],
+  self:["Saya mempertimbangkan kendala regulasi dan tenggat"]},
+ c2_2:{need:3,cr:[
+  ["Komunikasi","maaf|komunikasi|mengakui|transparan","Bagaimana komunikasinya?"],
+  ["Tindakan tepat","24|tidak ada sanksi|sanksi|peta jalan|roadmap|perbaikan","Apa yang sudah tepat?"],
+  ["Kekurangan","terlambat|setelah|dpr|pelatihan|kesiapan|literasi","Apa yang kurang?"],
+  ["Metrik ke depan","ukur|metrik|tingkat keberhasilan|keluhan|stabil|andal","Apa yang harus diukur?"]],
+  self:["Saya menilai secara seimbang, bukan hanya mengkritik"]},
+ c3_0:{need:3,cr:[
+  ["Migrasi data","migrasi|sinkron|data|tidak perlu daftar","Bagaimana migrasi data?"],
+  ["Changeover","pembaruan|update|changeover|tanpa hapus","Bagaimana changeover-nya?"],
+  ["Bertahap","bertahap|ios|android|pilot","Apa yang bertahap?"],
+  ["Berpusat pada pengguna","pengguna|usaha|mudah|tidak kehilangan","Mengapa berpusat pada pengguna?"]],
+  self:["Saya mengaitkan setiap keputusan dengan dampaknya pada pengguna"]},
+ c3_1:{need:3,cr:[
+  ["Lonjakan diprediksi","lonjakan|bersamaan|serentak|prediksi|beban","Apakah lonjakan bisa diprediksi?"],
+  ["Uji autentikasi","otp|token|login|autentikasi|pihak ketiga|vendor","Titik kritis apa yang diuji?"],
+  ["Sebar beban","bertahap|sebar|kelompok|cadangan|sesi","Bagaimana menyebar beban?"],
+  ["Perbandingan","coretax|berbeda|risiko|tenggat|hukum","Apa bedanya dengan Coretax?"]],
+  self:["Saya membandingkan kedua kasus secara spesifik"]},
+ c3_2:{need:3,cr:[
+  ["Metrik","aktivasi|retensi|login|exit rate|metrik","Metrik apa yang dipantau?"],
+  ["Uji","a/b|uji|test|varian","Uji apa yang dijalankan?"],
+  ["Segmentasi","segmen|ios|android|baru|lama|wilayah","Segmen apa yang dibandingkan?"],
+  ["Proses","sprint|siklus|90 hari|test, learn|iterasi","Bagaimana prosesnya berulang?"]],
+  self:["Rencana saya terukur dan bisa dijalankan dalam 90 hari"]},
+ c4_0:{need:3,cr:[
+  ["Pilihan jelas","agile|waterfall|hibrida","Pilih satu pendekatan."],
+  ["Kriteria","kebutuhan|ketidakpastian|regulasi|anggaran|tenggat|pemangku|ketergantungan","Gunakan kriteria dari bacaan."],
+  ["Fakta skenario","pos|40 toko|12.12|harbolnas|pdp|harga tetap|lihat-coba","Gunakan fakta skenario."]],
+  self:["Saya memakai minimal empat kriteria"]},
+ c4_1:{need:3,cr:[
+  ["Argumen lawan","lawan|sebaliknya|namun|kelemahan","Tulis argumen lawan."],
+  ["Bantahan","bantah|jawab|tetap|karena","Jawab argumen itu."],
+  ["Risiko sendiri","risiko|scope creep|terlambat|kelola|mitigasi","Risiko pilihan sendiri?"]],
+  self:["Saya mengakui kelemahan pilihan saya"]},
+ c4_2:{need:3,cr:[
+  ["Changeover","changeover|paralel|bertahap|pilot|big bang","Strategi changeover?"],
+  ["Pengujian","uji beban|pengujian|integrasi|penerimaan|keamanan","Pengujian wajib?"],
+  ["Metrik","konversi|metrik|exit|keranjang|retensi|nilai pesanan","Tiga metrik optimisasi?"]],
+  self:["Rencana saya realistis untuk tenggat 12.12"]}
+};
+var CONN=["karena","sehingga","akibatnya","oleh karena itu","maka","sebab","menyebabkan","artinya","dengan demikian","namun","tetapi","sedangkan","jika","agar","membuat","berdampak","because","therefore"];
+var LV=["Belum terlihat","Perlu diperkuat","Cukup","Baik","Sangat baik"];
+
+/* ---------------- glossary ---------------- */
+var GLOSS=[
+ ["Waterfall","Tahap berurutan yang ditetapkan di awal: kebutuhan → desain → pengembangan → pengujian → penyerahan"],
+ ["Agile","Iterasi pendek berulang dengan umpan balik dan penyesuaian terus-menerus"],
+ ["Hibrida","Tonggak dan syarat komersial tetap, pekerjaan sehari-hari iteratif"],
+ ["Scope creep","Ruang lingkup yang terus membesar tanpa kendali"],
+ ["Kanban","Kerangka agile berbasis papan alur kerja"],
+ ["Test, learn and commit","Loop pemasaran agile: uji kecil, belajar, lalu berkomitmen"],
+ ["Relay vs rugby","Pengembangan estafet antartim vs satu tim bekerja bersama (Scrum)"],
+ ["12 prinsip agile","Beck (2001): kolaborasi pelanggan, tim mandiri, merespons perubahan"],
+ ["Hackathon","Acara kerja intensif singkat untuk membangun solusi"],
+ ["Changeover","Peralihan dari sistem lama ke sistem baru"],
+ ["Big bang / paralel / bertahap / pilot","Serentak / berdampingan / per bagian / satu unit dulu"],
+ ["Migrasi data","Memindahkan data dari sistem lama ke sistem baru"],
+ ["MVP","Minimum viable product: versi dasar untuk umpan balik"],
+ ["Product/market fit","Penawaran yang benar-benar memenuhi kebutuhan segmen tertentu"],
+ ["Program perubahan","Literasi, kompetensi, dan budaya; komunikasikan semuanya, utamakan karyawan"],
+ ["Sprint planning","Menyusun sprint backlog; maks. 4 jam untuk sprint 2 minggu"],
+ ["Daily Scrum","Rapat berdiri ≤15 menit dengan tiga pertanyaan"],
+ ["Retrospective","Apa yang berjalan baik, apa yang bisa diperbaiki"],
+ ["Aturan 70:20:10","70% terencana, 20% otomatis, 10% agile"],
+ ["Test, Learn, Refine","Proses optimisasi Alliance & Leicester"],
+ ["TIMITI","Try It! Measure It! Tweak It! (Sterne)"],
+ ["Web analytics","Evaluasi berpusat pada pelanggan untuk meningkatkan kontribusi kanal online"],
+ ["CRO","Conversion rate optimisation: pengujian terstruktur untuk efektivitas situs"],
+ ["Halaman kontrol","Halaman acuan pembanding dalam A/B test"],
+ ["Multivariate testing","Menguji kombinasi banyak elemen halaman sekaligus"],
+ ["Analisis heuristik","Konversi per perangkat dan kanal, bounce rate, exit rate (Phillips)"],
+ ["Forward / reverse path","Klik dari sebuah halaman / jalur menuju sebuah halaman"],
+ ["Exit rate","Persentase orang yang keluar dari situs di halaman tertentu"],
+ ["Model kematangan CRO","People, knowledge, activities, tests, processes, sponsor, tools"],
+ ["Model Hanson","Laba operasional = pendapatan bersih − biaya situs − biaya call centre"]
+];
+
+/* ================= render: sidebar & plan ================= */
+var NAV=[["grp","Mulai"],["home","Beranda","⌂"],["grp","Pendekatan Implementasi"],["u1"],["u2"],["grp","Peluncuran & Iterasi"],["u3"],["u4"],["grp","Optimisasi Berkelanjutan"],["u5"],["u6"],["u7"],["grp","Penerapan & Evaluasi"],["cases","Studi Kasus","📂"],["final","Kuis Akhir","🏁"],["cards","Flashcard","🃏"],["notes","Catatan & Referensi","📝"]];
+function renderSide(){
+  var h="";
+  NAV.forEach(function(n){
+    if(n[0]==="grp"){h+='<div class="grp">'+n[1]+'</div>';return}
+    var u=UNITS.filter(function(x){return x.id===n[0]})[0];
+    if(u){var i=UNITS.indexOf(u)+1;h+='<a href="#'+u.id+'" data-nav="'+u.id+'" class="'+(S.done[u.id]?"done":"")+'"><span class="n">'+(S.done[u.id]?"✓":i)+'</span>'+u.t+'</a>'}
+    else{var dn=(n[0]==="final"&&S.final&&S.final.best>=80)||(n[0]==="cases"&&casesDone()); h+='<a href="#'+n[0]+'" data-nav="'+n[0]+'" class="'+(dn?"done":"")+'"><span class="n ico">'+(dn?"✓":n[2])+'</span>'+n[1]+'</a>'}
+  });
+  $("#side").innerHTML=h; markNav();
+  var pb="";UNITS.forEach(function(u,i){pb+='<tr><td>'+(i+1)+'</td><td><a href="#'+u.id+'">'+u.t+'</a></td><td>'+u.pg+'</td><td class="st '+(S.done[u.id]?"y":"n")+'">'+(S.done[u.id]?"✓ selesai":(S.read[i+1]?"dibaca":"—"))+'</td></tr>'});
+  pb+='<tr><td>'+(UNITS.length+1)+'</td><td><a href="#cases">Studi kasus ('+CASES.length+')</a></td><td>—</td><td class="st '+(casesDone()?"y":"n")+'">'+(casesDone()?"✓ selesai":"—")+'</td></tr>';
+  pb+='<tr><td>'+(UNITS.length+2)+'</td><td><a href="#final">Kuis akhir</a></td><td>—</td><td class="st '+(S.final&&S.final.best>=80?"y":"n")+'">'+(S.final?("terbaik "+S.final.best+"%"):"—")+'</td></tr>';
+  $("#planBody").innerHTML=pb;
+}
+function casesDone(){var n=0;CASES.forEach(function(c){c.qs.forEach(function(q,i){if((S.notes[c.id+"_"+i]||"").trim().length>=40)n++})});var t=0;CASES.forEach(function(c){t+=c.qs.length});return n>=t}
+function updateProgress(){
+  var tot=UNITS.length+2,d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  if(casesDone())d++; if(S.final&&S.final.best>=80)d++;
+  var p=Math.round(d/tot*100);$("#progBar").style.width=p+"%";$("#progLbl").textContent=p+"%";
+}
+
+/* ================= quizzes ================= */
+function seededOrder(key,n){var h=2166136261;for(var c=0;c<key.length;c++){h^=key.charCodeAt(c);h=Math.imul(h,16777619)}var a=[];for(var i=0;i<n;i++)a.push(i);for(var k=n-1;k>0;k--){h=Math.imul(h^(h>>>15),2246822507)>>>0;var r=h%(k+1),x=a[k];a[k]=a[r];a[r]=x}return a}
+function renderQuiz(box,uid){
+  var qs=QZ[uid], h='<div class="lockmsg"><div>🔒 <b>Soal terkunci.</b><br>Baca subbab buku yang ditunjuk, lalu centang "Saya sudah membaca" di atas.</div></div><div class="qbody">';
+  qs.forEach(function(q,i){
+    h+='<div class="q" data-qi="'+i+'"><span class="kind '+(q.k==="r"?"rb":"")+'">'+(q.k==="r"?"📖 Cek bacaan · "+q.pg:"Konsep")+'</span><div class="qt">'+(i+1)+'. '+esc(q.q)+'</div><div class="opts">';
+    seededOrder(uid+"_"+i,q.o.length).forEach(function(j,pos){h+='<button class="opt" data-j="'+j+'"><span class="L">'+"ABCD"[pos]+'</span><span>'+esc(q.o[j])+'</span></button>'});
+    h+='</div><div class="fbx"></div></div>';
+  });
+  h+='<div class="score" id="sc_'+uid+'"></div></div>';
+  box.innerHTML=h;
+  $$(".q",box).forEach(function(qe){
+    var i=+qe.dataset.qi;
+    $$(".opt",qe).forEach(function(b){b.addEventListener("click",function(){answer(uid,i,+b.dataset.j,qe)})});
+    var prev=S.q[uid+"_"+i]; if(prev!=null) paint(uid,i,prev,qe);
+  });
+  lockState(box,uid); scoreUnit(uid);
+}
+function answer(uid,i,j,qe){S.q[uid+"_"+i]=j;paint(uid,i,j,qe);scoreUnit(uid);save();}
+function paint(uid,i,j,qe){
+  var q=QZ[uid][i],ok=j===q.a;
+  $$(".opt",qe).forEach(function(b){var k=+b.dataset.j;b.disabled=true;b.classList.remove("ok","no");if(k===j)b.classList.add(ok?"ok":"no");if(ok&&k===q.a)b.classList.add("ok")});
+  var fb=$(".fbx",qe);
+  fb.innerHTML='<div class="fb '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat.")+'</b>'+(ok?esc(q.e):(q.k==="r"?"Buka kembali "+q.pg+", dan cari bagian yang relevan.":"Baca ulang ringkasan di atas, lalu coba lagi."))+'</div>'+(ok?"":'<button class="retry">Coba lagi</button>');
+  var r=$(".retry",fb); if(r) r.addEventListener("click",function(){delete S.q[uid+"_"+i];save();$$(".opt",qe).forEach(function(b){b.disabled=false;b.classList.remove("ok","no")});fb.innerHTML="";scoreUnit(uid)});
+}
+function scoreUnit(uid){
+  var qs=QZ[uid],c=0;qs.forEach(function(q,i){if(S.q[uid+"_"+i]===q.a)c++});
+  var el=$("#sc_"+uid); if(el) el.textContent=c+" / "+qs.length+" benar"+(c===qs.length?" · Unit selesai ✓":"");
+  var was=!!S.done[uid]; S.done[uid]=c===qs.length;
+  if(S.done[uid]&&!was){toast("Unit selesai! 🎉");} if(was!==S.done[uid]){save();renderSide();}
+}
+function lockState(box,uid){var n=+uid.slice(1);box.classList.toggle("locked",!S.read[n])}
+
+/* ================= classify ================= */
+function renderClassify(el){
+  var key=el.dataset.widget,w=CL[key],h='';
+  w.it.forEach(function(it,i){
+    h+='<div class="it" data-i="'+i+'"><p>'+esc(it[0])+'</p><div class="chips">';
+    w.o.forEach(function(o){h+='<button class="chip" data-o="'+esc(o)+'">'+esc(o)+'</button>'});
+    h+='</div><div class="why"></div></div>';
+  });
+  h+='<div class="score" style="margin-top:10px"></div>';
+  el.insertAdjacentHTML("beforeend",h);
+  $$(".it",el).forEach(function(row){
+    var i=+row.dataset.i;
+    $$(".chip",row).forEach(function(c){c.addEventListener("click",function(){
+      var it=w.it[i],ok=c.dataset.o===it[1];
+      if(ok){S.cls[key+"_"+i]=1;paintCls(row,it,true);save();clsScore(el,key)}
+      else{c.classList.add("no");c.disabled=true;$(".why",row).textContent="Belum tepat. Coba pilihan lain.";}
+    })});
+    if(S.cls[key+"_"+i])paintCls(row,w.it[i],true);
+  });
+  clsScore(el,key);
+}
+function paintCls(row,it,ok){$$(".chip",row).forEach(function(c){c.disabled=true;c.classList.remove("no");if(c.dataset.o===it[1])c.classList.add("ok")});$(".why",row).innerHTML="✓ "+esc(it[2])}
+function clsScore(el,key){var w=CL[key],c=0;w.it.forEach(function(_,i){if(S.cls[key+"_"+i])c++});$(".score",el).textContent=c+" / "+w.it.length+" tepat"}
+
+/* ================= widget topik 13 ================= */
+function n2(x,d){return x.toLocaleString("id-ID",{maximumFractionDigits:d==null?1:d})}
+function rpj(x){var a=Math.abs(x),s=x<0?"−":"";return a>=1e9?s+"Rp"+n2(a/1e9,2)+" miliar":a>=1e6?s+"Rp"+n2(a/1e6,1)+" juta":s+"Rp"+n2(a,0)}
+/* Agile / waterfall / hybrid fit (criteria from Accelo article) */
+function fitTool(){
+  if(!$("#fq1"))return;
+  var ids=["fq1","fq2","fq3","fq4","fq5","fq6"],rev=[1,0,1,1,0,1],
+      lab=["kebutuhan","ketidakpastian","regulasi & dokumentasi","anggaran & tenggat","keterlibatan pemangku kepentingan","ketergantungan antartahap"],
+      P={umkm:[2,4,2,2,4,2],reg:[5,2,5,5,2,5],corp:[3,3,3,5,4,4]};
+  function upd(){
+    var v=ids.map(function(id){return +$("#"+id).value||3}),ag=v.map(function(x,i){return rev[i]?6-x:x}),
+        sum=ag.reduce(function(a,b){return a+b},0),sc=Math.round((sum-6)/24*100),
+        pa=[],pw=[];
+    ag.forEach(function(x,i){if(x>=4)pa.push(lab[i]);if(x<=2)pw.push(lab[i])});
+    var rec=sc>=65?"Agile":sc<=35?"Waterfall":"Hibrida",
+        why=rec==="Agile"?"Kebutuhan masih berkembang dan umpan balik bisa sering didapat, sehingga penyerahan bertahap mengurangi risiko membangun hal yang salah.":rec==="Waterfall"?"Kebutuhan dan batasannya sudah pasti, sehingga perencanaan rinci di awal, dokumentasi, dan tonggak yang jelas lebih bernilai daripada kelenturan.":"Ada faktor yang menarik ke dua arah. Pertimbangkan tonggak dan kontrak yang tetap, dengan pengembangan dan pengujian yang berjalan per iterasi.",
+        warn=[];
+    if(rec!=="Waterfall"&&v[4]<=2)warn.push("Agile butuh pemangku kepentingan yang terlibat rutin; tanpa itu, risikonya prioritas buruk dan scope creep.");
+    if(rec==="Agile"&&v[2]>=4)warn.push("Regulasi ketat tetap menuntut dokumentasi dan bukti pengujian di setiap rilis.");
+    if(rec==="Waterfall"&&v[1]>=4)warn.push("Ketidakpastian tinggi berarti penemuan masalah di akhir bisa mahal; tambahkan prototipe atau uji pengguna sejak awal.");
+    $("#fitRes").innerHTML='<big>'+rec+'</big><div class="vsbar" title="0 = waterfall, 100 = agile"><i style="width:'+Math.max(sc,2)+'%"></i></div><div class="row" style="justify-content:space-between;font-size:.75rem;margin-top:2px"><span>Waterfall</span><span>Skor kecenderungan agile '+sc+'/100</span><span>Agile</span></div>'+
+      '<p style="margin:6px 0 0">'+why+'</p>'+
+      (pa.length?'<p style="margin:4px 0 0">Mendorong ke agile: <b>'+pa.join(", ")+'</b>.</p>':'')+
+      (pw.length?'<p style="margin:4px 0 0">Mendorong ke waterfall: <b>'+pw.join(", ")+'</b>.</p>':'')+
+      (warn.length?'<p style="margin:4px 0 0">⚠️ '+warn.join(" ")+'</p>':'')+
+      '<p class="hint" style="margin:6px 0 0">Skor ini rata-rata sederhana enam kondisi dengan bobot sama. Dalam proyek nyata satu faktor (mis. regulasi) bisa menentukan segalanya; gunakan hasilnya sebagai bahan argumen, bukan keputusan.</p>';
+    S.notes.fit_sum=rec+" (skor agile "+sc+"/100; skor input "+v.join("-")+")";
+  }
+  $$("#fitTool [data-fit]").forEach(function(b){b.addEventListener("click",function(){var q=P[b.dataset.fit];ids.forEach(function(id,i){$("#"+id).value=q[i]});upd();save();notesPreview()})});
+  ids.forEach(function(id){$("#"+id).addEventListener("change",function(){upd();save();notesPreview()})});
+  upd();
+}
+/* Conversion by device segment (heuristic steps 1–2) */
+function segTool(){
+  if(!$("#sgV1"))return;
+  var nm=["Desktop","Web mobile","Aplikasi"],P={mob:[20000,600,60000,480,40000,1000,150000],even:[20000,500,60000,1500,40000,1000,150000]},ids=["sgV1","sgO1","sgV2","sgO2","sgV3","sgO3","sgA"];
+  function v(id){return Math.max(0,+$("#"+id).value||0)}
+  function upd(){
+    var seg=[0,1,2].map(function(i){var V=v("sgV"+(i+1)),O=Math.min(v("sgO"+(i+1)),V);return{n:nm[i],V:V,O:O,cr:V?O/V*100:0}}),
+        TV=seg.reduce(function(a,s){return a+s.V},0),TO=seg.reduce(function(a,s){return a+s.O},0),ov=TV?TO/TV*100:0,aov=v("sgA");
+    var w=seg.filter(function(s){return s.V>0}).sort(function(a,b){return a.cr-b.cr})[0]||seg[0];
+    var gain=Math.max(0,(ov-w.cr)/100*w.V)*aov;
+    var rows=seg.map(function(s){var sv=TV?s.V/TV*100:0,so=TO?s.O/TO*100:0;return '<tr><td>'+s.n+'</td><td>'+n2(s.cr,2)+'%</td><td>'+n2(sv,0)+'%</td><td>'+n2(so,0)+'%</td></tr>'}).join("");
+    var spread=seg.filter(function(s){return s.V>0}).map(function(s){return s.cr}),mx=Math.max.apply(null,spread),mn=Math.min.apply(null,spread);
+    $("#sgRes").innerHTML='<big>Konversi keseluruhan '+n2(ov,2)+'%</big><div class="tw"><table><thead><tr><th>Segmen</th><th>Konversi</th><th>% kunjungan</th><th>% pesanan</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+      (mx>0&&mn<mx*0.6?'<p style="margin:6px 0 0">Segmen terlemah: <b>'+w.n+'</b> ('+n2(w.cr,2)+'%). Bila konversinya naik ke rata-rata keseluruhan saja, tambahan pendapatan sekitar <b>'+rpj(gain)+'</b> per periode yang sama. Langkah heuristik berikutnya: segmentasikan segmen ini menurut kanal pemasaran, lalu periksa bounce rate halaman pendaratan dan exit rate halaman login, pengiriman, dan pembayaran.</p>':'<p style="margin:6px 0 0">Konversi antarsegmen relatif merata. Lanjutkan ke langkah 2 heuristik: segmentasikan menurut kanal pemasaran untuk mencari perbedaan yang tersembunyi.</p>')+
+      '<p class="hint" style="margin:6px 0 0">Angka contoh bersifat ilustratif. Perbedaan konversi tidak selalu berarti masalah desain: pengguna aplikasi biasanya pelanggan lama yang memang lebih siap membeli, sedangkan web mobile banyak didatangi pengunjung baru dari iklan dan pencarian.</p>';
+    S.notes.sg_sum="Konversi total "+n2(ov,2)+"%; "+seg.map(function(s){return s.n+" "+n2(s.cr,2)+"%"}).join(", ");
+  }
+  $$("#segTool [data-sg]").forEach(function(b){b.addEventListener("click",function(){var q=P[b.dataset.sg];ids.forEach(function(id,i){$("#"+id).value=q[i]});upd();save();notesPreview()})});
+  ids.forEach(function(id){$("#"+id).addEventListener("input",function(){upd();save();notesPreview()})});
+  upd();
+}
+/* Hanson (2000) operating profit */
+function hanTool(){
+  if(!$("#hnP"))return;
+  var ids=["hnP","hnU","hnS","hnF","hnSF","hnSP","hnSC","hnCF","hnCP","hnCC"],
+      P={base:[200000,140000,10000,100000000,150000000,20,2000,100000000,40,25000],faq:[200000,140000,10000,100000000,175000000,45,2000,100000000,15,25000]};
+  function v(id){return Math.max(0,+$("#"+id).value||0)}
+  function calc(a){var net=(a[0]-a[1])*a[2]-a[3],site=a[4]+Math.min(a[5],100)/100*a[6]*a[2],cc=a[7]+Math.min(a[8],100)/100*a[9]*a[2];return{net:net,site:site,cc:cc,op:net-site-cc}}
+  var B=calc(P.base);
+  function upd(){
+    var a=ids.map(v),r=calc(a),d=r.op-B.op;
+    $("#hnRes").innerHTML='<big>Laba operasional '+rpj(r.op)+'</big>Pendapatan bersih penjualan '+rpj(r.net)+' − biaya situs '+rpj(r.site)+' − biaya call centre '+rpj(r.cc)+'.'+
+      '<p style="margin:6px 0 0">Dibanding preset "Sebelum optimisasi" ('+rpj(B.op)+'): <b>'+(d>=0?'+':'')+rpj(d)+'</b>.</p>'+
+      '<p class="hint" style="margin:6px 0 0">Preset kedua mengasumsikan investasi Rp25 juta untuk FAQ dan pelacakan pesanan, sehingga lebih banyak pertanyaan terjawab di situs (biaya per kontak Rp2.000) dan lebih sedikit lewat call centre (Rp25.000). Penjualan tidak berubah, tetapi laba naik. Semua angka contoh adalah ilustrasi, bukan data dari buku.</p>';
+    S.notes.hn_sum="Laba operasional "+rpj(r.op)+" (selisih "+(d>=0?"+":"")+rpj(d)+" dari skenario dasar)";
+  }
+  $$("#hanTool [data-hn]").forEach(function(b){b.addEventListener("click",function(){var q=P[b.dataset.hn];ids.forEach(function(id,i){$("#"+id).value=q[i]});upd();save();notesPreview()})});
+  ids.forEach(function(id){$("#"+id).addEventListener("input",function(){upd();save();notesPreview()})});
+  upd();
+}
+
+/* ================= cases ================= */
+function norm(t){return (t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}
+function grade(id){
+  var r=RUB[id],t=norm(S.notes[id]),words=t.split(/\s+/).filter(Boolean).length;
+  var hits=r.cr.map(function(c){return new RegExp(c[1],"i").test(t)}),h=hits.filter(Boolean).length;
+  var conn=CONN.filter(function(w){return new RegExp("(^|[^a-z])"+w+"([^a-z]|$)").test(t)}).length;
+  var cov=Math.min(h,r.need)/r.need,raw=3*cov+(conn>=2?1:conn===1?.5:0),warn=[];
+  if(words<25){raw=Math.min(raw,2);warn.push("Jawaban terlalu singkat ("+words+" kata). Kembangkan penjelasan Anda.")}
+  if(h>=2&&conn===0&&words/h<7){raw=Math.min(raw,1);warn.push("Jawaban tampak seperti daftar kata kunci. Jelaskan hubungan antarkonsep dengan kalimat utuh.")}
+  else if(conn===0) warn.push("Belum ada penalaran sebab-akibat. Gunakan \"karena\", \"sehingga\", atau \"akibatnya\" untuk menunjukkan alur pikir.");
+  return {lv:Math.max(0,Math.min(4,Math.floor(raw+1e-9))),hits:hits,h:h,conn:conn,words:words,warn:warn,len:(S.notes[id]||"").length};
+}
+function renderGrade(id){
+  var box=$('.fbres[data-for="'+id+'"]'),st=S.cs[id];if(!box)return;
+  if(!st){box.innerHTML="";return}
+  var r=RUB[id],g=grade(id),noans=CASES.some(function(c){return c.noans&&id.indexOf(c.id+"_")===0});
+  var h='<div class="gbox"><div class="ghead"><span class="meter">'+[0,1,2,3].map(function(k){return '<i class="'+(k<g.lv?"on":"")+'"></i>'}).join("")+'</span><span class="glv">'+g.lv+'/4 · '+LV[g.lv]+'</span><span class="gnote">umpan balik otomatis, bukan nilai</span></div>';
+  h+='<p class="hint" style="margin:0 0 4px">Konsep kunci ('+g.h+' dari '+r.cr.length+' muncul; minimal '+r.need+' untuk cakupan penuh):</p><ul class="crit">';
+  r.cr.forEach(function(c,k){h+='<li class="'+(g.hits[k]?"y":"n")+'"><span class="m">'+(g.hits[k]?"✓":"")+'</span><span><b>'+esc(c[0])+'</b>'+(g.hits[k]?'':' <span class="h">· '+esc(c[2])+'</span>')+'</span></li>'});
+  h+='</ul><ul class="crit"><li class="'+(g.conn>=2?"y":"n")+'"><span class="m">'+(g.conn>=2?"✓":"")+'</span><span><b>Penalaran</b> <span class="h">· '+g.conn+' penghubung sebab-akibat'+(g.conn<2?" (target ≥ 2)":"")+'</span></span></li></ul>';
+  g.warn.forEach(function(w){h+='<div class="gwarn">⚠️ '+esc(w)+'</div>'});
+  if(st.len!==g.len) h+='<div class="stale">✎ Jawaban sudah diubah sejak dinilai. Klik "Nilai ulang" untuk memperbarui.</div>';
+  h+='<div class="selfc"><b style="font-size:.9rem">Penilaian diri: centang yang benar-benar sudah Anda lakukan</b>';
+  r.self.forEach(function(sx,k){h+='<label><input type="checkbox" data-self="'+id+'" data-k="'+k+'" '+(st.self&&st.self[k]?"checked":"")+'> '+esc(sx)+'</label>'});
+  h+=st.selfDone?'<p class="hint" style="margin:6px 0 0">✓ Penilaian diri tersimpan'+(noans?". Bawa jawaban ini ke diskusi kelas.":". Arah jawaban di bawah sudah terbuka.")+'</p>':'<button class="btn sm" data-selfdone="'+id+'" style="margin-top:6px">'+(noans?"Selesai menilai diri":"Selesai, buka arah jawaban")+'</button>';
+  h+='</div></div>';
+  box.innerHTML=h;
+  $$('[data-self]',box).forEach(function(c){c.addEventListener("change",function(){st.self=st.self||[];st.self[+c.dataset.k]=c.checked;save()})});
+  var sd=$('[data-selfdone]',box);if(sd)sd.addEventListener("click",function(){st.selfDone=true;save();renderGrade(id);refreshAnsLocks();updateCaseSums();var d=$('details.ans[data-for="'+id+'"]');if(d){d.open=true}});
+  var gb=$('[data-grade="'+id+'"]');if(gb)gb.textContent="↻ Nilai ulang";
+}
+function updateCaseSums(){
+  CASES.forEach(function(c){var el=$('[data-csum="'+c.id+'"]');if(!el)return;var n=0,tot=0;c.qs.forEach(function(q,i){var id=c.id+"_"+i;if(S.cs[id]){n++;tot+=grade(id).lv}});
+    el.textContent=n?("umpan balik rata-rata "+(tot/n).toFixed(1).replace(".",",")+"/4 · "+n+"/"+c.qs.length+" dinilai"):"belum dinilai"});
+}
+function renderCases(){
+  S.cs=S.cs||{};
+  var h="";
+  CASES.forEach(function(c){
+    h+='<div class="card"><h3>📂 '+c.t+' <span class="csum" data-csum="'+c.id+'"></span></h3><p class="hint" style="margin-top:-6px">Sumber: '+c.src+'</p>'+c.body;
+    h+='<h4 style="margin-top:18px">'+(c.noans?"Tugas persiapan diskusi kelas":"Pertanyaan diskusi")+'</h4>';
+    c.qs.forEach(function(q,i){
+      var id=c.id+"_"+i;
+      h+='<div class="cq"><b>'+(i+1)+'. '+esc(q[0])+'</b><textarea data-note="'+id+'" placeholder="Tulis jawaban Anda dalam kalimat utuh…"></textarea>';
+      h+='<div class="fbk"><button class="btn sm ghost" data-grade="'+id+'">🔍 Minta umpan balik</button><div class="fbres" data-for="'+id+'"></div></div>';
+      if(!c.noans) h+='<details class="ans" data-for="'+id+'"><summary>🔑 Arah jawaban</summary><div>'+esc(q[1])+'</div></details>';
+      h+='</div>';
+    });
+    if(c.noans) h+='<div class="co book"><b class="t">📝 Catatan.</b> Arah jawaban untuk kasus ini sengaja tidak diberikan dan akan dibahas di kelas. Umpan balik otomatis di sini hanya memeriksa kelengkapan struktur jawaban Anda.</div>';
+    h+='</div>';
+  });
+  $("#caseList").innerHTML=h;
+  $$("[data-grade]").forEach(function(b){b.addEventListener("click",function(){
+    var id=b.dataset.grade,len=(S.notes[id]||"").trim().length;
+    if(len<40){toast("Tulis jawaban Anda dulu (min. 40 karakter)");return}
+    var prev=S.cs[id]||{};S.cs[id]={len:(S.notes[id]||"").length,self:prev.self||[],selfDone:prev.selfDone||false};save();renderGrade(id);updateCaseSums();
+  })});
+  $$("details.ans").forEach(function(d){
+    d.addEventListener("click",function(e){if(d.classList.contains("lock")&&!d.open){e.preventDefault();toast("Minta umpan balik dan selesaikan penilaian diri dulu")}});
+  });
+  Object.keys(S.cs).forEach(renderGrade);
+  refreshAnsLocks();updateCaseSums();
+}
+function refreshAnsLocks(){$$("details.ans").forEach(function(d){var st=S.cs&&S.cs[d.dataset.for];d.classList.toggle("lock",!(st&&st.selfDone))})}
+
+/* ================= notes binding ================= */
+function bindNotes(){
+  $$("textarea[data-note],input[data-note]").forEach(function(t){
+    t.value=S.notes[t.dataset.note]||"";
+    t.addEventListener("input",function(){S.notes[t.dataset.note]=t.value;clearTimeout(t._h);t._h=setTimeout(function(){save();refreshAnsLocks();renderSide();notesPreview();if(S.cs&&S.cs[t.dataset.note])renderGrade(t.dataset.note)},350)});
+  });
+}
+function notesText(){
+  var L=["PENGANTAR BISNIS DIGITAL (DG234101) — TOPIK 13","Implementasi dan Optimisasi Layanan Digital","",(S.notes.identity||"Nama — NRP"),"","== PEMANASAN ==","Peluncuran yang bermasalah:",S.notes.warm_know||"-","","Seharusnya dicegah di tahap:",S.notes.warm_want||"-",""];
+  L.push("== HASIL KALKULATOR (terakhir) ==","Pilihan pendekatan: "+(S.notes.fit_sum||"-"),"Konversi per segmen: "+(S.notes.sg_sum||"-"),"Model Hanson: "+(S.notes.hn_sum||"-"),"");
+  CASES.forEach(function(c){L.push("== "+c.t.toUpperCase()+" ==");c.qs.forEach(function(q,i){L.push((i+1)+". "+q[0]);L.push(S.notes[c.id+"_"+i]||"-");if(S.cs&&S.cs[c.id+"_"+i])L.push("[Umpan balik aplikasi: "+grade(c.id+"_"+i).lv+"/4]");L.push("")})});
+  var d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  L.push("== KEMAJUAN ==","Unit selesai: "+d+"/"+UNITS.length,"Kuis akhir (skor terbaik): "+(S.final?S.final.best+"%":"belum"));
+  return L.join("\n");
+}
+function notesPreview(){var p=$("#notesPrev");if(p)p.textContent=notesText()}
+
+/* ================= self-test (pola serviceman ch05) ================= */
+var quizEl=null, run=null;
+function setupQuiz(){
+  quizEl=$("#finalBox");
+  var best=S.final?S.final.best:null;
+  quizEl.innerHTML='<div class="qz-setup"><p>Soal diambil dari ketujuh unit (Chaffey Bab 10 dan artikel agile vs waterfall). Anda mendapat umpan balik setelah setiap jawaban, dan rincian per unit di akhir. Topik dianggap tuntas bila skor ≥ 80%.</p>'+
+   '<div><p class="qz-lbl">Panjang</p><div class="seg" id="qzLen"><button data-n="10" aria-pressed="true">Cepat · 10 soal</button><button data-n="20" aria-pressed="false">Standar · 20</button><button data-n="'+FINAL.length+'" aria-pressed="false">Lengkap · semua '+FINAL.length+'</button></div></div>'+
+   '<div><p class="qz-lbl">Fokus</p><div class="seg" id="qzLo"><button data-lo="0" aria-pressed="true">Semua unit</button>'+Object.keys(LO_NAMES).map(function(k){return '<button data-lo="'+k+'" aria-pressed="false" title="'+LO_NAMES[k]+'">Unit '+k+'</button>'}).join("")+'</div></div>'+
+   '<div class="row"><button class="btn" id="qzStart">Mulai self-test</button>'+(best!=null?'<span class="muted" style="font-family:var(--mono);font-size:.8rem">Skor terbaik di perangkat ini: '+best+'%</span>':'')+'</div></div>';
+  var n=10, lo=0;
+  $$("#qzLen button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLen button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});n=+b.dataset.n})});
+  $$("#qzLo button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLo button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});lo=+b.dataset.lo})});
+  $("#qzStart").addEventListener("click",function(){
+    var pool=FINAL.map(function(q,i){return i}).filter(function(i){return !lo||FINAL[i][0]===lo});
+    pool=shuffle(pool).slice(0,Math.min(n,pool.length));
+    run={qs:pool.map(function(i){var q=FINAL[i],order=shuffle(q[2].map(function(_,j){return j}));return {lo:q[0],text:q[1],opts:order.map(function(j){return q[2][j]}),ans:order.indexOf(q[3]),exp:q[4]}}),i:0,picks:[]};
+    showQ();
+  });
+}
+function showQ(){
+  var r=run,q=r.qs[r.i],picked=r.picks[r.i],sofar=r.picks.filter(function(p,k){return p===r.qs[k].ans}).length;
+  quizEl.innerHTML='<div class="qz-top"><span class="qz-lbl">Soal '+(r.i+1)+' dari '+r.qs.length+' · Unit '+q.lo+' '+LO_NAMES[q.lo]+'</span><span class="muted" style="font-family:var(--mono);font-size:.8rem">'+sofar+' benar sejauh ini</span></div>'+
+   '<div class="qz-prog"><i style="width:'+(r.i/r.qs.length*100)+'%"></i></div>'+
+   '<p class="qz-q">'+esc(q.text)+'</p>'+
+   '<div class="qz-opts">'+q.opts.map(function(o,j){return '<button data-j="'+j+'"><span class="k">'+"ABCD"[j]+'</span><span>'+esc(o)+'</span></button>'}).join("")+'</div>'+
+   '<div id="qzExp"></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzQuit">Keluar</button><button class="btn" id="qzNext" '+(picked==null?"disabled":"")+'>'+(r.i===r.qs.length-1?"Lihat hasil":"Soal berikutnya")+'</button></div>';
+  function lock(j){
+    $$(".qz-opts button",quizEl).forEach(function(b){b.disabled=true;var k=+b.dataset.j;if(k===q.ans)b.classList.add("right");else if(k===j)b.classList.add("wrong")});
+    var ok=j===q.ans;
+    $("#qzExp").innerHTML='<div class="qz-exp '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat. Jawabannya "+"ABCD"[q.ans]+".")+'</b>'+esc(q.exp)+'</div>';
+    $("#qzNext").disabled=false;
+  }
+  if(picked!=null)lock(picked);
+  $$(".qz-opts button",quizEl).forEach(function(b){b.addEventListener("click",function(){var j=+b.dataset.j;r.picks[r.i]=j;lock(j);$("#qzNext").focus()})});
+  $("#qzNext").addEventListener("click",function(){if(r.i<r.qs.length-1){r.i++;showQ()}else results()});
+  $("#qzQuit").addEventListener("click",setupQuiz);
+}
+function results(){
+  var r=run,right=r.qs.filter(function(q,k){return r.picks[k]===q.ans}).length,pct=Math.round(right/r.qs.length*100);
+  S.final={best:Math.max(pct,S.final?S.final.best:0),n:(S.final?S.final.n:0)+1,last:pct};save();renderSide();
+  var by={};r.qs.forEach(function(q,k){by[q.lo]=by[q.lo]||{r:0,t:0};by[q.lo].t++;if(r.picks[k]===q.ans)by[q.lo].r++});
+  var verdict=pct>=80?"Pemahaman kuat. Topik 13 tuntas.":pct>=65?"Fondasi sudah baik. Tinjau unit di bawah 70%.":"Pelajari ulang unit yang lemah (dan halaman bukunya), lalu coba lagi.";
+  quizEl.innerHTML='<div class="res-big"><span class="pct" style="color:'+(pct>=65?"var(--good)":"var(--bad)")+'">'+pct+'%</span><span>'+right+' dari '+r.qs.length+' benar. '+verdict+'</span></div>'+
+   (pct>=80?'<div><span class="badge">🏅 Topik 13 tuntas</span></div>':'')+
+   '<div><p class="qz-lbl">Per unit</p><div class="lo-bars">'+Object.keys(by).sort().map(function(k){var v=by[k],p=Math.round(v.r/v.t*100);return '<div class="lo-row"><span><b style="font-family:var(--mono)">U'+k+'</b> '+LO_NAMES[k]+(p<70?' · <a href="#u'+k+'">tinjau</a>':'')+'</span><span class="b"><i style="width:'+p+'%;background:'+(p>=70?"var(--good)":"var(--bad)")+'"></i></span><span class="v">'+v.r+'/'+v.t+'</span></div>'}).join("")+'</div></div>'+
+   '<div><p class="qz-lbl">Tinjau jawaban Anda</p><div class="review">'+r.qs.map(function(q,k){var ok=r.picks[k]===q.ans;return '<details '+(ok?"":"open")+'><summary><span class="mk '+(ok?"ok":"no")+'">'+(ok?"✓":"✗")+'</span>'+esc(q.text)+'</summary><p><b>Jawaban Anda:</b> '+esc(q.opts[r.picks[k]])+(ok?'':'<br><b>Jawaban benar:</b> '+esc(q.opts[q.ans]))+'</p><p class="muted">'+esc(q.exp)+'</p></details>'}).join("")+'</div></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzNew">Ubah pengaturan</button><button class="btn" id="qzAgain">Ulangi dengan soal baru</button></div>';
+  $("#qzNew").addEventListener("click",setupQuiz);
+  $("#qzAgain").addEventListener("click",function(){setupQuiz();$("#qzStart").click()});
+  quizEl.scrollIntoView({block:"start"});
+}
+
+/* ================= flashcards ================= */
+var deck=[],di=0;
+function buildDeck(){deck=GLOSS.map(function(g,i){return i}).filter(function(i){return !S.known[i]});if(!deck.length){deck=GLOSS.map(function(g,i){return i})}di=0;showCard()}
+function showCard(){var fc=$("#fc");fc.classList.remove("flip");var g=GLOSS[deck[di]];$("#fcF").textContent=g[0];$("#fcB").textContent=g[1];
+  var k=Object.keys(S.known).length;$("#fcCount").textContent="Kartu "+(di+1)+" / "+deck.length+" · dikuasai "+k+" / "+GLOSS.length}
+function cards(){
+  var fc=$("#fc");function flip(){fc.classList.toggle("flip")}
+  fc.addEventListener("click",flip);fc.addEventListener("keydown",function(e){if(e.key===" "||e.key==="Enter"){e.preventDefault();flip()}});
+  $("#fcNext").addEventListener("click",function(){di=(di+1)%deck.length;showCard()});
+  $("#fcPrev").addEventListener("click",function(){di=(di-1+deck.length)%deck.length;showCard()});
+  $("#fcShuffle").addEventListener("click",function(){deck=shuffle(deck);di=0;showCard()});
+  $("#fcKnow").addEventListener("click",function(){S.known[deck[di]]=1;save();deck.splice(di,1);if(!deck.length){toast("Semua kartu dikuasai! 🎉");buildDeck();return}if(di>=deck.length)di=0;showCard()});
+  $("#fcReset").addEventListener("click",function(){S.known={};save();buildDeck()});
+  buildDeck();
+}
+
+/* ================= routing ================= */
+function markNav(){var v=current();$$(".side a").forEach(function(a){a.classList.toggle("on",a.dataset.nav===v)})}
+function current(){var h=(location.hash||"#home").slice(1);return $('[data-view="'+h+'"]')?h:"home"}
+function route(){
+  var v=current();$$(".view").forEach(function(s){s.hidden=s.dataset.view!==v});
+  markNav();$("#side").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");
+  window.scrollTo(0,0);
+  
+  if(v==="notes")notesPreview();
+  
+  document.title=(v==="home"?"Topik 13":($('[data-view="'+v+'"] h2')||{}).textContent)+" · Implementasi dan Optimisasi Layanan Digital";
+}
+
+/* ================= init ================= */
+$$("[data-quiz]").forEach(function(b){renderQuiz(b,b.dataset.quiz)});
+$$("[data-widget]").forEach(renderClassify);
+$$("[data-readchk]").forEach(function(c){
+  var n=+c.dataset.readchk;c.checked=!!S.read[n];
+  c.addEventListener("change",function(){S.read[n]=c.checked;save();var b=$('[data-quiz="u'+n+'"]');lockState(b,"u"+n);renderSide();if(c.checked)toast("Soal cek pemahaman terbuka ↓")});
+});
+setupQuiz();renderCases();bindNotes();fitTool();segTool();hanTool();cards();renderSide();updateProgress();
+window.addEventListener("hashchange",route);route();
+
+$("#menuBtn").addEventListener("click",function(){var o=$("#side").classList.toggle("open");this.setAttribute("aria-expanded",o)});
+$("#themeBtn").addEventListener("click",function(){
+  var r=document.documentElement,cur=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),nx=cur==="dark"?"light":"dark";
+  r.setAttribute("data-theme",nx);try{localStorage.setItem("bisdig-theme",nx)}catch(e){} 
+});
+$("#copyNotes").addEventListener("click",function(){var t=notesText();
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast("Tersalin ke clipboard")},function(){var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("Tersalin")}catch(e){toast("Gagal menyalin")}ta.remove()})});
+$("#dlNotes").addEventListener("click",function(){var b=new Blob([notesText()],{type:"text/plain;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="Topik13_Catatan_"+((S.notes.identity||"mahasiswa").replace(/[^\w]+/g,"_").slice(0,40))+".txt";document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)});
+$("#resetAll").addEventListener("click",function(){
+  if(this.dataset.confirm!=="1"){this.dataset.confirm="1";this.textContent="Klik lagi untuk konfirmasi";var me=this;setTimeout(function(){me.dataset.confirm="";me.textContent="Hapus semua kemajuan"},3000);return}
+  try{localStorage.removeItem(KEY)}catch(e){} location.hash="#home";location.reload();
+});
+})();
+</script>
+</body>
+</html>
