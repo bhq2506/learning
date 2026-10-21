@@ -1,0 +1,1377 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Topik 12 · Pengalaman Pelanggan dan Perancangan Layanan</title>
+<meta name="description" content="Web-app belajar mandiri Pengantar Bisnis Digital (DG234101) ITS — Topik 12: Pengalaman Pelanggan dan Perancangan Layanan (pemodelan proses, UCD, usability, information architecture, mobile, keamanan), berbasis Chaffey et al. (2019) Bab 9, dengan kasus Indonesia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#F3F5FA; --surface:#FFFFFF; --sunk:#E8ECF5; --ink:#0F1B33; --muted:#56627A; --line:#D5DCEA;
+  --navy:#013880; --navy-ink:#FFFFFF; --navy-soft:#E1E9F7;
+  --gold:#B07A00; --gold-bg:#FFC72C; --gold-soft:#FFF4D4;
+  --good:#17784E; --good-soft:#DCF2E6; --bad:#B4372F; --bad-soft:#F9E2DF;
+  --dig:#5B3FB0; --dig-soft:#ECE7FA;
+  --idn:#B4372F; --idn-soft:#FBEAE8;
+  --f:"Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  --r:12px;
+  --shadow:0 1px 2px rgba(15,27,51,.06), 0 4px 16px rgba(15,27,51,.05);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.65}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:var(--navy)}
+h1,h2,h3,h4{line-height:1.2;margin:0 0 .5em;letter-spacing:-.01em}
+h2{font-size:clamp(1.45rem,1.1rem + 1.3vw,1.95rem);font-weight:800}
+h3{font-size:1.12rem;font-weight:700;margin-top:1.6em}
+p{margin:0 0 1em}
+em{font-style:italic}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold-bg);outline-offset:2px;border-radius:6px}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;padding-top:max(10px,env(safe-area-inset-top))}
+:root[data-theme="dark"] .top{background:#0E1A36}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .top{background:#0E1A36}}
+.top .brand{display:flex;flex-direction:column;line-height:1.2;min-width:0;flex:1}
+.top .brand b{font-size:.95rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .brand small{font-size:.72rem;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog{display:flex;align-items:center;gap:8px;font-size:.78rem;white-space:nowrap}
+.prog .bar{width:110px;height:8px;border-radius:99px;background:rgba(255,255,255,.22);overflow:hidden}
+.prog .bar i{display:block;height:100%;background:#FFC72C;border-radius:99px;width:0;transition:width .4s}
+.iconbtn{background:rgba(255,255,255,.12);border:0;border-radius:8px;width:34px;height:34px;display:grid;place-items:center;color:#fff;flex:none}
+.iconbtn:hover{background:rgba(255,255,255,.22)}
+.menubtn{display:none}
+@media (max-width:899px){.menubtn{display:grid}.prog .bar{width:64px}}
+@media (max-width:420px){.prog .lbl{display:none}}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1200px;margin:0 auto}
+@media (max-width:899px){.shell{grid-template-columns:minmax(0,1fr)}}
+nav.side{position:sticky;top:54px;align-self:start;height:calc(100vh - 54px);overflow:auto;padding:20px 12px 40px 16px;border-right:1px solid var(--line)}
+@media (max-width:899px){
+  nav.side{position:fixed;inset:54px 0 0 0;height:auto;background:var(--bg);z-index:15;border:0;transform:translateX(-100%);transition:transform .25s;padding:16px}
+  nav.side.open{transform:none}
+}
+.side .grp{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 8px 6px}
+.side .grp:first-child{margin-top:0}
+.side a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;text-decoration:none;color:var(--ink);font-size:.9rem;font-weight:500;line-height:1.3}
+.side a:hover{background:var(--sunk)}
+.side a.on{background:var(--navy-soft);color:var(--navy);font-weight:700}
+.side a .n{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk);color:var(--muted);border:1.5px solid var(--line)}
+.side a.done .n{background:var(--good);border-color:var(--good);color:#fff}
+.side a.on .n{border-color:var(--navy)}
+.side a .n.ico{font-size:.8rem}
+
+main{padding:28px 16px 80px;min-width:0}
+@media (min-width:900px){main{padding:36px 40px 100px}}
+.view{max-width:760px;margin:0 auto;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tag{display:inline-block;font-family:var(--mono);font-size:.7rem;font-weight:500;letter-spacing:0;text-transform:none;padding:2px 8px;border-radius:99px;background:var(--sunk);color:var(--muted)}
+.lead{font-size:1.05rem;color:var(--muted)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:18px 0;box-shadow:var(--shadow)}
+.card h3:first-child,.card h4:first-child{margin-top:0}
+
+/* reading box */
+.read{border:2px solid var(--navy);background:var(--navy-soft);border-radius:var(--r);padding:16px 18px;margin:20px 0}
+.read .hd{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.read .pg{font-family:var(--mono);font-size:.82rem;background:var(--navy);color:var(--navy-ink);padding:2px 9px;border-radius:6px}
+.read ul{margin:.3em 0 .8em;padding-left:1.2em}
+.read li{margin:.2em 0}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--line);cursor:pointer;font-weight:600;font-size:.92rem}
+.chk input{width:20px;height:20px;accent-color:var(--good);margin:1px 0 0;flex:none}
+
+/* callouts */
+.co{border-left:4px solid var(--dig);background:var(--dig-soft);padding:12px 16px;border-radius:0 10px 10px 0;margin:16px 0;font-size:.95rem}
+.co b.t{color:var(--dig)}
+.co.idn{border-color:var(--idn);background:var(--idn-soft)}
+.co.idn b.t{color:var(--idn)}
+.co.book{border-color:var(--gold);background:var(--gold-soft)}
+.co.book b.t{color:var(--gold)}
+.co p:last-child{margin:0}
+
+/* tables */
+.tw{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--sunk);font-weight:700;font-size:.8rem;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+
+.terms{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.terms span{font-size:.78rem;padding:3px 10px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-style:italic}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:.92rem;background:var(--navy);color:var(--navy-ink);text-decoration:none}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn.gold{background:var(--gold-bg);color:#1b1400}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:36px;padding-top:20px;border-top:1px solid var(--line)}
+
+/* quiz */
+.qwrap{position:relative}
+.qwrap.locked .qbody{filter:blur(3px);pointer-events:none;user-select:none;opacity:.6}
+.lockmsg{display:none;position:absolute;inset:0;z-index:2;align-items:center;justify-content:center;text-align:center;padding:16px}
+.qwrap.locked .lockmsg{display:flex}
+.lockmsg div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px;max-width:380px;box-shadow:0 6px 30px rgba(0,0,0,.12);font-size:.92rem}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0;background:var(--surface)}
+.q .qt{font-weight:600;margin-bottom:10px}
+.q .kind{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:5px;margin-bottom:6px;background:var(--sunk);color:var(--muted)}
+.q .kind.rb{background:var(--gold-soft);color:var(--gold)}
+.opts{display:grid;gap:7px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;padding:9px 12px;border-radius:9px;border:1.5px solid var(--line);background:var(--bg);font-size:.92rem;line-height:1.45}
+.opt:hover:not([disabled]){border-color:var(--navy)}
+.opt .L{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk)}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.ok .L{background:var(--good);color:#fff}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)}
+.opt.no .L{background:var(--bad);color:#fff}
+.opt.sel{border-color:var(--navy);background:var(--navy-soft)}
+.opt[disabled]{cursor:default}
+.fb{margin-top:10px;font-size:.88rem;padding:9px 12px;border-radius:8px}
+.fb.ok{background:var(--good-soft);color:var(--ink)}
+.fb.no{background:var(--bad-soft);color:var(--ink)}
+.fb b{margin-right:4px}
+.retry{margin-top:8px;font-size:.82rem;background:none;border:0;color:var(--navy);font-weight:700;padding:0;text-decoration:underline}
+
+/* classify widget */
+.cls .it{padding:12px 0;border-bottom:1px dashed var(--line)}
+.cls .it:last-child{border-bottom:0}
+.cls .it p{margin:0 0 8px;font-size:.93rem;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--line);background:var(--bg);border-radius:99px;padding:5px 12px;font-size:.8rem;font-weight:600}
+.chip:hover:not([disabled]){border-color:var(--navy)}
+.chip.ok{background:var(--good);border-color:var(--good);color:#fff}
+.chip.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.chip[disabled]{cursor:default}
+.cls .why{font-size:.84rem;color:var(--muted);margin-top:6px}
+.score{font-size:.85rem;font-weight:700;color:var(--muted)}
+
+/* simulator */
+.sim svg{width:100%;height:auto;display:block}
+.sim .ctl{display:grid;gap:10px;margin-top:10px}
+.sim input[type=range]{width:100%;accent-color:var(--navy)}
+.sim .out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.sim .out div{background:var(--sunk);border-radius:9px;padding:8px 10px;font-size:.78rem;color:var(--muted)}
+.sim .out b{display:block;font-size:1.05rem;color:var(--ink)}
+.state{font-weight:800;padding:8px 12px;border-radius:9px;text-align:center}
+.state.sh{background:var(--bad-soft);color:var(--bad)}
+.state.su{background:var(--gold-soft);color:var(--gold)}
+.state.eq{background:var(--good-soft);color:var(--good)}
+.tog{display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600}
+.tog input{width:18px;height:18px;accent-color:var(--dig)}
+
+/* calc */
+.calc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.calc{grid-template-columns:minmax(0,1fr)}}
+.calc label{font-size:.8rem;font-weight:600;color:var(--muted);display:grid;gap:4px}
+.calc input{font:inherit;font-size:.95rem;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.res{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--sunk);font-size:.92rem}
+.res big{font-size:1.4rem;font-weight:800;display:block}
+
+/* case */
+details.ans{margin-top:10px;border-radius:10px;border:1px dashed var(--gold);background:var(--gold-soft)}
+details.ans summary{cursor:pointer;padding:10px 14px;font-weight:700;color:var(--gold);font-size:.9rem}
+details.ans>div{padding:0 14px 12px;font-size:.92rem}
+details.ans.lock summary{color:var(--muted);cursor:not-allowed}
+textarea{font:inherit;font-size:.92rem;width:100%;min-height:92px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+textarea:focus{border-color:var(--navy);outline:none}
+.cq{margin:18px 0}
+.cq>b{display:block;margin-bottom:6px;font-size:.95rem}
+.hint{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+/* flashcards */
+.fc{perspective:1200px;margin:16px 0}
+.fc .inner{position:relative;min-height:230px;transition:transform .5s;transform-style:preserve-3d;cursor:pointer}
+.fc.flip .inner{transform:rotateY(180deg)}
+.fc .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;padding:24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border:1px solid var(--line);box-shadow:var(--shadow)}
+.fc .front{background:var(--navy);color:#fff}
+:root[data-theme="dark"] .fc .front{background:#1C2B4D;color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fc .front{background:#1C2B4D;color:var(--ink)}}
+.fc .front b{font-size:1.5rem;font-style:italic}
+.fc .back{background:var(--surface);transform:rotateY(180deg);font-size:1.02rem}
+.fc small{opacity:.7;font-size:.75rem;margin-top:10px}
+
+/* final */
+.big{font-size:2.6rem;font-weight:800;line-height:1}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--gold-bg);color:#1b1400;font-weight:800;padding:6px 14px;border-radius:99px}
+
+/* home */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+@media (max-width:620px){.steps{grid-template-columns:minmax(0,1fr)}}
+.steps div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.steps>div>b{display:block;font-size:1rem;margin-bottom:2px}
+.steps span{font-size:.85rem;color:var(--muted)}
+.steps i{font-style:normal;font-size:1.4rem}
+.plan td:nth-child(3){font-family:var(--mono);font-size:.8rem;white-space:nowrap}
+.plan .st{font-size:.75rem;font-weight:700;white-space:nowrap}
+.st.y{color:var(--good)}.st.n{color:var(--muted)}
+.hero{background:linear-gradient(135deg,#013880 0%,#0a4fa8 100%);color:#fff;border-radius:16px;padding:24px 22px;margin-bottom:20px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(1.6rem,1.2rem + 1.8vw,2.3rem);font-weight:800;margin:4px 0 8px}
+.hero p{opacity:.92;margin:0;max-width:56ch}
+.hero .eyebrow{color:#FFC72C}
+.hero::after{content:"";position:absolute;right:-40px;bottom:-60px;width:220px;height:220px;border-radius:50%;border:28px solid rgba(255,199,44,.18)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:.88rem;font-weight:600;z-index:40;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.foot{font-size:.78rem;color:var(--muted);margin-top:40px}
+ol.ref li{margin:.4em 0;font-size:.9rem}
+/* self-test (pola serviceman) */
+.quiz{scroll-margin-top:70px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow)}
+.qz-setup{display:flex;flex-direction:column;gap:14px}
+.qz-setup p{margin:0}
+.qz-lbl{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;font-size:.88rem;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.qz-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.qz-top .qz-lbl{margin:0}
+.qz-prog{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.qz-prog i{display:block;height:100%;background:var(--navy);width:0;transition:width .3s}
+.qz-q{font-size:1.18rem;font-weight:700;margin:0;line-height:1.4}
+.qz-opts{display:flex;flex-direction:column;gap:8px}
+.qz-opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;font-size:.95rem;line-height:1.45}
+.qz-opts button .k{font-family:var(--mono);font-size:.8rem;color:var(--muted);flex:none;padding-top:2px}
+.qz-opts button:hover:not(:disabled){border-color:var(--navy)}
+.qz-opts button:disabled{cursor:default}
+.qz-opts button.right{border-color:var(--good);background:var(--good-soft)}
+.qz-opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.qz-exp{border-radius:10px;padding:12px 14px;font-size:.93rem}
+.qz-exp.ok{background:var(--good-soft)}.qz-exp.no{background:var(--bad-soft)}
+.qz-exp b{display:block;margin-bottom:2px}
+.qz-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.res-big{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.res-big .pct{font-weight:800;font-size:3.4rem;line-height:1}
+.lo-bars{display:flex;flex-direction:column;gap:8px}
+.lo-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 44px;gap:10px;align-items:center;font-size:.86rem}
+@media (max-width:520px){.lo-row{grid-template-columns:minmax(0,1fr) 70px 40px}}
+.lo-row .b{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.lo-row .b i{display:block;height:100%}
+.lo-row .v{font-family:var(--mono);font-size:.78rem;text-align:right}
+.review{display:flex;flex-direction:column;gap:8px}
+.review details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.review summary{cursor:pointer;font-size:.92rem}
+.review .mk{font-family:var(--mono);font-weight:700;margin-right:6px}
+.review .mk.ok{color:var(--good)}.review .mk.no{color:var(--bad)}
+.review p{font-size:.88rem;margin:6px 0 0}
+.muted{color:var(--muted)}
+/* umpan balik studi kasus */
+.btn.sm{padding:7px 12px;font-size:.84rem}
+.fbk{margin-top:8px}
+.fbres{margin-top:10px}
+.gbox{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px}
+.ghead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.meter{display:flex;gap:4px}
+.meter i{width:22px;height:10px;border-radius:3px;background:var(--sunk)}
+.meter i.on{background:var(--navy)}
+.glv{font-weight:800}
+.gnote{font-size:.72rem;color:var(--muted);margin-left:auto}
+.crit{list-style:none;padding:0;margin:6px 0;display:grid;gap:5px}
+.crit li{font-size:.86rem;display:flex;gap:8px;align-items:flex-start}
+.crit li .m{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:.7rem;font-weight:800;margin-top:2px}
+.crit li.y .m{background:var(--good);color:#fff}
+.crit li.n .m{background:var(--sunk);color:var(--muted);border:1.5px dashed var(--muted)}
+.crit li.n span.h{color:var(--muted)}
+.gwarn{font-size:.84rem;background:var(--gold-soft);border-radius:8px;padding:8px 10px;margin-top:8px}
+.selfc{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.selfc label{display:flex;gap:8px;align-items:flex-start;font-size:.88rem;margin:6px 0;cursor:pointer}
+.selfc input{width:18px;height:18px;accent-color:var(--navy);flex:none;margin-top:2px}
+.stale{font-size:.8rem;color:var(--gold);font-weight:700;margin-top:6px}
+.csum{font-family:var(--mono);font-size:.75rem;font-weight:500;background:var(--sunk);color:var(--muted);padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle}
+
+/* widget topik 12 */
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:.8rem;font-weight:600;color:var(--ink)}
+.chip:hover{border-color:var(--navy)}
+.vsbar{height:12px;border-radius:6px;background:var(--surface);overflow:hidden;margin-top:8px;border:1px solid var(--line)}
+.vsbar i{display:block;height:100%;background:var(--good)}
+.calc3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.calc3{grid-template-columns:minmax(0,1fr)}}
+.calc3 fieldset{border:1px solid var(--line);border-radius:10px;padding:8px 10px 10px;margin:0;display:grid;gap:6px;align-content:start}
+.calc3 legend{font-size:.78rem;font-weight:800;color:var(--navy);padding:0 4px}
+.calc3 label{display:grid;gap:2px;font-size:.75rem;font-weight:600;color:var(--muted)}
+.calc3 input[type=number]{font:inherit;font-size:.88rem;padding:6px 8px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.tbar{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:.86rem;margin:6px 0 0}
+.tbar i{display:block;height:14px;border-radius:7px;min-width:4px}
+.calc3 select{font:inherit;font-size:.85rem;padding:6px 8px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+
+
+/* logo ITS & tombol beranda */
+.top .logo{display:flex;align-items:center;flex:none;line-height:0}
+.top .logo img{height:44px;width:auto;display:block}
+.top .logo .mk{display:none}
+@media (max-width:640px){.top .logo .full{display:none}.top .logo .mk{display:block;height:34px}}
+.homebtn{flex:none;display:inline-flex;align-items:center;gap:6px;background:#FFC72C;color:#013880;font-weight:800;font-size:.82rem;line-height:1;text-decoration:none;padding:9px 13px;border-radius:9px;box-shadow:0 0 0 2px rgba(255,255,255,.28);white-space:nowrap}
+.homebtn:hover{background:#FFD65C}
+.homebtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+@media (max-width:560px){.homebtn .t{display:none}.homebtn{padding:9px 11px;font-size:.95rem}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <button class="iconbtn menubtn" id="menuBtn" aria-label="Buka menu" aria-expanded="false">☰</button>
+  <a class="logo" href="../" aria-label="Beranda mata kuliah Pengantar Bisnis Digital, ITS"><img class="full" src="../assets/its-logo-white.png" alt="Institut Teknologi Sepuluh Nopember" width="77" height="44"><img class="mk" src="../assets/its-mark-white.png" alt="ITS" width="23" height="34"></a>
+  <div class="brand"><b>Topik 12 · Pengalaman Pelanggan dan Perancangan Layanan</b><small>Pengantar Bisnis Digital (DG234101) · ITS</small></div>
+  <div class="prog" title="Kemajuan belajar"><span class="lbl" id="progLbl">0%</span><span class="bar"><i id="progBar"></i></span></div>
+  <a class="homebtn" href="../" title="Kembali ke beranda mata kuliah"><span aria-hidden="true">⌂</span><span class="t">Beranda</span></a>
+  <button class="iconbtn" id="themeBtn" aria-label="Ganti tema terang/gelap">◐</button>
+</header>
+
+<div class="shell">
+<nav class="side" id="side" aria-label="Navigasi materi"></nav>
+<main id="main">
+
+<!-- ================= HOME ================= -->
+<section class="view" data-view="home">
+  <div class="hero">
+    <div class="eyebrow">Minggu 12 · Belajar Mandiri</div>
+    <h1>Pengalaman Pelanggan dan Perancangan Layanan</h1>
+    <p>Strategi yang bagus bisa gagal di tangan desain yang buruk: tombol yang tidak ditemukan, formulir yang terlalu panjang, atau data pelanggan yang bocor. Topik ini membahas cara menganalisis proses dan kebutuhan pengguna, merancang pengalaman pelanggan (CX) dan antarmuka yang mudah dipakai di desktop maupun ponsel, serta merancang keamanan yang menjaga kepercayaan.</p>
+  </div>
+
+  <div class="card">
+    <h3>🎯 Sub-CPMK 11 <span class="tag">CPMK6</span></h3>
+    <p style="margin:0">Mahasiswa mampu menjelaskan prinsip user-centered design (UCD), merancang information architecture, dan memahami keamanan sistem.</p>
+  </div>
+
+  <h3>Cara memakai aplikasi ini</h3>
+  <p>Aplikasi ini <b>bukan pengganti buku</b>. Ringkasan di sini sengaja dibuat padat; detail, gambar, dan kasus ada di buku. Setiap unit mengikuti tiga langkah:</p>
+  <div class="steps">
+    <div><i>📖</i><b>1. Baca</b><span>Buka subbab Chaffey Bab 9 yang ditunjuk, dengan pertanyaan pemandu sebagai fokus.</span></div>
+    <div><i>✅</i><b>2. Cek</b><span>Centang "sudah membaca" untuk membuka soal. Soal berlabel <span style="font-weight:700">Cek Bacaan</span> hanya bisa dijawab dari buku.</span></div>
+    <div><i>🧩</i><b>3. Terapkan</b><span>Hitung efisiensi proses, hasil uji usability, dan kedalaman navigasi; analisis kasus Indonesia.</span></div>
+  </div>
+  <p class="hint">Kemajuan Anda tersimpan otomatis di peramban ini (bukan di server). Gunakan menu <b>Catatan &amp; Referensi</b> untuk menyalin atau mengunduh semua jawaban Anda.</p>
+
+  <h3>Rencana belajar (± 4 jam)</h3>
+  <div class="tw"><table class="plan">
+    <thead><tr><th>#</th><th>Unit</th><th>Bacaan</th><th>Status</th></tr></thead>
+    <tbody id="planBody"></tbody>
+  </table></div>
+  <p class="hint">Bacaan utama: Chaffey, D., Hemphill, T., &amp; Edmundson-Bird, D. (2019). <em>Digital Business and E-Commerce Management</em> (7th ed.). Pearson. Bab 9: <em>Customer experience and service design</em>. Rujukan memakai <b>nama subbab</b> serta nomor <b>Gambar, Tabel, Box, dan Case Study</b>.</p>
+
+  <div class="co idn"><b class="t">🇮🇩 Kasus Indonesia minggu ini.</b> Selain Case Study 9.1 dari buku (RS Components), Anda akan menganalisis <b>PLN Mobile</b>, aplikasi yang naik dari sekitar 500 ribu unduhan dengan rating 2,5 menjadi lebih dari 85 juta pengguna lewat perancangan ulang layanan, dan <b>kebocoran data Tokopedia 2020</b> sebagai pelajaran desain keamanan. Latihan individunya, sesuai RPS: analisis UX/UI satu situs e-commerce lokal dan identifikasi tiga area perbaikan.</div>
+
+  <h3>🔥 Pemanasan (5 menit)</h3>
+  <div class="card">
+    <p>Ingat satu pengalaman paling menjengkelkan saat memakai aplikasi atau situs belanja, bank, atau layanan publik.</p>
+    <div class="cq"><b>Apa yang Anda coba lakukan, dan di langkah mana Anda tersendat atau menyerah?</b><textarea data-note="warm_know" placeholder="Layanan: … Tugas: … Langkah yang membuat frustrasi: …"></textarea></div>
+    <div class="cq"><b>Menurut Anda, masalahnya di desain tampilan, di alur prosesnya, atau di layanan di balik layar? Simpan jawaban ini; Anda akan menimbangnya lagi di Unit 1 dan Unit 4.</b><textarea data-note="warm_want" placeholder="Menurut saya…"></textarea></div>
+  </div>
+  <div class="pager"><span></span><a class="btn" href="#u1">Mulai Unit 1 →</a></div>
+</section>
+
+<!-- ================= UNIT 1 ================= -->
+<section class="view" data-view="u1" data-unit="1">
+  <div class="eyebrow">Unit 1 <span class="tag">LO Bab 9</span><span class="tag">± 35 menit</span></div>
+  <h2>Analisis dan Pemodelan Proses</h2>
+  <div class="read" data-read="1">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 9 · Introduction · Real-world Digital Business (Domino's) · Analysis for digital technology projects · Process modelling · Gambar 9.2–9.5 · Box 9.1 · Activity 9.2</span></div>
+    <p style="margin:0 0 4px">Bagian pembuka Bab 9, wawancara Nick Dutch (Domino's Pizza UK), analisis untuk sistem digital, pemetaan proses, analisis dan dekomposisi tugas, manajemen workflow, flow process chart, effort duration analysis, network diagram, model EPC, dan validasi model proses. Cari jawaban:</p>
+    <ul>
+      <li>Apa empat tingkat dekomposisi proses menurut Curtis dkk. (1992)?</li>
+      <li>Apa manfaat utama workflow, dan apa beda workflow administratif dan workflow produksi?</li>
+      <li>Bagaimana effort duration analysis dihitung, dan berapa efisiensi proses faktur pada Activity 9.2?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="1"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b>Analisis</b> untuk sistem digital bertujuan memahami kebutuhan bisnis dan pengguna, lalu meninjau alternatif solusinya. Strategi yang efektif pun bisa hancur oleh analisis dan desain yang buruk. Pant dan Ravichandran (2001) menyebut informasi sebagai "lem" yang menyatukan organisasi, rantai pasok, dan saluran distribusi.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Teknik</th><th>Inti</th></tr></thead>
+    <tbody>
+      <tr><td><b>Process mapping</b></td><td>Di mana proses terjadi dan siapa yang bertanggung jawab (lintas fungsi)</td></tr>
+      <tr><td><b>Task analysis/dekomposisi</b></td><td>Proses bisnis (level 1) → aktivitas (2) → tugas (3) → subtugas (4)</td></tr>
+      <tr><td><b>Workflow management</b></td><td>Otomatisasi proses: dokumen, informasi, atau tugas berpindah antarpartisipan menurut aturan prosedural</td></tr>
+      <tr><td><b>Flow process chart</b></td><td>Urutan operasi, transportasi, inspeksi, penundaan, dan penyimpanan; mudah dipahami staf non-teknis</td></tr>
+      <tr><td><b>Network diagram, EPC</b></td><td>Definisi urutan yang formal (simpul AND/OR); EPC dipopulerkan oleh SAP R/3 dengan lebih dari 800 EPC standar</td></tr>
+      <tr><td><b>Validasi</b></td><td><em>Talk-through</em>, <em>walk-through</em>, lalu <em>run-through</em> (Taylor, 1995)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="level"><h4>🧩 Latihan: tingkat dekomposisi proses</h4></div>
+  <p>Manfaat workflow: efisiensi, kontrol proses yang lebih baik, layanan pelanggan yang konsisten, fleksibilitas, dan perbaikan proses bisnis. <b>Effort duration analysis</b> mengukur efisiensi proses: jumlah waktu kerja aktual semua aktivitas dibagi total durasi proses. Waktu menunggu di baki surat dan pengiriman berkas membuat efisiensi proses faktur di Activity 9.2 hanya sekitar 2%.</p>
+
+  <div class="card" id="edTool">
+    <h4>⏱️ Kalkulator effort duration analysis</h4>
+    <p class="hint">Masukkan waktu kerja aktual (saat seseorang benar-benar mengerjakan) dan total durasi proses dari awal hingga selesai, dalam menit.</p>
+    <div class="calc">
+      <label>Total waktu kerja aktual (menit)<input type="number" id="edW" value="60" min="0" step="5"></label>
+      <label>Total durasi proses (menit)<input type="number" id="edD" value="7200" min="1" step="60"></label>
+    </div>
+    <div class="row" style="gap:6px;margin-top:8px"><button class="chip" data-ed="inv">Persetujuan faktur manual</button><button class="chip" data-ed="wf">Setelah workflow digital</button></div>
+    <div class="res" id="edRes"></div>
+  </div>
+
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Pengaduan gangguan listrik yang dulu menunggu telepon call centre, diteruskan manual ke petugas, lalu tidak terlacak adalah proses dengan banyak penundaan. PLN Mobile mengintegrasikan pengaduan dengan pusat komando virtual sehingga statusnya terlacak dari laporan hingga selesai. Ini wujud workflow management. Studi Kasus 2 membahasnya.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u1"></div>
+  <div class="pager"><a class="btn ghost" href="#home">← Beranda</a><a class="btn" href="#u2">Unit 2 →</a></div>
+</section>
+
+<!-- ================= UNIT 2 ================= -->
+<section class="view" data-view="u2" data-unit="2">
+  <div class="eyebrow">Unit 2 <span class="tag">LO Bab 9</span><span class="tag">± 30 menit</span></div>
+  <h2>Pemodelan Data, Big Data, dan Arsitektur Sistem</h2>
+  <div class="read" data-read="2">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 9 · Data modelling · Box 9.2–9.3 · Gambar 9.6 · Design for digital technology projects · Architectural design · Gambar 9.7–9.8 · Debate 9.1</span></div>
+    <p style="margin:0 0 4px">Subbab pemodelan data (ER), social sign-in (Box 9.2), Big Data (Box 9.3), dan desain arsitektur sistem bisnis digital (client-server, three-tier, Gambar 9.8). Cari jawaban:</p>
+    <ul>
+      <li>Apa tiga tahap pemodelan ER sederhana, dan apa beda primary key dan secondary key?</li>
+      <li>Apa 4V Big Data menurut IBM?</li>
+      <li>Apa fungsi tiap server dalam arsitektur bisnis digital B2C (Gambar 9.8)?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="2"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b>Pemodelan data</b> dengan entity relationship (ER) punya tiga tahap: mengidentifikasi <b>entitas</b> (mis. pelanggan, pesanan, produk; menjadi tabel), <b>atribut</b> (mis. nama, email; menjadi field), dan <b>relasi</b> antar-entitas lewat kunci. <em>Primary key</em> mengidentifikasi setiap record secara unik; <em>secondary key</em> menautkan ke primary key di tabel lain. Contoh relasi satu-ke-banyak: satu pelanggan bisa memiliki banyak pesanan. <b>Social sign-in</b> (masuk dengan akun Facebook atau Google) menurunkan hambatan pendaftaran, tetapi bila dipakai sederhana tidak ada data profil yang terkumpul. Menurut riset yang dikutip buku, 87% pernah melihatnya tetapi hanya 25% yang rutin memakainya.</p>
+  <p><b>Big Data</b> menurut IBM dicirikan 4V: <b>volume</b>, <b>variety</b> (data terstruktur dan tidak terstruktur), <b>velocity</b> (dimanfaatkan secara real time, mis. mendeteksi penipuan), dan <b>veracity</b> (bisa dipercaya). Mengintegrasikan data saja tidak menciptakan nilai; dibutuhkan model analitik dan alat yang membuat hasilnya bisa dipakai manajer dan staf lini depan.</p>
+  <p><b>Arsitektur</b> bisnis digital umumnya <b>three-tier client-server</b>: klien (tampilan, kini banyak ponsel), server aplikasi (logika dan aturan bisnis), dan server basis data. Karena pemrosesan ada di server, disebut <em>thin client</em>. Dalam praktiknya ada banyak server yang harus diintegrasikan:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Server (Gambar 9.8)</th><th>Fungsi</th></tr></thead>
+    <tbody>
+      <tr><td>Web server</td><td>Menerima permintaan http dan menyajikan halaman</td></tr>
+      <tr><td>Merchant server</td><td>Lokasi utama logika aplikasi; mengintegrasikan server lain</td></tr>
+      <tr><td>Personalisation server</td><td>Menyajikan konten yang disesuaikan</td></tr>
+      <tr><td>Payment commerce server</td><td>Mengelola pembayaran dan transaksi aman</td></tr>
+      <tr><td>Catalogue server</td><td>Menampilkan informasi dan spesifikasi produk</td></tr>
+      <tr><td>CRM server</td><td>Menyimpan semua kontak pelanggan</td></tr>
+      <tr><td>ERP server</td><td>Ketersediaan stok, harga, pemrosesan pesanan, dan logistik</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="arch"><h4>🧩 Latihan: server yang menangani tugas ini</h4></div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Saat Anda memesan di marketplace Indonesia, satu klik "Bayar" melibatkan banyak server: katalog (detail produk), personalisasi (rekomendasi), pembayaran (dompet digital, virtual account, QRIS), ERP penjual (stok), dan CRM (riwayat pelanggan). Masalah integrasi di salah satunya terasa bagi pelanggan sebagai "stok tersedia" yang ternyata habis.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u2"></div>
+  <div class="pager"><a class="btn ghost" href="#u1">← Unit 1</a><a class="btn" href="#u3">Unit 3 →</a></div>
+</section>
+
+<!-- ================= UNIT 3 ================= -->
+<section class="view" data-view="u3" data-unit="3">
+  <div class="eyebrow">Unit 3 <span class="tag">LO Bab 9</span><span class="tag">± 35 menit</span></div>
+  <h2>User-Centred Design dan Manajemen Pengalaman Pelanggan</h2>
+  <div class="read" data-read="3">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 9 · Focus on User-centred site design and customer experience management · Box 9.4–9.5 · Gambar 9.9–9.11 · Customer experience management framework</span></div>
+    <p style="margin:0 0 4px">Bagian awal subbab <em>Focus on</em>: UX dan CXM, Box 9.4 (penurunan skor CX di Inggris dan enam pilar), Box 9.5 (14 alasan bisnis gagal di UX), faktor pengalaman pelanggan online (Gambar 9.11), dimensi ekuitas merek online, kerangka manajemen CX, dan sepuluh tips implementasi CX. Cari jawaban:</p>
+    <ul>
+      <li>Apa yang mendorong perluasan dari UX ke customer experience management (CXM)?</li>
+      <li>Menurut Box 9.4, berapa kenaikan pendapatan dan penurunan biaya layanan bila perjalanan pelanggan diperbaiki?</li>
+      <li>Apa enam pilar keunggulan pengalaman pelanggan?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="3"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b>User-centred design (UX)</b> adalah desain yang mengoptimalkan pengalaman pengguna dari semua faktor yang memengaruhinya, termasuk antarmuka. Menurut Bevan (1999), situs yang tidak memenuhi kebutuhan pengguna tidak akan memenuhi kebutuhan organisasi pemiliknya. <b>Customer experience management (CXM)</b> memperluas UX ke seluruh titik sentuh dan konteks pemakaian: ponsel, pemakaian beberapa layar sekaligus, belanja multichannel, media sosial, email, dan layanan pelanggan offline. CXM bukan kegiatan sekali jadi, tetapi perbaikan terus-menerus lewat analitik dan pengujian (CRO).</p>
+  <p>Box 9.4 (KPMG Nunwood, 2017) mencatat merek yang memperbaiki perjalanan pelanggan bisa menaikkan pendapatan 10–15% dan menurunkan biaya layanan 15–20%. Riset itu merumuskan <b>enam pilar keunggulan pengalaman</b>:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Pilar</th><th>Makna singkat</th></tr></thead>
+    <tbody>
+      <tr><td><b>Personalisation</b></td><td>Perhatian individual; pilar penentu advokasi dan loyalitas</td></tr>
+      <tr><td><b>Integrity</b></td><td>Bertindak tepercaya dan membangun kepercayaan</td></tr>
+      <tr><td><b>Expectations</b></td><td>Menetapkan ekspektasi secara akurat, lalu memenuhi atau melampauinya</td></tr>
+      <tr><td><b>Resolution</b></td><td>Mengubah pengalaman buruk menjadi baik</td></tr>
+      <tr><td><b>Time and effort</b></td><td>Meminimalkan waktu dan usaha pelanggan</td></tr>
+      <tr><td><b>Empathy</b></td><td>Memahami keadaan pelanggan</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="pillar"><h4>🧩 Latihan: pilar pengalaman pelanggan</h4></div>
+  <p>Box 9.5 mendaftar 14 alasan bisnis gagal di UX, antara lain tidak ada kepala desain, UX tidak dilibatkan sejak awal proyek, tim UX bekerja agile sementara bisnis bekerja waterfall, perjalanan pengguna yang rusak tetapi dibiarkan, dan manajer yang menginginkan "barang baru yang mengilap" yang tidak dibutuhkan pengguna. Sepuluh tips implementasi CX menekankan meruntuhkan fokus per kanal, berpusat pada perjalanan pelanggan, dan kepemimpinan: <b>teknologi adalah alat, bukan solusi</b>.</p>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Menurut PLN, program loyalitas di PLN Mobile dirancang mengikuti analisis perjalanan pelanggan yang dilakukan secara berkala, dan pelanggan bisa melacak status layanan secara real time dari pengaduan hingga pasang baru. Pelacakan status ini menyentuh pilar <em>expectations</em> dan <em>time and effort</em>.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u3"></div>
+  <div class="pager"><a class="btn ghost" href="#u2">← Unit 2</a><a class="btn" href="#u4">Unit 4 →</a></div>
+</section>
+
+<!-- ================= UNIT 4 ================= -->
+<section class="view" data-view="u4" data-unit="4">
+  <div class="eyebrow">Unit 4 <span class="tag">LO Bab 9</span><span class="tag">± 40 menit</span></div>
+  <h2>Usability, Persona, dan Analisis Use-Case</h2>
+  <div class="read" data-read="4">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 9 · Usability · Evaluating designs · Use-case analysis · Persona and scenario analysis · Mini Case Study 9.1 · Stages in use-case analysis · Gambar 9.12–9.15</span></div>
+    <p style="margin:0 0 4px">Subbab usability (definisi ISO dan Nielsen), evaluasi desain (Bevan), alat umpan balik, persona dan skenario, Mini Case Study 9.1 (Miele Professional), serta tahap analisis use-case. Cari jawaban:</p>
+    <ul>
+      <li>Berapa porsi anggaran proyek desain yang menurut Nielsen sebaiknya dialokasikan untuk usability?</li>
+      <li>Menurut Forrester (2005), berapa wawancara dan berapa persona rata-rata per proyek, dan berapa biayanya?</li>
+      <li>Apa empat tahap analisis use-case (Schneider &amp; Winters, 1998)?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="4"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b>Usability</b> menurut standar ISO: sejauh mana produk dapat dipakai pengguna tertentu untuk mencapai tujuan tertentu dengan <b>efektif, efisien, dan memuaskan</b> dalam konteks pemakaian tertentu. Nielsen: di web, usability adalah syarat bertahan hidup; bila sulit dipakai, orang pergi. Dua aktivitas utamanya: <b>expert review</b> (ahli meninjau desain) dan <b>usability testing</b> (pengguna representatif diamati mengerjakan tugas representatif). Bevan menilai desain dari efektivitas (tugas selesai dengan benar), produktivitas atau efisiensi (waktu yang wajar), dan kepuasan. Nielsen menyarankan sekitar 10% anggaran proyek desain untuk usability.</p>
+
+  <div class="card" id="utTool">
+    <h4>🧪 Kalkulator hasil uji usability (satu tugas)</h4>
+    <div class="calc">
+      <label>Jumlah penguji<input type="number" id="utN" value="10" min="1"></label>
+      <label>Penguji yang menyelesaikan tugas<input type="number" id="utS" value="3" min="0"></label>
+      <label>Rata-rata waktu penguji yang berhasil (detik)<input type="number" id="utT" value="95" min="0"></label>
+      <label>Target waktu (detik)<input type="number" id="utG" value="60" min="1"></label>
+      <label>Rata-rata kepuasan (skala 1–5)<input type="number" id="utK" value="2.8" min="1" max="5" step="0.1"></label>
+    </div>
+    <div class="row" style="gap:6px;margin-top:8px"><button class="chip" data-ut="phone">Mencari nomor telepon (contoh buku: 3 dari 10)</button><button class="chip" data-ut="good">Setelah perbaikan</button></div>
+    <div class="res" id="utRes"></div>
+  </div>
+
+  <p><b>Persona</b> adalah gambaran ringkas karakteristik, kebutuhan, motivasi, dan lingkungan pengguna khas. Forrester (2005) menemukan rata-rata 21 wawancara per proyek untuk menghasilkan 4–8 persona dengan biaya US$47.000–500.000. Atribut persona mencakup <b>demografi</b>, <b>psikografi</b> (tujuan, tugas, motivasi), dan <b>webografi</b> (pengalaman web, lokasi dan platform pemakaian, frekuensi). Pilih satu <b>primary persona</b>: tipe pengguna umum yang penting bagi bisnis sekaligus paling menantang dari sisi desain. Setiap persona punya beberapa <b>skenario</b>, misalnya mencari informasi, pembelian pelanggan baru, dan pembelian pelanggan lama.</p>
+  <div class="card cls" data-widget="persona"><h4>🧩 Latihan: atribut persona</h4></div>
+  <p><b>Analisis use-case</b> (bagian dari UML) punya empat tahap: identifikasi <b>aktor</b> (orang, perangkat lunak, atau perangkat yang berinteraksi dengan sistem), identifikasi <b>use-case</b> (hal yang ingin dilakukan aktor), hubungkan aktor dengan use-case, lalu kembangkan <b>skenario</b>: skenario primer (tanpa masalah) dan skenario alternatif (batal, salah input), lengkap dengan prakondisi dan pascakondisi.</p>
+  <div class="co"><b class="t">💡 Miele Professional (Mini Case Study 9.1).</b> Persona disusun dari riset telepon, survei online, dan forum: pemilik dan manajer panti wreda dan hotel kecil-menengah yang sibuk dan beranggaran ketat. Konten disusun untuk tiap persona. Hasilnya, 19% pendapatan penjualan kini berasal dari konten, dengan ROI 321%.</div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Persona untuk aplikasi belanja kebutuhan rumah tangga di Indonesia bisa berupa "Bu Rina, 42 tahun, pedagang warung di Sidoarjo, memakai ponsel Android kelas menengah dengan kuota terbatas, belanja stok tiap minggu". Persona ini menuntut halaman ringan, alur ulang-pesan cepat, dan pembayaran tunai atau transfer, berbeda dari persona mahasiswa di Surabaya.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u4"></div>
+  <div class="pager"><a class="btn ghost" href="#u3">← Unit 3</a><a class="btn" href="#u5">Unit 5 →</a></div>
+</section>
+
+<!-- ================= UNIT 5 ================= -->
+<section class="view" data-view="u5" data-unit="5">
+  <div class="eyebrow">Unit 5 <span class="tag">LO Bab 9</span><span class="tag">± 40 menit</span></div>
+  <h2>Information Architecture dan Desain Situs</h2>
+  <div class="read" data-read="5">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 9 · Designing the information architecture · Card sorting · Blueprints · Wireframes · Gambar 9.16–9.19 · Customer orientation · Elements of site design · Tabel 9.6</span></div>
+    <p style="margin:0 0 4px">Subbab information architecture (card sorting, blueprint, wireframe, CSS), orientasi pelanggan dan persuasion marketing, serta elemen desain situs: gaya, organisasi informasi, skema navigasi, desain halaman, dan desain konten (Tabel 9.6). Cari jawaban:</p>
+    <ul>
+      <li>Apa beda navigasi <em>narrow and deep</em> dan <em>broad and shallow</em>, dan apa aturan praktis tiga klik?</li>
+      <li>Menurut Fogg dkk. (2003), faktor apa yang paling sering disebut dalam menilai kredibilitas situs?</li>
+      <li>Apa lima tahap pemrosesan informasi web menurut Hofacker (2001)?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="5"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b>Information architecture</b> adalah gabungan skema organisasi, pelabelan, dan navigasi dalam sistem informasi (Rosenfeld &amp; Morville, 2002). Manfaatnya: mendukung usability dan <em>flow</em>, membantu SEO, mendukung komunikasi offline (halaman tujuan kampanye), dan pengukuran. Tekniknya:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Teknik</th><th>Kegunaan</th></tr></thead>
+    <tbody>
+      <tr><td><b>Card sorting</b></td><td>Pengguna mengelompokkan kartu berisi label atau konten, agar kategori mengikuti cara berpikir pengguna, bukan perancang</td></tr>
+      <tr><td><b>Blueprint</b> (site map)</td><td>Hubungan antarhalaman dan pengelompokan konten</td></tr>
+      <tr><td><b>Wireframe</b></td><td>Kerangka tata letak satu halaman tanpa warna dan grafis; ditinjau lewat storyboarding</td></tr>
+      <tr><td><b>Page template + CSS</b></td><td>Tampilan konsisten di seluruh situs; lebih cepat, mudah dipelihara, dan lebih aksesibel</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>Navigasi.</b> <em>Narrow and deep</em>: sedikit pilihan per halaman tetapi banyak klik; <em>broad and shallow</em>: banyak pilihan, sedikit klik. Aturan praktisnya, setiap informasi bisa dicapai dalam <b>tiga klik</b>, sehingga situs besar cenderung broad and shallow. Pengguna juga sering masuk dari tengah situs (<em>deep linking</em>), sehingga setiap halaman harus menjawab: di mana saya, ke mana saja saya sudah pergi, dan ke mana saya ingin pergi. Menurut Fogg dkk. (2003), tampilan desain (46,1%) adalah faktor yang paling sering disebut dalam menilai kredibilitas situs.</p>
+
+  <div class="card" id="navTool">
+    <h4>🧭 Kalkulator kedalaman navigasi</h4>
+    <div class="calc">
+      <label>Jumlah halaman atau produk yang harus bisa dicapai<input type="number" id="nvN" value="5000" min="1" step="100"></label>
+      <label>Pilihan menu per halaman<input type="number" id="nvB" value="8" min="2" max="200"></label>
+    </div>
+    <div class="row" style="gap:6px;margin-top:8px"><button class="chip" data-nv="deep">Narrow and deep (5 pilihan)</button><button class="chip" data-nv="broad">Broad and shallow (20 pilihan)</button></div>
+    <div class="res" id="nvRes"></div>
+  </div>
+
+  <p><b>Persuasion marketing</b> (Eisenberg) mengajukan tiga pertanyaan untuk setiap halaman: tindakan apa yang harus diambil, siapa yang harus mengambilnya, dan bagaimana membujuknya. Model perilaku Fogg (2009): perilaku terjadi bila <b>motivasi</b>, <b>kemampuan</b>, dan <b>pemicu</b> hadir bersamaan. Desain konten untuk layar: lebih ringkas daripada brosur, dipotong per 5–6 baris, memakai daftar dan judul, tanpa jargon internal. Hofacker (2001) menggambarkan lima tahap pemrosesan informasi yang masing-masing menjadi rintangan:</p>
+  <div class="card cls" data-widget="hofacker"><h4>🧩 Latihan: tahap pemrosesan informasi (Tabel 9.6)</h4></div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Marketplace besar di Indonesia memiliki jutaan produk. Dengan menu bertingkat saja, pengguna butuh banyak klik, sehingga pencarian, filter, dan rekomendasi menjadi jalur utama, bukan tambahan. Uji sendiri: berapa klik yang Anda butuhkan untuk menemukan halaman bantuan "cara retur barang" di aplikasi belanja favorit Anda?</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u5"></div>
+  <div class="pager"><a class="btn ghost" href="#u4">← Unit 4</a><a class="btn" href="#u6">Unit 6 →</a></div>
+</section>
+
+<!-- ================= UNIT 6 ================= -->
+<section class="view" data-view="u6" data-unit="6">
+  <div class="eyebrow">Unit 6 <span class="tag">LO Bab 9</span><span class="tag">± 30 menit</span></div>
+  <h2>Desain Mobile dan Aksesibilitas Web</h2>
+  <div class="read" data-read="6">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 9 · Mobile design · Gambar 9.20 · Mini Case Study 9.2 · Consider personalisation options · Web accessibility · Activity 9.4</span></div>
+    <p style="margin:0 0 4px">Subbab desain mobile: empat opsi pengembangan situs mobile (Thurner, 2016), Mini Case Study 9.2 (FT.com), personalisasi mobile, dan aksesibilitas web (prioritas WAI, alasan bisnis, quick tips). Cari jawaban:</p>
+    <ul>
+      <li>Apa beda responsive design dan adaptive design?</li>
+      <li>Mengapa FT.com memilih web app HTML5 daripada aplikasi native di app store?</li>
+      <li>Apa empat argumen bisnis untuk aksesibilitas web?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="6"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <div class="tw"><table>
+    <thead><tr><th>Opsi situs mobile</th><th>Cara kerja</th><th>Catatan dari buku</th></tr></thead>
+    <tbody>
+      <tr><td><b>A. Responsive design</b></td><td>Satu konten dan domain; tata letak menyesuaikan layar lewat CSS media queries</td><td>Pilihan bawaan banyak organisasi dan didukung Google; bisa memaksa kompromi desain</td></tr>
+      <tr><td><b>B. Adaptive design</b></td><td>Tata letak berbeda menurut perangkat, dipilih oleh aturan di server atau klien (breakpoint)</td><td>Bisa menambah atau menghapus fungsi sesuai niat dan konteks pengguna mobile</td></tr>
+      <tr><td><b>C. HTML5 web app</b></td><td>Dibangun sekali untuk semua platform di peramban</td><td>Menghindari komisi app store; FT.com menjadi contohnya</td></tr>
+      <tr><td><b>D. Domain mobile terpisah</b></td><td>Konten dipindahkan ke templat mobile tanpa integrasi back-end (screen scrape)</td><td>Cepat, tetapi tidak disarankan karena biaya pemeliharaan ganda</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="mobile"><h4>🧩 Latihan: opsi desain mobile yang mana?</h4></div>
+  <p>Ponsel adalah perangkat yang sangat pribadi, sehingga peluang personalisasi mobile besar (penawaran berbasis waktu dan lokasi, riwayat pembelian). <b>Aksesibilitas</b> memungkinkan semua orang memakai situs terlepas dari disabilitas, peramban, atau platformnya. Argumen bisnisnya: jumlah penyandang gangguan penglihatan yang besar, variasi peramban dan resolusi layar, lebih banyak pengunjung dari mesin pencari, dan kewajiban hukum. W3C WAI membagi tiga prioritas: <b>A</b> (wajib), <b>AA</b> (sebaiknya), dan <b>AAA</b> (boleh). Quick tips antara lain teks ALT untuk gambar, teks tautan yang bermakna (hindari "klik di sini"), judul dan daftar yang terstruktur, serta teks transkrip untuk multimedia.</p>
+  <div class="co"><b class="t">💡 FT.com (Mini Case Study 9.2).</b> Web app HTML5 membangun hubungan langsung dengan pembaca, menghindari bagi hasil 30% app store, memudahkan pencarian dan berbagi, bebas dari proses persetujuan app store sehingga bisa rilis dan A/B test kapan saja, dan satu versi berlaku untuk semua sistem operasi. Langganan FT.com tumbuh 21% menjadi hampir 504.000, dan digital mencapai 70% dari total pembaca berbayar.</div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Web-app belajar yang sedang Anda pakai ini adalah contoh opsi C: satu berkas HTML yang berjalan di peramban desktop maupun ponsel, dengan tata letak responsif. Coba buka di ponsel dan perhatikan menu yang berubah. Dari sisi aksesibilitas, Indonesia memiliki UU No. 8 Tahun 2016 tentang Penyandang Disabilitas yang mengatur hak atas aksesibilitas, termasuk informasi.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u6"></div>
+  <div class="pager"><a class="btn ghost" href="#u5">← Unit 5</a><a class="btn" href="#u7">Unit 7 →</a></div>
+</section>
+
+<!-- ================= UNIT 7 ================= -->
+<section class="view" data-view="u7" data-unit="7">
+  <div class="eyebrow">Unit 7 <span class="tag">LO Bab 9</span><span class="tag">± 40 menit</span></div>
+  <h2>Desain Keamanan untuk Bisnis Digital</h2>
+  <div class="read" data-read="7">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 9 · Focus on Security design for digital business · Box 9.6–9.7 · Tabel 9.8 · Gambar 9.22–9.24 · Secure e-commerce transactions · Reassuring the customer</span></div>
+    <p style="margin:0 0 4px">Subbab desain keamanan: ancaman umum dan sembilan langkah NCSC (Box 9.6), standar manajemen keamanan informasi, kasus TalkTalk dan Uber (Box 9.7), prinsip sistem yang aman, enkripsi simetris dan asimetris, tanda tangan digital, certificate authority, VPN, SSL, dan cara meyakinkan pelanggan. Cari jawaban:</p>
+    <ul>
+      <li>Berapa persen perusahaan kecil dan besar yang mengalami insiden keamanan menurut Tabel 9.8?</li>
+      <li>Berapa data pelanggan TalkTalk yang diakses pada 2015, dan berapa denda serta perkiraan total kerugiannya?</li>
+      <li>Apa lima kebutuhan keamanan dalam transaksi e-commerce?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="7"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Keamanan informasi adalah perhatian utama manajer bisnis digital, dan di banyak negara melindungi data pelanggan adalah kewajiban hukum. Menurut survei BIS (2015), 74% perusahaan kecil dan 90% perusahaan besar mengalami insiden keamanan; insiden terkait staf mencapai 75% di perusahaan besar. Box 9.6 merangkum <b>sembilan langkah NCSC</b>: lindungi jaringan, edukasi pengguna, kelola hak akses, perbarui sistem, kendalikan media lepas pasang, amankan kerja mobile, pakai anti-malware, lakukan pemantauan, dan siapkan manajemen insiden serta keberlangsungan bisnis.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Kebutuhan keamanan transaksi</th><th>Pertanyaan</th></tr></thead>
+    <tbody>
+      <tr><td><b>Authentication</b></td><td>Apakah para pihak benar-benar orang yang mereka akui?</td></tr>
+      <tr><td><b>Privacy &amp; confidentiality</b></td><td>Apakah data transaksi terlindungi?</td></tr>
+      <tr><td><b>Integrity</b></td><td>Apakah pesan utuh dan tidak rusak atau diubah?</td></tr>
+      <tr><td><b>Non-repudiability</b></td><td>Apakah pengirim tidak bisa menyangkal telah mengirim pesan?</td></tr>
+      <tr><td><b>Availability</b></td><td>Apakah sistem tetap tersedia dan berkinerja?</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="secure"><h4>🧩 Latihan: kebutuhan keamanan yang mana?</h4></div>
+  <p><b>Enkripsi simetris</b> memakai satu kunci yang sama untuk kedua pihak (cocok untuk mitra tetap seperti EDI); <b>asimetris</b> memakai pasangan kunci publik dan privat, sehingga pelanggan bisa mengenkripsi pesanan dengan kunci publik penjual. <b>Tanda tangan digital</b> dan <b>certificate authority</b> (pihak ketiga tepercaya) membuktikan identitas. <b>VPN</b> membuat jaringan privat di atas internet publik. <b>SSL</b> mengenkripsi data antara peramban dan server (https dan ikon gembok). Selain teknologi, pelanggan perlu diyakinkan: jaminan pembelian, penjelasan keamanan yang jelas, dan sertifikasi pihak ketiga.</p>
+  <div class="co book"><b class="t">⚠️ Catatan pembaruan.</b> Beberapa istilah di buku (edisi 2019) sudah usang. SSL kini digantikan <b>TLS</b>, walau sertifikatnya masih sering disebut "SSL". Standar ISO/IEC 17799 telah dinomori ulang menjadi <b>ISO/IEC 27002</b> dan dipasangkan dengan ISO/IEC 27001 untuk sistem manajemen keamanan informasi. Protokol SET juga tidak lagi dipakai. Prinsip yang dijelaskan buku tetap berlaku.</div>
+  <div class="co"><b class="t">💡 TalkTalk dan Uber (Box 9.7).</b> Pada 2015 data pribadi 156.959 pelanggan TalkTalk diakses, termasuk rekening bank 15.656 pelanggan. Pertanyaan besarnya: mengapa data tidak dienkripsi? Dendanya £400.000, kecil dibanding perkiraan biaya £60 juta dan hilangnya lebih dari 100.000 pelanggan. Uber menyembunyikan peretasan yang memengaruhi 57 juta pelanggan dan pengemudi selama setahun dan membayar peretas US$100.000 untuk menghapus data.</div>
+  <div class="co idn"><b class="t">🇮🇩 Konteks Indonesia.</b> Indonesia kini memiliki UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP), yang mewajibkan pengendali data menjaga keamanan data pribadi dan memberitahukan kegagalan pelindungan data. Studi Kasus 3 membahas kebocoran data Tokopedia pada 2020, sebelum UU ini berlaku.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u7"></div>
+  <div class="pager"><a class="btn ghost" href="#u6">← Unit 6</a><a class="btn" href="#cases">Studi Kasus →</a></div>
+</section>
+
+<!-- ================= CASES ================= -->
+<section class="view" data-view="cases">
+  <div class="eyebrow">Penerapan <span class="tag">± 90 menit</span></div>
+  <h2>Studi Kasus</h2>
+  <p class="lead">Satu kasus dari buku, dua kasus Indonesia, dan satu latihan individu. Alur setiap pertanyaan: <b>tulis jawaban → minta umpan balik aplikasi → nilai diri dengan checklist → buka arah jawaban</b>.</p>
+  <div class="co book"><b class="t">ℹ️ Tentang umpan balik otomatis.</b> Aplikasi memeriksa apakah konsep kunci dan penalaran ("karena", "sehingga") muncul dalam jawaban Anda. Aplikasi <b>tidak</b> bisa menilai apakah argumen Anda benar atau tajam. Skor 0–4 ini hanya umpan balik belajar, <b>bukan nilai</b>. Checklist penilaian diri menilai bagian yang tidak bisa diukur mesin.</div>
+  <div id="caseList"></div>
+  <div class="pager"><a class="btn ghost" href="#u7">← Unit 7</a><a class="btn" href="#final">Kuis Akhir →</a></div>
+</section>
+
+<!-- ================= FINAL ================= -->
+<section class="view" data-view="final">
+  <div class="eyebrow">Self-test</div>
+  <h2>Kuis Akhir: Uji Pemahaman</h2>
+  <div class="quiz" id="finalBox"></div>
+</section>
+
+<!-- ================= FLASH ================= -->
+<section class="view" data-view="cards">
+  <div class="eyebrow">Penguatan</div>
+  <h2>Flashcard Istilah Kunci</h2>
+  <p class="lead">Ketuk kartu untuk membalik. Tandai yang sudah Anda kuasai; sisanya akan muncul lagi.</p>
+  <div class="row" style="justify-content:space-between"><span class="score" id="fcCount"></span><button class="btn ghost" id="fcShuffle" style="padding:6px 12px">⤮ Acak</button></div>
+  <div class="fc" id="fc" tabindex="0" role="button" aria-label="Balik kartu"><div class="inner"><div class="face front"><b id="fcF"></b><small>ketuk untuk membalik</small></div><div class="face back"><div id="fcB"></div></div></div></div>
+  <div class="row" style="justify-content:center">
+    <button class="btn ghost" id="fcPrev">←</button>
+    <button class="btn gold" id="fcKnow">✓ Sudah hafal</button>
+    <button class="btn ghost" id="fcNext">→</button>
+  </div>
+  <p class="hint" style="text-align:center;margin-top:10px"><button class="retry" id="fcReset">Ulang semua kartu</button></p>
+</section>
+
+<!-- ================= NOTES & REFS ================= -->
+<section class="view" data-view="notes">
+  <div class="eyebrow">Rangkuman</div>
+  <h2>Catatan Saya &amp; Referensi</h2>
+  <div class="card">
+    <h3>📝 Semua jawaban Anda</h3>
+    <p class="hint">Gabungan pemanasan, hasil kalkulator, dan studi kasus. Salin atau unduh untuk dikumpulkan di MyITS Classroom bila diminta dosen.</p>
+    <div class="cq"><b>Nama &amp; NRP</b><textarea data-note="identity" style="min-height:44px" placeholder="Nama — NRP"></textarea></div>
+    <div class="row"><button class="btn" id="copyNotes">📋 Salin</button><button class="btn ghost" id="dlNotes">⬇ Unduh .txt</button><button class="btn ghost" id="resetAll" style="border-color:var(--bad);color:var(--bad)">Hapus semua kemajuan</button></div>
+    <pre id="notesPrev" style="white-space:pre-wrap;font-family:var(--f);font-size:.85rem;background:var(--sunk);padding:12px;border-radius:10px;margin-top:14px;max-height:300px;overflow:auto"></pre>
+  </div>
+
+  <h3>🧩 Ringkasan</h3>
+  <ul>
+    <li>Analisis kebutuhan bisnis dan pengguna menentukan keberhasilan sistem digital. Pemodelan proses (dekomposisi tugas, workflow, flow process chart, EPC) dan effort duration analysis menemukan pemborosan.</li>
+    <li>Pemodelan data memakai entitas, atribut, dan relasi. Big Data dicirikan 4V. Arsitektur bisnis digital bersifat three-tier client-server dengan banyak server yang harus terintegrasi.</li>
+    <li>UX berkembang menjadi CXM yang mencakup semua titik sentuh. Enam pilar CX: personalisation, integrity, expectations, resolution, time and effort, empathy.</li>
+    <li>Usability berarti efektif, efisien, dan memuaskan. Persona, skenario, dan use-case menyusun kebutuhan dari sudut pengguna.</li>
+    <li>Information architecture (card sorting, blueprint, wireframe) dan navigasi yang jelas mendukung flow. Desain mobile dan aksesibilitas memperluas jangkauan.</li>
+    <li>Desain keamanan menjaga kepercayaan: kebutuhan authentication, privacy, integrity, non-repudiability, dan availability, ditopang enkripsi, sertifikat, dan tata kelola.</li>
+  </ul>
+  <div class="co book"><b class="t">➡️ Minggu 13: Implementasi dan Optimisasi.</b> Topik berikutnya membahas proses implementasi layanan digital, dari pengujian hingga optimisasi, termasuk perbandingan pendekatan agile dan waterfall yang disinggung di Box 9.5.</div>
+
+  <h3>Referensi</h3>
+  <ol class="ref">
+    <li>Chaffey, D., Hemphill, T., &amp; Edmundson-Bird, D. (2019). <em>Digital business and e-commerce management</em> (7th ed.). Pearson. Bab 9: <em>Customer experience and service design</em>, termasuk Case Study 9.1 dan Mini Case Study 9.1–9.2.</li>
+    <li><a href="https://finance.detik.com/energi/d-6438096/pln-mobile-diunduh-35-juta-pengguna-bos-pln-sebut-hasil-transformasi" target="_blank" rel="noopener">detikFinance. (2022, 1 Desember). PLN Mobile diunduh 35 juta pengguna, bos PLN sebut hasil transformasi.</a></li>
+    <li><a href="https://listrikindonesia.com/detail/16602/gelegar-pln-mobile-2025-resmi-diluncurkan-cek-cara-ikutannya" target="_blank" rel="noopener">Listrik Indonesia. (2025, 11 Mei). Gelegar PLN Mobile 2025 resmi diluncurkan.</a></li>
+    <li><a href="https://www.cnbcindonesia.com/tech/20200507083340-37-156876/91-juta-data-pengguna-bocor-tokopedia-" target="_blank" rel="noopener">CNBC Indonesia. (2020, 7 Mei). 91 juta data pengguna bocor, Tokopedia digugat Rp100 M.</a></li>
+    <li><a href="https://siliconangle.com/2020/05/03/91m-customer-records-stolen-indonesian-e-commerce-giant-tokopedia/" target="_blank" rel="noopener">SiliconANGLE. (2020, 3 Mei). 91M customer records stolen from Indonesian e-commerce giant Tokopedia.</a></li>
+  </ol>
+  <p class="foot">Materi ini adalah ringkasan dan adaptasi untuk keperluan pembelajaran Pengantar Bisnis Digital (DG234101), Departemen Manajemen Bisnis ITS. Mahasiswa tetap wajib membaca bab asli pada buku acuan. Pengembang mata kuliah: Imam Baihaqi, Ph.D.</p>
+</section>
+
+</main>
+
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+/* ---------------- storage (safe) ---------------- */
+var KEY="bisdig-t12-v1", S={read:{},q:{},done:{},cls:{},notes:{},final:null,known:{},cs:{}};
+try{var raw=localStorage.getItem(KEY); if(raw){var o=JSON.parse(raw); for(var k in o) S[k]=o[k];}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} updateProgress();}
+try{var th=localStorage.getItem("bisdig-theme"); if(th) document.documentElement.setAttribute("data-theme",th);}catch(e){}
+
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove("on")},1800)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=a[i];a[i]=a[j];a[j]=x;}return a}
+var rp=function(n){return "Rp"+Math.round(n).toLocaleString("id-ID")};
+/* ---------------- units meta ---------------- */
+var UNITS=[
+ {id:"u1",t:"Analisis & Pemodelan Proses",pg:"Gambar 9.2–9.5 · Box 9.1"},
+ {id:"u2",t:"Data, Big Data & Arsitektur",pg:"Box 9.2–9.3 · Gambar 9.6–9.8"},
+ {id:"u3",t:"UX & Manajemen CX",pg:"Box 9.4–9.5 · Gambar 9.9–9.11"},
+ {id:"u4",t:"Usability, Persona & Use-Case",pg:"Mini CS 9.1 · Gambar 9.12–9.15"},
+ {id:"u5",t:"Information Architecture & Desain Situs",pg:"Gambar 9.16–9.19 · Tabel 9.6"},
+ {id:"u6",t:"Desain Mobile & Aksesibilitas",pg:"Gambar 9.20 · Mini CS 9.2"},
+ {id:"u7",t:"Desain Keamanan",pg:"Box 9.6–9.7 · Gambar 9.22–9.24"}
+];
+
+/* ---------------- unit quizzes ---------------- */
+var QZ={
+u1:[
+ {k:"c",q:"Mengidentifikasi di bagian organisasi mana proses terjadi dan siapa yang bertanggung jawab disebut…",o:["Task analysis","Process mapping","Data modelling","Card sorting"],a:1,e:"Penting karena proses sering melintasi beberapa fungsi bisnis."},
+ {k:"r",pg:"subbab Task analysis and task decomposition (Curtis dkk., 1992)",q:"Menurut kerangka Curtis dkk. (1992), urutan dekomposisi proses adalah…",o:["Tugas → aktivitas → proses → subtugas","Proses bisnis → aktivitas → tugas → subtugas","Aktivitas → proses → subtugas → tugas","Sistem → modul → fungsi → kode"],a:1,e:"Davenport (1993) mencatat proses utama organisasi besar pun jarang lebih dari sepuluh."},
+ {k:"r",pg:"subbab Effort duration analysis",q:"Menurut buku, efisiensi skenario awal proses faktur pada Activity 9.2 bila dihitung dengan effort duration analysis adalah…",o:["Hampir 100%","Sekitar 50%","Sekitar 20%","Hanya sekitar 2%"],a:3,e:"Waktu pengiriman berkas dan menunggu di baki surat tidak menambah nilai."},
+ {k:"r",pg:"subbab Event-driven process chain (EPC) model",q:"Model EPC dipopulerkan oleh penerapannya pada…",o:["Google Analytics","SAP R/3, dengan lebih dari 800 EPC bisnis standar","Microsoft Office","Salesforce"],a:1,e:"EPC dipakai untuk menjelaskan aturan bisnis sebelum diterapkan di perangkat lunak."}
+],
+u2:[
+ {k:"c",q:"Field yang mengidentifikasi setiap record dalam tabel secara unik disebut…",o:["Secondary key","Primary key","Attribute","Entity"],a:1,e:"Secondary key menautkan ke primary key di tabel lain."},
+ {k:"r",pg:"Box 9.2",q:"Menurut riset yang dikutip Box 9.2, dibanding yang pernah melihat social sign-in, yang rutin memakainya…",o:["87% pernah melihat, 25% rutin memakai","25% pernah melihat, 87% rutin memakai","Semua memakainya","Tidak ada yang memakainya"],a:0,e:"Facebook menguasai 64% social sign-in pada kuartal III 2015 (Gigya)."},
+ {k:"r",pg:"Box 9.3",q:"Dalam 4V Big Data menurut IBM, 'veracity' berarti…",o:["Jumlah data yang sangat besar","Data dimanfaatkan secara real time","Data bisa dipercaya dari sisi sumber, akurasi, dan relevansi","Ragam format data"],a:2,e:"Tiga V lainnya: volume, variety, velocity."}
+],
+u3:[
+ {k:"c",q:"Perluasan UX ke seluruh titik sentuh dan konteks pemakaian (ponsel, media sosial, layanan offline) disebut…",o:["CRO","CXM (customer experience management)","ERP","SEO"],a:1,e:"CXM adalah proses perbaikan berkelanjutan, bukan kegiatan sekali jadi."},
+ {k:"r",pg:"Box 9.4",q:"Menurut Box 9.4, merek yang memperbaiki perjalanan pelanggan bisa…",o:["Menaikkan pendapatan 1–2%","Menaikkan pendapatan 10–15% dan menurunkan biaya layanan 15–20%","Menaikkan biaya layanan 50%","Menghapus kebutuhan call centre"],a:1,e:"Karena perjalanan pelanggan sering penuh inefisiensi lintas titik sentuh."},
+ {k:"r",pg:"Box 9.5",q:"Mana yang termasuk alasan bisnis gagal di UX menurut Box 9.5?",o:["Terlalu banyak riset pengguna","Tim UX bekerja agile sementara bagian lain bisnis bekerja waterfall","Kepala desain melapor ke CEO","Pedoman desain diperbarui terlalu sering"],a:1,e:"Alasan lain: tidak ada kepala desain dan UX tidak dilibatkan sejak awal proyek."}
+],
+u4:[
+ {k:"c",q:"Pengguna representatif diamati saat mengerjakan tugas representatif. Ini adalah…",o:["Expert review","Usability testing","Card sorting","Penetration testing"],a:1,e:"Expert review dilakukan oleh ahli usability tanpa pengguna."},
+ {k:"r",pg:"subbab Usability (Nielsen)",q:"Menurut Nielsen, berapa porsi anggaran proyek desain yang sebaiknya dialokasikan untuk usability?",o:["Sekitar 1%","Sekitar 10%","Sekitar 25%","Sekitar 50%"],a:1,e:"Dalam praktik, pengeluaran nyata sering jauh lebih kecil."},
+ {k:"r",pg:"subbab Persona and scenario analysis (Forrester, 2005)",q:"Menurut Forrester (2005), proyek persona rata-rata melibatkan…",o:["2 wawancara dan 1 persona","21 wawancara dan 4–8 persona, dengan biaya US$47.000–500.000","100 wawancara dan 20 persona","Tanpa wawancara"],a:1,e:"Ford memakai tiga persona pembeli, Staples tujuh."},
+ {k:"r",pg:"Mini Case Study 9.1",q:"Menurut Mini Case Study 9.1, berapa porsi pendapatan penjualan Miele Professional yang kini berasal dari konten?",o:["4,3%","19%","42%","100%"],a:1,e:"ROI kampanye 321%; sebelum 2013, 100% berasal dari telemarketing outbound."}
+],
+u5:[
+ {k:"c",q:"Kerangka tata letak satu halaman yang menunjukkan elemen dan kepentingannya tanpa warna dan grafis disebut…",o:["Blueprint","Wireframe","Card sorting","Site map"],a:1,e:"Blueprint menunjukkan hubungan antarhalaman."},
+ {k:"r",pg:"subbab Site style (Fogg dkk., 2003)",q:"Menurut Fogg dkk. (2003), faktor yang paling sering disebut dalam menilai kredibilitas situs adalah…",o:["Reputasi nama (14,1%)","Tampilan desain (46,1%)","Layanan pelanggan (6,4%)","Akurasi informasi (14,3%)"],a:1,e:"Disusul desain dan struktur informasi (28,5%)."},
+ {k:"r",pg:"Tabel 9.6",q:"Menurut Tabel 9.6, tahap Hofacker di mana pengguna 'mengalami banner blindness' adalah…",o:["Exposure","Attention","Comprehension","Retention"],a:1,e:"Mata pengguna tertuju pada judul dan konten, bukan grafis bergerak."}
+],
+u6:[
+ {k:"c",q:"Satu konten dan domain, dengan tata letak yang menyesuaikan layar lewat CSS media queries, adalah…",o:["Adaptive design","Responsive design","Domain mobile terpisah","Aplikasi native"],a:1,e:"Adaptive design memakai tata letak berbeda yang dipilih oleh aturan di server atau klien."},
+ {k:"r",pg:"Mini Case Study 9.2",q:"Menurut Mini Case Study 9.2, porsi digital dari total pembaca berbayar FT adalah…",o:["10%","21%","50%","70%"],a:3,e:"Langganan FT.com tumbuh 21% menjadi hampir 504.000."},
+ {k:"r",pg:"subbab Web accessibility",q:"Dalam pedoman WAI, prioritas yang 'harus' dipenuhi pengembang konten agar tidak ada kelompok yang sama sekali tidak bisa mengakses adalah…",o:["Priority 1 (Level A)","Priority 2 (Level AA)","Priority 3 (Level AAA)","Tidak ada yang wajib"],a:0,e:"AA sebaiknya dipenuhi; AAA boleh dipenuhi."}
+],
+u7:[
+ {k:"c",q:"Enkripsi yang memakai pasangan kunci publik dan privat disebut…",o:["Simetris","Asimetris","Hashing","Kompresi"],a:1,e:"Enkripsi simetris memakai satu kunci yang sama bagi kedua pihak."},
+ {k:"r",pg:"Tabel 9.8 (BIS, 2015)",q:"Menurut Tabel 9.8, persentase perusahaan besar (lebih dari 250 staf) yang mengalami insiden keamanan adalah…",o:["31%","74%","90%","100%"],a:2,e:"Perusahaan kecil 74%; insiden terkait staf di perusahaan besar 75%."},
+ {k:"r",pg:"Box 9.7",q:"Menurut Box 9.7, denda dari ICO untuk TalkTalk dibanding perkiraan total biaya peretasan adalah…",o:["£4 juta vs £6 juta","£400.000 vs sekitar £60 juta","£60 juta vs £400.000","Tidak ada denda"],a:1,e:"Ditambah kehilangan lebih dari 100.000 pelanggan dalam beberapa bulan."},
+ {k:"r",pg:"Box 9.7",q:"Menurut Box 9.7, apa yang dilakukan Uber terhadap peretasan yang memengaruhi 57 juta pelanggan dan pengemudi?",o:["Langsung mengumumkannya","Menyembunyikannya selama setahun dan membayar peretas US$100.000 untuk menghapus data","Menutup layanannya","Melaporkan ke polisi di hari yang sama"],a:1,e:"ICO menilai hal ini menimbulkan kekhawatiran besar tentang kebijakan dan etika perlindungan data."}
+]
+};
+
+/* ---------------- classify drills ---------------- */
+var CL={
+level:{o:["Proses bisnis","Aktivitas","Tugas","Subtugas"],it:[
+ ["Pemenuhan pesanan pelanggan (order fulfilment).","Proses bisnis","Level 1: proses utama dalam value chain."],
+ ["Memproses pembayaran pesanan.","Aktivitas","Level 2: bagian dari proses."],
+ ["Memverifikasi status pembayaran di virtual account.","Tugas","Level 3: langkah dalam aktivitas."],
+ ["Mencocokkan nomor referensi transfer dengan nomor pesanan.","Subtugas","Level 4: rincian dari tugas."],
+ ["Pengadaan bahan baku (procurement).","Proses bisnis","Level 1."],
+ ["Meminta penawaran harga dari pemasok.","Aktivitas","Level 2 (mis. 'get bids' pada contoh procure materials)."]
+]},
+arch:{o:["Web server","Merchant server","Personalisation server","Payment commerce server","Catalogue server","CRM server","ERP server"],it:[
+ ["Menerima permintaan http dan mengirim halaman ke peramban.","Web server","Broker pasif ke server lain."],
+ ["Menjalankan logika aplikasi dan menghubungkan semua server lain.","Merchant server","Lokasi utama logika aplikasi."],
+ ["Menampilkan rekomendasi 'mungkin Anda suka' untuk tiap pelanggan.","Personalisation server","Konten yang disesuaikan."],
+ ["Memproses pembayaran kartu dan transaksi aman.","Payment commerce server","Sistem pembayaran."],
+ ["Menampilkan spesifikasi teknis dan foto produk.","Catalogue server","Server manajemen dokumen produk."],
+ ["Menyimpan riwayat keluhan dan kontak pelanggan.","CRM server","Semua kontak pelanggan."],
+ ["Memeriksa ketersediaan stok di gudang saat pemesanan.","ERP server","Stok, harga, pesanan, logistik."]
+]},
+pillar:{o:["Personalisation","Integrity","Expectations","Resolution","Time and effort","Empathy"],it:[
+ ["Aplikasi menyapa pelanggan dengan nama dan menawarkan produk sesuai riwayatnya.","Personalisation","Perhatian individual."],
+ ["Menyampaikan estimasi pengiriman tiga hari, lalu barang tiba dalam dua hari.","Expectations","Menetapkan ekspektasi lalu melampauinya."],
+ ["Pesanan salah kirim segera diganti dan diberi voucher permintaan maaf.","Resolution","Mengubah pengalaman buruk menjadi baik."],
+ ["Checkout satu klik untuk pelanggan lama.","Time and effort","Meminimalkan usaha pelanggan."],
+ ["Agen layanan memberi kelonggaran bagi pelanggan yang sedang tertimpa musibah.","Empathy","Memahami keadaan pelanggan."],
+ ["Perusahaan terbuka mengakui kesalahan tagihan dan mengembalikan kelebihan bayar tanpa diminta.","Integrity","Membangun kepercayaan."]
+]},
+persona:{o:["Demografi","Psikografi","Webografi"],it:[
+ ["Usia 42 tahun, perempuan, lulusan SMA, pedagang warung.","Demografi","Atribut demografis."],
+ ["Ingin belanja stok cepat agar bisa kembali melayani pembeli.","Psikografi","Tujuan dan motivasi."],
+ ["Memakai ponsel Android dengan kuota terbatas, belanja online seminggu sekali.","Webografi","Platform dan frekuensi pemakaian web."],
+ ["Takut tertipu penjual online dan lebih percaya ulasan pembeli lain.","Psikografi","Sikap dan motivasi."],
+ ["Pengalaman memakai aplikasi belanja sekitar enam bulan.","Webografi","Pengalaman web."],
+ ["Manajer pembelian di perusahaan dengan 200 karyawan.","Demografi","Untuk B2B: posisi dan ukuran perusahaan."]
+]},
+hofacker:{o:["Exposure","Attention","Comprehension","Yielding & acceptance","Retention"],it:[
+ ["Iklan banner berganti terlalu cepat sehingga tidak sempat terbaca.","Exposure","Konten harus tampil cukup lama untuk diproses."],
+ ["Pengguna membaca judul dan mengabaikan animasi di samping halaman.","Attention","Banner blindness."],
+ ["Ikon keranjang belanja langsung dipahami tanpa penjelasan.","Comprehension","Standar dan metafora umum memudahkan pemahaman."],
+ ["Klaim produk didukung sumber tepercaya agar pembaca percaya.","Yielding & acceptance","Apakah informasi diterima pengguna?"],
+ ["Kuis interaktif membuat pengguna mengingat merek seminggu kemudian.","Retention","Interaksi dan flow meningkatkan ingatan."]
+]},
+mobile:{o:["Responsive design","Adaptive design","HTML5 web app","Domain mobile terpisah"],it:[
+ ["Satu situs yang kolomnya menyusut otomatis dari tiga menjadi satu di layar ponsel.","Responsive design","CSS media queries."],
+ ["Server mendeteksi ponsel lalu mengirim tata letak khusus dengan tombol 'cari toko terdekat'.","Adaptive design","Tata letak dan fungsi berbeda per perangkat."],
+ ["Penerbit berita membuat aplikasi berbasis peramban agar tidak membayar komisi app store.","HTML5 web app","Contoh FT.com."],
+ ["Konten situs lama disalin ke m.situs.com tanpa terhubung ke sistem back-end.","Domain mobile terpisah","Screen scrape; tidak disarankan."],
+ ["Tata letak dipilih dari tiga breakpoint tetap: 320, 760, dan 960 piksel.","Adaptive design","Layout statis berbasis breakpoint."]
+]},
+secure:{o:["Authentication","Privacy & confidentiality","Integrity","Non-repudiability","Availability"],it:[
+ ["Memastikan situs belanja benar-benar milik toko tersebut lewat sertifikat digital.","Authentication","Apakah pihak itu yang mereka akui?"],
+ ["Nomor kartu dienkripsi agar tidak bisa dibaca saat dikirim.","Privacy & confidentiality","Data transaksi terlindungi."],
+ ["Memastikan jumlah transfer tidak diubah di tengah jalan.","Integrity","Pesan utuh dan tidak rusak."],
+ ["Pembeli tidak bisa menyangkal telah memesan karena pesanannya ditandatangani secara digital.","Non-repudiability","Pengirim tidak bisa menyangkal."],
+ ["Situs tetap bisa diakses saat diserang banjir lalu lintas (DDoS).","Availability","Kesinambungan dan kinerja sistem."]
+]}
+};
+
+/* ---------------- cases ---------------- */
+var CASES=[
+ {id:"c1",t:"Studi Kasus 1 — RS Components: pengalaman pengguna yang lebih baik di pasar B2B",src:"Chaffey et al., Bab 9, Case Study 9.1",
+  body:"<p>RS Components adalah distributor komponen elektronik B2B yang menjual sekitar 500.000 produk dari 2.500 pemasok kepada lebih dari satu juta insinyur, dengan perusahaan operasional di 30 negara. Penjualan online naik dari 15% pada 2004 menjadi 70% penjualan Uni Eropa pada 2015, tetapi pengalaman pengguna menghambat: jutaan pelanggan meninggalkan situs, dan keluhan teratas adalah <b>pencarian di situs</b> dan <b>informasi produk</b>.</p><p>Tujuannya menaikkan konversi keseluruhan 0,5% untuk 110 juta kunjungan pada tahun buku 2015, di 60 situs berbahasa lokal. Dua prinsipnya: <b>berpusat pada pelanggan</b> (proses UX berbasis data) dan <b>kecepatan</b> (agile). Sejak awal 2014, RS menganalisis 6.000 baris umpan balik, survei online, uji pengguna di lab, dan forum internal. Lima area muncul: pencarian, filter, usability, konten, dan adopsi agile.</p><p>Perubahan (Februari 2014–Agustus 2015) mencakup relevansi pencarian, header baru, pencarian prediktif bergambar, kategori populer di atas hasil pencarian, dan filter 70% lebih cepat (memilih empat filter turun dari rata-rata 10 detik menjadi 3,2 detik, dengan kenaikan konversi dari filter pencarian 40%). Ditambah fitur bandingkan produk, <em>express checkout</em> satu klik, <em>remember me</em>, harga dan stok yang lebih jelas, daftar suku cadang favorit, dan perancangan ulang lebih dari 50.000 halaman produk dengan foto studio, lembar data, dan video. Hasilnya, penjualan e-commerce mencapai titik tertinggi dalam 41 bulan, target pendapatan tahun buku 2015 terlampaui 42%, dan pertumbuhan konversi tahunan naik 10%.</p>",
+  qs:[
+   ["Prinsip user-centred design apa yang diterapkan RS Components? Hubungkan dengan riset pengguna, usability (efektif, efisien, memuaskan), dan CXM.","RS memulai dari data pengguna (6.000 umpan balik, survei, uji lab), bukan asumsi internal, sesuai prinsip UCD dan pandangan Bevan bahwa situs harus memenuhi kebutuhan pengguna. Perbaikan menyasar efektivitas (pencarian dan filter yang menemukan produk yang tepat), efisiensi (filter 10 → 3,2 detik, checkout satu klik, remember me), dan kepuasan. Proses agile dan berkelanjutan sesuai CXM sebagai perbaikan terus-menerus, bukan proyek sekali jadi."],
+   ["Buat satu persona pengguna RS Components (insinyur atau manajer pembelian), lengkap dengan atribut demografi, psikografi, dan webografi, lalu tuliskan satu skenario primer use-case 'membeli ulang komponen'.","Contoh persona: Budi, 34, insinyur perawatan di pabrik menengah (demografi); butuh suku cadang cepat agar mesin tidak berhenti, menghindari salah spesifikasi (psikografi); memakai desktop di kantor dan ponsel di lapangan, memesan beberapa kali seminggu (webografi). Skenario primer: masuk (remember me) → buka daftar suku cadang → cek harga dan stok → tambah ke keranjang → express checkout → konfirmasi. Skenario alternatif: stok habis atau nomor komponen tidak ditemukan, lalu memakai pencarian prediktif atau fitur bandingkan."],
+   ["Mengapa perbaikan kecil (filter lebih cepat, checkout satu klik) bisa berdampak besar pada pendapatan B2B? Kaitkan dengan pilar CX 'time and effort', konversi, dan agile.","Pelanggan B2B (mis. UKM yang memakai RS seperti gudang) memesan berkali-kali sehari, sehingga setiap detik dan klik yang dihemat berlipat ganda. Pilar time and effort langsung menaikkan konversi dan loyalitas. Dengan 110 juta kunjungan, kenaikan konversi kecil menghasilkan pendapatan besar. Pendekatan agile memungkinkan perbaikan dirilis dan diukur cepat (empat kali lebih cepat menurut RS), sehingga keputusan berbasis data, bukan opini."]
+  ]},
+ {id:"c2",t:"Studi Kasus 2 — 🇮🇩 PLN Mobile: merancang ulang layanan pelanggan listrik",src:"detikFinance (1 Des 2022); Listrik Indonesia (11 Mei 2025)",
+  body:"<p>PT PLN (Persero) melayani pelanggan listrik di seluruh Indonesia. Menurut PLN, sebelum transformasi aplikasi PLN Mobile hanya diunduh sekitar <b>500 ribu</b> kali dengan rating <b>2,5</b>: tidak bisa membeli token atau membayar tagihan lain, tidak punya fitur pengaduan interaktif, dan penanganan pengaduan belum digital dari ujung ke ujung. Dalam sekitar 2,5 tahun, PLN mendigitalkan proses di pembangkit, transmisi, keuangan, pengadaan, dan layanan pelanggan, sambil menyederhanakan proses bisnis yang disebut Direktur Utama Darmawan Prasodjo \"berbelit\".</p><p>Per Desember 2022, PLN Mobile diunduh lebih dari <b>35 juta</b> pengguna dengan rating sekitar 4,8–4,9. Pengaduan diintegrasikan dengan <b>pusat komando virtual</b> dan optimalisasi petugas pelayanan teknik, sehingga kinerja petugas lapangan yang sebelumnya tidak terukur kini terpantau oleh pelanggan dan manajemen. Porsi kanal pengaduan berbalik: sebelumnya call centre 64% dan PLN Mobile 32%; sesudahnya <b>PLN Mobile 64%</b> dan call centre 31%. Pada Mei 2025, PLN menyebut penggunanya lebih dari <b>85 juta</b>. Pelanggan bisa melacak status layanan secara real time, dari pengaduan hingga permohonan pasang baru, dan program loyalitas dirancang mengikuti analisis perjalanan pelanggan berkala.</p>",
+  qs:[
+   ["Analisis transformasi PLN Mobile dengan konsep pemodelan proses dan workflow management. Mengapa PLN menyederhanakan proses bisnis, bukan sekadar membuat aplikasi baru?","Aplikasi lama hanya antarmuka di atas proses yang berbelit; yang diubah adalah alur pengaduan (workflow): laporan masuk, diteruskan otomatis ke pusat komando virtual, ditugaskan ke petugas, dan statusnya terlacak hingga selesai. Ini mengurangi penundaan dan transportasi informasi (effort duration naik), memberi kontrol proses dan jejak audit (kinerja petugas terukur), dan layanan yang konsisten. Sesuai Bab 9: informasi sebagai 'lem', dan sistem baru hanya bermanfaat bila prosesnya dirancang ulang."],
+   ["Gunakan enam pilar CX untuk menilai PLN Mobile. Pilar mana yang paling kuat, dan pilar mana yang perlu Anda uji lebih jauh sebagai pengguna?","Expectations dan time and effort kuat: pelacakan status real time menetapkan ekspektasi dan mengurangi telepon berulang; pembelian token dan tagihan dalam satu aplikasi menghemat usaha. Resolution terbantu oleh pengaduan digital dan petugas yang terpantau. Personalisation mulai muncul lewat program loyalitas. Yang perlu diuji: integrity (kejelasan tagihan dan poin), empathy (penanganan pelanggan rentan atau tanpa ponsel pintar), dan apakah rating tinggi sejalan dengan pengalaman saat gangguan besar."],
+   ["Kanal pengaduan bergeser dari call centre ke aplikasi. Apa risikonya dari sisi aksesibilitas dan keamanan, dan bagaimana mengelolanya?","Aksesibilitas: pelanggan lansia, penyandang disabilitas, atau tanpa ponsel pintar dan kuota bisa tertinggal, sehingga call centre dan kanal lain tetap perlu dan aplikasi harus memenuhi pedoman aksesibilitas (teks ALT, kontras, navigasi sederhana). Keamanan: aplikasi menyimpan data pribadi dan transaksi puluhan juta pelanggan, sehingga butuh authentication, enkripsi, availability saat lonjakan, dan kepatuhan UU PDP. Pengelolaan: CXM lintas kanal yang terintegrasi, bukan memaksa semua ke satu kanal."]
+  ]},
+ {id:"c3",t:"Studi Kasus 3 — 🇮🇩 Kebocoran data Tokopedia 2020: pelajaran desain keamanan",src:"CNBC Indonesia (7 Mei 2020); SiliconANGLE (3 Mei 2020)",
+  body:"<p>Pada awal Mei 2020, data sekitar <b>91 juta akun</b> pengguna Tokopedia dilaporkan bocor dan ditawarkan di forum peretas. Peretasan diperkirakan terjadi pada Maret 2020. Menurut laporan, data yang terekspos mencakup nama, nama pengguna, email, tanggal lahir, jenis kelamin, lokasi, nomor telepon, dan <b>password yang di-hash</b>.</p><p>Tokopedia menyatakan menemukan upaya pencurian data, tetapi informasi penting seperti password tetap terlindungi enkripsi, data pembayaran (kartu debit, kartu kredit, OVO) aman, dan ada keamanan berlapis termasuk OTP real time yang hanya bisa diakses pemilik akun. Tokopedia menyarankan pengguna rutin mengganti password. Pada 7 Mei 2020, Komunitas Konsumen Indonesia menggugat Tokopedia dan Menteri Komunikasi dan Informatika ke PN Jakarta Pusat, menuntut denda administratif Rp100 miliar, dengan dalil sistem keamanan tidak memadai dan pengawasan pemerintah lemah. Saat itu Indonesia belum memiliki undang-undang pelindungan data pribadi; UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi baru disahkan dua tahun kemudian.</p>",
+  qs:[
+   ["Petakan insiden ini ke lima kebutuhan keamanan transaksi di buku (authentication, privacy, integrity, non-repudiability, availability). Kebutuhan mana yang dilanggar, dan mana yang menurut Tokopedia masih terlindungi?","Yang terutama dilanggar: privacy dan confidentiality (data pribadi 91 juta akun terekspos). Yang diklaim masih terlindungi: password (di-hash) dan data pembayaran, serta authentication lewat OTP sehingga pengambilalihan akun lebih sulit. Integrity dan availability tidak menjadi isu utama. Risiko lanjutan: data pribadi dipakai untuk phishing dan rekayasa sosial, sehingga authentication pengguna lain bisa terancam."],
+   ["Berdasarkan sembilan langkah NCSC dan kasus TalkTalk di buku, langkah desain keamanan apa yang seharusnya mencegah atau membatasi dampak kebocoran seperti ini?","Kelola hak akses (membatasi akses ke basis data pengguna), pemantauan untuk mendeteksi aktivitas tidak biasa sejak Maret, perbarui dan uji kerentanan secara rutin (penetration testing), enkripsi data pribadi saat disimpan, bukan hanya password (pelajaran TalkTalk: 'mengapa data tidak dienkripsi?'), serta manajemen insiden: rencana respons, pemberitahuan kepada pengguna dan regulator, dan saran tindakan. Edukasi pengguna juga penting agar waspada phishing."],
+   ["Bagaimana kebocoran data memengaruhi pengalaman pelanggan dan merek? Kaitkan dengan pilar CX integrity, dimensi trust (Christodoulides dkk.), dan cara 'meyakinkan pelanggan' di buku.","Kepercayaan adalah bagian dari ekuitas merek online ('saya percaya data pribadi saya aman'). Kebocoran merusak pilar integrity dan bisa menurunkan sentimen, seperti grafik TalkTalk. Cara memulihkan: komunikasi yang terbuka dan cepat (bukan menutupi seperti Uber), penjelasan langkah keamanan, jaminan bagi pelanggan, sertifikasi pihak ketiga, dan perbaikan nyata yang bisa diverifikasi. Kini UU PDP juga mewajibkan pemberitahuan kegagalan pelindungan data."]
+  ]},
+ {id:"c4",t:"Studi Kasus 4 — 🇮🇩 Latihan individu: analisis UX/UI situs e-commerce lokal",src:"Latihan sesuai RPS Minggu 12",noans:true,
+  body:"<p>Pilih <b>satu situs atau aplikasi e-commerce lokal Indonesia</b> (marketplace, toko online merek lokal, layanan pesan-antar, atau toko UMKM) yang belum dipakai teman sekelompok Anda. Kerjakan satu tugas nyata seperti pengguna baru: cari produk tertentu, bandingkan dua pilihan, lalu jalankan proses sampai halaman pembayaran (tidak perlu membayar). Catat waktu, jumlah klik, dan hambatan yang Anda temui.</p><p>Gunakan <b>kalkulator uji usability (Unit 4)</b> dan <b>kalkulator kedalaman navigasi (Unit 5)</b> bila membantu. Lampirkan tangkapan layar pada laporan yang dikumpulkan ke dosen.</p>",
+  qs:[
+   ["Definisikan satu primary persona untuk situs yang Anda pilih (demografi, psikografi, webografi) dan tulis skenario primer tugas yang Anda uji.",""],
+   ["Evaluasi situs itu dengan prinsip UCD: usability (efektif, efisien, memuaskan), information architecture dan navigasi (di mana saya, ke mana saya pergi), desain halaman dan konten, versi mobile, serta isyarat kepercayaan dan keamanan.",""],
+   ["Identifikasi tiga area perbaikan yang paling berdampak, urutkan prioritasnya, dan untuk masing-masing jelaskan prinsip UCD yang dilanggar, usulan perbaikan, serta cara mengukur keberhasilannya.",""]
+  ]}
+];
+
+var LO_NAMES={1:"Analisis & pemodelan proses",2:"Data, Big Data & arsitektur",3:"UX & manajemen CX",4:"Usability, persona & use-case",5:"Information architecture & desain situs",6:"Desain mobile & aksesibilitas",7:"Desain keamanan"};
+
+/* ---------------- self-test bank ---------------- */
+var FINAL=[
+ [1,"Menurut buku, mengapa analisis dan desain penting meski strategi sudah efektif?",["Karena desain menentukan harga","Karena eksekusi strategi bisa hancur oleh analisis dan desain yang buruk","Karena analisis menggantikan strategi","Karena hanya diwajibkan auditor"],1,"Lihat Activity 9.1."],
+ [1,"Workflow management didefinisikan sebagai…",["Pembuatan situs web","Otomatisasi proses bisnis, di mana dokumen, informasi, atau tugas berpindah antarpartisipan menurut aturan prosedural","Analisis keuangan","Pemasaran email"],1,"Definisi WfMC (1996)."],
+ [1,"Contoh workflow produksi (bukan administratif) adalah…",["Pemesanan cuti karyawan","Basis data dukungan pelanggan berbasis extranet yang terhubung dengan sistem pemasok","Pemesanan pelatihan staf","Pengelolaan pesanan pembelian internal"],1,"Workflow produksi berhadapan dengan pelanggan atau pemasok."],
+ [1,"Kelebihan flow process chart menurut buku adalah…",["Sangat formal untuk sistem ERP","Mudah dipahami staf non-teknis dan menyoroti hambatan serta inefisiensi","Hanya bisa dibuat programmer","Menggantikan basis data"],1,"Network diagram dan EPC lebih formal."],
+ [1,"Dalam network diagram, simpul tempat hanya satu jalur dipilih dari beberapa alternatif disebut…",["AND node","OR node","Join node","Primary key"],1,"AND node: beberapa jalur bisa diikuti."],
+ [1,"Tiga tahap validasi model proses menurut Taylor (1995) adalah…",["Plan, do, check","Talk-through, walk-through, run-through","Design, build, test","Reach, act, convert"],1,"Run-through adalah pemeriksaan kualitas tanpa debugging di tempat."],
+ [2,"Dalam pemodelan ER, 'pelanggan', 'pesanan', dan 'produk' adalah…",["Atribut","Entitas","Record","Field"],1,"Setiap entitas menjadi tabel."],
+ [2,"Kelemahan social sign-in yang dipakai secara sederhana adalah…",["Menambah hambatan pendaftaran","Tidak ada data profil pengguna yang terkumpul","Tidak aman sama sekali","Hanya untuk B2B"],1,"Kelebihannya menurunkan hambatan masuk."],
+ [2,"Dalam 4V Big Data, kemampuan memanfaatkan data secara real time (mis. mendeteksi penipuan) adalah…",["Volume","Variety","Velocity","Veracity"],2,"Box 9.3."],
+ [2,"Dalam arsitektur three-tier, tier kedua berisi…",["Tampilan di klien","Logika aplikasi dan aturan bisnis","Basis data","Jaringan internet"],1,"Tier ketiga adalah server basis data."],
+ [2,"Arsitektur di mana sebagian besar pemrosesan dilakukan di server sehingga program di perangkat pengguna kecil disebut…",["Fat client","Thin client","Peer-to-peer","Mainframe"],1,"Contohnya aplikasi SaaS berbasis peramban."],
+ [2,"Saran buku untuk menyederhanakan integrasi banyak server adalah…",["Menambah vendor sebanyak mungkin","Mengurangi jumlah pemasok komponen","Tidak memakai ERP","Memindahkan semua ke klien"],1,"Seperti dibahas di Bab 8 tentang CRM."],
+ [3,"Menurut Bevan (1999), situs yang tidak memenuhi kebutuhan pengguna…",["Tetap bisa sukses bila murah","Tidak akan memenuhi kebutuhan organisasi pemiliknya","Hanya bermasalah di B2B","Bisa diperbaiki dengan iklan"],1,"Inti user-centred design."],
+ [3,"Mana yang BUKAN pendorong perluasan UX menjadi CXM menurut buku?",["Pemakaian ponsel dan beberapa layar","Belanja multichannel","Integrasi layanan pelanggan online dan offline","Berkurangnya pemakaian media sosial"],3,"Media sosial justru bagian dari platform CXM."],
+ [3,"Enam pilar keunggulan pengalaman pelanggan adalah personalisation, integrity, expectations, resolution, time and effort, dan…",["Price","Empathy","Speed","Loyalty"],1,"Lihat Ringkasan Bab 9 poin 5."],
+ [3,"Salah satu dari sepuluh tips implementasi CX (Econsultancy, 2017) adalah…",["Fokus per kanal secara terpisah","Teknologi adalah alat, bukan solusi","Hindari kepemimpinan CEO","Mulai nanti setelah teknologi siap"],1,"Tips lain: runtuhkan fokus per kanal, berpusat pada perjalanan pelanggan."],
+ [3,"Menurut Box 9.5, risiko 'design is seen as a service' adalah…",["Desain dipakai secara ad hoc, bertentangan dengan konsep user-centred design","Desain terlalu strategis","Terlalu banyak desainer","Desain terlalu mahal"],0,"Tingkat tertinggi menurut Design Council adalah desain strategis."],
+ [4,"Menurut standar ISO, usability adalah sejauh mana produk dapat dipakai untuk mencapai tujuan dengan…",["Murah, cepat, indah","Efektif, efisien, dan memuaskan dalam konteks pemakaian tertentu","Aman, stabil, terjangkau","Inovatif dan viral"],1,"Bevan: efektivitas, produktivitas, kepuasan."],
+ [4,"Teknik yang menampilkan peta panas (heatmap) ke mana mata pengguna paling sering melihat adalah…",["Card sorting","Eyetracking","Effort duration analysis","EPC"],1,"Dipakai dalam focus group atau pengujian jarak jauh."],
+ [4,"Primary persona menurut Wodtke (2002) adalah…",["Pengguna paling ahli","Tipe pengguna umum yang penting bagi bisnis sekaligus paling menantang dari sisi desain","Pengguna yang paling jarang datang","Pemilik perusahaan"],1,"Bila primary persona terpuaskan, yang lain kemungkinan ikut terpuaskan."],
+ [4,"Dalam analisis use-case, 'aktor' adalah…",["Bagian dari sistem","Orang, perangkat lunak, atau perangkat yang berinteraksi dengan sistem","Tabel basis data","Halaman web"],1,"Satu karyawan dengan dua peran digambarkan sebagai dua aktor."],
+ [4,"Skenario primer use-case menggambarkan…",["Jalur ketika terjadi kesalahan","Jalur khas ketika tidak ada yang salah","Skenario pembatalan","Skenario serangan siber"],1,"Skenario alternatif mencakup batal dan kesalahan input."],
+ [4,"Skenario pelanggan menurut Seybold adalah…",["Daftar harga","Serangkaian tugas yang ingin atau perlu dilakukan pelanggan untuk mencapai hasil yang diinginkan","Iklan TV","Rencana anggaran"],1,"Setiap persona bisa memiliki beberapa skenario."],
+ [5,"Information architecture didefinisikan sebagai gabungan skema…",["Harga, produk, tempat","Organisasi, pelabelan, dan navigasi","Server, klien, basis data","Warna, huruf, gambar"],1,"Rosenfeld dan Morville (2002)."],
+ [5,"Card sorting bertujuan…",["Menguji keamanan","Membuat kategori dan label mengikuti cara berpikir pengguna, bukan perancang","Menghitung biaya","Membuat iklan"],1,"Hasilnya dipetakan ke spreadsheet untuk menemukan istilah dan relasi terpopuler."],
+ [5,"Manfaat CSS menurut buku antara lain…",["Membuat situs lebih lambat","Unduhan lebih cepat, pengembangan efisien, pemeliharaan mudah, interoperabilitas, dan aksesibilitas","Menggantikan basis data","Menghapus kebutuhan desainer"],1,"Gaya cukup diunduh sekali untuk banyak halaman."],
+ [5,"Navigasi broad and shallow berarti…",["Sedikit pilihan, banyak klik","Banyak pilihan, sedikit klik","Tanpa menu","Hanya pencarian"],1,"Cocok untuk situs besar dan aturan tiga klik."],
+ [5,"Istilah Nielsen untuk pengguna yang tiba di tengah struktur situs, bukan di beranda, adalah…",["Bounce","Deep linking","Flow","Persona"],1,"Setiap halaman perlu konteks navigasi yang jelas."],
+ [5,"Model perilaku Fogg (2009) menyatakan perilaku terjadi bila hadir bersamaan…",["Harga, produk, tempat","Motivasi, kemampuan, dan pemicu","Volume, kualitas, nilai","Iklan, PR, promosi"],1,"Dipakai untuk persuasive design."],
+ [5,"Saran buku untuk menulis konten web adalah…",["Lebih panjang dari brosur","Lebih ringkas, dipotong per 5–6 baris, memakai daftar dan judul, tanpa jargon internal","Semua dalam satu paragraf","Memakai banyak singkatan"],1,"Pengguna memindai, bukan membaca."],
+ [6,"Kelebihan adaptive design dibanding responsive design adalah…",["Lebih murah","Bisa menambah atau menghapus fungsi sesuai kemampuan perangkat dan niat pengguna","Tidak perlu server","Satu tata letak untuk semua"],1,"Tata letak dipilih berdasarkan breakpoint."],
+ [6,"Opsi situs mobile yang TIDAK disarankan buku adalah…",["Responsive design","Adaptive design","HTML5 web app","Domain mobile terpisah tanpa integrasi back-end (screen scrape)"],3,"Biaya pemeliharaan ganda dan minim diferensiasi."],
+ [6,"Menurut buku, app store mengenakan komisi sekitar…",["3%","10%","30%","70%"],2,"Juga 30% untuk produk dan langganan dalam aplikasi."],
+ [6,"Mana yang BUKAN argumen bisnis untuk aksesibilitas menurut buku?",["Jumlah penyandang gangguan penglihatan","Variasi peramban dan resolusi layar","Lebih banyak pengunjung dari mesin pencari","Menghemat biaya server"],3,"Argumen keempat: kewajiban hukum."],
+ [6,"Quick tip WAI untuk tautan adalah…",["Pakai 'klik di sini'","Pakai teks yang tetap bermakna bila dibaca di luar konteks","Pakai gambar tanpa teks","Sembunyikan tautan"],1,"Screen reader sering membacakan daftar tautan."],
+ [7,"Menurut sembilan langkah NCSC, password yang baik…",["Ditulis di kertas agar tidak lupa","Memuat huruf besar dan kecil, angka, dan simbol, serta tidak dibagi antarpengguna","Sama untuk semua akun","Hanya angka"],1,"Batasi juga hak admin."],
+ [7,"Siklus yang direkomendasikan ISO 17799 untuk manajemen keamanan adalah…",["Plan, do, check, act","Reach, act, convert, engage","Situation, objectives, strategy","Attention, interest, desire, action"],0,"Kini ISO/IEC 27002."],
+ [7,"Daftar semua aset informasi organisasi beserta nilai dan pemiliknya disebut…",["Firewall","Information asset register (IAR)","VPN","Certificate authority"],1,"Bagian 3 BS 7799: klasifikasi dan kontrol aset."],
+ [7,"Pihak ketiga tepercaya yang menerbitkan sertifikat digital disebut…",["Merchant","Certificate authority (CA)","Electronic token issuer","ISP"],1,"Bagian dari public-key infrastructure (PKI)."],
+ [7,"Jaringan privat yang berjalan di atas infrastruktur internet publik dengan 'tunnelling' disebut…",["LAN","VPN","Extranet","CDN"],1,"Lebih murah daripada jaringan privat khusus."],
+ [7,"Mana yang BUKAN cara Amazon meyakinkan pelanggan soal keamanan menurut buku?",["Jaminan pembelian","Penjelasan langkah keamanan SSL","Menekankan langkanya penipuan","Menyembunyikan informasi keamanan agar tidak menakutkan"],3,"Amazon justru menonjolkan informasi keamanan di menu utama."]
+];
+
+var RUB={
+ c1_0:{need:3,cr:[
+  ["Riset pengguna","umpan balik|survei|lab|data pengguna|riset","Bagaimana RS memahami pengguna?"],
+  ["Efektif/efisien/puas","efektif|efisien|puas|kepuasan|3,2|detik|satu klik","Kaitkan dengan tiga ukuran usability."],
+  ["CXM berkelanjutan","cxm|berkelanjutan|terus-menerus|agile|iteratif","Mengapa ini CXM, bukan proyek sekali jadi?"],
+  ["UCD","ucd|user-centred|user-centered|berpusat pada pengguna|bevan","Sebut prinsip UCD."]],
+  self:["Saya memakai bukti angka dari kasus"]},
+ c1_1:{need:3,cr:[
+  ["Demografi","usia|insinyur|manajer|perusahaan|demografi","Atribut demografi?"],
+  ["Psikografi","tujuan|motivasi|butuh|takut|psikografi","Atribut psikografi?"],
+  ["Webografi","desktop|ponsel|frekuensi|pengalaman|webografi","Atribut webografi?"],
+  ["Skenario","skenario|langkah|checkout|keranjang|alternatif","Tulis skenario primer dan alternatif."]],
+  self:["Persona saya cukup spesifik untuk memandu desain"]},
+ c1_2:{need:3,cr:[
+  ["Time and effort","time and effort|waktu|usaha|klik","Kaitkan dengan pilar time and effort."],
+  ["Volume B2B","berkali-kali|sering|ukm|gudang|110 juta|kunjungan","Mengapa efeknya berlipat?"],
+  ["Konversi","konversi|conversion|pendapatan","Bagaimana dampaknya ke konversi?"],
+  ["Agile","agile|cepat|iterasi|data","Apa peran agile?"]],
+  self:["Saya menjelaskan mekanisme, bukan hanya hasil"]},
+ c2_0:{need:3,cr:[
+  ["Workflow","workflow|alur|otomatis|pusat komando|ditugaskan","Bagaimana workflow berubah?"],
+  ["Proses dirancang ulang","berbelit|sederhana|rancang ulang|re-engineering|proses bisnis","Mengapa proses yang diubah?"],
+  ["Pelacakan & kontrol","lacak|status|terukur|kinerja petugas|audit","Apa manfaat kontrolnya?"],
+  ["Efisiensi","menunggu|penundaan|cepat|effort duration","Bagaimana efisiensinya naik?"]],
+  self:["Saya membedakan aplikasi (antarmuka) dan proses di baliknya"]},
+ c2_1:{need:3,cr:[
+  ["Pilar kuat","expectations|time and effort|resolution","Pilar mana yang kuat?"],
+  ["Bukti","lacak|real time|token|tagihan|pengaduan|rating","Apa buktinya?"],
+  ["Pilar diuji","integrity|empathy|personalisation|uji","Pilar mana yang perlu diuji?"]],
+  self:["Saya menilai sebagai pengguna, bukan hanya mengulang klaim perusahaan"]},
+ c2_2:{need:3,cr:[
+  ["Aksesibilitas","lansia|disabilitas|aksesibilitas|ponsel pintar|kuota","Apa risiko aksesibilitasnya?"],
+  ["Keamanan","keamanan|data pribadi|enkripsi|authentication|availability|pdp","Apa risiko keamanannya?"],
+  ["Kanal lain","call centre|kanal|lintas kanal|cxm|omnichannel","Bagaimana kanal lain dikelola?"]],
+  self:["Saya mengusulkan pengelolaan, bukan hanya risiko"]},
+ c3_0:{need:3,cr:[
+  ["Privacy dilanggar","privacy|privasi|confidentiality|data pribadi","Kebutuhan mana yang dilanggar?"],
+  ["Klaim terlindungi","password|hash|pembayaran|otp","Apa yang diklaim terlindungi?"],
+  ["Authentication","authentication|otp|identitas","Bagaimana posisi authentication?"],
+  ["Risiko lanjutan","phishing|rekayasa sosial|penipuan","Apa risiko lanjutannya?"]],
+  self:["Saya membedakan apa yang bocor dan apa yang diklaim aman"]},
+ c3_1:{need:3,cr:[
+  ["Hak akses","hak akses|akses|privilege","Bagaimana hak akses dikelola?"],
+  ["Pemantauan","pemantauan|monitoring|deteksi","Bagaimana deteksi dini?"],
+  ["Enkripsi","enkripsi|encrypt|talktalk","Kaitkan dengan pelajaran TalkTalk."],
+  ["Manajemen insiden","insiden|pemberitahuan|respons|rencana","Bagaimana manajemen insidennya?"]],
+  self:["Langkah saya diambil dari sembilan langkah NCSC"]},
+ c3_2:{need:3,cr:[
+  ["Trust/integrity","kepercayaan|trust|integrity|percaya","Bagaimana kepercayaan terdampak?"],
+  ["Ekuitas merek","merek|reputasi|sentimen|ekuitas","Bagaimana merek terdampak?"],
+  ["Meyakinkan pelanggan","terbuka|jaminan|sertifikasi|komunikasi|transparan","Bagaimana memulihkannya?"],
+  ["Uber/TalkTalk","uber|talktalk|menutupi","Bandingkan dengan kasus buku."]],
+  self:["Saya mengaitkan keamanan dengan pengalaman pelanggan"]},
+ c4_0:{need:3,cr:[
+  ["Persona","persona|usia|tujuan|ponsel|pengalaman","Definisikan persona."],
+  ["Tiga atribut","demografi|psikografi|webografi","Sebut ketiga kelompok atribut."],
+  ["Skenario","skenario|langkah|tugas","Tulis skenario primer."]],
+  self:["Persona saya realistis untuk situs yang saya pilih"]},
+ c4_1:{need:3,cr:[
+  ["Usability","efektif|efisien|puas|klik|detik|waktu","Ukur usability."],
+  ["Navigasi/IA","navigasi|menu|kategori|di mana saya|information architecture","Nilai navigasi dan IA."],
+  ["Mobile/konten","mobile|ponsel|konten|judul|teks","Nilai versi mobile dan konten."],
+  ["Kepercayaan","kepercayaan|keamanan|https|ulasan|jaminan","Nilai isyarat kepercayaan."]],
+  self:["Evaluasi saya didukung catatan waktu, klik, dan tangkapan layar"]},
+ c4_2:{need:3,cr:[
+  ["Tiga area","pertama|kedua|ketiga|1|2|3","Sebut tiga area perbaikan."],
+  ["Prinsip dilanggar","prinsip|melanggar|ucd|nielsen|hofacker","Prinsip UCD apa yang dilanggar?"],
+  ["Usulan & ukuran","usul|perbaikan|ukur|konversi|a/b|metrik","Bagaimana perbaikan dan ukurannya?"]],
+  self:["Prioritas saya didasarkan pada dampak bagi pengguna"]}
+};
+var CONN=["karena","sehingga","akibatnya","oleh karena itu","maka","sebab","menyebabkan","artinya","dengan demikian","namun","tetapi","sedangkan","jika","agar","membuat","berdampak","because","therefore"];
+var LV=["Belum terlihat","Perlu diperkuat","Cukup","Baik","Sangat baik"];
+
+/* ---------------- glossary ---------------- */
+var GLOSS=[
+ ["Process mapping","Mengidentifikasi lokasi dan penanggung jawab proses dalam organisasi"],
+ ["Task analysis","Identifikasi tugas, urutan, dan pemecahannya"],
+ ["Workflow management","Otomatisasi aliran informasi menurut aturan prosedural"],
+ ["Effort duration analysis","Waktu kerja aktual ÷ total durasi proses"],
+ ["EPC","Event-driven process chain: model proses yang dipopulerkan SAP R/3"],
+ ["Entity / attribute","Kelompok data (tabel) / karakteristik (field)"],
+ ["Primary / secondary key","Pengidentifikasi unik record / penaut ke primary key tabel lain"],
+ ["4V Big Data","Volume, variety, velocity, veracity"],
+ ["Three-tier client-server","Klien (tampilan), server aplikasi (logika), server basis data"],
+ ["Thin client","Perangkat akses dengan kebutuhan pemrosesan dan penyimpanan minimal"],
+ ["User-centred design (UX)","Desain yang mengoptimalkan pengalaman pengguna dari semua faktor"],
+ ["CXM","Customer experience management: UX di semua titik sentuh dan konteks"],
+ ["Enam pilar CX","Personalisation, integrity, expectations, resolution, time and effort, empathy"],
+ ["Usability","Efektif, efisien, dan memuaskan dalam konteks pemakaian"],
+ ["Expert review","Analisis desain oleh ahli usability"],
+ ["Usability testing","Pengguna representatif diamati mengerjakan tugas representatif"],
+ ["Eyetracking","Peta panas dan jejak pandangan pengguna di layar"],
+ ["Persona","Gambaran ringkas karakteristik, kebutuhan, motivasi pengguna khas"],
+ ["Primary persona","Pengguna umum yang penting bagi bisnis dan paling menantang secara desain"],
+ ["Use-case / actor","Urutan transaksi aktor dengan sistem / pihak yang berinteraksi dengan sistem"],
+ ["Information architecture","Skema organisasi, pelabelan, dan navigasi"],
+ ["Card sorting","Pengguna mengelompokkan kartu agar kategori sesuai cara pikir mereka"],
+ ["Blueprint / wireframe","Hubungan antarhalaman / kerangka tata letak satu halaman"],
+ ["Broad & shallow / narrow & deep","Banyak pilihan sedikit klik / sedikit pilihan banyak klik"],
+ ["Deep linking","Pengguna tiba di tengah struktur situs"],
+ ["Responsive / adaptive design","Tata letak menyesuaikan layar / tata letak dipilih per perangkat"],
+ ["Aksesibilitas (WAI A/AA/AAA)","Situs bisa dipakai semua orang; tiga tingkat prioritas"],
+ ["Lima kebutuhan keamanan","Authentication, privacy, integrity, non-repudiability, availability"],
+ ["Enkripsi simetris / asimetris","Satu kunci bersama / pasangan kunci publik-privat"],
+ ["Certificate authority","Pihak ketiga tepercaya penerbit sertifikat digital"]
+];
+
+/* ================= render: sidebar & plan ================= */
+var NAV=[["grp","Mulai"],["home","Beranda","⌂"],["grp","Analisis & Arsitektur"],["u1"],["u2"],["grp","CX, Usability & Desain"],["u3"],["u4"],["u5"],["grp","Mobile & Keamanan"],["u6"],["u7"],["grp","Penerapan & Evaluasi"],["cases","Studi Kasus","📂"],["final","Kuis Akhir","🏁"],["cards","Flashcard","🃏"],["notes","Catatan & Referensi","📝"]];
+function renderSide(){
+  var h="";
+  NAV.forEach(function(n){
+    if(n[0]==="grp"){h+='<div class="grp">'+n[1]+'</div>';return}
+    var u=UNITS.filter(function(x){return x.id===n[0]})[0];
+    if(u){var i=UNITS.indexOf(u)+1;h+='<a href="#'+u.id+'" data-nav="'+u.id+'" class="'+(S.done[u.id]?"done":"")+'"><span class="n">'+(S.done[u.id]?"✓":i)+'</span>'+u.t+'</a>'}
+    else{var dn=(n[0]==="final"&&S.final&&S.final.best>=80)||(n[0]==="cases"&&casesDone()); h+='<a href="#'+n[0]+'" data-nav="'+n[0]+'" class="'+(dn?"done":"")+'"><span class="n ico">'+(dn?"✓":n[2])+'</span>'+n[1]+'</a>'}
+  });
+  $("#side").innerHTML=h; markNav();
+  var pb="";UNITS.forEach(function(u,i){pb+='<tr><td>'+(i+1)+'</td><td><a href="#'+u.id+'">'+u.t+'</a></td><td>'+u.pg+'</td><td class="st '+(S.done[u.id]?"y":"n")+'">'+(S.done[u.id]?"✓ selesai":(S.read[i+1]?"dibaca":"—"))+'</td></tr>'});
+  pb+='<tr><td>'+(UNITS.length+1)+'</td><td><a href="#cases">Studi kasus ('+CASES.length+')</a></td><td>—</td><td class="st '+(casesDone()?"y":"n")+'">'+(casesDone()?"✓ selesai":"—")+'</td></tr>';
+  pb+='<tr><td>'+(UNITS.length+2)+'</td><td><a href="#final">Kuis akhir</a></td><td>—</td><td class="st '+(S.final&&S.final.best>=80?"y":"n")+'">'+(S.final?("terbaik "+S.final.best+"%"):"—")+'</td></tr>';
+  $("#planBody").innerHTML=pb;
+}
+function casesDone(){var n=0;CASES.forEach(function(c){c.qs.forEach(function(q,i){if((S.notes[c.id+"_"+i]||"").trim().length>=40)n++})});var t=0;CASES.forEach(function(c){t+=c.qs.length});return n>=t}
+function updateProgress(){
+  var tot=UNITS.length+2,d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  if(casesDone())d++; if(S.final&&S.final.best>=80)d++;
+  var p=Math.round(d/tot*100);$("#progBar").style.width=p+"%";$("#progLbl").textContent=p+"%";
+}
+
+/* ================= quizzes ================= */
+function seededOrder(key,n){var h=2166136261;for(var c=0;c<key.length;c++){h^=key.charCodeAt(c);h=Math.imul(h,16777619)}var a=[];for(var i=0;i<n;i++)a.push(i);for(var k=n-1;k>0;k--){h=Math.imul(h^(h>>>15),2246822507)>>>0;var r=h%(k+1),x=a[k];a[k]=a[r];a[r]=x}return a}
+function renderQuiz(box,uid){
+  var qs=QZ[uid], h='<div class="lockmsg"><div>🔒 <b>Soal terkunci.</b><br>Baca subbab buku yang ditunjuk, lalu centang "Saya sudah membaca" di atas.</div></div><div class="qbody">';
+  qs.forEach(function(q,i){
+    h+='<div class="q" data-qi="'+i+'"><span class="kind '+(q.k==="r"?"rb":"")+'">'+(q.k==="r"?"📖 Cek bacaan · "+q.pg:"Konsep")+'</span><div class="qt">'+(i+1)+'. '+esc(q.q)+'</div><div class="opts">';
+    seededOrder(uid+"_"+i,q.o.length).forEach(function(j,pos){h+='<button class="opt" data-j="'+j+'"><span class="L">'+"ABCD"[pos]+'</span><span>'+esc(q.o[j])+'</span></button>'});
+    h+='</div><div class="fbx"></div></div>';
+  });
+  h+='<div class="score" id="sc_'+uid+'"></div></div>';
+  box.innerHTML=h;
+  $$(".q",box).forEach(function(qe){
+    var i=+qe.dataset.qi;
+    $$(".opt",qe).forEach(function(b){b.addEventListener("click",function(){answer(uid,i,+b.dataset.j,qe)})});
+    var prev=S.q[uid+"_"+i]; if(prev!=null) paint(uid,i,prev,qe);
+  });
+  lockState(box,uid); scoreUnit(uid);
+}
+function answer(uid,i,j,qe){S.q[uid+"_"+i]=j;paint(uid,i,j,qe);scoreUnit(uid);save();}
+function paint(uid,i,j,qe){
+  var q=QZ[uid][i],ok=j===q.a;
+  $$(".opt",qe).forEach(function(b){var k=+b.dataset.j;b.disabled=true;b.classList.remove("ok","no");if(k===j)b.classList.add(ok?"ok":"no");if(ok&&k===q.a)b.classList.add("ok")});
+  var fb=$(".fbx",qe);
+  fb.innerHTML='<div class="fb '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat.")+'</b>'+(ok?esc(q.e):(q.k==="r"?"Buka kembali "+q.pg+", dan cari bagian yang relevan.":"Baca ulang ringkasan di atas, lalu coba lagi."))+'</div>'+(ok?"":'<button class="retry">Coba lagi</button>');
+  var r=$(".retry",fb); if(r) r.addEventListener("click",function(){delete S.q[uid+"_"+i];save();$$(".opt",qe).forEach(function(b){b.disabled=false;b.classList.remove("ok","no")});fb.innerHTML="";scoreUnit(uid)});
+}
+function scoreUnit(uid){
+  var qs=QZ[uid],c=0;qs.forEach(function(q,i){if(S.q[uid+"_"+i]===q.a)c++});
+  var el=$("#sc_"+uid); if(el) el.textContent=c+" / "+qs.length+" benar"+(c===qs.length?" · Unit selesai ✓":"");
+  var was=!!S.done[uid]; S.done[uid]=c===qs.length;
+  if(S.done[uid]&&!was){toast("Unit selesai! 🎉");} if(was!==S.done[uid]){save();renderSide();}
+}
+function lockState(box,uid){var n=+uid.slice(1);box.classList.toggle("locked",!S.read[n])}
+
+/* ================= classify ================= */
+function renderClassify(el){
+  var key=el.dataset.widget,w=CL[key],h='';
+  w.it.forEach(function(it,i){
+    h+='<div class="it" data-i="'+i+'"><p>'+esc(it[0])+'</p><div class="chips">';
+    w.o.forEach(function(o){h+='<button class="chip" data-o="'+esc(o)+'">'+esc(o)+'</button>'});
+    h+='</div><div class="why"></div></div>';
+  });
+  h+='<div class="score" style="margin-top:10px"></div>';
+  el.insertAdjacentHTML("beforeend",h);
+  $$(".it",el).forEach(function(row){
+    var i=+row.dataset.i;
+    $$(".chip",row).forEach(function(c){c.addEventListener("click",function(){
+      var it=w.it[i],ok=c.dataset.o===it[1];
+      if(ok){S.cls[key+"_"+i]=1;paintCls(row,it,true);save();clsScore(el,key)}
+      else{c.classList.add("no");c.disabled=true;$(".why",row).textContent="Belum tepat. Coba pilihan lain.";}
+    })});
+    if(S.cls[key+"_"+i])paintCls(row,w.it[i],true);
+  });
+  clsScore(el,key);
+}
+function paintCls(row,it,ok){$$(".chip",row).forEach(function(c){c.disabled=true;c.classList.remove("no");if(c.dataset.o===it[1])c.classList.add("ok")});$(".why",row).innerHTML="✓ "+esc(it[2])}
+function clsScore(el,key){var w=CL[key],c=0;w.it.forEach(function(_,i){if(S.cls[key+"_"+i])c++});$(".score",el).textContent=c+" / "+w.it.length+" tepat"}
+
+/* ================= widget topik 12 ================= */
+function n2(x,d){return x.toLocaleString("id-ID",{maximumFractionDigits:d==null?1:d})}
+function dur(m){return m>=1440?n2(m/1440,1)+" hari":m>=60?n2(m/60,1)+" jam":n2(m,0)+" menit"}
+/* Effort duration analysis */
+function edTool(){
+  if(!$("#edW"))return;
+  var P={inv:[60,7200],wf:[30,240]};
+  function upd(){
+    var w=Math.max(0,+$("#edW").value||0),d=Math.max(1,+$("#edD").value||1),e=Math.min(100,w/d*100);
+    var msg=e<5?'Sebagian besar durasi habis untuk menunggu dan memindahkan berkas, seperti contoh faktur di Activity 9.2. Workflow digital (tugas otomatis masuk antrean orang yang tepat, dokumen dipindai, persetujuan di ponsel) memangkas waktu tunggu tanpa harus mempercepat pekerjaannya sendiri.':e<30?'Masih banyak waktu tunggu. Petakan proses dengan flow process chart dan tandai langkah penundaan, transportasi, dan inspeksi yang bisa dihapus atau dijalankan paralel.':'Proses cukup efisien. Langkah berikutnya: tanyakan aktivitas mana yang benar-benar menambah nilai bagi pelanggan, bukan sekadar administratif.';
+    $("#edRes").innerHTML='<big>Efisiensi '+n2(e,e<1?2:1)+'%</big>Waktu kerja '+dur(w)+' dari total '+dur(d)+'; sisanya '+dur(Math.max(0,d-w))+' adalah menunggu atau berpindah.<div class="vsbar"><i style="width:'+Math.max(e,0.6)+'%"></i></div><p class="hint" style="margin:6px 0 0">'+msg+'</p>';
+    S.notes.ed_sum="Efisiensi "+n2(e,1)+"% ("+dur(w)+" dari "+dur(d)+")";
+  }
+  $$("#edTool [data-ed]").forEach(function(b){b.addEventListener("click",function(){var q=P[b.dataset.ed];$("#edW").value=q[0];$("#edD").value=q[1];upd();save();notesPreview()})});
+  ["edW","edD"].forEach(function(id){$("#"+id).addEventListener("input",function(){upd();save();notesPreview()})});
+  upd();
+}
+/* Usability test (Bevan: effectiveness, efficiency, satisfaction) */
+function utTool(){
+  if(!$("#utN"))return;
+  var ids=["utN","utS","utT","utG","utK"],P={phone:[10,3,95,60,2.8],good:[10,9,40,60,4.3]};
+  function v(id){return Math.max(0,+$("#"+id).value||0)}
+  function badge(ok,mid){return ok?'✅':mid?'⚠️':'❌'}
+  function upd(){
+    var n=Math.max(1,v("utN")),s=Math.min(v("utS"),n),t=v("utT"),g=Math.max(1,v("utG")),k=Math.min(5,Math.max(1,v("utK")||1));
+    var eff=s/n*100,tr=t/g,sat=k;
+    var e1=eff>=78,e2=eff>=50,f1=tr<=1,f2=tr<=1.5,s1=sat>=4,s2=sat>=3;
+    var worst=!e2?'efektivitas: sebagian besar penguji gagal menyelesaikan tugas. Periksa label navigasi, pencarian, dan apakah informasi ada di tempat yang dicari pengguna (card sorting).':!f2?'efisiensi: tugas selesai tetapi terlalu lama. Kurangi langkah dan klik, sederhanakan formulir, dan percepat halaman.':!s2?'kepuasan: pengguna berhasil tetapi tidak senang. Periksa kejelasan konten, tampilan, dan isyarat kepercayaan.':'Ketiga ukuran cukup baik. Lanjutkan dengan tugas lain dan persona lain.';
+    $("#utRes").innerHTML='<big>'+badge(e1,e2)+' Efektivitas '+n2(eff,0)+'%<br>'+badge(f1,f2)+' Efisiensi '+n2(t,0)+' dtk ('+n2(tr*100,0)+'% target)<br>'+badge(s1,s2)+' Kepuasan '+n2(sat,1)+'/5</big>'+
+      '<p style="margin:6px 0 0">Prioritas perbaikan: <b>'+worst+'</b></p><p class="hint" style="margin:4px 0 0">Tiga ukuran ini mengikuti Bevan (1999b): efektivitas (tugas selesai dengan benar), produktivitas atau efisiensi (waktu yang wajar), dan kepuasan. Ambang ✅/⚠️ di sini hanya patokan latihan, bukan standar baku. Contoh buku: mungkin hanya tiga dari sepuluh pengunjung yang bisa menemukan nomor telepon.</p>';
+    S.notes.ut_sum="Efektivitas "+n2(eff,0)+"%, waktu "+n2(t,0)+" dtk vs target "+n2(g,0)+", kepuasan "+n2(sat,1)+"/5";
+  }
+  $$("#utTool [data-ut]").forEach(function(b){b.addEventListener("click",function(){var q=P[b.dataset.ut];ids.forEach(function(id,i){$("#"+id).value=q[i]});upd();save();notesPreview()})});
+  ids.forEach(function(id){$("#"+id).addEventListener("input",function(){upd();save();notesPreview()})});
+  upd();
+}
+/* Navigation depth */
+function navTool(){
+  if(!$("#nvN"))return;
+  var P={deep:[5000,5],broad:[5000,20]};
+  function upd(){
+    var N=Math.max(1,Math.round(+$("#nvN").value||1)),b=Math.max(2,Math.round(+$("#nvB").value||2)),lv=Math.max(1,Math.ceil(Math.log(N)/Math.log(b)-1e-9)),need=Math.ceil(Math.pow(N,1/3));
+    var ok=lv<=3;
+    $("#nvRes").innerHTML='<big>'+lv+' klik dari beranda</big>Dengan '+b+' pilihan per halaman, '+n2(N,0)+' halaman membutuhkan sekitar '+lv+' tingkat menu. '+(ok?'✅ Memenuhi aturan praktis tiga klik.':'⚠️ Melebihi aturan tiga klik. Agar '+n2(N,0)+' halaman tercapai dalam tiga klik, dibutuhkan sekitar <b>'+need+' pilihan per halaman</b> (broad and shallow), atau jalur alternatif seperti pencarian, filter, dan site map.')+
+      '<p class="hint" style="margin:6px 0 0">Ini perhitungan ideal untuk pohon menu yang seimbang. Makin banyak pilihan per halaman, makin sedikit klik, tetapi layar makin padat. Narrow and deep cocok untuk pengguna awam, broad and shallow untuk situs besar dan pengguna berpengalaman. Ingat juga deep linking: banyak pengguna tidak datang dari beranda.</p>';
+    S.notes.nv_sum=n2(N,0)+" halaman, "+b+" pilihan/halaman → "+lv+" klik";
+  }
+  $$("#navTool [data-nv]").forEach(function(btn){btn.addEventListener("click",function(){var q=P[btn.dataset.nv];$("#nvN").value=q[0];$("#nvB").value=q[1];upd();save();notesPreview()})});
+  ["nvN","nvB"].forEach(function(id){$("#"+id).addEventListener("input",function(){upd();save();notesPreview()})});
+  upd();
+}
+
+/* ================= cases ================= */
+function norm(t){return (t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}
+function grade(id){
+  var r=RUB[id],t=norm(S.notes[id]),words=t.split(/\s+/).filter(Boolean).length;
+  var hits=r.cr.map(function(c){return new RegExp(c[1],"i").test(t)}),h=hits.filter(Boolean).length;
+  var conn=CONN.filter(function(w){return new RegExp("(^|[^a-z])"+w+"([^a-z]|$)").test(t)}).length;
+  var cov=Math.min(h,r.need)/r.need,raw=3*cov+(conn>=2?1:conn===1?.5:0),warn=[];
+  if(words<25){raw=Math.min(raw,2);warn.push("Jawaban terlalu singkat ("+words+" kata). Kembangkan penjelasan Anda.")}
+  if(h>=2&&conn===0&&words/h<7){raw=Math.min(raw,1);warn.push("Jawaban tampak seperti daftar kata kunci. Jelaskan hubungan antarkonsep dengan kalimat utuh.")}
+  else if(conn===0) warn.push("Belum ada penalaran sebab-akibat. Gunakan \"karena\", \"sehingga\", atau \"akibatnya\" untuk menunjukkan alur pikir.");
+  return {lv:Math.max(0,Math.min(4,Math.floor(raw+1e-9))),hits:hits,h:h,conn:conn,words:words,warn:warn,len:(S.notes[id]||"").length};
+}
+function renderGrade(id){
+  var box=$('.fbres[data-for="'+id+'"]'),st=S.cs[id];if(!box)return;
+  if(!st){box.innerHTML="";return}
+  var r=RUB[id],g=grade(id),noans=CASES.some(function(c){return c.noans&&id.indexOf(c.id+"_")===0});
+  var h='<div class="gbox"><div class="ghead"><span class="meter">'+[0,1,2,3].map(function(k){return '<i class="'+(k<g.lv?"on":"")+'"></i>'}).join("")+'</span><span class="glv">'+g.lv+'/4 · '+LV[g.lv]+'</span><span class="gnote">umpan balik otomatis, bukan nilai</span></div>';
+  h+='<p class="hint" style="margin:0 0 4px">Konsep kunci ('+g.h+' dari '+r.cr.length+' muncul; minimal '+r.need+' untuk cakupan penuh):</p><ul class="crit">';
+  r.cr.forEach(function(c,k){h+='<li class="'+(g.hits[k]?"y":"n")+'"><span class="m">'+(g.hits[k]?"✓":"")+'</span><span><b>'+esc(c[0])+'</b>'+(g.hits[k]?'':' <span class="h">· '+esc(c[2])+'</span>')+'</span></li>'});
+  h+='</ul><ul class="crit"><li class="'+(g.conn>=2?"y":"n")+'"><span class="m">'+(g.conn>=2?"✓":"")+'</span><span><b>Penalaran</b> <span class="h">· '+g.conn+' penghubung sebab-akibat'+(g.conn<2?" (target ≥ 2)":"")+'</span></span></li></ul>';
+  g.warn.forEach(function(w){h+='<div class="gwarn">⚠️ '+esc(w)+'</div>'});
+  if(st.len!==g.len) h+='<div class="stale">✎ Jawaban sudah diubah sejak dinilai. Klik "Nilai ulang" untuk memperbarui.</div>';
+  h+='<div class="selfc"><b style="font-size:.9rem">Penilaian diri: centang yang benar-benar sudah Anda lakukan</b>';
+  r.self.forEach(function(sx,k){h+='<label><input type="checkbox" data-self="'+id+'" data-k="'+k+'" '+(st.self&&st.self[k]?"checked":"")+'> '+esc(sx)+'</label>'});
+  h+=st.selfDone?'<p class="hint" style="margin:6px 0 0">✓ Penilaian diri tersimpan'+(noans?". Bawa jawaban ini ke diskusi kelas.":". Arah jawaban di bawah sudah terbuka.")+'</p>':'<button class="btn sm" data-selfdone="'+id+'" style="margin-top:6px">'+(noans?"Selesai menilai diri":"Selesai, buka arah jawaban")+'</button>';
+  h+='</div></div>';
+  box.innerHTML=h;
+  $$('[data-self]',box).forEach(function(c){c.addEventListener("change",function(){st.self=st.self||[];st.self[+c.dataset.k]=c.checked;save()})});
+  var sd=$('[data-selfdone]',box);if(sd)sd.addEventListener("click",function(){st.selfDone=true;save();renderGrade(id);refreshAnsLocks();updateCaseSums();var d=$('details.ans[data-for="'+id+'"]');if(d){d.open=true}});
+  var gb=$('[data-grade="'+id+'"]');if(gb)gb.textContent="↻ Nilai ulang";
+}
+function updateCaseSums(){
+  CASES.forEach(function(c){var el=$('[data-csum="'+c.id+'"]');if(!el)return;var n=0,tot=0;c.qs.forEach(function(q,i){var id=c.id+"_"+i;if(S.cs[id]){n++;tot+=grade(id).lv}});
+    el.textContent=n?("umpan balik rata-rata "+(tot/n).toFixed(1).replace(".",",")+"/4 · "+n+"/"+c.qs.length+" dinilai"):"belum dinilai"});
+}
+function renderCases(){
+  S.cs=S.cs||{};
+  var h="";
+  CASES.forEach(function(c){
+    h+='<div class="card"><h3>📂 '+c.t+' <span class="csum" data-csum="'+c.id+'"></span></h3><p class="hint" style="margin-top:-6px">Sumber: '+c.src+'</p>'+c.body;
+    h+='<h4 style="margin-top:18px">'+(c.noans?"Tugas persiapan diskusi kelas":"Pertanyaan diskusi")+'</h4>';
+    c.qs.forEach(function(q,i){
+      var id=c.id+"_"+i;
+      h+='<div class="cq"><b>'+(i+1)+'. '+esc(q[0])+'</b><textarea data-note="'+id+'" placeholder="Tulis jawaban Anda dalam kalimat utuh…"></textarea>';
+      h+='<div class="fbk"><button class="btn sm ghost" data-grade="'+id+'">🔍 Minta umpan balik</button><div class="fbres" data-for="'+id+'"></div></div>';
+      if(!c.noans) h+='<details class="ans" data-for="'+id+'"><summary>🔑 Arah jawaban</summary><div>'+esc(q[1])+'</div></details>';
+      h+='</div>';
+    });
+    if(c.noans) h+='<div class="co book"><b class="t">📝 Catatan.</b> Arah jawaban untuk kasus ini sengaja tidak diberikan dan akan dibahas di kelas. Umpan balik otomatis di sini hanya memeriksa kelengkapan struktur jawaban Anda.</div>';
+    h+='</div>';
+  });
+  $("#caseList").innerHTML=h;
+  $$("[data-grade]").forEach(function(b){b.addEventListener("click",function(){
+    var id=b.dataset.grade,len=(S.notes[id]||"").trim().length;
+    if(len<40){toast("Tulis jawaban Anda dulu (min. 40 karakter)");return}
+    var prev=S.cs[id]||{};S.cs[id]={len:(S.notes[id]||"").length,self:prev.self||[],selfDone:prev.selfDone||false};save();renderGrade(id);updateCaseSums();
+  })});
+  $$("details.ans").forEach(function(d){
+    d.addEventListener("click",function(e){if(d.classList.contains("lock")&&!d.open){e.preventDefault();toast("Minta umpan balik dan selesaikan penilaian diri dulu")}});
+  });
+  Object.keys(S.cs).forEach(renderGrade);
+  refreshAnsLocks();updateCaseSums();
+}
+function refreshAnsLocks(){$$("details.ans").forEach(function(d){var st=S.cs&&S.cs[d.dataset.for];d.classList.toggle("lock",!(st&&st.selfDone))})}
+
+/* ================= notes binding ================= */
+function bindNotes(){
+  $$("textarea[data-note],input[data-note]").forEach(function(t){
+    t.value=S.notes[t.dataset.note]||"";
+    t.addEventListener("input",function(){S.notes[t.dataset.note]=t.value;clearTimeout(t._h);t._h=setTimeout(function(){save();refreshAnsLocks();renderSide();notesPreview();if(S.cs&&S.cs[t.dataset.note])renderGrade(t.dataset.note)},350)});
+  });
+}
+function notesText(){
+  var L=["PENGANTAR BISNIS DIGITAL (DG234101) — TOPIK 12","Pengalaman Pelanggan dan Perancangan Layanan","",(S.notes.identity||"Nama — NRP"),"","== PEMANASAN ==","Pengalaman yang menjengkelkan:",S.notes.warm_know||"-","","Letak masalahnya:",S.notes.warm_want||"-",""];
+  L.push("== HASIL KALKULATOR (terakhir) ==","Effort duration: "+(S.notes.ed_sum||"-"),"Uji usability: "+(S.notes.ut_sum||"-"),"Kedalaman navigasi: "+(S.notes.nv_sum||"-"),"");
+  CASES.forEach(function(c){L.push("== "+c.t.toUpperCase()+" ==");c.qs.forEach(function(q,i){L.push((i+1)+". "+q[0]);L.push(S.notes[c.id+"_"+i]||"-");if(S.cs&&S.cs[c.id+"_"+i])L.push("[Umpan balik aplikasi: "+grade(c.id+"_"+i).lv+"/4]");L.push("")})});
+  var d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  L.push("== KEMAJUAN ==","Unit selesai: "+d+"/"+UNITS.length,"Kuis akhir (skor terbaik): "+(S.final?S.final.best+"%":"belum"));
+  return L.join("\n");
+}
+function notesPreview(){var p=$("#notesPrev");if(p)p.textContent=notesText()}
+
+/* ================= self-test (pola serviceman ch05) ================= */
+var quizEl=null, run=null;
+function setupQuiz(){
+  quizEl=$("#finalBox");
+  var best=S.final?S.final.best:null;
+  quizEl.innerHTML='<div class="qz-setup"><p>Soal diambil dari ketujuh unit (Chaffey Bab 9). Anda mendapat umpan balik setelah setiap jawaban, dan rincian per unit di akhir. Topik dianggap tuntas bila skor ≥ 80%.</p>'+
+   '<div><p class="qz-lbl">Panjang</p><div class="seg" id="qzLen"><button data-n="10" aria-pressed="true">Cepat · 10 soal</button><button data-n="20" aria-pressed="false">Standar · 20</button><button data-n="'+FINAL.length+'" aria-pressed="false">Lengkap · semua '+FINAL.length+'</button></div></div>'+
+   '<div><p class="qz-lbl">Fokus</p><div class="seg" id="qzLo"><button data-lo="0" aria-pressed="true">Semua unit</button>'+Object.keys(LO_NAMES).map(function(k){return '<button data-lo="'+k+'" aria-pressed="false" title="'+LO_NAMES[k]+'">Unit '+k+'</button>'}).join("")+'</div></div>'+
+   '<div class="row"><button class="btn" id="qzStart">Mulai self-test</button>'+(best!=null?'<span class="muted" style="font-family:var(--mono);font-size:.8rem">Skor terbaik di perangkat ini: '+best+'%</span>':'')+'</div></div>';
+  var n=10, lo=0;
+  $$("#qzLen button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLen button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});n=+b.dataset.n})});
+  $$("#qzLo button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLo button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});lo=+b.dataset.lo})});
+  $("#qzStart").addEventListener("click",function(){
+    var pool=FINAL.map(function(q,i){return i}).filter(function(i){return !lo||FINAL[i][0]===lo});
+    pool=shuffle(pool).slice(0,Math.min(n,pool.length));
+    run={qs:pool.map(function(i){var q=FINAL[i],order=shuffle(q[2].map(function(_,j){return j}));return {lo:q[0],text:q[1],opts:order.map(function(j){return q[2][j]}),ans:order.indexOf(q[3]),exp:q[4]}}),i:0,picks:[]};
+    showQ();
+  });
+}
+function showQ(){
+  var r=run,q=r.qs[r.i],picked=r.picks[r.i],sofar=r.picks.filter(function(p,k){return p===r.qs[k].ans}).length;
+  quizEl.innerHTML='<div class="qz-top"><span class="qz-lbl">Soal '+(r.i+1)+' dari '+r.qs.length+' · Unit '+q.lo+' '+LO_NAMES[q.lo]+'</span><span class="muted" style="font-family:var(--mono);font-size:.8rem">'+sofar+' benar sejauh ini</span></div>'+
+   '<div class="qz-prog"><i style="width:'+(r.i/r.qs.length*100)+'%"></i></div>'+
+   '<p class="qz-q">'+esc(q.text)+'</p>'+
+   '<div class="qz-opts">'+q.opts.map(function(o,j){return '<button data-j="'+j+'"><span class="k">'+"ABCD"[j]+'</span><span>'+esc(o)+'</span></button>'}).join("")+'</div>'+
+   '<div id="qzExp"></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzQuit">Keluar</button><button class="btn" id="qzNext" '+(picked==null?"disabled":"")+'>'+(r.i===r.qs.length-1?"Lihat hasil":"Soal berikutnya")+'</button></div>';
+  function lock(j){
+    $$(".qz-opts button",quizEl).forEach(function(b){b.disabled=true;var k=+b.dataset.j;if(k===q.ans)b.classList.add("right");else if(k===j)b.classList.add("wrong")});
+    var ok=j===q.ans;
+    $("#qzExp").innerHTML='<div class="qz-exp '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat. Jawabannya "+"ABCD"[q.ans]+".")+'</b>'+esc(q.exp)+'</div>';
+    $("#qzNext").disabled=false;
+  }
+  if(picked!=null)lock(picked);
+  $$(".qz-opts button",quizEl).forEach(function(b){b.addEventListener("click",function(){var j=+b.dataset.j;r.picks[r.i]=j;lock(j);$("#qzNext").focus()})});
+  $("#qzNext").addEventListener("click",function(){if(r.i<r.qs.length-1){r.i++;showQ()}else results()});
+  $("#qzQuit").addEventListener("click",setupQuiz);
+}
+function results(){
+  var r=run,right=r.qs.filter(function(q,k){return r.picks[k]===q.ans}).length,pct=Math.round(right/r.qs.length*100);
+  S.final={best:Math.max(pct,S.final?S.final.best:0),n:(S.final?S.final.n:0)+1,last:pct};save();renderSide();
+  var by={};r.qs.forEach(function(q,k){by[q.lo]=by[q.lo]||{r:0,t:0};by[q.lo].t++;if(r.picks[k]===q.ans)by[q.lo].r++});
+  var verdict=pct>=80?"Pemahaman kuat. Topik 12 tuntas.":pct>=65?"Fondasi sudah baik. Tinjau unit di bawah 70%.":"Pelajari ulang unit yang lemah (dan halaman bukunya), lalu coba lagi.";
+  quizEl.innerHTML='<div class="res-big"><span class="pct" style="color:'+(pct>=65?"var(--good)":"var(--bad)")+'">'+pct+'%</span><span>'+right+' dari '+r.qs.length+' benar. '+verdict+'</span></div>'+
+   (pct>=80?'<div><span class="badge">🏅 Topik 12 tuntas</span></div>':'')+
+   '<div><p class="qz-lbl">Per unit</p><div class="lo-bars">'+Object.keys(by).sort().map(function(k){var v=by[k],p=Math.round(v.r/v.t*100);return '<div class="lo-row"><span><b style="font-family:var(--mono)">U'+k+'</b> '+LO_NAMES[k]+(p<70?' · <a href="#u'+k+'">tinjau</a>':'')+'</span><span class="b"><i style="width:'+p+'%;background:'+(p>=70?"var(--good)":"var(--bad)")+'"></i></span><span class="v">'+v.r+'/'+v.t+'</span></div>'}).join("")+'</div></div>'+
+   '<div><p class="qz-lbl">Tinjau jawaban Anda</p><div class="review">'+r.qs.map(function(q,k){var ok=r.picks[k]===q.ans;return '<details '+(ok?"":"open")+'><summary><span class="mk '+(ok?"ok":"no")+'">'+(ok?"✓":"✗")+'</span>'+esc(q.text)+'</summary><p><b>Jawaban Anda:</b> '+esc(q.opts[r.picks[k]])+(ok?'':'<br><b>Jawaban benar:</b> '+esc(q.opts[q.ans]))+'</p><p class="muted">'+esc(q.exp)+'</p></details>'}).join("")+'</div></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzNew">Ubah pengaturan</button><button class="btn" id="qzAgain">Ulangi dengan soal baru</button></div>';
+  $("#qzNew").addEventListener("click",setupQuiz);
+  $("#qzAgain").addEventListener("click",function(){setupQuiz();$("#qzStart").click()});
+  quizEl.scrollIntoView({block:"start"});
+}
+
+/* ================= flashcards ================= */
+var deck=[],di=0;
+function buildDeck(){deck=GLOSS.map(function(g,i){return i}).filter(function(i){return !S.known[i]});if(!deck.length){deck=GLOSS.map(function(g,i){return i})}di=0;showCard()}
+function showCard(){var fc=$("#fc");fc.classList.remove("flip");var g=GLOSS[deck[di]];$("#fcF").textContent=g[0];$("#fcB").textContent=g[1];
+  var k=Object.keys(S.known).length;$("#fcCount").textContent="Kartu "+(di+1)+" / "+deck.length+" · dikuasai "+k+" / "+GLOSS.length}
+function cards(){
+  var fc=$("#fc");function flip(){fc.classList.toggle("flip")}
+  fc.addEventListener("click",flip);fc.addEventListener("keydown",function(e){if(e.key===" "||e.key==="Enter"){e.preventDefault();flip()}});
+  $("#fcNext").addEventListener("click",function(){di=(di+1)%deck.length;showCard()});
+  $("#fcPrev").addEventListener("click",function(){di=(di-1+deck.length)%deck.length;showCard()});
+  $("#fcShuffle").addEventListener("click",function(){deck=shuffle(deck);di=0;showCard()});
+  $("#fcKnow").addEventListener("click",function(){S.known[deck[di]]=1;save();deck.splice(di,1);if(!deck.length){toast("Semua kartu dikuasai! 🎉");buildDeck();return}if(di>=deck.length)di=0;showCard()});
+  $("#fcReset").addEventListener("click",function(){S.known={};save();buildDeck()});
+  buildDeck();
+}
+
+/* ================= routing ================= */
+function markNav(){var v=current();$$(".side a").forEach(function(a){a.classList.toggle("on",a.dataset.nav===v)})}
+function current(){var h=(location.hash||"#home").slice(1);return $('[data-view="'+h+'"]')?h:"home"}
+function route(){
+  var v=current();$$(".view").forEach(function(s){s.hidden=s.dataset.view!==v});
+  markNav();$("#side").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");
+  window.scrollTo(0,0);
+  
+  if(v==="notes")notesPreview();
+  
+  document.title=(v==="home"?"Topik 12":($('[data-view="'+v+'"] h2')||{}).textContent)+" · Pengalaman Pelanggan dan Perancangan Layanan";
+}
+
+/* ================= init ================= */
+$$("[data-quiz]").forEach(function(b){renderQuiz(b,b.dataset.quiz)});
+$$("[data-widget]").forEach(renderClassify);
+$$("[data-readchk]").forEach(function(c){
+  var n=+c.dataset.readchk;c.checked=!!S.read[n];
+  c.addEventListener("change",function(){S.read[n]=c.checked;save();var b=$('[data-quiz="u'+n+'"]');lockState(b,"u"+n);renderSide();if(c.checked)toast("Soal cek pemahaman terbuka ↓")});
+});
+setupQuiz();renderCases();bindNotes();edTool();utTool();navTool();cards();renderSide();updateProgress();
+window.addEventListener("hashchange",route);route();
+
+$("#menuBtn").addEventListener("click",function(){var o=$("#side").classList.toggle("open");this.setAttribute("aria-expanded",o)});
+$("#themeBtn").addEventListener("click",function(){
+  var r=document.documentElement,cur=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),nx=cur==="dark"?"light":"dark";
+  r.setAttribute("data-theme",nx);try{localStorage.setItem("bisdig-theme",nx)}catch(e){} 
+});
+$("#copyNotes").addEventListener("click",function(){var t=notesText();
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast("Tersalin ke clipboard")},function(){var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("Tersalin")}catch(e){toast("Gagal menyalin")}ta.remove()})});
+$("#dlNotes").addEventListener("click",function(){var b=new Blob([notesText()],{type:"text/plain;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="Topik12_Catatan_"+((S.notes.identity||"mahasiswa").replace(/[^\w]+/g,"_").slice(0,40))+".txt";document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)});
+$("#resetAll").addEventListener("click",function(){
+  if(this.dataset.confirm!=="1"){this.dataset.confirm="1";this.textContent="Klik lagi untuk konfirmasi";var me=this;setTimeout(function(){me.dataset.confirm="";me.textContent="Hapus semua kemajuan"},3000);return}
+  try{localStorage.removeItem(KEY)}catch(e){} location.hash="#home";location.reload();
+});
+})();
+</script>
+</body>
+</html>
