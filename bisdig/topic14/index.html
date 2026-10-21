@@ -1,0 +1,1398 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Topik 14 · Pengukuran Kinerja dan Optimisasi</title>
+<meta name="description" content="Web-app belajar mandiri Pengantar Bisnis Digital (DG234101) ITS — Topik 14: Pengukuran Kinerja dan Optimisasi (sistem manajemen kinerja, kerangka metrik dan KPI, web analytics, nilai bisnis data), berbasis Bughin (2016) McKinsey dan Chaffey et al. (2019), dengan kasus Indonesia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#F3F5FA; --surface:#FFFFFF; --sunk:#E8ECF5; --ink:#0F1B33; --muted:#56627A; --line:#D5DCEA;
+  --navy:#013880; --navy-ink:#FFFFFF; --navy-soft:#E1E9F7;
+  --gold:#B07A00; --gold-bg:#FFC72C; --gold-soft:#FFF4D4;
+  --good:#17784E; --good-soft:#DCF2E6; --bad:#B4372F; --bad-soft:#F9E2DF;
+  --dig:#5B3FB0; --dig-soft:#ECE7FA;
+  --idn:#B4372F; --idn-soft:#FBEAE8;
+  --f:"Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  --r:12px;
+  --shadow:0 1px 2px rgba(15,27,51,.06), 0 4px 16px rgba(15,27,51,.05);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.65}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:var(--navy)}
+h1,h2,h3,h4{line-height:1.2;margin:0 0 .5em;letter-spacing:-.01em}
+h2{font-size:clamp(1.45rem,1.1rem + 1.3vw,1.95rem);font-weight:800}
+h3{font-size:1.12rem;font-weight:700;margin-top:1.6em}
+p{margin:0 0 1em}
+em{font-style:italic}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold-bg);outline-offset:2px;border-radius:6px}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;padding-top:max(10px,env(safe-area-inset-top))}
+:root[data-theme="dark"] .top{background:#0E1A36}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .top{background:#0E1A36}}
+.top .brand{display:flex;flex-direction:column;line-height:1.2;min-width:0;flex:1}
+.top .brand b{font-size:.95rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .brand small{font-size:.72rem;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog{display:flex;align-items:center;gap:8px;font-size:.78rem;white-space:nowrap}
+.prog .bar{width:110px;height:8px;border-radius:99px;background:rgba(255,255,255,.22);overflow:hidden}
+.prog .bar i{display:block;height:100%;background:#FFC72C;border-radius:99px;width:0;transition:width .4s}
+.iconbtn{background:rgba(255,255,255,.12);border:0;border-radius:8px;width:34px;height:34px;display:grid;place-items:center;color:#fff;flex:none}
+.iconbtn:hover{background:rgba(255,255,255,.22)}
+.menubtn{display:none}
+@media (max-width:899px){.menubtn{display:grid}.prog .bar{width:64px}}
+@media (max-width:420px){.prog .lbl{display:none}}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1200px;margin:0 auto}
+@media (max-width:899px){.shell{grid-template-columns:minmax(0,1fr)}}
+nav.side{position:sticky;top:54px;align-self:start;height:calc(100vh - 54px);overflow:auto;padding:20px 12px 40px 16px;border-right:1px solid var(--line)}
+@media (max-width:899px){
+  nav.side{position:fixed;inset:54px 0 0 0;height:auto;background:var(--bg);z-index:15;border:0;transform:translateX(-100%);transition:transform .25s;padding:16px}
+  nav.side.open{transform:none}
+}
+.side .grp{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 8px 6px}
+.side .grp:first-child{margin-top:0}
+.side a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;text-decoration:none;color:var(--ink);font-size:.9rem;font-weight:500;line-height:1.3}
+.side a:hover{background:var(--sunk)}
+.side a.on{background:var(--navy-soft);color:var(--navy);font-weight:700}
+.side a .n{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk);color:var(--muted);border:1.5px solid var(--line)}
+.side a.done .n{background:var(--good);border-color:var(--good);color:#fff}
+.side a.on .n{border-color:var(--navy)}
+.side a .n.ico{font-size:.8rem}
+
+main{padding:28px 16px 80px;min-width:0}
+@media (min-width:900px){main{padding:36px 40px 100px}}
+.view{max-width:760px;margin:0 auto;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tag{display:inline-block;font-family:var(--mono);font-size:.7rem;font-weight:500;letter-spacing:0;text-transform:none;padding:2px 8px;border-radius:99px;background:var(--sunk);color:var(--muted)}
+.lead{font-size:1.05rem;color:var(--muted)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:18px 0;box-shadow:var(--shadow)}
+.card h3:first-child,.card h4:first-child{margin-top:0}
+
+/* reading box */
+.read{border:2px solid var(--navy);background:var(--navy-soft);border-radius:var(--r);padding:16px 18px;margin:20px 0}
+.read .hd{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.read .pg{font-family:var(--mono);font-size:.82rem;background:var(--navy);color:var(--navy-ink);padding:2px 9px;border-radius:6px}
+.read ul{margin:.3em 0 .8em;padding-left:1.2em}
+.read li{margin:.2em 0}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--line);cursor:pointer;font-weight:600;font-size:.92rem}
+.chk input{width:20px;height:20px;accent-color:var(--good);margin:1px 0 0;flex:none}
+
+/* callouts */
+.co{border-left:4px solid var(--dig);background:var(--dig-soft);padding:12px 16px;border-radius:0 10px 10px 0;margin:16px 0;font-size:.95rem}
+.co b.t{color:var(--dig)}
+.co.idn{border-color:var(--idn);background:var(--idn-soft)}
+.co.idn b.t{color:var(--idn)}
+.co.book{border-color:var(--gold);background:var(--gold-soft)}
+.co.book b.t{color:var(--gold)}
+.co p:last-child{margin:0}
+
+/* tables */
+.tw{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--sunk);font-weight:700;font-size:.8rem;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+
+.terms{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.terms span{font-size:.78rem;padding:3px 10px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-style:italic}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:.92rem;background:var(--navy);color:var(--navy-ink);text-decoration:none}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn.gold{background:var(--gold-bg);color:#1b1400}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:36px;padding-top:20px;border-top:1px solid var(--line)}
+
+/* quiz */
+.qwrap{position:relative}
+.qwrap.locked .qbody{filter:blur(3px);pointer-events:none;user-select:none;opacity:.6}
+.lockmsg{display:none;position:absolute;inset:0;z-index:2;align-items:center;justify-content:center;text-align:center;padding:16px}
+.qwrap.locked .lockmsg{display:flex}
+.lockmsg div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px;max-width:380px;box-shadow:0 6px 30px rgba(0,0,0,.12);font-size:.92rem}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0;background:var(--surface)}
+.q .qt{font-weight:600;margin-bottom:10px}
+.q .kind{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:5px;margin-bottom:6px;background:var(--sunk);color:var(--muted)}
+.q .kind.rb{background:var(--gold-soft);color:var(--gold)}
+.opts{display:grid;gap:7px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;padding:9px 12px;border-radius:9px;border:1.5px solid var(--line);background:var(--bg);font-size:.92rem;line-height:1.45}
+.opt:hover:not([disabled]){border-color:var(--navy)}
+.opt .L{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk)}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.ok .L{background:var(--good);color:#fff}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)}
+.opt.no .L{background:var(--bad);color:#fff}
+.opt.sel{border-color:var(--navy);background:var(--navy-soft)}
+.opt[disabled]{cursor:default}
+.fb{margin-top:10px;font-size:.88rem;padding:9px 12px;border-radius:8px}
+.fb.ok{background:var(--good-soft);color:var(--ink)}
+.fb.no{background:var(--bad-soft);color:var(--ink)}
+.fb b{margin-right:4px}
+.retry{margin-top:8px;font-size:.82rem;background:none;border:0;color:var(--navy);font-weight:700;padding:0;text-decoration:underline}
+
+/* classify widget */
+.cls .it{padding:12px 0;border-bottom:1px dashed var(--line)}
+.cls .it:last-child{border-bottom:0}
+.cls .it p{margin:0 0 8px;font-size:.93rem;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--line);background:var(--bg);border-radius:99px;padding:5px 12px;font-size:.8rem;font-weight:600}
+.chip:hover:not([disabled]){border-color:var(--navy)}
+.chip.ok{background:var(--good);border-color:var(--good);color:#fff}
+.chip.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.chip[disabled]{cursor:default}
+.cls .why{font-size:.84rem;color:var(--muted);margin-top:6px}
+.score{font-size:.85rem;font-weight:700;color:var(--muted)}
+
+/* simulator */
+.sim svg{width:100%;height:auto;display:block}
+.sim .ctl{display:grid;gap:10px;margin-top:10px}
+.sim input[type=range]{width:100%;accent-color:var(--navy)}
+.sim .out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.sim .out div{background:var(--sunk);border-radius:9px;padding:8px 10px;font-size:.78rem;color:var(--muted)}
+.sim .out b{display:block;font-size:1.05rem;color:var(--ink)}
+.state{font-weight:800;padding:8px 12px;border-radius:9px;text-align:center}
+.state.sh{background:var(--bad-soft);color:var(--bad)}
+.state.su{background:var(--gold-soft);color:var(--gold)}
+.state.eq{background:var(--good-soft);color:var(--good)}
+.tog{display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600}
+.tog input{width:18px;height:18px;accent-color:var(--dig)}
+
+/* calc */
+.calc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.calc{grid-template-columns:minmax(0,1fr)}}
+.calc label{font-size:.8rem;font-weight:600;color:var(--muted);display:grid;gap:4px}
+.calc input{font:inherit;font-size:.95rem;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.res{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--sunk);font-size:.92rem}
+.res big{font-size:1.4rem;font-weight:800;display:block}
+
+/* case */
+details.ans{margin-top:10px;border-radius:10px;border:1px dashed var(--gold);background:var(--gold-soft)}
+details.ans summary{cursor:pointer;padding:10px 14px;font-weight:700;color:var(--gold);font-size:.9rem}
+details.ans>div{padding:0 14px 12px;font-size:.92rem}
+details.ans.lock summary{color:var(--muted);cursor:not-allowed}
+textarea{font:inherit;font-size:.92rem;width:100%;min-height:92px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+textarea:focus{border-color:var(--navy);outline:none}
+.cq{margin:18px 0}
+.cq>b{display:block;margin-bottom:6px;font-size:.95rem}
+.hint{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+/* flashcards */
+.fc{perspective:1200px;margin:16px 0}
+.fc .inner{position:relative;min-height:230px;transition:transform .5s;transform-style:preserve-3d;cursor:pointer}
+.fc.flip .inner{transform:rotateY(180deg)}
+.fc .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;padding:24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border:1px solid var(--line);box-shadow:var(--shadow)}
+.fc .front{background:var(--navy);color:#fff}
+:root[data-theme="dark"] .fc .front{background:#1C2B4D;color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fc .front{background:#1C2B4D;color:var(--ink)}}
+.fc .front b{font-size:1.5rem;font-style:italic}
+.fc .back{background:var(--surface);transform:rotateY(180deg);font-size:1.02rem}
+.fc small{opacity:.7;font-size:.75rem;margin-top:10px}
+
+/* final */
+.big{font-size:2.6rem;font-weight:800;line-height:1}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--gold-bg);color:#1b1400;font-weight:800;padding:6px 14px;border-radius:99px}
+
+/* home */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+@media (max-width:620px){.steps{grid-template-columns:minmax(0,1fr)}}
+.steps div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.steps>div>b{display:block;font-size:1rem;margin-bottom:2px}
+.steps span{font-size:.85rem;color:var(--muted)}
+.steps i{font-style:normal;font-size:1.4rem}
+.plan td:nth-child(3){font-family:var(--mono);font-size:.8rem;white-space:nowrap}
+.plan .st{font-size:.75rem;font-weight:700;white-space:nowrap}
+.st.y{color:var(--good)}.st.n{color:var(--muted)}
+.hero{background:linear-gradient(135deg,#013880 0%,#0a4fa8 100%);color:#fff;border-radius:16px;padding:24px 22px;margin-bottom:20px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(1.6rem,1.2rem + 1.8vw,2.3rem);font-weight:800;margin:4px 0 8px}
+.hero p{opacity:.92;margin:0;max-width:56ch}
+.hero .eyebrow{color:#FFC72C}
+.hero::after{content:"";position:absolute;right:-40px;bottom:-60px;width:220px;height:220px;border-radius:50%;border:28px solid rgba(255,199,44,.18)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:.88rem;font-weight:600;z-index:40;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.foot{font-size:.78rem;color:var(--muted);margin-top:40px}
+ol.ref li{margin:.4em 0;font-size:.9rem}
+/* self-test (pola serviceman) */
+.quiz{scroll-margin-top:70px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow)}
+.qz-setup{display:flex;flex-direction:column;gap:14px}
+.qz-setup p{margin:0}
+.qz-lbl{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;font-size:.88rem;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.qz-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.qz-top .qz-lbl{margin:0}
+.qz-prog{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.qz-prog i{display:block;height:100%;background:var(--navy);width:0;transition:width .3s}
+.qz-q{font-size:1.18rem;font-weight:700;margin:0;line-height:1.4}
+.qz-opts{display:flex;flex-direction:column;gap:8px}
+.qz-opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;font-size:.95rem;line-height:1.45}
+.qz-opts button .k{font-family:var(--mono);font-size:.8rem;color:var(--muted);flex:none;padding-top:2px}
+.qz-opts button:hover:not(:disabled){border-color:var(--navy)}
+.qz-opts button:disabled{cursor:default}
+.qz-opts button.right{border-color:var(--good);background:var(--good-soft)}
+.qz-opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.qz-exp{border-radius:10px;padding:12px 14px;font-size:.93rem}
+.qz-exp.ok{background:var(--good-soft)}.qz-exp.no{background:var(--bad-soft)}
+.qz-exp b{display:block;margin-bottom:2px}
+.qz-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.res-big{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.res-big .pct{font-weight:800;font-size:3.4rem;line-height:1}
+.lo-bars{display:flex;flex-direction:column;gap:8px}
+.lo-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 44px;gap:10px;align-items:center;font-size:.86rem}
+@media (max-width:520px){.lo-row{grid-template-columns:minmax(0,1fr) 70px 40px}}
+.lo-row .b{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.lo-row .b i{display:block;height:100%}
+.lo-row .v{font-family:var(--mono);font-size:.78rem;text-align:right}
+.review{display:flex;flex-direction:column;gap:8px}
+.review details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.review summary{cursor:pointer;font-size:.92rem}
+.review .mk{font-family:var(--mono);font-weight:700;margin-right:6px}
+.review .mk.ok{color:var(--good)}.review .mk.no{color:var(--bad)}
+.review p{font-size:.88rem;margin:6px 0 0}
+.muted{color:var(--muted)}
+/* umpan balik studi kasus */
+.btn.sm{padding:7px 12px;font-size:.84rem}
+.fbk{margin-top:8px}
+.fbres{margin-top:10px}
+.gbox{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px}
+.ghead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.meter{display:flex;gap:4px}
+.meter i{width:22px;height:10px;border-radius:3px;background:var(--sunk)}
+.meter i.on{background:var(--navy)}
+.glv{font-weight:800}
+.gnote{font-size:.72rem;color:var(--muted);margin-left:auto}
+.crit{list-style:none;padding:0;margin:6px 0;display:grid;gap:5px}
+.crit li{font-size:.86rem;display:flex;gap:8px;align-items:flex-start}
+.crit li .m{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:.7rem;font-weight:800;margin-top:2px}
+.crit li.y .m{background:var(--good);color:#fff}
+.crit li.n .m{background:var(--sunk);color:var(--muted);border:1.5px dashed var(--muted)}
+.crit li.n span.h{color:var(--muted)}
+.gwarn{font-size:.84rem;background:var(--gold-soft);border-radius:8px;padding:8px 10px;margin-top:8px}
+.selfc{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.selfc label{display:flex;gap:8px;align-items:flex-start;font-size:.88rem;margin:6px 0;cursor:pointer}
+.selfc input{width:18px;height:18px;accent-color:var(--navy);flex:none;margin-top:2px}
+.stale{font-size:.8rem;color:var(--gold);font-weight:700;margin-top:6px}
+.csum{font-family:var(--mono);font-size:.75rem;font-weight:500;background:var(--sunk);color:var(--muted);padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle}
+
+/* widget topik 14 */
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:.8rem;font-weight:600;color:var(--ink)}
+.chip:hover{border-color:var(--navy)}
+.vsbar{height:12px;border-radius:6px;background:var(--surface);overflow:hidden;margin-top:8px;border:1px solid var(--line)}
+.vsbar i{display:block;height:100%;background:var(--good)}
+.calc3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.calc3{grid-template-columns:minmax(0,1fr)}}
+.calc3 fieldset{border:1px solid var(--line);border-radius:10px;padding:8px 10px 10px;margin:0;display:grid;gap:6px;align-content:start}
+.calc3 legend{font-size:.78rem;font-weight:800;color:var(--navy);padding:0 4px}
+.calc3 label{display:grid;gap:2px;font-size:.75rem;font-weight:600;color:var(--muted)}
+.calc3 input[type=number]{font:inherit;font-size:.88rem;padding:6px 8px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.tbar{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:.86rem;margin:6px 0 0}
+.tbar i{display:block;height:14px;border-radius:7px;min-width:4px}
+.calc3 select{font:inherit;font-size:.85rem;padding:6px 8px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+
+
+/* logo ITS & tombol beranda */
+.top .logo{display:flex;align-items:center;flex:none;line-height:0}
+.top .logo img{height:44px;width:auto;display:block}
+.top .logo .mk{display:none}
+@media (max-width:640px){.top .logo .full{display:none}.top .logo .mk{display:block;height:34px}}
+.homebtn{flex:none;display:inline-flex;align-items:center;gap:6px;background:#FFC72C;color:#013880;font-weight:800;font-size:.82rem;line-height:1;text-decoration:none;padding:9px 13px;border-radius:9px;box-shadow:0 0 0 2px rgba(255,255,255,.28);white-space:nowrap}
+.homebtn:hover{background:#FFD65C}
+.homebtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+@media (max-width:560px){.homebtn .t{display:none}.homebtn{padding:9px 11px;font-size:.95rem}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <button class="iconbtn menubtn" id="menuBtn" aria-label="Buka menu" aria-expanded="false">☰</button>
+  <a class="logo" href="../" aria-label="Beranda mata kuliah Pengantar Bisnis Digital, ITS"><img class="full" src="../assets/its-logo-white.png" alt="Institut Teknologi Sepuluh Nopember" width="77" height="44"><img class="mk" src="../assets/its-mark-white.png" alt="ITS" width="23" height="34"></a>
+  <div class="brand"><b>Topik 14 · Pengukuran Kinerja dan Optimisasi</b><small>Pengantar Bisnis Digital (DG234101) · ITS</small></div>
+  <div class="prog" title="Kemajuan belajar"><span class="lbl" id="progLbl">0%</span><span class="bar"><i id="progBar"></i></span></div>
+  <a class="homebtn" href="../" title="Kembali ke beranda mata kuliah"><span aria-hidden="true">⌂</span><span class="t">Beranda</span></a>
+  <button class="iconbtn" id="themeBtn" aria-label="Ganti tema terang/gelap">◐</button>
+</header>
+
+<div class="shell">
+<nav class="side" id="side" aria-label="Navigasi materi"></nav>
+<main id="main">
+
+<!-- ================= HOME ================= -->
+<section class="view" data-view="home">
+  <div class="hero">
+    <div class="eyebrow">Minggu 14 · Belajar Mandiri</div>
+    <h1>Pengukuran Kinerja dan Optimisasi</h1>
+    <p>"You can't manage what you can't measure." Topik penutup ini membahas cara membangun sistem pengukuran kinerja digital: menetapkan kerangka metrik dan KPI, mendiagnosis kinerja lintas kanal, mengumpulkan data yang bisa dipercaya, dan menilai apakah investasi data benar-benar memberi hasil. Kerangka ini juga menjadi bagian wajib laporan akhir proyek kelompok Anda.</p>
+  </div>
+
+  <div class="card">
+    <h3>🎯 Sub-CPMK 13 <span class="tag">CPMK6</span></h3>
+    <p style="margin:0">Mahasiswa mampu menjelaskan kerangka kerja pengukuran kinerja digital, mengidentifikasi KPI, dan memahami penggunaan data untuk optimisasi.</p>
+  </div>
+
+  <h3>Cara memakai aplikasi ini</h3>
+  <p>Aplikasi ini <b>bukan pengganti bacaan</b>. Ringkasan di sini sengaja dibuat padat; detail, gambar, dan kasus ada di sumber aslinya. Setiap unit mengikuti tiga langkah:</p>
+  <div class="steps">
+    <div><i>📖</i><b>1. Baca</b><span>Buka bagian Chaffey atau artikel McKinsey yang ditunjuk, dengan pertanyaan pemandu sebagai fokus.</span></div>
+    <div><i>✅</i><b>2. Cek</b><span>Centang "sudah membaca" untuk membuka soal. Soal berlabel <span style="font-weight:700">Cek Bacaan</span> hanya bisa dijawab dari bacaan.</span></div>
+    <div><i>🧩</i><b>3. Terapkan</b><span>Uraikan target pendapatan menjadi KPI, nilai bauran sumber kunjungan, hitung imbal hasil investasi data; analisis kasus Indonesia.</span></div>
+  </div>
+  <p class="hint">Kemajuan Anda tersimpan otomatis di peramban ini (bukan di server). Gunakan menu <b>Catatan &amp; Referensi</b> untuk menyalin atau mengunduh semua jawaban Anda.</p>
+
+  <h3>Rencana belajar (± 4 jam)</h3>
+  <div class="tw"><table class="plan">
+    <thead><tr><th>#</th><th>Unit</th><th>Bacaan</th><th>Status</th></tr></thead>
+    <tbody id="planBody"></tbody>
+  </table></div>
+  <p class="hint">Bacaan: (1) Bughin, J. (2016). <em>Big data: Getting a better read on performance</em>. McKinsey Quarterly; dirujuk RPS sebagai McKinsey (2014). (2) Chaffey, D., Hemphill, T., &amp; Edmundson-Bird, D. (2019). <em>Digital Business and E-Commerce Management</em> (7th ed.). Pearson: Case Study 1.2 (Bab 1) sesuai RPS, ditambah bagian <em>Focus on Web analytics</em> di Bab 10 (Stage 1–3 sistem pengukuran) dan Case Study 10.2. Rujukan buku memakai <b>nama subbab</b> serta nomor <b>Gambar, Tabel, Box, dan Case Study</b>.</p>
+
+  <div class="co book"><b class="t">ℹ️ Hubungan dengan Topik 11 dan 13.</b> Topik 11 sudah memperkenalkan KPI volume, kualitas, dan nilai, tahap RACE, dan lima kategori diagnostik secara singkat. Topik 13 membahas CRO dan analisis heuristik. Topik ini memperdalam <b>sistem pengukurannya</b>: proses, kerangka metrik, pengumpulan data, dan nilai bisnis data.</div>
+
+  <div class="co idn"><b class="t">🇮🇩 Kasus Indonesia minggu ini.</b> Selain Case Study 1.2 dari buku (Amazon dan prinsip <em>obsessing with customers</em>), Anda akan menganalisis <b>BRIBrain</b>, sistem big data dan AI Bank BRI, dan membaca kritis angka <b>Harbolnas 2024</b> (Rp31,2 triliun, di bawah target Rp40 triliun). Latihan individunya menyusun kerangka KPI untuk perusahaan proyek kelompok Anda, bahan langsung untuk laporan akhir Minggu 15.</div>
+
+  <h3>🔥 Pemanasan (5 menit)</h3>
+  <div class="card">
+    <p>Pikirkan perusahaan atau UMKM yang dianalisis kelompok Anda untuk proyek semester.</p>
+    <div class="cq"><b>Jika Anda hanya boleh memantau tiga angka setiap minggu untuk bisnis itu, angka apa yang Anda pilih?</b><textarea data-note="warm_know" placeholder="1. … 2. … 3. …"></textarea></div>
+    <div class="cq"><b>Dari mana data tiap angka itu bisa diperoleh, dan seberapa yakin Anda datanya akurat? Simpan jawaban ini; Anda akan mengujinya di Unit 2 dan Unit 5.</b><textarea data-note="warm_want" placeholder="Sumber data dan keraguan saya…"></textarea></div>
+  </div>
+  <div class="pager"><span></span><a class="btn" href="#u1">Mulai Unit 1 →</a></div>
+</section>
+
+<!-- ================= UNIT 1 ================= -->
+<section class="view" data-view="u1" data-unit="1">
+  <div class="eyebrow">Unit 1 <span class="tag">Bab 10</span><span class="tag">± 30 menit</span></div>
+  <h2>Sistem Manajemen Kinerja: Mengapa dan Bagaimana Mengukur</h2>
+  <div class="read" data-read="1">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 10 · Measuring implementation success · Focus on Web analytics · Principles of performance management and improvement · Stage 1: Creating a performance management system · Gambar 10.21</span></div>
+    <p style="margin:0 0 4px">Subbab prinsip manajemen kinerja, <em>design for analysis</em>, definisi pengukuran kinerja (Neely dkk., 2002), hambatan perbaikan sistem pengukuran (Adams dkk., 2000), dan empat tahap proses pengukuran (Gambar 10.21). Cari jawaban:</p>
+    <ul>
+      <li>Apa itu <em>design for analysis</em> (DFA), dan bagaimana Dell menerapkannya?</li>
+      <li>Apa beda efektivitas dan efisiensi?</li>
+      <li>Apa empat kelompok hambatan perbaikan sistem pengukuran, dan apa empat tahap proses pengukuran kinerja?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="1"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>"You can't manage what you can't measure" (Bob Napier, Hewlett-Packard). Namun pengukuran sering diabaikan saat situs pertama dibuat dan baru ditambahkan belakangan, ketika staf mulai bertanya berapa pelanggan yang datang dan berapa penjualan yang dihasilkan. Bila pengukuran dirancang sejak awal, perusahaan bisa menerapkan <b>design for analysis (DFA)</b>: situs dirancang agar jenis audiens dan titik keputusannya terbaca. Dell, misalnya, menavigasi beranda menurut jenis bisnis, sehingga sekaligus mengetahui proporsi tiap audiens. Contoh DFA lain: memecah formulir panjang menjadi beberapa bagian, mengelompokkan konten per jenis audiens, dan mengukur atrisi di setiap langkah perjalanan pembelian.</p>
+  <p><b>Pengukuran kinerja</b> menurut Neely dkk. (2002) adalah proses mengkuantifikasi <b>efisiensi</b> dan <b>efektivitas</b> tindakan masa lalu melalui pengumpulan, penyusunan, pemilahan, analisis, interpretasi, dan penyebaran data yang tepat. <b>Efektivitas</b> = mencapai tujuan proses, "doing the right thing". <b>Efisiensi</b> = meminimalkan sumber daya atau waktu, "doing the thing right". <b>Manajemen kinerja</b> memperluasnya hingga analisis dan tindakan perubahan.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Hambatan (Adams dkk., 2000)</th><th>Wujudnya</th></tr></thead>
+    <tbody>
+      <tr><td><b>Rabun jauh manajemen puncak</b></td><td>Pengukuran tidak dianggap prioritas, tidak dipahami, atau salah sasaran (memotong biaya, bukan memperbaiki kinerja)</td></tr>
+      <tr><td><b>Tanggung jawab tidak jelas</b></td><td>Tidak ada pemilik yang menjalankan dan memperbaiki sistem pengukuran</td></tr>
+      <tr><td><b>Masalah sumber daya</b></td><td>Kurang waktu, teknologi, dan sistem yang terintegrasi</td></tr>
+      <tr><td><b>Masalah data</b></td><td>Data berlebihan atau berkualitas buruk, data pembanding terbatas</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="bar"><h4>🧩 Latihan: hambatan yang mana?</h4></div>
+  <p>Untuk menghindarinya, buku memakai proses pengukuran empat tahap (Gambar 10.21, mengikuti Kotler, 1997): <b>(1) penetapan tujuan</b> sistem pengukuran dari tujuan strategis; <b>(2) pengukuran kinerja</b>, yaitu mengumpulkan data untuk metrik dalam kerangka pengukuran; <b>(3) diagnosis kinerja</b>, yaitu menganalisis penyebab selisih antara target dan aktual (<em>performance gap</em>) dan memilih solusinya; <b>(4) tindakan korektif</b>, misalnya memperbarui konten, desain, dan komunikasi pemasaran. Siklus lalu berulang, dan kesesuaian metriknya sendiri juga perlu ditinjau ulang. Pengukuran tidak boleh ad hoc; dibutuhkan <b>budaya pengukuran</b> di mana setiap karyawan sadar perlunya mengumpulkan data kinerja.</p>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Banyak toko online UMKM di Indonesia baru bertanya "iklan mana yang benar-benar menghasilkan penjualan?" setelah berbulan-bulan beriklan. Penerapan DFA sederhana: tautan berbeda untuk setiap kanal (bio Instagram, status WhatsApp, iklan marketplace) dan kode voucher unik per kampanye, sehingga asal setiap pesanan terbaca sejak hari pertama.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u1"></div>
+  <div class="pager"><a class="btn ghost" href="#home">← Beranda</a><a class="btn" href="#u2">Unit 2 →</a></div>
+</section>
+
+<!-- ================= UNIT 2 ================= -->
+<section class="view" data-view="u2" data-unit="2">
+  <div class="eyebrow">Unit 2 <span class="tag">Bab 10</span><span class="tag">± 35 menit</span></div>
+  <h2>Kerangka Metrik dan KPI</h2>
+  <div class="read" data-read="2">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 10 · Stage 2: Defining the performance metrics framework (kriteria A–F) · Gambar 10.22 · Defining goals and KPIs (ulas kembali)</span></div>
+    <p style="margin:0 0 4px">Subbab kerangka metrik kinerja: empat pertanyaan pengukuran, enam kriteria kerangka yang baik (Chaffey, 2000), SMART dan tiga tingkat ukuran, pendekatan top-down dan bottom-up, serta ulasan singkat KPI volume, kualitas, dan nilai. Cari jawaban:</p>
+    <ul>
+      <li>Apa beda metrik makro (efektivitas) dan mikro (efisiensi), dan apa itu <em>performance driver</em>?</li>
+      <li>Apa enam kriteria kerangka pengukuran yang baik menurut Chaffey (2000)?</li>
+      <li>Apa beda menyusun tujuan secara top-down dan bottom-up?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="2"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Pengukuran pemasaran digital menjawab empat pertanyaan: apakah tujuan korporat tercapai, apakah tujuan pemasaran tercapai, apakah tujuan komunikasi pemasaran tercapai, dan seberapa efisien teknik promosi menarik pengunjung. Chaffey (2000) menyarankan kerangka metrik yang:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Kriteria</th><th>Isi</th></tr></thead>
+    <tbody>
+      <tr><td><b>A. Metrik makro</b></td><td>Efektivitas: apakah tujuan strategis tercapai, kontribusi pendapatan, ROI</td></tr>
+      <tr><td><b>B. Metrik mikro</b></td><td>Efisiensi taktik; disebut <b>performance drivers</b> karena mencapainya membantu tujuan makro</td></tr>
+      <tr><td><b>C. Pemangku kepentingan</b></td><td>Dampak pada kepuasan, loyalitas, dan kontribusi pelanggan, investor, karyawan, mitra</td></tr>
+      <tr><td><b>D. Fleksibel</b></td><td>Bisa diterapkan pada B2C, B2B, nirlaba, transaksional; bukan "satu ukuran untuk semua"</td></tr>
+      <tr><td><b>E. Lintas kanal</b></td><td>Membandingkan kinerja kanal digital dengan kanal lain</td></tr>
+      <tr><td><b>F. Pembanding</b></td><td>Menilai terhadap pesaing atau praktik terbaik di luar sektor</td></tr>
+    </tbody>
+  </table></div>
+  <p>Setiap metrik sebaiknya <b>SMART</b> dan dipisahkan dalam tiga tingkat: ukuran bisnis, ukuran pemasaran, dan ukuran pemasaran internet. Tujuan bisa disusun <b>top-down</b> (dari kontribusi bisnis dan hasil pemasaran turun ke kepuasan, perilaku, dan promosi situs) atau <b>bottom-up</b> (keberhasilan promosi, perilaku, dan kepuasan berurutan menghasilkan hasil pemasaran dan kontribusi bisnis). Ingat kembali dari Topik 11: KPI e-commerce bisa diringkas menjadi <b>volume, kualitas, nilai</b>, dan <b>pendapatan per kunjungan</b> menggabungkan kualitas dan nilai.</p>
+  <div class="card cls" data-widget="lvl"><h4>🧩 Latihan: metrik makro atau mikro?</h4></div>
+
+  <div class="card" id="kpiTool">
+    <h4>🌳 Pohon KPI: dari target pendapatan ke performance driver</h4>
+    <p class="hint">Pendapatan = kunjungan × tingkat konversi × nilai rata-rata pesanan. Lihat seberapa besar setiap driver harus berubah sendirian untuk mengejar target.</p>
+    <div class="calc">
+      <label>Kunjungan per bulan<input type="number" id="kpV" value="50000" min="0" step="1000"></label>
+      <label>Tingkat konversi (%)<input type="number" id="kpC" value="1.5" min="0" step="0.1"></label>
+      <label>Nilai rata-rata pesanan (Rp)<input type="number" id="kpA" value="180000" min="0" step="5000"></label>
+      <label>Target pendapatan per bulan (Rp)<input type="number" id="kpT" value="175000000" min="0" step="1000000"></label>
+    </div>
+    <div class="row" style="gap:6px;margin-top:8px"><button class="chip" data-kp="umkm">Toko fesyen UMKM</button><button class="chip" data-kp="ok">Target sudah tercapai</button></div>
+    <div class="res" id="kpRes"></div>
+  </div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Target "omzet naik 30% tahun ini" adalah metrik makro. Agar bisa dikelola tim, target itu perlu diturunkan menjadi driver: tambahan kunjungan dari kanal tertentu, kenaikan konversi di halaman checkout, atau nilai pesanan lewat bundling. Tanpa penurunan ini, tim pemasaran, produk, dan layanan pelanggan tidak tahu angka mana yang menjadi tanggung jawab mereka.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u2"></div>
+  <div class="pager"><a class="btn ghost" href="#u1">← Unit 1</a><a class="btn" href="#u3">Unit 3 →</a></div>
+</section>
+
+<!-- ================= UNIT 3 ================= -->
+<section class="view" data-view="u3" data-unit="3">
+  <div class="eyebrow">Unit 3 <span class="tag">Bab 10</span><span class="tag">± 40 menit</span></div>
+  <h2>Lima Kategori Diagnostik secara Rinci</h2>
+  <div class="read" data-read="3">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 10 · Gambar 10.22 · 5 Site promotion · 4 Customer behaviour · 3 Customer satisfaction · 2 Marketing outcomes · Gambar 10.23 · 1 Business contribution</span></div>
+    <p style="margin:0 0 4px">Penjelasan rinci lima kategori diagnostik pengukuran e-marketing (Chaffey, 2000), dari promosi situs hingga kontribusi bisnis, termasuk ukuran kunci tiap kategori. Cari jawaban:</p>
+    <ul>
+      <li>Empat ukuran apa yang dihitung untuk setiap sumber rujukan dalam <em>referral mix</em>?</li>
+      <li>Mengapa kepuasan pelanggan sering tidak dilaporkan sama sekali?</li>
+      <li>Berapa target kontribusi online easyJet saat meluncurkan e-commerce, dan kapan tercapai?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="3"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <div class="tw"><table>
+    <thead><tr><th>Kategori (Gambar 10.22)</th><th>Pertanyaan</th><th>Ukuran kunci</th></tr></thead>
+    <tbody>
+      <tr><td><b>5. Promosi situs</b></td><td>Dari mana pengunjung datang, berapa banyak, seberapa berkualitas, berapa biayanya?</td><td>Referral mix: % rujukan, biaya akuisisi (CPA) atau per penjualan, pendapatan per kunjungan, kontribusi penjualan</td></tr>
+      <tr><td><b>4. Perilaku pelanggan</b></td><td>Konten apa yang dilihat, kapan, berapa lama?</td><td>Bounce rate per halaman (proporsi kunjungan satu halaman)</td></tr>
+      <tr><td><b>3. Kepuasan pelanggan</b></td><td>Bagaimana pendapat pelanggan tentang layanan online?</td><td>Survei, focus group, wawancara; tidak muncul di web analytics</td></tr>
+      <tr><td><b>2. Hasil pemasaran</b></td><td>Tindakan apa yang dihasilkan kunjungan?</td><td>Konversi (mis. 200 pembeli dari 10.000 pengunjung = 2%), leads, pendaftaran, atrisi</td></tr>
+      <tr><td><b>1. Kontribusi bisnis</b></td><td>Berapa kontribusi kanal pada penjualan dan laba?</td><td>Porsi penjualan online, profitabilitas kanal, arus kas terdiskonto</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="cat5"><h4>🧩 Latihan: kategori diagnostik yang mana?</h4></div>
+
+  <div class="card" id="mixTool">
+    <h4>📊 Kalkulator referral mix</h4>
+    <div class="calc3">
+      <fieldset><legend>Iklan pencarian</legend><label>Kunjungan<input type="number" id="mxV1" value="8000" min="0"></label><label>Biaya (Rp)<input type="number" id="mxC1" value="12000000" min="0" step="100000"></label><label>Pesanan<input type="number" id="mxO1" value="200" min="0"></label></fieldset>
+      <fieldset><legend>Media sosial</legend><label>Kunjungan<input type="number" id="mxV2" value="20000" min="0"></label><label>Biaya (Rp)<input type="number" id="mxC2" value="10000000" min="0" step="100000"></label><label>Pesanan<input type="number" id="mxO2" value="160" min="0"></label></fieldset>
+      <fieldset><legend>Email pelanggan</legend><label>Kunjungan<input type="number" id="mxV3" value="3000" min="0"></label><label>Biaya (Rp)<input type="number" id="mxC3" value="1000000" min="0" step="100000"></label><label>Pesanan<input type="number" id="mxO3" value="150" min="0"></label></fieldset>
+    </div>
+    <div class="calc" style="margin-top:8px"><label>Nilai rata-rata pesanan (Rp)<input type="number" id="mxA" value="180000" min="0" step="5000"></label></div>
+    <div class="row" style="gap:6px;margin-top:8px"><button class="chip" data-mx="base">Contoh toko online</button><button class="chip" data-mx="viral">Konten viral, pembeli sedikit</button></div>
+    <div class="res" id="mxRes"></div>
+  </div>
+  <p>Hubungan antarkategori bersifat berantai: promosi menarik pengunjung, perilaku dan kepuasan menentukan apakah mereka menjadi hasil pemasaran, dan hasil pemasaran menentukan kontribusi bisnis. Konsep terkait adalah <b>attrition rate</b> (Gambar 10.23): banyak pengunjung hilang antara memasukkan barang ke keranjang dan membayar. Untuk kontribusi bisnis, perusahaan terkemuka menetapkan porsi penjualan lewat kanal online. Contohnya easyJet: saat meluncurkan e-commerce pada 1998, targetnya 30% penjualan online pada 2000, dan target itu tercapai pada 1999.</p>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Konten yang viral di media sosial bisa menghasilkan lonjakan kunjungan (volume) tetapi sedikit pesanan (kualitas). Kalkulator di atas menunjukkan mengapa referral mix harus dinilai dengan biaya per pesanan dan pendapatan per kunjungan, bukan hanya jumlah kunjungan atau jumlah <em>views</em>.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u3"></div>
+  <div class="pager"><a class="btn ghost" href="#u2">← Unit 2</a><a class="btn" href="#u4">Unit 4 →</a></div>
+</section>
+
+<!-- ================= UNIT 4 ================= -->
+<section class="view" data-view="u4" data-unit="4">
+  <div class="eyebrow">Unit 4 <span class="tag">Bab 10</span><span class="tag">± 30 menit</span></div>
+  <h2>Mengukur Lintas Kanal dan Media Sosial</h2>
+  <div class="read" data-read="4">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 10 · Multichannel evaluation · Gambar 10.24 · Focus on Measuring social media marketing · Gambar 10.25–10.26</span></div>
+    <p style="margin:0 0 4px">Subbab evaluasi multichannel (Wilson, 2008; rekomendasi Forrester), kartu skor kinerja multichannel untuk peritel (Gambar 10.24), dan kerangka pengukuran media sosial Altimeter (2011). Cari jawaban:</p>
+    <ul>
+      <li>Apa yang dimaksud Wilson (2008) dengan <em>channel cross-over effects</em>?</li>
+      <li>Empat hasil apa yang disarankan untuk mengukur pelanggan hibrida?</li>
+      <li>Apa tiga tingkat KPI media sosial menurut Altimeter, dan mana yang paling mudah dikumpulkan tetapi paling kecil nilainya?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="4"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Kerangka pengukuran biasanya dijelaskan per kanal, padahal kanal saling mendukung. Menurut Wilson (2008), aspek terpenting pengukuran multichannel adalah <b>efek lintas kanal</b> (<em>channel cross-over effects</em>): bagaimana mengukur dampak iklan pencarian yang bisa menghasilkan kunjungan ke toko, tenaga penjual, atau call centre, bukan hanya ke situs? Rekomendasi Forrester yang dikutip buku mengukur empat hal: (1) jumlah <b>pelanggan hibrida</b>, misalnya yang riset online lalu beli offline; (2) distribusi dan tingkat belanja mereka; (3) <b>konversi lintas kanal</b>; (4) belanja pelanggan di pesaing per kanal. Gambar 10.24 memperlihatkan kartu skor gaya <em>balanced scorecard</em> untuk membandingkan kinerja kanal peritel.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Tingkat KPI media sosial (Altimeter, 2011)</th><th>Contoh</th><th>Catatan</th></tr></thead>
+    <tbody>
+      <tr><td><b>KPI bisnis</b></td><td>Kontribusi pendapatan dari penjualan yang diatribusikan ke media sosial; reputasi; kepuasan (CSAT)</td><td>Paling bernilai bagi manajemen</td></tr>
+      <tr><td><b>KPI jangkauan dan pengaruh</b></td><td>Jangkauan, <em>share of voice</em>, sentimen</td><td>Perbandingan relatif dengan merek lain</td></tr>
+      <tr><td><b>KPI keterlibatan</b></td><td>Suka, bagikan, komentar, sebutan</td><td>Paling mudah dikumpulkan, paling kecil nilainya</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="alt"><h4>🧩 Latihan: tingkat KPI media sosial</h4></div>
+  <p>Karena perilaku individu di jejaring sosial tidak bisa dilacak sepenuhnya, nilai "pengikut" atau "suka" sulit ditetapkan. Yang bisa dinilai adalah <b>tingkat pembelian relatif</b> pengunjung dari media sosial dibanding kanal lain, misalnya lewat konversi dan pendapatan per pengunjung.</p>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Banyak merek Indonesia menjual lewat toko fisik, marketplace, social commerce, dan WhatsApp sekaligus. Pembeli bisa melihat produk di siaran langsung, bertanya lewat WhatsApp, lalu membeli di marketplace. Bila setiap kanal diukur sendiri-sendiri, kontribusi siaran langsung bisa tampak nol, padahal ia memicu penjualan di kanal lain. Inilah efek lintas kanal.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u4"></div>
+  <div class="pager"><a class="btn ghost" href="#u3">← Unit 3</a><a class="btn" href="#u5">Unit 5 →</a></div>
+</section>
+
+<!-- ================= UNIT 5 ================= -->
+<section class="view" data-view="u5" data-unit="5">
+  <div class="eyebrow">Unit 5 <span class="tag">Bab 10</span><span class="tag">± 40 menit</span></div>
+  <h2>Mengumpulkan Data yang Bisa Dipercaya</h2>
+  <div class="read" data-read="5">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 10 · Stage 3: Tools and techniques for collecting metrics and summarising results · Gambar 10.27–10.28 · Collecting site outcome data · Selecting a web analytics tool · Tabel 10.8–10.9</span></div>
+    <p style="margin:0 0 4px">Subbab pengumpulan data aktivitas pengunjung (page impression, unique visitor, IPV, VPV), data hasil, pemilihan alat web analytics, ketidakakuratan analisis log-file (Tabel 10.8), dan perbandingan metode pengumpulan metrik (Tabel 10.9). Cari jawaban:</p>
+    <ul>
+      <li>Mengapa <em>hits</em> menyesatkan dibanding page impression dan unique visitor?</li>
+      <li>Apa sumber <em>under-counting</em> dan <em>over-counting</em> pada analisis log-file?</li>
+      <li>Apa tiga jenis data (operasional, taktis, strategis) yang perlu diintegrasikan dalam sistem manajemen kinerja?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="5"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b>Data aktivitas pengunjung</b> mencatat jumlah pengunjung dan jalur yang mereka tempuh. <b>Page impression</b> (satu orang melihat satu halaman) lebih andal daripada <b>hit</b> (setiap berkas yang diunduh, termasuk gambar), yang jauh lebih besar dan menyesatkan sebagai "kesempatan melihat" pesan. <b>Unique visitor</b> diukur lewat cookie atau alamat IP. Rasio yang berguna: <b>IPV</b> (halaman per kunjungan, indikator keterlibatan) dan <b>VPV</b> (kunjungan per pengunjung, indikator frekuensi; lebih bermakna dilaporkan per kuartal atau tahun). Durasi kunjungan dalam menit tidak akurat karena terdongkrak pengunjung yang diam sampai sesi habis setelah 30 menit. Karena alat dan definisinya beragam, lembaga seperti IFABC, Digital Analytics Association, ABC electronic, dan JICWEBS menstandarkan definisinya.</p>
+  <p>Dulu data dikumpulkan dengan <b>analisis log-file</b> di server; kini umumnya <b>berbasis tag di peramban</b> (mis. Google Analytics), yang lebih akurat karena menghindari masalah di Tabel 10.8:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Under-counting (tercatat terlalu sedikit)</th><th>Over-counting (tercatat terlalu banyak)</th></tr></thead>
+    <tbody>
+      <tr><td>Cache di peramban pengguna; cache di proxy server; firewall yang memberi satu alamat IP untuk banyak pengguna; halaman dinamis</td><td>Frame (satu halaman tiga frame tercatat tiga page view); spider dan robot mesin pencari; berkas executable</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="cnt"><h4>🧩 Latihan: kurang terhitung atau lebih terhitung?</h4></div>
+  <p><b>Data hasil</b> (pendaftaran, permintaan informasi, respons promosi, penjualan online atau offline yang dipengaruhi situs) adalah ukuran kualitas lalu lintas yang sebenarnya. Untuk menangkap pembelian offline yang dipengaruhi situs, perusahaan bisa memakai nomor telepon khusus untuk pengunjung situs, seperti Dell, atau menanyakan asal pelanggan belakangan (mis. saat mengisi kartu garansi) agar tidak mengganggu. Sistem manajemen kinerja perlu mengintegrasikan data <b>operasional</b> (rujukan kampanye, perilaku di situs, profil pelanggan, transaksi), <b>taktis</b> (model jangkauan, model nilai seumur hidup pelanggan), dan <b>strategis</b> (kartu skor atau dasbor kontribusi kanal untuk manajemen puncak). Tabel 10.9 membandingkan metode: log-file, data berbasis peramban, data panel, data hasil, kuesioner online, focus group online, dan <em>mystery shopper</em>, masing-masing dengan kekuatan dan kelemahan.</p>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Angka "views" di platform video pendek, "pengunjung toko" di dasbor marketplace, dan "pengguna" di Google Analytics untuk situs yang sama hampir tidak pernah sama, karena definisi dan cara pengumpulannya berbeda. Sebelum membandingkan angka antarplatform dalam laporan proyek Anda, tuliskan definisi setiap metrik dan sumbernya.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u5"></div>
+  <div class="pager"><a class="btn ghost" href="#u4">← Unit 4</a><a class="btn" href="#u6">Unit 6 →</a></div>
+</section>
+
+<!-- ================= UNIT 6 ================= -->
+<section class="view" data-view="u6" data-unit="6">
+  <div class="eyebrow">Unit 6 <span class="tag">McKinsey</span><span class="tag">± 35 menit</span></div>
+  <h2>Data sebagai Investasi: Apa Kata Bukti?</h2>
+  <div class="read" data-read="6">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bughin (2016), McKinsey Quarterly · Analyzing data analytics · Gauging performance · Understanding investment patterns</span></div>
+    <p style="margin:0 0 4px">Seluruh artikel McKinsey: latar survei, metodologi (714 perusahaan, data 2013), besar imbal hasil investasi big data dibanding siklus TI sebelumnya, domain bisnis yang menguntungkan, dan tiga pola investasi yang membedakan perusahaan. Cari jawaban:</p>
+    <ul>
+      <li>Berapa rata-rata kenaikan laba awal dan setelah lima tahun, dan berapa kali lipat imbal hasil terhadap investasi?</li>
+      <li>Domain bisnis apa yang menghasilkan kenaikan laba operasional sekitar 6%?</li>
+      <li>Tiga pola investasi apa yang menjelaskan sekitar 80% kenaikan laba operasional?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="6"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Bughin (2016) memulai dari paradoks: dalam jajak pendapat informal McKinsey (2015) terhadap 20 eksekutif analitik, 90% melaporkan investasi analitik menengah hingga tinggi, tetapi survei eksekutif 2014 menemukan perbaikan pendapatan dan biaya yang hanya sedang. Untuk mengujinya, McKinsey menganalisis <b>714 perusahaan</b> yang dipilih acak di seluruh dunia, memakai data 2013. Imbal hasil diukur dengan <b>laba operasional</b>; investasi mencakup perangkat lunak, analitik, perangkat keras, dan talenta data (delapan peran kunci, termasuk data scientist, analis, dan arsitek).</p>
+  <div class="tw"><table>
+    <thead><tr><th>Temuan</th><th>Angka</th></tr></thead>
+    <tbody>
+      <tr><td>Investasi big data</td><td>Rata-rata 0,6% dari pendapatan perusahaan</td></tr>
+      <tr><td>Imbal hasil terhadap investasi</td><td>1,4 kali, naik menjadi 2,0 kali dalam lima tahun (siklus investasi komputer 1980-an: 1,1–1,9 kali)</td></tr>
+      <tr><td>Kenaikan laba operasional</td><td>Rata-rata 6% di awal, 9% untuk investasi lima tahun</td></tr>
+      <tr><td>Domain yang menguntungkan</td><td>Intelijen kompetitif, penargetan pelanggan, optimasi operasi dan rantai pasok: masing-masing sekitar 6%</td></tr>
+    </tbody>
+  </table></div>
+  <p>Tiga pola investasi menjelaskan sekitar <b>80%</b> kenaikan laba operasional: <b>berinvestasi lebih awal</b> (penggerak awal menyumbang sekitar 25% kenaikan, karena belajar lewat coba-coba), <b>menggabungkan investasi TI dan keterampilan</b> (sekitar 40%; perencanaan yang terkotak-kotak, misalnya TI menetapkan investasi terpisah dari rekrutmen SDM, merusak hasil; sebagian perusahaan menunjuk <em>chief data/analytics officer</em> untuk mengoordinasikannya), dan <b>talenta dalam skala</b> (sekitar 15%; membangun departemen, bukan merekrut satu atau dua spesialis).</p>
+  <div class="card cls" data-widget="bdf"><h4>🧩 Latihan: pola investasi yang mana?</h4></div>
+
+  <div class="card" id="bdTool">
+    <h4>📈 Kalkulator imbal hasil investasi data (rata-rata studi McKinsey)</h4>
+    <div class="calc">
+      <label>Pendapatan tahunan perusahaan (Rp juta)<input type="number" id="bdR" value="50000" min="0" step="1000"></label>
+      <label>Laba operasional tahunan (Rp juta)<input type="number" id="bdP" value="5000" min="0" step="100"></label>
+      <label>Investasi data (% pendapatan)<input type="number" id="bdI" value="0.6" min="0" step="0.1"></label>
+    </div>
+    <div class="row" style="gap:6px;margin-top:8px"><button class="chip" data-bd="mid">Perusahaan menengah</button><button class="chip" data-bd="over">Investasi 3% pendapatan</button></div>
+    <div class="res" id="bdRes"></div>
+  </div>
+  <div class="co book"><b class="t">⚠️ Catatan bacaan.</b> RPS merujuk "McKinsey (2014)", tetapi artikel di tautan tersebut ditulis Jacques Bughin dan terbit di McKinsey Quarterly pada 1 Februari 2016, dengan data perusahaan tahun 2013. Bughin sendiri menyebut jajak pendapat 20 eksekutifnya "tidak ilmiah"; temuan utamanya berasal dari sampel 714 perusahaan. Angka-angka studi adalah rata-rata, bukan janji untuk setiap perusahaan.</div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Pola "talenta dalam skala" relevan bagi perusahaan Indonesia yang merekrut satu data scientist lalu berharap transformasi data terjadi. Menurut studi ini, hasil terbesar datang dari investasi teknologi dan keterampilan yang dikoordinasikan, bukan dari satu orang atau satu alat. Studi Kasus 2 (BRIBrain) menguji gagasan ini.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u6"></div>
+  <div class="pager"><a class="btn ghost" href="#u5">← Unit 5</a><a class="btn" href="#u7">Unit 7 →</a></div>
+</section>
+
+<!-- ================= UNIT 7 ================= -->
+<section class="view" data-view="u7" data-unit="7">
+  <div class="eyebrow">Unit 7 <span class="tag">Bab 1 · Bab 10</span><span class="tag">± 35 menit</span></div>
+  <h2>"Obsessing with Customers": Budaya Data Amazon</h2>
+  <div class="read" data-read="7">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 1 · Case Study 1.2 (Mission, Proposition, Risks, Competition, Objectives and strategy) · Bab 10 · Case Study 10.2 (How 'the culture of metrics' started) · Defining goals and KPIs (bagian dasbor RACE)</span></div>
+    <p style="margin:0 0 4px">Case Study 1.2 tentang misi, proposisi, risiko, dan prinsip 1997 Amazon; bagian Case Study 10.2 tentang awal "culture of metrics"; dan saran buku tentang dasbor pemasaran. Cari jawaban:</p>
+    <ul>
+      <li>Tiga hal apa dari surat pemegang saham 1997 yang menurut Case Study 1.2 membuat Amazon mampu menghadapi persaingan?</li>
+      <li>Apa lima aturan dasar 1997 yang terus dirujuk Amazon?</li>
+      <li>Dalam diskusi tentang metrik "kenikmatan pelanggan", ukuran apa saja yang diusulkan, dan apa tujuan akhir menurut Bezos?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="7"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Misi Amazon adalah menjadi <b>perusahaan paling berorientasi pelanggan di dunia</b>. Case Study 1.2 menyebut tiga hal dari surat pemegang saham 1997 yang membuat Amazon mampu menghadapi persaingan: fokus pada kemenangan jangka panjang, narasi <b>"obsessing with customers"</b> yang sangat terlihat, dan investasi jangka panjang yang konstan pada infrastruktur teknis. Lima aturan dasar 1997 yang terus dirujuk:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Aturan 1997</th></tr></thead>
+    <tbody>
+      <tr><td>1. Fokus tanpa henti pada pelanggan</td></tr>
+      <tr><td>2. Keputusan investasi berani demi kepemimpinan jangka panjang, bukan laba jangka pendek</td></tr>
+      <tr><td>3. Fokus pada kas</td></tr>
+      <tr><td>4. Belanja secara bijak dan pertahankan budaya ramping</td></tr>
+      <tr><td>5. Rekrut dan pertahankan karyawan serbabisa dan berbakat, dengan kompensasi berbasis kepemilikan saham</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card cls" data-widget="amz"><h4>🧩 Latihan: aturan 1997 yang mana?</h4></div>
+  <p>Bagaimana obsesi pada pelanggan menjadi angka? Case Study 10.2 mengisahkan diskusi tahun 1997: untuk mengukur "kenikmatan pelanggan", peserta mengusulkan waktu di situs, rata-rata menit per sesi, pembelian, dan frekuensi kunjungan. Bezos menolak usulan yang tidak cukup spesifik dan menutup: pada akhirnya yang harus diukur adalah <em>customer ecstasy</em>. Buku mencatat ini adalah unsur analisis RFM (Bab 8). Pelajarannya: metrik pelanggan harus spesifik, terkait perilaku nyata, dan diperbaiki terus.</p>
+  <p>Untuk dasbor, buku menyarankan mengukur <b>hasil</b> (efektivitas, efisiensi, ROI), bukan sekadar aktivitas; bila mungkin dasbor dibuka ke seluruh organisasi dan tujuannya dikaitkan dengan kompensasi tim. Activity 10.2 (Tabel 10.5) mengajak Anda menentukan seberapa sering setiap kelompok metrik perlu dilaporkan dan ditindaklanjuti: tidak semua metrik perlu dipantau real time.</p>
+  <div class="co idn"><b class="t">🇮🇩 Contoh.</b> Membuka dasbor ke seluruh organisasi berarti setiap unit melihat angka yang sama. Bagi perusahaan Indonesia yang laporan kinerjanya masih berbentuk berkas yang dikirim berjenjang setiap akhir bulan, langkah ini sering lebih sulit secara budaya daripada secara teknologi.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u7"></div>
+  <div class="pager"><a class="btn ghost" href="#u6">← Unit 6</a><a class="btn" href="#cases">Studi Kasus →</a></div>
+</section>
+
+<!-- ================= CASES ================= -->
+<section class="view" data-view="cases">
+  <div class="eyebrow">Penerapan <span class="tag">± 90 menit</span></div>
+  <h2>Studi Kasus</h2>
+  <p class="lead">Satu kasus dari buku, dua kasus Indonesia, dan satu latihan individu. Alur setiap pertanyaan: <b>tulis jawaban → minta umpan balik aplikasi → nilai diri dengan checklist → buka arah jawaban</b>.</p>
+  <div class="co book"><b class="t">ℹ️ Tentang umpan balik otomatis.</b> Aplikasi memeriksa apakah konsep kunci dan penalaran ("karena", "sehingga") muncul dalam jawaban Anda. Aplikasi <b>tidak</b> bisa menilai apakah argumen Anda benar atau tajam. Skor 0–4 ini hanya umpan balik belajar, <b>bukan nilai</b>. Checklist penilaian diri menilai bagian yang tidak bisa diukur mesin.</div>
+  <div id="caseList"></div>
+  <div class="pager"><a class="btn ghost" href="#u7">← Unit 7</a><a class="btn" href="#final">Kuis Akhir →</a></div>
+</section>
+
+<!-- ================= FINAL ================= -->
+<section class="view" data-view="final">
+  <div class="eyebrow">Self-test</div>
+  <h2>Kuis Akhir: Uji Pemahaman</h2>
+  <div class="quiz" id="finalBox"></div>
+</section>
+
+<!-- ================= FLASH ================= -->
+<section class="view" data-view="cards">
+  <div class="eyebrow">Penguatan</div>
+  <h2>Flashcard Istilah Kunci</h2>
+  <p class="lead">Ketuk kartu untuk membalik. Tandai yang sudah Anda kuasai; sisanya akan muncul lagi.</p>
+  <div class="row" style="justify-content:space-between"><span class="score" id="fcCount"></span><button class="btn ghost" id="fcShuffle" style="padding:6px 12px">⤮ Acak</button></div>
+  <div class="fc" id="fc" tabindex="0" role="button" aria-label="Balik kartu"><div class="inner"><div class="face front"><b id="fcF"></b><small>ketuk untuk membalik</small></div><div class="face back"><div id="fcB"></div></div></div></div>
+  <div class="row" style="justify-content:center">
+    <button class="btn ghost" id="fcPrev">←</button>
+    <button class="btn gold" id="fcKnow">✓ Sudah hafal</button>
+    <button class="btn ghost" id="fcNext">→</button>
+  </div>
+  <p class="hint" style="text-align:center;margin-top:10px"><button class="retry" id="fcReset">Ulang semua kartu</button></p>
+</section>
+
+<!-- ================= NOTES & REFS ================= -->
+<section class="view" data-view="notes">
+  <div class="eyebrow">Rangkuman</div>
+  <h2>Catatan Saya &amp; Referensi</h2>
+  <div class="card">
+    <h3>📝 Semua jawaban Anda</h3>
+    <p class="hint">Gabungan pemanasan, hasil kalkulator, dan studi kasus. Salin atau unduh untuk dikumpulkan di MyITS Classroom bila diminta dosen.</p>
+    <div class="cq"><b>Nama &amp; NRP</b><textarea data-note="identity" style="min-height:44px" placeholder="Nama — NRP"></textarea></div>
+    <div class="row"><button class="btn" id="copyNotes">📋 Salin</button><button class="btn ghost" id="dlNotes">⬇ Unduh .txt</button><button class="btn ghost" id="resetAll" style="border-color:var(--bad);color:var(--bad)">Hapus semua kemajuan</button></div>
+    <pre id="notesPrev" style="white-space:pre-wrap;font-family:var(--f);font-size:.85rem;background:var(--sunk);padding:12px;border-radius:10px;margin-top:14px;max-height:300px;overflow:auto"></pre>
+  </div>
+
+  <h3>🧩 Ringkasan</h3>
+  <ul>
+    <li>Pengukuran kinerja mengkuantifikasi efektivitas dan efisiensi; sebaiknya dirancang sejak awal (design for analysis) dan dijalankan sebagai proses empat tahap: tujuan, pengukuran, diagnosis, tindakan korektif.</li>
+    <li>Kerangka metrik yang baik memuat metrik makro dan mikro (performance drivers), pemangku kepentingan, fleksibilitas, perbandingan lintas kanal, dan pembanding eksternal.</li>
+    <li>Lima kategori diagnostik: promosi situs, perilaku, kepuasan, hasil pemasaran, kontribusi bisnis. Referral mix dinilai dengan biaya dan pendapatan per kunjungan, bukan volume saja.</li>
+    <li>Pengukuran multichannel menangkap efek lintas kanal; KPI media sosial bertingkat dari keterlibatan hingga kontribusi bisnis.</li>
+    <li>Data harus didefinisikan dan dikumpulkan dengan benar: page impression dan unique visitor, bukan hits; waspadai under- dan over-counting; integrasikan data operasional, taktis, dan strategis.</li>
+    <li>Investasi data memberi hasil rata-rata yang sebanding dengan siklus TI sebelumnya, terutama bila dimulai awal, menggabungkan TI dan keterampilan, dan membangun talenta dalam skala. Amazon menunjukkan budaya yang menjadikan obsesi pada pelanggan sebagai metrik.</li>
+  </ul>
+  <div class="co book"><b class="t">➡️ Minggu 15: Presentasi Proyek Akhir.</b> Laporan akhir kelompok wajib memuat kerangka pengukuran kinerja (KPI dan alat analisis). Jawaban Studi Kasus 4 di topik ini adalah draf awalnya.</div>
+
+  <h3>Referensi</h3>
+  <ol class="ref">
+    <li><a href="https://www.mckinsey.com/industries/technology-media-and-telecommunications/our-insights/big-data-getting-a-better-read-on-performance" target="_blank" rel="noopener">Bughin, J. (2016, 1 Februari). Big data: Getting a better read on performance. McKinsey Quarterly.</a> Dirujuk RPS sebagai McKinsey (2014).</li>
+    <li>Chaffey, D., Hemphill, T., &amp; Edmundson-Bird, D. (2019). <em>Digital business and e-commerce management</em> (7th ed.). Pearson. Bab 1: Case Study 1.2; Bab 10: <em>Focus on Web analytics</em> dan Case Study 10.2.</li>
+    <li><a href="https://finansial.bisnis.com/read/20201113/90/1317428/iiais-2020-bri-perkenalkan-bribrain-otak-dibalik-semua-kecanggihan-teknologi-bri" target="_blank" rel="noopener">Bisnis.com. (2020, 13 November). IIAIS 2020, BRI perkenalkan BRIBrain "otak" di balik semua kecanggihan teknologi BRI.</a></li>
+    <li><a href="https://ekonomi.republika.co.id/berita/sp6z6h370/bri-manfaatkan-teknologi-ai-untuk-sistem-credit-scoring-nasabah" target="_blank" rel="noopener">Republika. (2024, 28 Desember). BRI manfaatkan teknologi AI untuk sistem credit scoring nasabah.</a></li>
+    <li><a href="https://ekonomi.bisnis.com/read/20241228/9/1827470/transaksi-harbolnas-2024-capai-rp312-triliun-di-bawah-target" target="_blank" rel="noopener">Bisnis.com. (2024, 28 Desember). Transaksi Harbolnas 2024 capai Rp31,2 triliun, di bawah target.</a></li>
+    <li><a href="https://www.fortuneidn.com/news/nilai-transaksi-harbolnas-2024-belum-mencapai-target-rp40-triliun-00-xkln4-w6d7pm/amp" target="_blank" rel="noopener">Fortune Indonesia. (2024, 30 Desember). Nilai transaksi Harbolnas 2024 belum mencapai target Rp40 triliun.</a></li>
+  </ol>
+  <p class="foot">Materi ini adalah ringkasan dan adaptasi untuk keperluan pembelajaran Pengantar Bisnis Digital (DG234101), Departemen Manajemen Bisnis ITS. Mahasiswa tetap wajib membaca bab asli pada buku acuan. Pengembang mata kuliah: Imam Baihaqi, Ph.D.</p>
+</section>
+
+</main>
+
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+/* ---------------- storage (safe) ---------------- */
+var KEY="bisdig-t14-v1", S={read:{},q:{},done:{},cls:{},notes:{},final:null,known:{},cs:{}};
+try{var raw=localStorage.getItem(KEY); if(raw){var o=JSON.parse(raw); for(var k in o) S[k]=o[k];}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} updateProgress();}
+try{var th=localStorage.getItem("bisdig-theme"); if(th) document.documentElement.setAttribute("data-theme",th);}catch(e){}
+
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove("on")},1800)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=a[i];a[i]=a[j];a[j]=x;}return a}
+var rp=function(n){return "Rp"+Math.round(n).toLocaleString("id-ID")};
+/* ---------------- units meta ---------------- */
+var UNITS=[
+ {id:"u1",t:"Sistem Manajemen Kinerja",pg:"Gambar 10.21 · Stage 1"},
+ {id:"u2",t:"Kerangka Metrik & KPI",pg:"Stage 2 · kriteria A–F"},
+ {id:"u3",t:"Lima Kategori Diagnostik",pg:"Gambar 10.22–10.23"},
+ {id:"u4",t:"Lintas Kanal & Media Sosial",pg:"Gambar 10.24–10.25"},
+ {id:"u5",t:"Mengumpulkan Data yang Andal",pg:"Stage 3 · Tabel 10.8–10.9"},
+ {id:"u6",t:"Data sebagai Investasi",pg:"Bughin (2016), McKinsey"},
+ {id:"u7",t:"Obsessing with Customers: Amazon",pg:"CS 1.2 · CS 10.2"}
+];
+
+/* ---------------- unit quizzes ---------------- */
+var QZ={
+u1:[
+ {k:"c",q:"'Doing the thing right', yaitu meminimalkan sumber daya atau waktu untuk menyelesaikan proses, adalah definisi…",o:["Efektivitas","Efisiensi","Kepuasan","Kontribusi"],a:1,e:"Efektivitas = 'doing the right thing', mencapai tujuan proses."},
+ {k:"c",q:"Tahap dalam proses pengukuran kinerja yang menganalisis penyebab selisih antara target dan aktual adalah…",o:["Penetapan tujuan","Pengukuran kinerja","Diagnosis kinerja","Tindakan korektif"],a:2,e:"Selisih ini disebut performance gap (Friedman & Furey, 1999)."},
+ {k:"r",pg:"Principles of performance management and improvement",q:"Menurut buku, Dell menerapkan design for analysis dengan…",o:["Menghapus menu navigasi","Menavigasi beranda menurut jenis bisnis sehingga proporsi tiap audiens terbaca","Memakai log-file saja","Melarang cookie"],a:1,e:"Sekaligus menghubungkan audiens ke konten yang relevan."},
+ {k:"r",pg:"Stage 1 (Adams dkk., 2000)",q:"'Pengukuran tidak dianggap prioritas atau diarahkan ke target yang salah, seperti memotong biaya' termasuk kelompok hambatan…",o:["Masalah data","Rabun jauh manajemen puncak (senior management myopia)","Masalah sumber daya","Tanggung jawab tidak jelas"],a:1,e:"Empat kelompok: myopia, tanggung jawab, sumber daya, data."}
+],
+u2:[
+ {k:"c",q:"Metrik mikro yang bila tercapai membantu tercapainya tujuan strategis disebut…",o:["Vanity metrics","Performance drivers","Lagging indicators","Hits"],a:1,e:"Mis. kunjungan dan konversi yang mendorong pendapatan."},
+ {k:"r",pg:"Stage 2: Defining the performance metrics framework",q:"Kriteria kerangka pengukuran Chaffey (2000) yang menyatakan 'one-size-fits-all' tidak diinginkan adalah…",o:["A. Metrik makro","C. Pemangku kepentingan","D. Fleksibel untuk berbagai bentuk kehadiran online","F. Pembanding pesaing"],a:2,e:"Mengikuti Adams dkk. (2000)."},
+ {k:"r",pg:"Stage 2 (top-down vs bottom-up)",q:"Menyusun tujuan mulai dari kontribusi bisnis dan hasil pemasaran, lalu turun ke kepuasan, perilaku, dan promosi situs disebut…",o:["Bottom-up","Top-down","Lateral","Agile"],a:1,e:"Bottom-up berjalan sebaliknya."}
+],
+u3:[
+ {k:"c",q:"Proporsi kunjungan yang hanya melihat satu halaman adalah…",o:["Conversion rate","Bounce rate","Attrition rate","IPV"],a:1,e:"Ukuran kunci kategori perilaku pelanggan."},
+ {k:"r",pg:"3 Customer satisfaction",q:"Menurut buku, kepuasan pelanggan sering tidak dilaporkan sama sekali karena…",o:["Tidak penting","Tidak dilaporkan langsung oleh web analytics, sehingga butuh riset seperti kuesioner","Dilarang hukum","Selalu tinggi"],a:1,e:"Padahal kepuasan vital untuk mencapai hasil kanal."},
+ {k:"r",pg:"1 Business contribution",q:"Saat meluncurkan e-commerce pada 1998, easyJet menetapkan target kontribusi internet…",o:["10% pada 1999","30% pada 2000, dan tercapai pada 1999","50% pada 2005","100% pada 2000"],a:1,e:"Didukung sumber daya dan rencana komunikasi."},
+ {k:"r",pg:"2 Marketing outcomes",q:"Contoh buku: dari 10.000 pengunjung, 500 mendaftar. Konversi pengunjung ke pendaftaran adalah…",o:["0,5%","2%","5%","50%"],a:2,e:"Konversi ke pembelian pada contoh yang sama 2% (200 pembeli)."}
+],
+u4:[
+ {k:"c",q:"Pelanggan yang meriset online lalu membeli di toko fisik disebut pelanggan…",o:["Hibrida","Pasif","Detraktor","Organik"],a:0,e:"Salah satu ukuran yang disarankan Forrester."},
+ {k:"r",pg:"Multichannel evaluation (Wilson, 2008)",q:"Menurut Wilson (2008), aspek terpenting pengukuran multichannel adalah…",o:["Jumlah pengikut","Efek lintas kanal (channel cross-over effects)","Kecepatan server","Jumlah iklan"],a:1,e:"Mis. iklan pencarian yang mendorong kunjungan ke toko."},
+ {k:"r",pg:"Focus on Measuring social media marketing (Altimeter, 2011)",q:"Menurut Altimeter, KPI media sosial yang paling mudah dikumpulkan tetapi paling kecil nilainya adalah…",o:["KPI bisnis","KPI jangkauan dan pengaruh","KPI keterlibatan","KPI keuangan"],a:2,e:"Tidak langsung menunjukkan kontribusi pada nilai bisnis."}
+],
+u5:[
+ {k:"c",q:"Ukuran yang menunjukkan satu orang melihat satu halaman, lebih andal daripada hit, adalah…",o:["Page impression","Bounce","Session","Cookie"],a:0,e:"Hit menghitung setiap berkas yang diunduh, termasuk gambar."},
+ {k:"r",pg:"Stage 3 (IPV dan durasi)",q:"Mengapa buku menilai durasi kunjungan dalam menit tidak akurat?",o:["Karena server lambat","Karena terdongkrak pengunjung yang diam sampai sesi habis setelah 30 menit","Karena dihitung per hari","Karena tidak ada cookie"],a:1,e:"IPV lebih baik sebagai indikator keterlibatan."},
+ {k:"r",pg:"Tabel 10.8",q:"Menurut Tabel 10.8, spider dan robot mesin pencari pada analisis log-file menyebabkan…",o:["Under-counting","Over-counting","Tidak berpengaruh","Kehilangan data penjualan"],a:1,e:"Cache dan firewall menyebabkan under-counting."},
+ {k:"r",pg:"Collecting site outcome data",q:"Cara yang disebut buku untuk mengetahui pesanan telepon yang dipengaruhi situs adalah…",o:["Menebak","Memakai nomor telepon khusus untuk pengunjung situs","Menghapus nomor telepon","Membeli data panel"],a:1,e:"Dell melakukannya."}
+],
+u6:[
+ {k:"c",q:"Dalam studi Bughin (2016), imbal hasil investasi big data diukur dengan…",o:["Jumlah pengikut","Laba operasional","Jumlah server","Harga saham"],a:1,e:"Menangkap kenaikan produktivitas dan kekuatan harga."},
+ {k:"r",pg:"Analyzing data analytics",q:"Studi utama McKinsey dalam artikel memakai sampel…",o:["20 eksekutif","714 perusahaan acak di seluruh dunia dengan data 2013","100 start-up","Seluruh perusahaan Fortune 500"],a:1,e:"Jajak 20 eksekutif hanya latar yang disebut 'tidak ilmiah'."},
+ {k:"r",pg:"Gauging performance",q:"Rata-rata investasi big data setara 0,6% pendapatan dan menghasilkan…",o:["0,5 kali investasi","1,4 kali, naik menjadi 2,0 kali dalam lima tahun","10 kali","Tidak ada imbal hasil"],a:1,e:"Sebanding dengan siklus investasi komputer 1980-an (1,1–1,9 kali)."},
+ {k:"r",pg:"Understanding investment patterns",q:"Pola investasi yang menyumbang porsi terbesar (sekitar 40%) kenaikan laba adalah…",o:["Investasi lebih awal","Menggabungkan investasi TI dan keterampilan","Talenta dalam skala","Membeli perangkat keras"],a:1,e:"Investasi awal sekitar 25%, talenta dalam skala sekitar 15%."}
+],
+u7:[
+ {k:"c",q:"Misi Amazon menurut Case Study 1.2 adalah menjadi…",o:["Toko buku terbesar","Perusahaan paling berorientasi pelanggan di dunia","Perusahaan cloud termurah","Perusahaan logistik terbesar"],a:1,e:"Juga tempat siapa pun bisa membeli apa pun."},
+ {k:"r",pg:"Case Study 1.2 · Competition",q:"Menurut Case Study 1.2, tiga hal dari surat 1997 yang membuat Amazon mampu bersaing adalah…",o:["Harga termurah, iklan TV, toko fisik","Fokus jangka panjang, obsessing with customers, dan investasi infrastruktur teknis jangka panjang","Akuisisi, merger, dan IPO","Diskon, voucher, dan cashback"],a:1,e:"Ini memberi Amazon posisi unik di ritel, konten, dan AWS."},
+ {k:"r",pg:"Case Study 1.2 · Objectives and strategy",q:"Mana yang TIDAK termasuk aturan dasar Amazon 1997?",o:["Fokus pada kas","Belanja bijak dan budaya ramping","Kompensasi karyawan berbasis saham","Maksimalkan laba kuartalan"],a:3,e:"Justru: investasi demi kepemimpinan jangka panjang, bukan laba jangka pendek."},
+ {k:"r",pg:"Case Study 10.2 · How 'the culture of metrics' started",q:"Dalam diskusi 1997, Bezos menyebut tujuan akhir pengukuran pelanggan adalah…",o:["Customer enjoyment","Customer ecstasy","Customer count","Customer cost"],a:1,e:"Buku mencatat diskusi itu memuat unsur analisis RFM."}
+]
+};
+
+/* ---------------- classify drills ---------------- */
+var CL={
+bar:{o:["Rabun jauh manajemen","Tanggung jawab tidak jelas","Sumber daya","Masalah data"],it:[
+ ["Direksi hanya menanyakan penghematan biaya, bukan perbaikan layanan.","Rabun jauh manajemen","Salah sasaran."],
+ ["Tidak ada yang tahu siapa yang harus memperbarui dasbor setiap bulan.","Tanggung jawab tidak jelas","Pemilik sistem tidak ada."],
+ ["Data penjualan toko dan online ada di dua sistem yang tidak terhubung.","Sumber daya","Kurang sistem terintegrasi."],
+ ["Laporan berisi ratusan angka sehingga tidak ada yang membacanya.","Masalah data","Data berlebihan."],
+ ["Tidak ada data industri untuk membandingkan kinerja.","Masalah data","Data pembanding terbatas."],
+ ["Pimpinan menganggap pengukuran urusan teknis, bukan prioritas bisnis.","Rabun jauh manajemen","Tidak dianggap prioritas."]
+]},
+lvl:{o:["Makro (efektivitas)","Mikro (performance driver)"],it:[
+ ["Porsi penjualan online terhadap total penjualan.","Makro (efektivitas)","Kontribusi bisnis."],
+ ["ROI kanal digital tahun ini.","Makro (efektivitas)","Tujuan strategis."],
+ ["Tingkat klik iklan pencarian.","Mikro (performance driver)","Efisiensi taktik."],
+ ["Persentase pengunjung yang memasukkan barang ke keranjang.","Mikro (performance driver)","Mendorong konversi."],
+ ["Biaya per akuisisi pelanggan dari email.","Mikro (performance driver)","Efisiensi taktik."],
+ ["Laba dari kanal online.","Makro (efektivitas)","Kontribusi bisnis."]
+]},
+cat5:{o:["Promosi situs","Perilaku pelanggan","Kepuasan pelanggan","Hasil pemasaran","Kontribusi bisnis"],it:[
+ ["Biaya per pesanan dari iklan media sosial.","Promosi situs","Referral mix."],
+ ["Bounce rate halaman produk.","Perilaku pelanggan","Ukuran kunci perilaku."],
+ ["Skor survei kepuasan setelah pesanan diterima.","Kepuasan pelanggan","Riset pendapat pelanggan."],
+ ["Jumlah pendaftar newsletter bulan ini.","Hasil pemasaran","Outcome."],
+ ["Persentase pengunjung yang hilang antara keranjang dan pembayaran.","Hasil pemasaran","Atrisi terkait konversi."],
+ ["Porsi penjualan online terhadap total penjualan perusahaan.","Kontribusi bisnis","Contoh target easyJet."],
+ ["Kata kunci yang diketik pengunjung sebelum masuk situs.","Promosi situs","Asal rujukan."]
+]},
+alt:{o:["KPI bisnis","KPI jangkauan & pengaruh","KPI keterlibatan"],it:[
+ ["Pendapatan dari penjualan yang diatribusikan ke media sosial.","KPI bisnis","Kontribusi pendapatan."],
+ ["Share of voice merek dibanding pesaing.","KPI jangkauan & pengaruh","Perbandingan relatif."],
+ ["Jumlah suka dan komentar pada unggahan.","KPI keterlibatan","Mudah dikumpulkan, nilai kecil."],
+ ["Sentimen percakapan tentang merek.","KPI jangkauan & pengaruh","Reach and influence."],
+ ["Skor kepuasan pelanggan (CSAT) dari layanan lewat media sosial.","KPI bisnis","Ukuran lunak tingkat bisnis."],
+ ["Jumlah kali akun disebut pengguna lain.","KPI keterlibatan","Interaksi."]
+]},
+cnt:{o:["Under-counting","Over-counting"],it:[
+ ["Pengguna membuka ulang halaman yang tersimpan di cache peramban.","Under-counting","Tidak meminta ulang ke server."],
+ ["Spider mesin pencari menjelajahi seluruh situs.","Over-counting","Tercatat sebagai page impression."],
+ ["Kantor memakai proxy server yang menyimpan salinan halaman populer.","Under-counting","Permintaan tidak sampai ke server."],
+ ["Satu halaman tersusun dari tiga frame.","Over-counting","Tercatat tiga page view."],
+ ["Firewall perusahaan memberi satu alamat IP untuk ratusan karyawan.","Under-counting","Banyak orang tampak sebagai satu."],
+ ["Berkas executable tercatat sebagai hit.","Over-counting","Kecuali dikeluarkan."]
+]},
+bdf:{o:["Investasi lebih awal","Koordinasi TI & keterampilan","Talenta dalam skala"],it:[
+ ["Perusahaan mulai bereksperimen dengan analitik bertahun-tahun sebelum pesaing.","Investasi lebih awal","Belajar lewat coba-coba."],
+ ["Chief data officer menyelaraskan belanja teknologi dengan rencana rekrutmen.","Koordinasi TI & keterampilan","Menghindari perencanaan terkotak."],
+ ["Bank membangun departemen analitik berisi puluhan data scientist dan analis.","Talenta dalam skala","Bukan satu atau dua spesialis."],
+ ["TI membeli platform data, sementara SDM tidak merekrut orang yang bisa memakainya.","Koordinasi TI & keterampilan","Contoh kegagalan koordinasi."],
+ ["Penggerak awal menyumbang sekitar 25% kenaikan laba dalam sampel.","Investasi lebih awal","Angka dari artikel."],
+ ["Sekitar 15% kenaikan laba terkait perekrutan ahli data dan analitik.","Talenta dalam skala","Angka dari artikel."]
+]},
+amz:{o:["Fokus pada pelanggan","Investasi jangka panjang","Fokus pada kas","Budaya ramping","Talenta & saham"],it:[
+ ["Prime ditawarkan meski pengiriman gratis menekan margin jangka pendek.","Investasi jangka panjang","Kepemimpinan jangka panjang."],
+ ["Metrik dirancang untuk mengukur 'customer ecstasy'.","Fokus pada pelanggan","Fokus tanpa henti pada pelanggan."],
+ ["Program pengurangan biaya yang terus-menerus.","Budaya ramping","Belanja bijak."],
+ ["Kompensasi karyawan dititikberatkan pada kepemilikan saham.","Talenta & saham","Aturan kelima."],
+ ["Memantau arus kas, bukan hanya laba akuntansi.","Fokus pada kas","Aturan ketiga."],
+ ["Investasi bertahun-tahun pada AWS dan infrastruktur teknis.","Investasi jangka panjang","Investasi berani."]
+]}
+};
+
+/* ---------------- cases ---------------- */
+var CASES=[
+ {id:"c1",t:"Studi Kasus 1 — Amazon: \"obsessing with customers\" dan peran data",src:"Chaffey et al., Bab 1, Case Study 1.2 (dengan Case Study 10.2)",
+  body:"<p>Amazon dimulai pada 1994 sebagai Cadabra di garasi Jeff Bezos. Pada 2015 pendapatannya US$107 miliar. Misinya menjadi <b>perusahaan paling berorientasi pelanggan di dunia</b>, tempat siapa pun bisa membeli apa pun. Proposisi intinya: membeli apa saja dengan harga rendah, sangat nyaman, dan cepat diterima; untuk AWS, biaya lebih rendah, kecepatan, dan operasi global. Pendapatannya berasal dari ritel, platform (AWS dan Marketplace), konten, dan langganan Prime.</p><p>Case Study 1.2 mencatat risiko Amazon: persaingan, ekspansi global, prakiraan persediaan dan pemenuhan pesanan (terutama musim puncak seperti Black Friday), keamanan data, aktivitas ilegal pihak ketiga di platformnya, dan laju perubahan yang konstan. Untuk menghadapinya, Amazon merujuk surat pemegang saham 1997: fokus jangka panjang, narasi <b>\"obsessing with customers\"</b>, dan investasi jangka panjang pada infrastruktur teknis. Lima aturan dasarnya: fokus tanpa henti pada pelanggan, investasi berani demi kepemimpinan jangka panjang, fokus pada kas, belanja bijak dan budaya ramping, serta talenta dengan kompensasi berbasis saham.</p><p>Case Study 10.2 memperlihatkan bagaimana obsesi itu menjadi angka. Pada 1997 Bezos menyatakan \"At Amazon, we will have a Culture of Metrics\" dan memimpin diskusi tentang cara mengukur \"kenikmatan pelanggan\" (waktu di situs, menit per sesi, pembelian, frekuensi kunjungan), dengan tujuan akhir mengukur <em>customer ecstasy</em>. Amazon memantau kepuasan pelanggan, ketersediaan dan kecepatan situs, serta pendapatan per menit dengan alarm; pada 2004 American Customer Satisfaction Index memberi Amazon skor 88, tertinggi yang pernah tercatat di industri jasa saat itu.</p>",
+  qs:[
+   ["Bagaimana prinsip \"obsessing with customers\" diterjemahkan menjadi sistem pengukuran di Amazon? Petakan metrik yang disebut kasus ke lima kategori diagnostik Chaffey.","Prinsip itu menjadi metrik spesifik: perilaku (waktu, frekuensi kunjungan, unsur RFM), kepuasan (ACSI 88, pemantauan kepuasan), hasil pemasaran (pembelian, konversi dari eksperimen), kontribusi bisnis (pendapatan per menit, laba per pengunjung), dan promosi (afiliasi, iklan pencarian terotomasi). Bezos menuntut metrik yang spesifik dan terkait perilaku nyata, bukan perkiraan kabur, dan proses empat tahap berjalan terus: target, ukur, diagnosis, tindakan."],
+   ["Pilih tiga risiko Amazon dalam Case Study 1.2. Untuk masing-masing, usulkan satu KPI dan jelaskan apakah KPI itu metrik makro atau mikro.","Contoh: (1) risiko pemenuhan pesanan di musim puncak: persentase pesanan tiba sesuai janji (mikro, mendorong kepuasan dan pembelian ulang); (2) keamanan data: jumlah insiden dan waktu deteksi (mikro, melindungi kepercayaan); (3) penjual pihak ketiga ilegal: persentase produk dilaporkan palsu per 1.000 pesanan (mikro); dan kontribusi Marketplace terhadap laba (makro). Jawaban yang baik mengaitkan KPI mikro ke tujuan makro yang didukungnya."],
+   ["Apa yang membuat budaya data Amazon sulit ditiru perusahaan lain? Kaitkan dengan temuan Bughin (2016) tentang investasi awal, koordinasi TI dan keterampilan, serta talenta dalam skala.","Amazon memulai sangat awal (1997), sehingga mendapat keuntungan penggerak awal dan pembelajaran bertahun-tahun; komitmen pimpinan menyatukan investasi teknologi (infrastruktur, Weblab) dengan orang dan proses; dan talenta dalam skala dengan kompensasi berbasis saham. Menurut Bughin, ketiga pola ini menjelaskan sekitar 80% kenaikan laba. Perusahaan lain bisa membeli alat, tetapi tidak bisa membeli waktu belajar dan budaya yang sudah terbentuk."]
+  ]},
+ {id:"c2",t:"Studi Kasus 2 — 🇮🇩 BRIBrain: big data dan AI di Bank BRI",src:"Bisnis.com (13 Nov 2020); Republika (28 Des 2024)",
+  body:"<p>Pada Inovasi Indonesia Artificial Intelligence Summit (November 2020), Bank BRI memperkenalkan <b>BRIBrain</b>, sistem berbasis big data dan kecerdasan buatan yang menyimpan, mengolah, dan mengonsolidasikan informasi dari berbagai sumber. Direktur Digital, TI, dan Operasi saat itu, Indra Utoyo, menyebutnya \"otak\" bagi BRI dalam mengambil keputusan bisnis yang tepat dan presisi, dengan tingkat risiko terukur. Empat pemanfaatan yang disebut: <b>BRILink Score</b> (menilai kelayakan calon agen BRILink secara cepat dan real time), <b>credit scoring</b> dengan machine learning (persetujuan dan pencairan instan, risiko kredit macet lebih rendah), <b>customer profiling score</b> (memetakan profil nasabah agar komunikasi lebih tepat), dan <b>fraud score</b> (mendeteksi anomali transaksi).</p><p>Pada Desember 2024, Direktur Digital dan TI Arga M. Nugraha menyatakan BRI memakai AI untuk credit scoring, deteksi penipuan, dan analisis risiko dengan big data dari berbagai sumber, termasuk data tidak terstruktur. Menurutnya, AI meningkatkan produktivitas tanpa menggantikan peran manusia, dan keberhasilannya bergantung pada kompleksitas pekerjaan yang diotomasi serta kemampuan individu memakai teknologinya. Kedua sumber berita ini <b>tidak melaporkan angka hasil</b> seperti akurasi, penurunan kredit macet, atau waktu proses.</p>",
+  qs:[
+   ["Petakan empat pemanfaatan BRIBrain ke domain bisnis dalam studi Bughin (intelijen kompetitif, penargetan pelanggan, optimasi operasi). Untuk masing-masing, usulkan satu KPI efektivitas dan satu KPI efisiensi.","Customer profiling: penargetan pelanggan (efektivitas: konversi penawaran; efisiensi: biaya per nasabah baru). Credit scoring: operasi dan risiko (efektivitas: rasio kredit macet segmen yang disetujui; efisiensi: waktu dari pengajuan ke pencairan). Fraud score: operasi (efektivitas: nilai penipuan yang dicegah; efisiensi: tingkat peringatan palsu). BRILink Score: operasi dan jaringan (efektivitas: kinerja transaksi agen baru; efisiensi: waktu verifikasi agen)."],
+   ["Sumber berita tidak memuat angka hasil. Bila Anda ditugaskan mengevaluasi nilai BRIBrain, rancang sistem pengukurannya dengan empat tahap Gambar 10.21 dan sebutkan data yang dibutuhkan.","Tahap 1: tetapkan tujuan (mis. menurunkan kredit macet dan waktu proses tanpa menurunkan inklusi). Tahap 2: ukur dengan data sebelum dan sesudah, atau kelompok kontrol yang tidak memakai skor AI; data pengajuan, persetujuan, pembayaran, penipuan, biaya. Tahap 3: diagnosis selisih per segmen (wilayah, produk, jenis nasabah). Tahap 4: tindakan korektif pada model, aturan, atau pelatihan staf; tinjau ulang kesesuaian metrik. Tanpa kelompok pembanding, kenaikan kinerja tidak bisa diatribusikan ke AI."],
+   ["Pernyataan bahwa keberhasilan AI bergantung pada kemampuan individu memakainya sejalan dengan temuan Bughin. Jelaskan kaitannya, dan risiko apa bila bank hanya berinvestasi pada teknologi.","Bughin menemukan sekitar 40% kenaikan laba berasal dari investasi TI dan keterampilan yang dikoordinasikan, dan 15% dari talenta dalam skala. Model AI yang canggih tanpa staf yang memahami, mempercayai, dan memakai hasilnya tidak mengubah keputusan kredit atau layanan. Risiko bila hanya teknologi: skor diabaikan atau dipakai membabi buta, bias model tidak terdeteksi, dan investasi tidak menghasilkan laba. Perlu pelatihan, peran data yang cukup, dan tata kelola."]
+  ]},
+ {id:"c3",t:"Studi Kasus 3 — 🇮🇩 Harbolnas 2024: membaca angka kinerja secara kritis",src:"Bisnis.com (28 Des 2024); Fortune Indonesia (30 Des 2024)",
+  body:"<p>Hari Belanja Online Nasional (Harbolnas) 2024 berlangsung 10–16 Desember 2024 dengan 407 peserta: pedagang, peritel online, dan penyedia marketplace. Menurut siaran pers Kementerian Koordinator Bidang Perekonomian, nilai transaksinya <b>Rp31,2 triliun</b>, naik 21,4% dari Rp25,7 triliun pada 2023, tetapi <b>di bawah target pemerintah Rp40 triliun</b>. Menteri Perdagangan menyebut target itu didasarkan pada pertumbuhan nilai transaksi yang stabil sejak 2019, sementara Menteri UMKM sebelumnya menyebut harapan sekitar Rp30 triliun.</p><p>Laporan yang sama menyebut sekitar <b>98 juta orang</b> berbelanja dengan rata-rata Rp318.000 per orang. Produk lokal menyumbang 52% transaksi (Rp16,1 triliun, naik 31%). Kategori teratas: pakaian olahraga dan aksesori fesyen, perawatan diri, serta makanan dan minuman. Belanja lewat siaran langsung populer, dan menurut Fortune Indonesia, 50% pembeli membeli lewat tautan afiliasi yang dibagikan di media sosial. Laporan-laporan tersebut <b>tidak menjelaskan metode pengumpulan datanya</b>, misalnya apakah berasal dari data transaksi platform atau survei.</p>",
+  qs:[
+   ["Nilai Harbolnas dengan proses manajemen kinerja empat tahap. Apakah target Rp40 triliun ditetapkan dengan baik (SMART)? Apa yang perlu didiagnosis dari selisih Rp8,8 triliun?","Target spesifik dan terukur, tetapi dasarnya (tren sejak 2019) tidak dijelaskan rinci, dan ada target lain yang berbeda dari kementerian lain (sekitar Rp30 triliun), sehingga kurang realistis atau tidak selaras. Diagnosis selisih: apakah volume pembeli, nilai belanja per orang, atau jumlah peserta yang di bawah perkiraan; kategori dan kanal mana yang tumbuh dan mana yang tidak; serta faktor luar seperti daya beli. Tindakan korektif harus diarahkan ke driver yang tertinggal."],
+   ["\"98 juta orang\" berbelanja dalam seminggu, padahal metodenya tidak dijelaskan. Gunakan konsep Unit 5 (unique visitor vs kunjungan, data platform vs survei, under/over-counting) untuk menilai keandalan angka ini.","Angka 98 juta × Rp318.000 cocok secara aritmetika dengan Rp31,2 triliun, tetapi tidak jelas apakah 98 juta adalah orang unik atau akun atau transaksi. Satu orang bisa berbelanja di beberapa platform dan terhitung lebih dari sekali (over-counting), sementara transaksi di luar peserta tidak tercatat (under-counting). Data platform lebih akurat untuk transaksi tetapi sulit dideduplikasi lintas platform; survei bisa mengestimasi orang unik tetapi bergantung pada sampel. Laporan kinerja yang baik menyebut definisi metrik, sumber, dan metodenya."],
+   ["Susun kerangka KPI yang lebih baik untuk menilai keberhasilan Harbolnas bagi tujuan pemerintah (mis. mendorong produk lokal), memakai metrik makro, mikro, dan efek lintas kanal.","Makro: nilai transaksi produk lokal dan porsinya, pertumbuhan penjualan UMKM peserta setelah Harbolnas (bukan hanya selama acara), pembelian ulang. Mikro: jumlah pembeli unik terdeduplikasi, konversi per kanal (marketplace, siaran langsung, afiliasi), nilai pesanan rata-rata, biaya promosi per transaksi. Lintas kanal: pengaruh siaran langsung dan tautan afiliasi terhadap penjualan di kanal lain, serta apakah transaksi hanya bergeser dari minggu lain (kanibalisasi waktu). Sertakan definisi dan metode pengumpulan data."]
+  ]},
+ {id:"c4",t:"Studi Kasus 4 — 🇮🇩 Latihan individu: kerangka KPI untuk perusahaan proyek kelompok",src:"Latihan sesuai RPS Minggu 14–15",noans:true,
+  body:"<p>Gunakan perusahaan atau UMKM Indonesia yang dianalisis kelompok Anda sejak Milestone 1. Susun <b>draf kerangka pengukuran kinerja</b> untuk solusi bisnis digital yang diusulkan di Milestone 2. Draf ini menjadi bahan bagian \"kerangka pengukuran kinerja (KPI dan alat analisis)\" pada laporan akhir Minggu 15.</p><p>Gunakan <b>pohon KPI (Unit 2)</b> dan <b>kalkulator referral mix (Unit 3)</b> dengan angka perkiraan yang masuk akal, dan sebutkan bila angka itu asumsi.</p>",
+  qs:[
+   ["Tetapkan satu tujuan makro (SMART) untuk solusi digital kelompok Anda, lalu turunkan menjadi tiga sampai lima performance driver. Jelaskan bagaimana setiap driver memengaruhi tujuan makro.",""],
+   ["Petakan KPI Anda ke lima kategori diagnostik Chaffey. Kategori mana yang belum terukur, dan mengapa itu berisiko?",""],
+   ["Untuk setiap KPI, tuliskan definisi, sumber data, alat analisis, frekuensi pelaporan, dan penanggung jawabnya. Sebutkan satu masalah akurasi data yang mungkin muncul dan cara menguranginya.",""]
+  ]}
+];
+
+var LO_NAMES={1:"Sistem manajemen kinerja",2:"Kerangka metrik & KPI",3:"Lima kategori diagnostik",4:"Lintas kanal & media sosial",5:"Pengumpulan data",6:"Data sebagai investasi",7:"Budaya data Amazon"};
+
+/* ---------------- self-test bank ---------------- */
+var FINAL=[
+ [1,"Menurut buku, mengapa pengukuran sering dibangun secara retrospektif?",["Karena wajib hukum","Karena sering diabaikan saat situs pertama dibuat dan baru dipertanyakan setelah berjalan","Karena alatnya belum ada","Karena pelanggan memintanya"],1,"Akibatnya design for analysis sulit diterapkan."],
+ [1,"Contoh design for analysis menurut buku adalah…",["Memperpanjang formulir menjadi satu halaman","Memecah formulir panjang menjadi beberapa bagian untuk melihat bagian mana yang diminati","Menghapus analitik","Menyembunyikan menu"],1,"Juga mengukur atrisi di setiap langkah pembelian."],
+ [1,"'Doing the right thing' adalah…",["Efisiensi","Efektivitas","Produktivitas","Kepuasan"],1,"Efisiensi = doing the thing right."],
+ [1,"Tahap pertama proses pengukuran kinerja (Gambar 10.21) adalah…",["Tindakan korektif","Penetapan tujuan sistem pengukuran","Diagnosis","Pengumpulan data"],1,"Mengambil tujuan strategis pemasaran internet sebagai masukan."],
+ [1,"Menurut Bourne dkk. dan Plant (2000), selain meninjau tujuan, perusahaan juga perlu meninjau…",["Harga produk","Kesesuaian metriknya","Logo","Gaji direksi"],1,"Metrik yang dulu tepat bisa tidak relevan lagi."],
+ [1,"'Budaya pengukuran' berarti…",["Hanya analis yang mengumpulkan data","Setiap karyawan sadar perlunya mengumpulkan data kinerja dan kebutuhan pelanggan","Pengukuran dilakukan setahun sekali","Data dirahasiakan"],1,"Pengukuran tidak boleh ad hoc."],
+ [2,"Kriteria A kerangka metrik Chaffey (2000) adalah…",["Metrik makro efektivitas, termasuk kontribusi pendapatan dan ROI","Jumlah pengikut","Kecepatan server","Warna situs"],0,"Kriteria B: metrik mikro efisiensi."],
+ [2,"Kriteria E kerangka metrik menekankan…",["Membandingkan kinerja kanal digital dengan kanal lain","Mengabaikan kanal offline","Mengukur satu kanal saja","Mengukur karyawan"],0,"Mengikuti Friedman & Furey (1999)."],
+ [2,"Tiga tingkat ukuran yang disarankan buku adalah…",["Harian, mingguan, bulanan","Ukuran bisnis, ukuran pemasaran, ukuran pemasaran internet","Volume, kualitas, nilai","Bronze, silver, gold"],1,"Lihat bagian penetapan tujuan di Bab 5."],
+ [2,"Pendekatan bottom-up menyatakan bahwa…",["Kontribusi bisnis menentukan promosi","Keberhasilan promosi, perilaku, dan kepuasan berurutan menghasilkan hasil pemasaran dan kontribusi bisnis","Tujuan tidak perlu","Hanya kepuasan yang penting"],1,"Top-down berjalan dari kontribusi bisnis ke bawah."],
+ [2,"Pendapatan per kunjungan berguna karena…",["Hanya mengukur volume","Menggabungkan kualitas dan nilai, menunjukkan efisiensi perjalanan konversi","Tidak bisa dihitung","Sama dengan bounce rate"],1,"Lihat Defining goals and KPIs."],
+ [3,"Dalam kategori promosi situs, ukuran kuncinya adalah…",["Bounce rate","Referral mix","ACSI","Arus kas"],1,"% rujukan, CPA, pendapatan per kunjungan, kontribusi."],
+ [3,"Kualitas lalu lintas dari sebuah sumber rujukan ditentukan oleh…",["Jumlah kunjungan saja","Apakah pengunjungnya pasar sasaran dan cenderung berkonversi (konversi, bounce, biaya akuisisi)","Warna iklan","Panjang URL"],1,"Volume tanpa kualitas menyesatkan."],
+ [3,"Atrisi tertinggi di situs e-commerce biasanya terjadi antara…",["Beranda dan halaman produk","Memasukkan barang ke keranjang dan membeli","Membeli dan menerima barang","Pencarian dan beranda"],1,"Dikurangi lewat usability dan pesan yang persuasif (CRO)."],
+ [3,"Untuk perusahaan yang tidak menjual online, kontribusi kanal digital dinilai dengan…",["Mengabaikannya","Menilai peran kanal digital dalam memengaruhi pembelian","Menghitung hits","Menghapus situs"],1,"Juga kontribusi layanan."],
+ [3,"Teknik untuk menilai tingkat pengembalian kanal dari waktu ke waktu adalah…",["Arus kas terdiskonto","Card sorting","A/B test","Bounce rate"],0,"Discounted cash flow."],
+ [4,"Mana yang termasuk rekomendasi Forrester untuk pengukuran multichannel?",["Jumlah pelanggan hibrida dan konversi lintas kanal","Jumlah karyawan","Jumlah server","Jumlah logo"],0,"Juga belanja pelanggan di pesaing per kanal."],
+ [4,"Gambar 10.24 menunjukkan…",["Kartu skor kinerja multichannel gaya balanced scorecard untuk peritel","Wireframe","Peta proses","Model hook"],0,"Membandingkan kinerja kanal."],
+ [4,"Nilai seorang pengikut media sosial sulit ditetapkan karena…",["Pengikut tidak nyata","Perilaku individu di jejaring tidak bisa dilacak sepenuhnya","Dilarang hukum","Platform gratis"],1,"Yang bisa dinilai: tingkat pembelian relatif dari kanal sosial."],
+ [4,"Share of voice dan sentimen termasuk KPI…",["Bisnis","Jangkauan dan pengaruh","Keterlibatan","Operasional"],1,"Altimeter (2011)."],
+ [5,"IPV (impressions per visit) menunjukkan…",["Frekuensi kunjungan","Keterlibatan dengan situs","Biaya iklan","Jumlah server"],1,"VPV menunjukkan frekuensi."],
+ [5,"VPV lebih bermakna dilaporkan per…",["Jam","Hari","Kuartal atau tahun","Detik"],2,"Dalam sebulan tidak banyak pengunjung kembali."],
+ [5,"Google Analytics termasuk metode…",["Log-file server","Berbasis tag di peramban","Data panel","Mystery shopper"],1,"Lebih akurat dari log-file karena menghindari masalah Tabel 10.8."],
+ [5,"Kelemahan data panel menurut Tabel 10.9 adalah…",["Mahal sekali","Bergantung pada ekstrapolasi dari sampel terbatas yang mungkin tidak representatif","Tidak ada data demografi","Tidak bisa membandingkan pesaing"],1,"Kelebihannya: perbandingan pesaing dan profil demografi."],
+ [5,"Kelemahan kuesioner online menurut Tabel 10.9 adalah…",["Mahal","Bias sampel: cenderung diisi pendukung setia atau pelanggan kecewa","Tidak bisa mengukur kepuasan","Tidak bisa dianalisis"],1,"Kelebihannya: murah dan bisa mengukur kepuasan."],
+ [5,"Data strategis dalam sistem manajemen kinerja disajikan sebagai…",["Log-file mentah","Kartu skor atau dasbor kontribusi kanal untuk manajemen puncak","Kode HTML","Daftar kata kunci"],1,"Data operasional dan taktis berada di bawahnya."],
+ [5,"Mengapa unique visitor lebih akurat bila memadukan alamat IP dengan cookie dan jenis peramban?",["Karena IP saja bisa mewakili banyak orang (mis. di balik firewall)","Karena cookie gratis","Karena lebih cepat","Karena diwajibkan Google"],0,"Lihat Comparing apples to oranges."],
+ [6,"Jajak pendapat 2015 terhadap 20 eksekutif analitik menemukan berapa persen melaporkan investasi analitik menengah hingga tinggi?",["20%","30%","60%","90%"],3,"30% menyebutnya 'sangat signifikan'; 20% menganggap analitik jalur terpenting keunggulan bersaing."],
+ [6,"Talenta dalam studi McKinsey diukur pada…",["Satu peran","Delapan peran kunci, termasuk data scientist, analis, dan arsitek","Semua karyawan","Hanya CEO"],1,"Lihat metodologi."],
+ [6,"Menurut Bughin, pada perusahaan konsumen kenaikan pendapatan…",["Jauh lebih tinggi dari kenaikan laba","Jauh lebih rendah dari kenaikan laba","Sama persis","Negatif"],1,"Perusahaan B2B menunjukkan pola cermin di sisi biaya."],
+ [6,"Contoh perencanaan terkotak-kotak yang merusak hasil menurut artikel adalah…",["CEO memimpin data","TI menetapkan investasi terpisah dari rekrutmen SDM","Merekrut data scientist","Investasi awal"],1,"Solusinya koordinasi, mis. lewat chief data officer."],
+ [6,"Tiga pola investasi dalam artikel bersama-sama menjelaskan sekitar…",["20%","50%","80%","100%"],2,"Investasi awal 25%, koordinasi 40%, talenta 15%."],
+ [6,"Saran penutup Bughin bagi pemimpin adalah…",["Berhenti berinvestasi","Mengikuti perkembangan, menyeimbangkan investasi keterampilan dan teknologi, dan menarik talenta terbaik","Membeli satu alat","Menunggu pesaing"],1,"Untuk mengubah hasil sedang menjadi besar."],
+ [7,"Risiko Amazon dalam Case Study 1.2 yang terkait penjual barang palsu adalah…",["Persaingan","Aktivitas ilegal pihak ketiga di platform","Keamanan data","Laju perubahan"],1,"Sulit diawasi dengan jutaan produk dan ribuan penjual."],
+ [7,"Mengapa janji pengiriman cepat Amazon sulit dijaga menurut Case Study 1.2?",["Tidak ada gudang","Permintaan berfluktuasi, terutama musim Natal dan Black Friday, sehingga prakiraan sulit","Tidak ada kurir","Pelanggan tidak peduli"],1,"Risiko persediaan dan pemenuhan."],
+ [7,"Proposisi inti AWS menurut Case Study 1.2 adalah…",["Harga ritel termurah","Menurunkan biaya, menambah kecepatan, dan memungkinkan operasi global aplikasi cloud","Pengiriman gratis","Konten video"],1,"Dua konsep kuncinya: biaya lebih rendah dan kecepatan."],
+ [7,"Saran buku tentang dasbor pemasaran adalah…",["Mengukur aktivitas saja","Mengukur hasil (efektivitas, efisiensi, ROI), dibuka ke seluruh organisasi, dan dikaitkan dengan kompensasi","Dirahasiakan dari tim","Diperbarui setahun sekali"],1,"Mendorong keselarasan pemasaran dan penjualan."],
+ [7,"Pelajaran utama diskusi metrik 'kenikmatan pelanggan' Amazon 1997 adalah…",["Metrik harus kabur agar fleksibel","Metrik pelanggan harus spesifik, terkait perilaku nyata, dan terus diperbaiki","Metrik tidak penting","Hanya pendapatan yang diukur"],1,"Bezos menolak usulan yang tidak cukup spesifik."]
+];
+
+var RUB={
+ c1_0:{need:3,cr:[
+  ["Metrik spesifik","waktu|frekuensi|pembelian|acsi|88|pendapatan per menit|rfm","Sebut metrik dari kasus."],
+  ["Lima kategori","promosi|perilaku|kepuasan|hasil|kontribusi","Petakan ke lima kategori."],
+  ["Spesifik & perilaku","spesifik|perilaku nyata|ecstasy|bezos","Mengapa harus spesifik?"],
+  ["Proses berulang","tujuan|diagnosis|tindakan|siklus|terus","Kaitkan dengan proses pengukuran."]],
+  self:["Saya memakai bukti dari kedua case study"]},
+ c1_1:{need:3,cr:[
+  ["Risiko","persaingan|global|persediaan|pemenuhan|keamanan|pihak ketiga|palsu|perubahan","Sebut tiga risiko."],
+  ["KPI","kpi|persentase|tingkat|waktu|jumlah|rasio","Usulkan KPI per risiko."],
+  ["Makro/mikro","makro|mikro|driver|efektivitas|efisiensi","Klasifikasikan KPI."]],
+  self:["KPI saya terukur dan terkait langsung dengan risikonya"]},
+ c1_2:{need:3,cr:[
+  ["Investasi awal","awal|1997|penggerak|first mover|25%","Bahas investasi awal."],
+  ["Koordinasi","koordinasi|teknologi dan|ti dan|40%|weblab|infrastruktur","Bahas koordinasi TI dan keterampilan."],
+  ["Talenta","talenta|karyawan|saham|15%|skala","Bahas talenta."],
+  ["Sulit ditiru","sulit ditiru|budaya|waktu belajar|tidak bisa dibeli","Mengapa sulit ditiru?"]],
+  self:["Saya memakai angka dari artikel Bughin"]},
+ c2_0:{need:3,cr:[
+  ["Domain Bughin","penargetan|operasi|intelijen|domain","Petakan ke domain."],
+  ["KPI efektivitas","efektivitas|kredit macet|npl|konversi|dicegah","KPI efektivitas?"],
+  ["KPI efisiensi","efisiensi|waktu|biaya|peringatan palsu|verifikasi","KPI efisiensi?"],
+  ["Empat pemanfaatan","brilink|credit scoring|profiling|fraud","Bahas keempat pemanfaatan."]],
+  self:["Setiap KPI saya bisa dihitung dari data bank"]},
+ c2_1:{need:3,cr:[
+  ["Empat tahap","tujuan|ukur|diagnosis|korektif|tahap","Gunakan empat tahap."],
+  ["Pembanding","kontrol|sebelum|sesudah|pembanding|baseline","Bagaimana mengatribusikan hasil ke AI?"],
+  ["Data","data|pengajuan|pembayaran|penipuan|biaya","Data apa yang dibutuhkan?"],
+  ["Segmen","segmen|wilayah|produk|jenis nasabah","Bagaimana diagnosis per segmen?"]],
+  self:["Saya menjelaskan cara memisahkan dampak AI dari faktor lain"]},
+ c2_2:{need:3,cr:[
+  ["Temuan Bughin","40%|15%|koordinasi|talenta|keterampilan","Kaitkan dengan temuan Bughin."],
+  ["Manusia & adopsi","staf|memakai|percaya|pelatihan|kemampuan","Peran manusia?"],
+  ["Risiko teknologi saja","diabaikan|bias|tidak menghasilkan|membabi buta|risiko","Risiko hanya teknologi?"]],
+  self:["Saya menghubungkan pernyataan direksi dengan bukti riset"]},
+ c3_0:{need:3,cr:[
+  ["SMART","smart|spesifik|terukur|realistis|selaras","Nilai targetnya."],
+  ["Selisih","8,8|selisih|gap|40|31,2","Sebut selisihnya."],
+  ["Diagnosis driver","pembeli|per orang|peserta|kategori|kanal|daya beli","Driver apa yang didiagnosis?"],
+  ["Proses","diagnosis|tindakan korektif|tahap|tujuan","Gunakan proses empat tahap."]],
+  self:["Saya tidak hanya menyatakan target meleset, tetapi mencari penyebabnya"]},
+ c3_1:{need:3,cr:[
+  ["Definisi metrik","unik|akun|transaksi|definisi|orang","Apa definisi 98 juta?"],
+  ["Over/under-counting","over|under|ganda|lebih dari sekali|tidak tercatat","Bahas kesalahan hitung."],
+  ["Metode","platform|survei|metode|sampel|deduplikasi","Bahas metode pengumpulan."],
+  ["Aritmetika","318|98|aritmetika|cocok","Periksa konsistensi angka."]],
+  self:["Saya menilai keandalan angka, bukan hanya menerimanya"]},
+ c3_2:{need:3,cr:[
+  ["Makro","produk lokal|umkm|pembelian ulang|porsi|makro","Metrik makro?"],
+  ["Mikro","konversi|pembeli unik|nilai pesanan|biaya|mikro","Metrik mikro?"],
+  ["Lintas kanal","lintas kanal|siaran langsung|afiliasi|kanibalisasi|bergeser","Efek lintas kanal?"],
+  ["Definisi & metode","definisi|metode|sumber","Sertakan definisi dan metode."]],
+  self:["Kerangka saya sejalan dengan tujuan pemerintah"]},
+ c4_0:{need:3,cr:[
+  ["Tujuan SMART","smart|target|naik|persen|pada akhir|bulan","Tetapkan tujuan makro SMART."],
+  ["Driver","driver|kunjungan|konversi|nilai pesanan|retensi","Turunkan menjadi driver."],
+  ["Hubungan","memengaruhi|sehingga|karena|mendorong","Jelaskan hubungannya."]],
+  self:["Angka saya realistis untuk perusahaan yang dipilih"]},
+ c4_1:{need:3,cr:[
+  ["Lima kategori","promosi|perilaku|kepuasan|hasil|kontribusi","Petakan ke lima kategori."],
+  ["Celah","belum terukur|celah|kosong|tidak ada","Kategori yang belum terukur?"],
+  ["Risiko","risiko|menyesatkan|tidak tahu|buta","Mengapa berisiko?"]],
+  self:["Saya jujur tentang bagian yang belum terukur"]},
+ c4_2:{need:3,cr:[
+  ["Definisi & sumber","definisi|sumber|data","Definisi dan sumber?"],
+  ["Alat & frekuensi","google analytics|dasbor|marketplace|frekuensi|mingguan|bulanan","Alat dan frekuensi?"],
+  ["Penanggung jawab","penanggung jawab|pemilik|tim|bagian","Siapa penanggung jawab?"],
+  ["Akurasi","akurasi|under|over|ganda|bias|validasi","Masalah akurasi data?"]],
+  self:["Kerangka saya siap dipakai di laporan akhir"]}
+};
+var CONN=["karena","sehingga","akibatnya","oleh karena itu","maka","sebab","menyebabkan","artinya","dengan demikian","namun","tetapi","sedangkan","jika","agar","membuat","berdampak","because","therefore"];
+var LV=["Belum terlihat","Perlu diperkuat","Cukup","Baik","Sangat baik"];
+
+/* ---------------- glossary ---------------- */
+var GLOSS=[
+ ["Performance management system","Proses mengevaluasi dan memperbaiki efisiensi dan efektivitas organisasi"],
+ ["Performance measurement system","Proses mendefinisikan, mengumpulkan, menyebarkan, dan menindaklanjuti metrik"],
+ ["Design for analysis (DFA)","Merancang situs agar jenis audiens dan titik keputusannya terbaca"],
+ ["Efektivitas","Doing the right thing: mencapai tujuan proses"],
+ ["Efisiensi","Doing the thing right: meminimalkan sumber daya atau waktu"],
+ ["Empat tahap pengukuran","Penetapan tujuan → pengukuran → diagnosis → tindakan korektif"],
+ ["Performance gap","Selisih antara target dan kinerja aktual"],
+ ["Budaya pengukuran","Setiap karyawan sadar perlunya mengumpulkan data kinerja"],
+ ["Metrik makro","Efektivitas strategis: kontribusi pendapatan, ROI"],
+ ["Performance driver","Metrik mikro yang mendorong tercapainya tujuan makro"],
+ ["Top-down / bottom-up","Dari kontribusi bisnis ke bawah / dari promosi ke atas"],
+ ["Lima kategori diagnostik","Promosi situs, perilaku, kepuasan, hasil pemasaran, kontribusi bisnis"],
+ ["Referral mix","% rujukan, CPA, pendapatan per kunjungan, kontribusi per sumber"],
+ ["Bounce rate","Proporsi kunjungan satu halaman"],
+ ["Conversion rate","Persentase pengunjung yang melakukan tindakan tertentu"],
+ ["Attrition rate","Persentase pengunjung yang hilang di setiap tahap"],
+ ["Channel cross-over effects","Pengaruh satu kanal terhadap hasil di kanal lain"],
+ ["Pelanggan hibrida","Meriset di satu kanal, membeli di kanal lain"],
+ ["KPI media sosial (Altimeter)","Bisnis; jangkauan & pengaruh; keterlibatan"],
+ ["Hit","Setiap berkas yang diunduh; menyesatkan sebagai ukuran"],
+ ["Page impression","Satu orang melihat satu halaman"],
+ ["Unique visitor","Pengunjung individual (cookie, IP)"],
+ ["IPV / VPV","Halaman per kunjungan / kunjungan per pengunjung"],
+ ["Log-file vs tag","Dicatat di server / dicatat oleh skrip di peramban"],
+ ["Under- / over-counting","Tercatat terlalu sedikit (cache, firewall) / terlalu banyak (robot, frame)"],
+ ["Data operasional, taktis, strategis","Kampanye dan transaksi; model nilai; dasbor manajemen"],
+ ["Bughin (2016)","Investasi data 0,6% pendapatan, imbal hasil 1,4× → 2,0× dalam 5 tahun"],
+ ["Tiga pola investasi data","Investasi awal (25%), koordinasi TI-keterampilan (40%), talenta dalam skala (15%)"],
+ ["Obsessing with customers","Prinsip Amazon dari surat pemegang saham 1997"],
+ ["Culture of Metrics","Pendekatan Amazon: semua aspek bisnis diukur"]
+];
+
+/* ================= render: sidebar & plan ================= */
+var NAV=[["grp","Mulai"],["home","Beranda","⌂"],["grp","Sistem & Kerangka"],["u1"],["u2"],["u3"],["grp","Kanal & Data"],["u4"],["u5"],["grp","Nilai Data & Budaya"],["u6"],["u7"],["grp","Penerapan & Evaluasi"],["cases","Studi Kasus","📂"],["final","Kuis Akhir","🏁"],["cards","Flashcard","🃏"],["notes","Catatan & Referensi","📝"]];
+function renderSide(){
+  var h="";
+  NAV.forEach(function(n){
+    if(n[0]==="grp"){h+='<div class="grp">'+n[1]+'</div>';return}
+    var u=UNITS.filter(function(x){return x.id===n[0]})[0];
+    if(u){var i=UNITS.indexOf(u)+1;h+='<a href="#'+u.id+'" data-nav="'+u.id+'" class="'+(S.done[u.id]?"done":"")+'"><span class="n">'+(S.done[u.id]?"✓":i)+'</span>'+u.t+'</a>'}
+    else{var dn=(n[0]==="final"&&S.final&&S.final.best>=80)||(n[0]==="cases"&&casesDone()); h+='<a href="#'+n[0]+'" data-nav="'+n[0]+'" class="'+(dn?"done":"")+'"><span class="n ico">'+(dn?"✓":n[2])+'</span>'+n[1]+'</a>'}
+  });
+  $("#side").innerHTML=h; markNav();
+  var pb="";UNITS.forEach(function(u,i){pb+='<tr><td>'+(i+1)+'</td><td><a href="#'+u.id+'">'+u.t+'</a></td><td>'+u.pg+'</td><td class="st '+(S.done[u.id]?"y":"n")+'">'+(S.done[u.id]?"✓ selesai":(S.read[i+1]?"dibaca":"—"))+'</td></tr>'});
+  pb+='<tr><td>'+(UNITS.length+1)+'</td><td><a href="#cases">Studi kasus ('+CASES.length+')</a></td><td>—</td><td class="st '+(casesDone()?"y":"n")+'">'+(casesDone()?"✓ selesai":"—")+'</td></tr>';
+  pb+='<tr><td>'+(UNITS.length+2)+'</td><td><a href="#final">Kuis akhir</a></td><td>—</td><td class="st '+(S.final&&S.final.best>=80?"y":"n")+'">'+(S.final?("terbaik "+S.final.best+"%"):"—")+'</td></tr>';
+  $("#planBody").innerHTML=pb;
+}
+function casesDone(){var n=0;CASES.forEach(function(c){c.qs.forEach(function(q,i){if((S.notes[c.id+"_"+i]||"").trim().length>=40)n++})});var t=0;CASES.forEach(function(c){t+=c.qs.length});return n>=t}
+function updateProgress(){
+  var tot=UNITS.length+2,d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  if(casesDone())d++; if(S.final&&S.final.best>=80)d++;
+  var p=Math.round(d/tot*100);$("#progBar").style.width=p+"%";$("#progLbl").textContent=p+"%";
+}
+
+/* ================= quizzes ================= */
+function seededOrder(key,n){var h=2166136261;for(var c=0;c<key.length;c++){h^=key.charCodeAt(c);h=Math.imul(h,16777619)}var a=[];for(var i=0;i<n;i++)a.push(i);for(var k=n-1;k>0;k--){h=Math.imul(h^(h>>>15),2246822507)>>>0;var r=h%(k+1),x=a[k];a[k]=a[r];a[r]=x}return a}
+function renderQuiz(box,uid){
+  var qs=QZ[uid], h='<div class="lockmsg"><div>🔒 <b>Soal terkunci.</b><br>Baca subbab buku yang ditunjuk, lalu centang "Saya sudah membaca" di atas.</div></div><div class="qbody">';
+  qs.forEach(function(q,i){
+    h+='<div class="q" data-qi="'+i+'"><span class="kind '+(q.k==="r"?"rb":"")+'">'+(q.k==="r"?"📖 Cek bacaan · "+q.pg:"Konsep")+'</span><div class="qt">'+(i+1)+'. '+esc(q.q)+'</div><div class="opts">';
+    seededOrder(uid+"_"+i,q.o.length).forEach(function(j,pos){h+='<button class="opt" data-j="'+j+'"><span class="L">'+"ABCD"[pos]+'</span><span>'+esc(q.o[j])+'</span></button>'});
+    h+='</div><div class="fbx"></div></div>';
+  });
+  h+='<div class="score" id="sc_'+uid+'"></div></div>';
+  box.innerHTML=h;
+  $$(".q",box).forEach(function(qe){
+    var i=+qe.dataset.qi;
+    $$(".opt",qe).forEach(function(b){b.addEventListener("click",function(){answer(uid,i,+b.dataset.j,qe)})});
+    var prev=S.q[uid+"_"+i]; if(prev!=null) paint(uid,i,prev,qe);
+  });
+  lockState(box,uid); scoreUnit(uid);
+}
+function answer(uid,i,j,qe){S.q[uid+"_"+i]=j;paint(uid,i,j,qe);scoreUnit(uid);save();}
+function paint(uid,i,j,qe){
+  var q=QZ[uid][i],ok=j===q.a;
+  $$(".opt",qe).forEach(function(b){var k=+b.dataset.j;b.disabled=true;b.classList.remove("ok","no");if(k===j)b.classList.add(ok?"ok":"no");if(ok&&k===q.a)b.classList.add("ok")});
+  var fb=$(".fbx",qe);
+  fb.innerHTML='<div class="fb '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat.")+'</b>'+(ok?esc(q.e):(q.k==="r"?"Buka kembali "+q.pg+", dan cari bagian yang relevan.":"Baca ulang ringkasan di atas, lalu coba lagi."))+'</div>'+(ok?"":'<button class="retry">Coba lagi</button>');
+  var r=$(".retry",fb); if(r) r.addEventListener("click",function(){delete S.q[uid+"_"+i];save();$$(".opt",qe).forEach(function(b){b.disabled=false;b.classList.remove("ok","no")});fb.innerHTML="";scoreUnit(uid)});
+}
+function scoreUnit(uid){
+  var qs=QZ[uid],c=0;qs.forEach(function(q,i){if(S.q[uid+"_"+i]===q.a)c++});
+  var el=$("#sc_"+uid); if(el) el.textContent=c+" / "+qs.length+" benar"+(c===qs.length?" · Unit selesai ✓":"");
+  var was=!!S.done[uid]; S.done[uid]=c===qs.length;
+  if(S.done[uid]&&!was){toast("Unit selesai! 🎉");} if(was!==S.done[uid]){save();renderSide();}
+}
+function lockState(box,uid){var n=+uid.slice(1);box.classList.toggle("locked",!S.read[n])}
+
+/* ================= classify ================= */
+function renderClassify(el){
+  var key=el.dataset.widget,w=CL[key],h='';
+  w.it.forEach(function(it,i){
+    h+='<div class="it" data-i="'+i+'"><p>'+esc(it[0])+'</p><div class="chips">';
+    w.o.forEach(function(o){h+='<button class="chip" data-o="'+esc(o)+'">'+esc(o)+'</button>'});
+    h+='</div><div class="why"></div></div>';
+  });
+  h+='<div class="score" style="margin-top:10px"></div>';
+  el.insertAdjacentHTML("beforeend",h);
+  $$(".it",el).forEach(function(row){
+    var i=+row.dataset.i;
+    $$(".chip",row).forEach(function(c){c.addEventListener("click",function(){
+      var it=w.it[i],ok=c.dataset.o===it[1];
+      if(ok){S.cls[key+"_"+i]=1;paintCls(row,it,true);save();clsScore(el,key)}
+      else{c.classList.add("no");c.disabled=true;$(".why",row).textContent="Belum tepat. Coba pilihan lain.";}
+    })});
+    if(S.cls[key+"_"+i])paintCls(row,w.it[i],true);
+  });
+  clsScore(el,key);
+}
+function paintCls(row,it,ok){$$(".chip",row).forEach(function(c){c.disabled=true;c.classList.remove("no");if(c.dataset.o===it[1])c.classList.add("ok")});$(".why",row).innerHTML="✓ "+esc(it[2])}
+function clsScore(el,key){var w=CL[key],c=0;w.it.forEach(function(_,i){if(S.cls[key+"_"+i])c++});$(".score",el).textContent=c+" / "+w.it.length+" tepat"}
+
+/* ================= widget topik 14 ================= */
+function n2(x,d){return x.toLocaleString("id-ID",{maximumFractionDigits:d==null?1:d})}
+function rpj(x){var a=Math.abs(x),s=x<0?"−":"";return a>=1e12?s+"Rp"+n2(a/1e12,2)+" triliun":a>=1e9?s+"Rp"+n2(a/1e9,2)+" miliar":a>=1e6?s+"Rp"+n2(a/1e6,1)+" juta":s+"Rp"+n2(a,0)}
+function pct(x){return (x>=0?"+":"")+n2(x,1)+"%"}
+/* KPI tree: revenue = visits x conversion x AOV */
+function kpiTool(){
+  if(!$("#kpV"))return;
+  var ids=["kpV","kpC","kpA","kpT"],P={umkm:[50000,1.5,180000,175000000],ok:[50000,2,180000,150000000]};
+  function v(id){return Math.max(0,+$("#"+id).value||0)}
+  function upd(){
+    var V=v("kpV"),C=v("kpC"),A=v("kpA"),T=v("kpT"),rev=V*C/100*A,rpv=V?rev/V:0;
+    var h='<big>Pendapatan '+rpj(rev)+' per bulan</big>Pendapatan per kunjungan '+rpj(rpv)+'. ';
+    if(!rev||!T){h+='Isi semua angka untuk melihat kebutuhan setiap driver.';}
+    else if(rev>=T){h+='✅ Target '+rpj(T)+' sudah tercapai (kelebihan '+rpj(rev-T)+'). Tetapkan target berikutnya, atau pastikan target ini memang cukup menantang.';}
+    else{
+      var r=T/rev,each=(Math.pow(r,1/3)-1)*100;
+      h+='Selisih ke target '+rpj(T)+': <b>'+rpj(T-rev)+'</b>.<div class="tw"><table><thead><tr><th>Bila hanya satu driver yang berubah</th><th>Harus menjadi</th><th>Perubahan</th></tr></thead><tbody>'+
+        '<tr><td>Kunjungan</td><td>'+n2(T/(C/100*A),0)+'</td><td>'+pct((r-1)*100)+'</td></tr>'+
+        '<tr><td>Tingkat konversi</td><td>'+n2(C*r,2)+'%</td><td>'+pct((r-1)*100)+'</td></tr>'+
+        '<tr><td>Nilai rata-rata pesanan</td><td>'+rpj(A*r)+'</td><td>'+pct((r-1)*100)+'</td></tr></tbody></table></div>'+
+        '<p style="margin:6px 0 0">Bila ketiganya diperbaiki bersama, cukup naik sekitar <b>'+pct(each)+'</b> masing-masing. Karena pendapatan adalah perkalian, kenaikan kecil di beberapa driver sering lebih realistis daripada kenaikan besar di satu driver.</p>';
+    }
+    h+='<p class="hint" style="margin:6px 0 0">Model ini menyederhanakan: driver saling memengaruhi (mis. iklan untuk menambah kunjungan bisa menurunkan konversi karena pengunjungnya kurang tertarget). Gunakan untuk memecah target makro menjadi tanggung jawab yang jelas, bukan sebagai ramalan.</p>';
+    $("#kpRes").innerHTML=h;
+    S.notes.kp_sum="Pendapatan "+rpj(rev)+" vs target "+rpj(T)+" ("+n2(V,0)+" kunjungan × "+n2(C,2)+"% × "+rpj(A)+")";
+  }
+  $$("#kpiTool [data-kp]").forEach(function(b){b.addEventListener("click",function(){var q=P[b.dataset.kp];ids.forEach(function(id,i){$("#"+id).value=q[i]});upd();save();notesPreview()})});
+  ids.forEach(function(id){$("#"+id).addEventListener("input",function(){upd();save();notesPreview()})});
+  upd();
+}
+/* Referral mix */
+function mixTool(){
+  if(!$("#mxV1"))return;
+  var nm=["Iklan pencarian","Media sosial","Email pelanggan"],ids=["mxV1","mxC1","mxO1","mxV2","mxC2","mxO2","mxV3","mxC3","mxO3","mxA"],
+      P={base:[8000,12000000,200,20000,10000000,160,3000,1000000,150,180000],viral:[8000,12000000,200,80000,10000000,120,3000,1000000,150,180000]};
+  function v(id){return Math.max(0,+$("#"+id).value||0)}
+  function upd(){
+    var A=v("mxA"),s=[1,2,3].map(function(i){var V=v("mxV"+i),C=v("mxC"+i),O=Math.min(v("mxO"+i),V),R=O*A;return{n:nm[i-1],V:V,C:C,O:O,R:R,cr:V?O/V*100:0,cpa:O?C/O:Infinity,rpv:V?R/V:0,roas:C?R/C:Infinity}}),
+        TV=s.reduce(function(a,x){return a+x.V},0);
+    var sh=["Pencarian","Sosial","Email"];var rows=s.map(function(x,i){return '<tr><td>'+sh[i]+'</td><td>'+n2(TV?x.V/TV*100:0,0)+'%</td><td>'+n2(x.cr,1)+'%</td><td>'+(isFinite(x.cpa)?rpj(x.cpa):'–')+'</td><td>'+rpj(x.rpv)+'</td><td>'+(isFinite(x.roas)?n2(x.roas,1)+'×':'–')+'</td></tr>'}).join("");
+    var byV=s.slice().sort(function(a,b){return b.V-a.V})[0],byR=s.filter(function(x){return x.V>0}).sort(function(a,b){return b.rpv-a.rpv})[0]||s[0];
+    $("#mxRes").innerHTML='<div class="tw"><table><thead><tr><th>Sumber</th><th>% kunj.</th><th>Konv.</th><th>CPA</th><th>Rp/kunj.</th><th>ROAS</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+      '<p style="margin:6px 0 0">Penyumbang kunjungan terbesar: <b>'+byV.n+'</b>. Pendapatan per kunjungan tertinggi: <b>'+byR.n+'</b>.'+(byV.n!==byR.n?' Sumber yang paling ramai bukan yang paling bernilai, sehingga menilai kanal dari volume saja akan menyesatkan.':'')+'</p>'+
+      '<p class="hint" style="margin:6px 0 0">CPA = biaya ÷ pesanan; ROAS = pendapatan ÷ biaya. Email ke pelanggan lama biasanya tampak sangat efisien karena biaya akuisisi pelanggannya sudah dibayar di kanal lain; itulah alasan buku menekankan efek lintas kanal (Unit 4). Angka contoh bersifat ilustratif.</p>';
+    S.notes.mx_sum=s.map(function(x){return x.n+": konv "+n2(x.cr,1)+"%, CPA "+(isFinite(x.cpa)?rpj(x.cpa):"-")}).join("; ");
+  }
+  $$("#mixTool [data-mx]").forEach(function(b){b.addEventListener("click",function(){var q=P[b.dataset.mx];ids.forEach(function(id,i){$("#"+id).value=q[i]});upd();save();notesPreview()})});
+  ids.forEach(function(id){$("#"+id).addEventListener("input",function(){upd();save();notesPreview()})});
+  upd();
+}
+/* Data investment returns (Bughin, 2016 averages) */
+function bdTool(){
+  if(!$("#bdR"))return;
+  var ids=["bdR","bdP","bdI"],P={mid:[50000,5000,0.6],over:[50000,5000,3]};
+  function v(id){return Math.max(0,+$("#"+id).value||0)}
+  function upd(){
+    var R=v("bdR")*1e6,Pr=v("bdP")*1e6,I=v("bdI"),inv=R*I/100;
+    var up5=Pr*0.09;
+    $("#bdRes").innerHTML='<big>Investasi data '+rpj(inv)+' per tahun</big>'+
+      '<div class="tw"><table><thead><tr><th>Ukuran dalam artikel</th><th>Awal</th><th>5 tahun</th></tr></thead><tbody>'+
+      '<tr><td>Imbal hasil (× investasi)</td><td>'+rpj(inv*1.4)+' (1,4×)</td><td>'+rpj(inv*2)+' (2,0×)</td></tr>'+
+      '<tr><td>Kenaikan laba operasional</td><td>'+rpj(Pr*0.06)+' (6%)</td><td>'+rpj(up5)+' (9%)</td></tr></tbody></table></div>'+
+      '<p style="margin:6px 0 0">Dari kenaikan laba lima tahun itu, menurut pola dalam studi: sekitar '+rpj(up5*0.40)+' terkait koordinasi TI dan keterampilan (40%), '+rpj(up5*0.25)+' terkait investasi awal (25%), dan '+rpj(up5*0.15)+' terkait talenta dalam skala (15%).</p>'+
+      (Math.abs(I-0.6)>0.3?'<p style="margin:4px 0 0">⚠️ Investasi Anda ('+n2(I,1)+'% pendapatan) jauh dari rata-rata sampel (0,6%). Tidak ada dasar untuk menganggap imbal hasil berskala linear; investasi yang jauh lebih besar belum tentu memberi kelipatan yang sama.</p>':'')+
+      '<p class="hint" style="margin:6px 0 0">Artikel melaporkan dua ukuran berbeda: kelipatan terhadap investasi dan persentase kenaikan laba operasional. Keduanya rata-rata 714 perusahaan dengan data 2013, bukan prakiraan untuk perusahaan tertentu. Atribusi 40/25/15 adalah porsi rata-rata dalam sampel, bukan rumus.</p>';
+    S.notes.bd_sum="Investasi "+rpj(inv)+"; imbal hasil rata-rata "+rpj(inv*1.4)+"–"+rpj(inv*2)+"; kenaikan laba 6–9% = "+rpj(Pr*0.06)+"–"+rpj(up5);
+  }
+  $$("#bdTool [data-bd]").forEach(function(b){b.addEventListener("click",function(){var q=P[b.dataset.bd];ids.forEach(function(id,i){$("#"+id).value=q[i]});upd();save();notesPreview()})});
+  ids.forEach(function(id){$("#"+id).addEventListener("input",function(){upd();save();notesPreview()})});
+  upd();
+}
+
+/* ================= cases ================= */
+function norm(t){return (t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}
+function grade(id){
+  var r=RUB[id],t=norm(S.notes[id]),words=t.split(/\s+/).filter(Boolean).length;
+  var hits=r.cr.map(function(c){return new RegExp(c[1],"i").test(t)}),h=hits.filter(Boolean).length;
+  var conn=CONN.filter(function(w){return new RegExp("(^|[^a-z])"+w+"([^a-z]|$)").test(t)}).length;
+  var cov=Math.min(h,r.need)/r.need,raw=3*cov+(conn>=2?1:conn===1?.5:0),warn=[];
+  if(words<25){raw=Math.min(raw,2);warn.push("Jawaban terlalu singkat ("+words+" kata). Kembangkan penjelasan Anda.")}
+  if(h>=2&&conn===0&&words/h<7){raw=Math.min(raw,1);warn.push("Jawaban tampak seperti daftar kata kunci. Jelaskan hubungan antarkonsep dengan kalimat utuh.")}
+  else if(conn===0) warn.push("Belum ada penalaran sebab-akibat. Gunakan \"karena\", \"sehingga\", atau \"akibatnya\" untuk menunjukkan alur pikir.");
+  return {lv:Math.max(0,Math.min(4,Math.floor(raw+1e-9))),hits:hits,h:h,conn:conn,words:words,warn:warn,len:(S.notes[id]||"").length};
+}
+function renderGrade(id){
+  var box=$('.fbres[data-for="'+id+'"]'),st=S.cs[id];if(!box)return;
+  if(!st){box.innerHTML="";return}
+  var r=RUB[id],g=grade(id),noans=CASES.some(function(c){return c.noans&&id.indexOf(c.id+"_")===0});
+  var h='<div class="gbox"><div class="ghead"><span class="meter">'+[0,1,2,3].map(function(k){return '<i class="'+(k<g.lv?"on":"")+'"></i>'}).join("")+'</span><span class="glv">'+g.lv+'/4 · '+LV[g.lv]+'</span><span class="gnote">umpan balik otomatis, bukan nilai</span></div>';
+  h+='<p class="hint" style="margin:0 0 4px">Konsep kunci ('+g.h+' dari '+r.cr.length+' muncul; minimal '+r.need+' untuk cakupan penuh):</p><ul class="crit">';
+  r.cr.forEach(function(c,k){h+='<li class="'+(g.hits[k]?"y":"n")+'"><span class="m">'+(g.hits[k]?"✓":"")+'</span><span><b>'+esc(c[0])+'</b>'+(g.hits[k]?'':' <span class="h">· '+esc(c[2])+'</span>')+'</span></li>'});
+  h+='</ul><ul class="crit"><li class="'+(g.conn>=2?"y":"n")+'"><span class="m">'+(g.conn>=2?"✓":"")+'</span><span><b>Penalaran</b> <span class="h">· '+g.conn+' penghubung sebab-akibat'+(g.conn<2?" (target ≥ 2)":"")+'</span></span></li></ul>';
+  g.warn.forEach(function(w){h+='<div class="gwarn">⚠️ '+esc(w)+'</div>'});
+  if(st.len!==g.len) h+='<div class="stale">✎ Jawaban sudah diubah sejak dinilai. Klik "Nilai ulang" untuk memperbarui.</div>';
+  h+='<div class="selfc"><b style="font-size:.9rem">Penilaian diri: centang yang benar-benar sudah Anda lakukan</b>';
+  r.self.forEach(function(sx,k){h+='<label><input type="checkbox" data-self="'+id+'" data-k="'+k+'" '+(st.self&&st.self[k]?"checked":"")+'> '+esc(sx)+'</label>'});
+  h+=st.selfDone?'<p class="hint" style="margin:6px 0 0">✓ Penilaian diri tersimpan'+(noans?". Bawa jawaban ini ke diskusi kelas.":". Arah jawaban di bawah sudah terbuka.")+'</p>':'<button class="btn sm" data-selfdone="'+id+'" style="margin-top:6px">'+(noans?"Selesai menilai diri":"Selesai, buka arah jawaban")+'</button>';
+  h+='</div></div>';
+  box.innerHTML=h;
+  $$('[data-self]',box).forEach(function(c){c.addEventListener("change",function(){st.self=st.self||[];st.self[+c.dataset.k]=c.checked;save()})});
+  var sd=$('[data-selfdone]',box);if(sd)sd.addEventListener("click",function(){st.selfDone=true;save();renderGrade(id);refreshAnsLocks();updateCaseSums();var d=$('details.ans[data-for="'+id+'"]');if(d){d.open=true}});
+  var gb=$('[data-grade="'+id+'"]');if(gb)gb.textContent="↻ Nilai ulang";
+}
+function updateCaseSums(){
+  CASES.forEach(function(c){var el=$('[data-csum="'+c.id+'"]');if(!el)return;var n=0,tot=0;c.qs.forEach(function(q,i){var id=c.id+"_"+i;if(S.cs[id]){n++;tot+=grade(id).lv}});
+    el.textContent=n?("umpan balik rata-rata "+(tot/n).toFixed(1).replace(".",",")+"/4 · "+n+"/"+c.qs.length+" dinilai"):"belum dinilai"});
+}
+function renderCases(){
+  S.cs=S.cs||{};
+  var h="";
+  CASES.forEach(function(c){
+    h+='<div class="card"><h3>📂 '+c.t+' <span class="csum" data-csum="'+c.id+'"></span></h3><p class="hint" style="margin-top:-6px">Sumber: '+c.src+'</p>'+c.body;
+    h+='<h4 style="margin-top:18px">'+(c.noans?"Tugas persiapan diskusi kelas":"Pertanyaan diskusi")+'</h4>';
+    c.qs.forEach(function(q,i){
+      var id=c.id+"_"+i;
+      h+='<div class="cq"><b>'+(i+1)+'. '+esc(q[0])+'</b><textarea data-note="'+id+'" placeholder="Tulis jawaban Anda dalam kalimat utuh…"></textarea>';
+      h+='<div class="fbk"><button class="btn sm ghost" data-grade="'+id+'">🔍 Minta umpan balik</button><div class="fbres" data-for="'+id+'"></div></div>';
+      if(!c.noans) h+='<details class="ans" data-for="'+id+'"><summary>🔑 Arah jawaban</summary><div>'+esc(q[1])+'</div></details>';
+      h+='</div>';
+    });
+    if(c.noans) h+='<div class="co book"><b class="t">📝 Catatan.</b> Arah jawaban untuk kasus ini sengaja tidak diberikan dan akan dibahas di kelas. Umpan balik otomatis di sini hanya memeriksa kelengkapan struktur jawaban Anda.</div>';
+    h+='</div>';
+  });
+  $("#caseList").innerHTML=h;
+  $$("[data-grade]").forEach(function(b){b.addEventListener("click",function(){
+    var id=b.dataset.grade,len=(S.notes[id]||"").trim().length;
+    if(len<40){toast("Tulis jawaban Anda dulu (min. 40 karakter)");return}
+    var prev=S.cs[id]||{};S.cs[id]={len:(S.notes[id]||"").length,self:prev.self||[],selfDone:prev.selfDone||false};save();renderGrade(id);updateCaseSums();
+  })});
+  $$("details.ans").forEach(function(d){
+    d.addEventListener("click",function(e){if(d.classList.contains("lock")&&!d.open){e.preventDefault();toast("Minta umpan balik dan selesaikan penilaian diri dulu")}});
+  });
+  Object.keys(S.cs).forEach(renderGrade);
+  refreshAnsLocks();updateCaseSums();
+}
+function refreshAnsLocks(){$$("details.ans").forEach(function(d){var st=S.cs&&S.cs[d.dataset.for];d.classList.toggle("lock",!(st&&st.selfDone))})}
+
+/* ================= notes binding ================= */
+function bindNotes(){
+  $$("textarea[data-note],input[data-note]").forEach(function(t){
+    t.value=S.notes[t.dataset.note]||"";
+    t.addEventListener("input",function(){S.notes[t.dataset.note]=t.value;clearTimeout(t._h);t._h=setTimeout(function(){save();refreshAnsLocks();renderSide();notesPreview();if(S.cs&&S.cs[t.dataset.note])renderGrade(t.dataset.note)},350)});
+  });
+}
+function notesText(){
+  var L=["PENGANTAR BISNIS DIGITAL (DG234101) — TOPIK 14","Pengukuran Kinerja dan Optimisasi","",(S.notes.identity||"Nama — NRP"),"","== PEMANASAN ==","Tiga angka yang dipantau:",S.notes.warm_know||"-","","Sumber data dan keraguannya:",S.notes.warm_want||"-",""];
+  L.push("== HASIL KALKULATOR (terakhir) ==","Pohon KPI: "+(S.notes.kp_sum||"-"),"Referral mix: "+(S.notes.mx_sum||"-"),"Investasi data: "+(S.notes.bd_sum||"-"),"");
+  CASES.forEach(function(c){L.push("== "+c.t.toUpperCase()+" ==");c.qs.forEach(function(q,i){L.push((i+1)+". "+q[0]);L.push(S.notes[c.id+"_"+i]||"-");if(S.cs&&S.cs[c.id+"_"+i])L.push("[Umpan balik aplikasi: "+grade(c.id+"_"+i).lv+"/4]");L.push("")})});
+  var d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  L.push("== KEMAJUAN ==","Unit selesai: "+d+"/"+UNITS.length,"Kuis akhir (skor terbaik): "+(S.final?S.final.best+"%":"belum"));
+  return L.join("\n");
+}
+function notesPreview(){var p=$("#notesPrev");if(p)p.textContent=notesText()}
+
+/* ================= self-test (pola serviceman ch05) ================= */
+var quizEl=null, run=null;
+function setupQuiz(){
+  quizEl=$("#finalBox");
+  var best=S.final?S.final.best:null;
+  quizEl.innerHTML='<div class="qz-setup"><p>Soal diambil dari ketujuh unit (Bughin/McKinsey dan Chaffey). Anda mendapat umpan balik setelah setiap jawaban, dan rincian per unit di akhir. Topik dianggap tuntas bila skor ≥ 80%.</p>'+
+   '<div><p class="qz-lbl">Panjang</p><div class="seg" id="qzLen"><button data-n="10" aria-pressed="true">Cepat · 10 soal</button><button data-n="20" aria-pressed="false">Standar · 20</button><button data-n="'+FINAL.length+'" aria-pressed="false">Lengkap · semua '+FINAL.length+'</button></div></div>'+
+   '<div><p class="qz-lbl">Fokus</p><div class="seg" id="qzLo"><button data-lo="0" aria-pressed="true">Semua unit</button>'+Object.keys(LO_NAMES).map(function(k){return '<button data-lo="'+k+'" aria-pressed="false" title="'+LO_NAMES[k]+'">Unit '+k+'</button>'}).join("")+'</div></div>'+
+   '<div class="row"><button class="btn" id="qzStart">Mulai self-test</button>'+(best!=null?'<span class="muted" style="font-family:var(--mono);font-size:.8rem">Skor terbaik di perangkat ini: '+best+'%</span>':'')+'</div></div>';
+  var n=10, lo=0;
+  $$("#qzLen button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLen button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});n=+b.dataset.n})});
+  $$("#qzLo button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLo button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});lo=+b.dataset.lo})});
+  $("#qzStart").addEventListener("click",function(){
+    var pool=FINAL.map(function(q,i){return i}).filter(function(i){return !lo||FINAL[i][0]===lo});
+    pool=shuffle(pool).slice(0,Math.min(n,pool.length));
+    run={qs:pool.map(function(i){var q=FINAL[i],order=shuffle(q[2].map(function(_,j){return j}));return {lo:q[0],text:q[1],opts:order.map(function(j){return q[2][j]}),ans:order.indexOf(q[3]),exp:q[4]}}),i:0,picks:[]};
+    showQ();
+  });
+}
+function showQ(){
+  var r=run,q=r.qs[r.i],picked=r.picks[r.i],sofar=r.picks.filter(function(p,k){return p===r.qs[k].ans}).length;
+  quizEl.innerHTML='<div class="qz-top"><span class="qz-lbl">Soal '+(r.i+1)+' dari '+r.qs.length+' · Unit '+q.lo+' '+LO_NAMES[q.lo]+'</span><span class="muted" style="font-family:var(--mono);font-size:.8rem">'+sofar+' benar sejauh ini</span></div>'+
+   '<div class="qz-prog"><i style="width:'+(r.i/r.qs.length*100)+'%"></i></div>'+
+   '<p class="qz-q">'+esc(q.text)+'</p>'+
+   '<div class="qz-opts">'+q.opts.map(function(o,j){return '<button data-j="'+j+'"><span class="k">'+"ABCD"[j]+'</span><span>'+esc(o)+'</span></button>'}).join("")+'</div>'+
+   '<div id="qzExp"></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzQuit">Keluar</button><button class="btn" id="qzNext" '+(picked==null?"disabled":"")+'>'+(r.i===r.qs.length-1?"Lihat hasil":"Soal berikutnya")+'</button></div>';
+  function lock(j){
+    $$(".qz-opts button",quizEl).forEach(function(b){b.disabled=true;var k=+b.dataset.j;if(k===q.ans)b.classList.add("right");else if(k===j)b.classList.add("wrong")});
+    var ok=j===q.ans;
+    $("#qzExp").innerHTML='<div class="qz-exp '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat. Jawabannya "+"ABCD"[q.ans]+".")+'</b>'+esc(q.exp)+'</div>';
+    $("#qzNext").disabled=false;
+  }
+  if(picked!=null)lock(picked);
+  $$(".qz-opts button",quizEl).forEach(function(b){b.addEventListener("click",function(){var j=+b.dataset.j;r.picks[r.i]=j;lock(j);$("#qzNext").focus()})});
+  $("#qzNext").addEventListener("click",function(){if(r.i<r.qs.length-1){r.i++;showQ()}else results()});
+  $("#qzQuit").addEventListener("click",setupQuiz);
+}
+function results(){
+  var r=run,right=r.qs.filter(function(q,k){return r.picks[k]===q.ans}).length,pct=Math.round(right/r.qs.length*100);
+  S.final={best:Math.max(pct,S.final?S.final.best:0),n:(S.final?S.final.n:0)+1,last:pct};save();renderSide();
+  var by={};r.qs.forEach(function(q,k){by[q.lo]=by[q.lo]||{r:0,t:0};by[q.lo].t++;if(r.picks[k]===q.ans)by[q.lo].r++});
+  var verdict=pct>=80?"Pemahaman kuat. Topik 14 tuntas.":pct>=65?"Fondasi sudah baik. Tinjau unit di bawah 70%.":"Pelajari ulang unit yang lemah (dan halaman bukunya), lalu coba lagi.";
+  quizEl.innerHTML='<div class="res-big"><span class="pct" style="color:'+(pct>=65?"var(--good)":"var(--bad)")+'">'+pct+'%</span><span>'+right+' dari '+r.qs.length+' benar. '+verdict+'</span></div>'+
+   (pct>=80?'<div><span class="badge">🏅 Topik 14 tuntas</span></div>':'')+
+   '<div><p class="qz-lbl">Per unit</p><div class="lo-bars">'+Object.keys(by).sort().map(function(k){var v=by[k],p=Math.round(v.r/v.t*100);return '<div class="lo-row"><span><b style="font-family:var(--mono)">U'+k+'</b> '+LO_NAMES[k]+(p<70?' · <a href="#u'+k+'">tinjau</a>':'')+'</span><span class="b"><i style="width:'+p+'%;background:'+(p>=70?"var(--good)":"var(--bad)")+'"></i></span><span class="v">'+v.r+'/'+v.t+'</span></div>'}).join("")+'</div></div>'+
+   '<div><p class="qz-lbl">Tinjau jawaban Anda</p><div class="review">'+r.qs.map(function(q,k){var ok=r.picks[k]===q.ans;return '<details '+(ok?"":"open")+'><summary><span class="mk '+(ok?"ok":"no")+'">'+(ok?"✓":"✗")+'</span>'+esc(q.text)+'</summary><p><b>Jawaban Anda:</b> '+esc(q.opts[r.picks[k]])+(ok?'':'<br><b>Jawaban benar:</b> '+esc(q.opts[q.ans]))+'</p><p class="muted">'+esc(q.exp)+'</p></details>'}).join("")+'</div></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzNew">Ubah pengaturan</button><button class="btn" id="qzAgain">Ulangi dengan soal baru</button></div>';
+  $("#qzNew").addEventListener("click",setupQuiz);
+  $("#qzAgain").addEventListener("click",function(){setupQuiz();$("#qzStart").click()});
+  quizEl.scrollIntoView({block:"start"});
+}
+
+/* ================= flashcards ================= */
+var deck=[],di=0;
+function buildDeck(){deck=GLOSS.map(function(g,i){return i}).filter(function(i){return !S.known[i]});if(!deck.length){deck=GLOSS.map(function(g,i){return i})}di=0;showCard()}
+function showCard(){var fc=$("#fc");fc.classList.remove("flip");var g=GLOSS[deck[di]];$("#fcF").textContent=g[0];$("#fcB").textContent=g[1];
+  var k=Object.keys(S.known).length;$("#fcCount").textContent="Kartu "+(di+1)+" / "+deck.length+" · dikuasai "+k+" / "+GLOSS.length}
+function cards(){
+  var fc=$("#fc");function flip(){fc.classList.toggle("flip")}
+  fc.addEventListener("click",flip);fc.addEventListener("keydown",function(e){if(e.key===" "||e.key==="Enter"){e.preventDefault();flip()}});
+  $("#fcNext").addEventListener("click",function(){di=(di+1)%deck.length;showCard()});
+  $("#fcPrev").addEventListener("click",function(){di=(di-1+deck.length)%deck.length;showCard()});
+  $("#fcShuffle").addEventListener("click",function(){deck=shuffle(deck);di=0;showCard()});
+  $("#fcKnow").addEventListener("click",function(){S.known[deck[di]]=1;save();deck.splice(di,1);if(!deck.length){toast("Semua kartu dikuasai! 🎉");buildDeck();return}if(di>=deck.length)di=0;showCard()});
+  $("#fcReset").addEventListener("click",function(){S.known={};save();buildDeck()});
+  buildDeck();
+}
+
+/* ================= routing ================= */
+function markNav(){var v=current();$$(".side a").forEach(function(a){a.classList.toggle("on",a.dataset.nav===v)})}
+function current(){var h=(location.hash||"#home").slice(1);return $('[data-view="'+h+'"]')?h:"home"}
+function route(){
+  var v=current();$$(".view").forEach(function(s){s.hidden=s.dataset.view!==v});
+  markNav();$("#side").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");
+  window.scrollTo(0,0);
+  
+  if(v==="notes")notesPreview();
+  
+  document.title=(v==="home"?"Topik 14":($('[data-view="'+v+'"] h2')||{}).textContent)+" · Pengukuran Kinerja dan Optimisasi";
+}
+
+/* ================= init ================= */
+$$("[data-quiz]").forEach(function(b){renderQuiz(b,b.dataset.quiz)});
+$$("[data-widget]").forEach(renderClassify);
+$$("[data-readchk]").forEach(function(c){
+  var n=+c.dataset.readchk;c.checked=!!S.read[n];
+  c.addEventListener("change",function(){S.read[n]=c.checked;save();var b=$('[data-quiz="u'+n+'"]');lockState(b,"u"+n);renderSide();if(c.checked)toast("Soal cek pemahaman terbuka ↓")});
+});
+setupQuiz();renderCases();bindNotes();kpiTool();mixTool();bdTool();cards();renderSide();updateProgress();
+window.addEventListener("hashchange",route);route();
+
+$("#menuBtn").addEventListener("click",function(){var o=$("#side").classList.toggle("open");this.setAttribute("aria-expanded",o)});
+$("#themeBtn").addEventListener("click",function(){
+  var r=document.documentElement,cur=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),nx=cur==="dark"?"light":"dark";
+  r.setAttribute("data-theme",nx);try{localStorage.setItem("bisdig-theme",nx)}catch(e){} 
+});
+$("#copyNotes").addEventListener("click",function(){var t=notesText();
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast("Tersalin ke clipboard")},function(){var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("Tersalin")}catch(e){toast("Gagal menyalin")}ta.remove()})});
+$("#dlNotes").addEventListener("click",function(){var b=new Blob([notesText()],{type:"text/plain;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="Topik14_Catatan_"+((S.notes.identity||"mahasiswa").replace(/[^\w]+/g,"_").slice(0,40))+".txt";document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)});
+$("#resetAll").addEventListener("click",function(){
+  if(this.dataset.confirm!=="1"){this.dataset.confirm="1";this.textContent="Klik lagi untuk konfirmasi";var me=this;setTimeout(function(){me.dataset.confirm="";me.textContent="Hapus semua kemajuan"},3000);return}
+  try{localStorage.removeItem(KEY)}catch(e){} location.hash="#home";location.reload();
+});
+})();
+</script>
+</body>
+</html>
