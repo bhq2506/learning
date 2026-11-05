@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Manajemen Strategi · ITS</title>
+<meta name="description" content="Manajemen Strategi, Magister Manajemen ITS: materi belajar mandiri interaktif per bab berbasis David &amp; David (2023), dengan studi kasus Indonesia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#F3F5FA; --surface:#FFFFFF; --sunk:#E8ECF5; --ink:#0F1B33; --muted:#56627A; --line:#D5DCEA;
+  --navy:#013880; --navy-ink:#FFFFFF; --navy-soft:#E1E9F7; --gold:#B07A00; --gold-soft:#FFF4D4;
+  --good:#17784E; --good-soft:#DCF2E6;
+  --f:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --shadow:0 1px 2px rgba(15,27,51,.06),0 4px 16px rgba(15,27,51,.05);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D; --gold:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --shadow:none; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D; --gold:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --shadow:none; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.65}
+a{color:var(--navy)}
+h1,h2,h3{line-height:1.2;margin:0 0 .5em;letter-spacing:-.01em}
+h2{font-size:clamp(1.4rem,1.1rem + 1.2vw,1.9rem);font-weight:800}
+p{margin:0 0 1em}
+:focus-visible{outline:3px solid #FFC72C;outline-offset:2px;border-radius:6px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+.top{position:sticky;top:0;z-index:20;background:#013880;color:#fff}
+.top .wrap{display:flex;align-items:center;gap:14px;height:60px}
+.top img{height:40px;width:auto;display:block}
+.top b{font-weight:800;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iconbtn{background:rgba(255,255,255,.12);border:0;border-radius:8px;width:34px;height:34px;color:#fff;flex:none;margin-left:auto;cursor:pointer;font:inherit}
+.hero{background:linear-gradient(140deg,#013880 0%,#0a4fa8 60%,#0d5cc2 100%);color:#fff;position:relative;overflow:hidden}
+.hero .wrap{padding-top:52px;padding-bottom:56px;position:relative;z-index:1}
+.hero::before{content:"";position:absolute;right:-90px;top:-80px;width:360px;height:360px;border-radius:50%;border:44px solid rgba(255,199,44,.16)}
+.kick{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#FFC72C;margin-bottom:10px}
+.hero h1{font-size:clamp(2rem,1.4rem + 3vw,3.1rem);font-weight:800;margin:0 0 6px}
+.hero .en{font-size:1.05rem;opacity:.8;font-style:italic;margin-bottom:16px}
+.hero .lead{font-size:1.05rem;max-width:62ch;opacity:.95}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0}
+.meta span{font-family:var(--mono);font-size:.76rem;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:4px 10px;border-radius:99px}
+section.blk{padding:48px 0}
+.eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.sub{color:var(--muted);max-width:68ch}
+.part{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:26px 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.ch{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:inherit;min-height:132px}
+.ch .no{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:.74rem;color:var(--muted)}
+.ch b{font-size:1rem;line-height:1.35}
+.ch span.en{font-size:.82rem;color:var(--muted);font-style:italic}
+.ch .st{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--sunk);color:var(--muted);font-family:var(--f)}
+a.ch{border-color:var(--navy);box-shadow:var(--shadow)}
+a.ch:hover{transform:translateY(-2px)}
+a.ch .st{background:var(--good-soft);color:var(--good)}
+a.ch .go{margin-top:auto;font-weight:700;font-size:.88rem;color:var(--navy)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+.foot{font-size:.8rem;color:var(--muted);padding:24px 0 40px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <img src="assets/its-logo-white.png" alt="Institut Teknologi Sepuluh Nopember" width="70" height="40">
+  <b>Manajemen Strategi · Magister Manajemen ITS</b>
+  <button class="iconbtn" id="themeBtn" aria-label="Ganti tema terang/gelap">◐</button>
+</div></header>
+
+<div class="hero"><div class="wrap">
+  <div class="kick">Magister Manajemen · Belajar Mandiri</div>
+  <h1>Manajemen Strategi</h1>
+  <div class="en">Strategic Management</div>
+  <p class="lead">Materi belajar mandiri interaktif per bab. Setiap bab mengikuti alur <b>baca → cek → terapkan</b>: ringkasan berbasis buku acuan, soal cek bacaan, alat analisis interaktif, studi kasus dengan konteks Indonesia, kuis, dan flashcard.</p>
+  <div class="meta"><span>David &amp; David (2023)</span><span>Kasus Indonesia</span><span>Progres tersimpan di peramban</span></div>
+</div></div>
+
+<main class="wrap">
+<section class="blk">
+  <div class="eyebrow">Materi per bab</div>
+  <h2>Bab dalam buku acuan</h2>
+  <p class="sub">Buku acuan: David, F. R., &amp; David, F. R. (2023). <em>Strategic Management: A Competitive Advantage Approach, Concepts and Cases</em> (Global Edition). Pearson. Bab yang sudah tersedia ditandai hijau; bab lain menyusul.</p>
+  <div id="chapters"></div>
+</section>
+<section class="blk" style="padding-top:0">
+  <div class="card">
+    <h3 style="margin-top:0">Cara belajar</h3>
+    <p style="margin:0">Buka bab yang dijadwalkan, baca halaman buku yang ditunjuk di setiap unit, lalu centang "sudah membaca" untuk membuka soal. Jawaban dan hasil alat interaktif tersimpan di peramban perangkat yang sama; gunakan menu <b>Catatan &amp; Referensi</b> di tiap bab untuk mengunduhnya bila diminta dosen.</p>
+  </div>
+</section>
+</main>
+<div class="wrap"><p class="foot">Departemen Manajemen Bisnis · Institut Teknologi Sepuluh Nopember. Pengembang materi: Dr. Imam Baihaqi. Materi adalah ringkasan dan adaptasi untuk pembelajaran; mahasiswa tetap wajib membaca buku acuan.</p></div>
+
+<script>
+(function(){
+try{var th=localStorage.getItem("stratman-theme");if(th)document.documentElement.setAttribute("data-theme",th)}catch(e){}
+var CH=[
+ ["Bagian 1 · Overview of Strategic Management",[[1,"Hakikat Manajemen Strategis","The Nature of Strategic Management"]]],
+ ["Bagian 2 · Strategy Formulation",[[2,"Visi dan Misi Bisnis","Business Vision and Mission"],[3,"Analisis Eksternal","The External Assessment"],[4,"Analisis Internal","The Internal Assessment"],[5,"Strategi dalam Aksi","Strategies in Action"],[6,"Analisis dan Pilihan Strategi","Strategy Analysis and Choice"]]],
+ ["Bagian 3 · Strategy Implementation",[[7,"Implementasi Strategi: Isu Manajemen & Pemasaran","Implementing Strategies: Management and Marketing Issues","ch07/"],[8,"Implementasi Strategi: Isu Keuangan & Akuntansi","Implementing Strategies: Finance and Accounting Issues"]]],
+ ["Bagian 4 · Strategy Evaluation and Governance",[[9,"Evaluasi Strategi dan Tata Kelola","Strategy Evaluation and Governance"]]],
+ ["Bagian 5 · Key Strategic-Management Topics",[[10,"Etika Bisnis, Keberlanjutan, dan CSR","Business Ethics, Environmental Sustainability, and CSR"],[11,"Isu Global dan Internasional","Global and International Issues"]]]
+];
+var h="";
+CH.forEach(function(p){
+  h+='<div class="part">'+p[0]+'</div><div class="grid">';
+  p[1].forEach(function(c){
+    var no='<span class="no">Bab '+String(c[0]).padStart(2,"0")+'<span class="st">'+(c[3]?"Tersedia":"Segera")+'</span></span><b>'+c[1]+'</b><span class="en">'+c[2]+'</span>';
+    h+=c[3]?'<a class="ch" href="'+c[3]+'">'+no+'<span class="go">Mulai belajar →</span></a>':'<div class="ch">'+no+'</div>';
+  });
+  h+='</div>';
+});
+document.getElementById("chapters").innerHTML=h;
+document.getElementById("themeBtn").addEventListener("click",function(){
+  var r=document.documentElement,cur=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),nx=cur==="dark"?"light":"dark";
+  r.setAttribute("data-theme",nx);try{localStorage.setItem("stratman-theme",nx)}catch(e){}
+});
+})();
+</script>
+</body>
+</html>
