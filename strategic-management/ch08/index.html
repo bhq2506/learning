@@ -1,0 +1,1645 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bab 8 · Implementasi Strategi: Keuangan</title>
+<meta name="description" content="Web-app belajar mandiri Manajemen Strategi (Magister Manajemen ITS) — Bab 8: Implementing Strategies: Finance and Accounting Issues, berbasis David &amp; David (2023), dengan studi kasus Indonesia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#F3F5FA; --surface:#FFFFFF; --sunk:#E8ECF5; --ink:#0F1B33; --muted:#56627A; --line:#D5DCEA;
+  --navy:#013880; --navy-ink:#FFFFFF; --navy-soft:#E1E9F7;
+  --gold:#B07A00; --gold-bg:#FFC72C; --gold-soft:#FFF4D4;
+  --good:#17784E; --good-soft:#DCF2E6; --bad:#B4372F; --bad-soft:#F9E2DF;
+  --dig:#5B3FB0; --dig-soft:#ECE7FA;
+  --idn:#B4372F; --idn-soft:#FBEAE8;
+  --f:"Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  --r:12px;
+  --shadow:0 1px 2px rgba(15,27,51,.06), 0 4px 16px rgba(15,27,51,.05);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0B1222; --surface:#131C30; --sunk:#1A2540; --ink:#E6EBF5; --muted:#9AA6BF; --line:#28344F;
+  --navy:#7FA6F0; --navy-ink:#0B1222; --navy-soft:#1C2B4D;
+  --gold:#F2C14E; --gold-bg:#F2C14E; --gold-soft:#3A2F12;
+  --good:#52C48F; --good-soft:#123327; --bad:#F07D72; --bad-soft:#3C1C1A;
+  --dig:#B8A4F5; --dig-soft:#261F45; --idn:#F29A90; --idn-soft:#3A1E1C;
+  --shadow:none; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.65}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:var(--navy)}
+h1,h2,h3,h4{line-height:1.2;margin:0 0 .5em;letter-spacing:-.01em}
+h2{font-size:clamp(1.45rem,1.1rem + 1.3vw,1.95rem);font-weight:800}
+h3{font-size:1.12rem;font-weight:700;margin-top:1.6em}
+p{margin:0 0 1em}
+em{font-style:italic}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold-bg);outline-offset:2px;border-radius:6px}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;padding-top:max(10px,env(safe-area-inset-top))}
+:root[data-theme="dark"] .top{background:#0E1A36}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .top{background:#0E1A36}}
+.top .brand{display:flex;flex-direction:column;line-height:1.2;min-width:0;flex:1}
+.top .brand b{font-size:.95rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .brand small{font-size:.72rem;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog{display:flex;align-items:center;gap:8px;font-size:.78rem;white-space:nowrap}
+.prog .bar{width:110px;height:8px;border-radius:99px;background:rgba(255,255,255,.22);overflow:hidden}
+.prog .bar i{display:block;height:100%;background:#FFC72C;border-radius:99px;width:0;transition:width .4s}
+.iconbtn{background:rgba(255,255,255,.12);border:0;border-radius:8px;width:34px;height:34px;display:grid;place-items:center;color:#fff;flex:none}
+.iconbtn:hover{background:rgba(255,255,255,.22)}
+.menubtn{display:none}
+@media (max-width:899px){.menubtn{display:grid}.prog .bar{width:64px}}
+@media (max-width:420px){.prog .lbl{display:none}}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1200px;margin:0 auto}
+@media (max-width:899px){.shell{grid-template-columns:minmax(0,1fr)}}
+nav.side{position:sticky;top:54px;align-self:start;height:calc(100vh - 54px);overflow:auto;padding:20px 12px 40px 16px;border-right:1px solid var(--line)}
+@media (max-width:899px){
+  nav.side{position:fixed;inset:54px 0 0 0;height:auto;background:var(--bg);z-index:15;border:0;transform:translateX(-100%);transition:transform .25s;padding:16px}
+  nav.side.open{transform:none}
+}
+.side .grp{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 8px 6px}
+.side .grp:first-child{margin-top:0}
+.side a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;text-decoration:none;color:var(--ink);font-size:.9rem;font-weight:500;line-height:1.3}
+.side a:hover{background:var(--sunk)}
+.side a.on{background:var(--navy-soft);color:var(--navy);font-weight:700}
+.side a .n{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk);color:var(--muted);border:1.5px solid var(--line)}
+.side a.done .n{background:var(--good);border-color:var(--good);color:#fff}
+.side a.on .n{border-color:var(--navy)}
+.side a .n.ico{font-size:.8rem}
+
+main{padding:28px 16px 80px;min-width:0}
+@media (min-width:900px){main{padding:36px 40px 100px}}
+.view{max-width:760px;margin:0 auto;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tag{display:inline-block;font-family:var(--mono);font-size:.7rem;font-weight:500;letter-spacing:0;text-transform:none;padding:2px 8px;border-radius:99px;background:var(--sunk);color:var(--muted)}
+.lead{font-size:1.05rem;color:var(--muted)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:18px 0;box-shadow:var(--shadow)}
+.card h3:first-child,.card h4:first-child{margin-top:0}
+
+/* reading box */
+.read{border:2px solid var(--navy);background:var(--navy-soft);border-radius:var(--r);padding:16px 18px;margin:20px 0}
+.read .hd{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.read .pg{font-family:var(--mono);font-size:.82rem;background:var(--navy);color:var(--navy-ink);padding:2px 9px;border-radius:6px}
+.read ul{margin:.3em 0 .8em;padding-left:1.2em}
+.read li{margin:.2em 0}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--line);cursor:pointer;font-weight:600;font-size:.92rem}
+.chk input{width:20px;height:20px;accent-color:var(--good);margin:1px 0 0;flex:none}
+
+/* callouts */
+.co{border-left:4px solid var(--dig);background:var(--dig-soft);padding:12px 16px;border-radius:0 10px 10px 0;margin:16px 0;font-size:.95rem}
+.co b.t{color:var(--dig)}
+.co.idn{border-color:var(--idn);background:var(--idn-soft)}
+.co.idn b.t{color:var(--idn)}
+.co.book{border-color:var(--gold);background:var(--gold-soft)}
+.co.book b.t{color:var(--gold)}
+.co p:last-child{margin:0}
+
+/* tables */
+.tw{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--sunk);font-weight:700;font-size:.8rem;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+
+.terms{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.terms span{font-size:.78rem;padding:3px 10px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-style:italic}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:.92rem;background:var(--navy);color:var(--navy-ink);text-decoration:none}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn.gold{background:var(--gold-bg);color:#1b1400}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:36px;padding-top:20px;border-top:1px solid var(--line)}
+
+/* quiz */
+.qwrap{position:relative}
+.qwrap.locked .qbody{filter:blur(3px);pointer-events:none;user-select:none;opacity:.6}
+.lockmsg{display:none;position:absolute;inset:0;z-index:2;align-items:center;justify-content:center;text-align:center;padding:16px}
+.qwrap.locked .lockmsg{display:flex}
+.lockmsg div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px;max-width:380px;box-shadow:0 6px 30px rgba(0,0,0,.12);font-size:.92rem}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0;background:var(--surface)}
+.q .qt{font-weight:600;margin-bottom:10px}
+.q .kind{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:5px;margin-bottom:6px;background:var(--sunk);color:var(--muted)}
+.q .kind.rb{background:var(--gold-soft);color:var(--gold)}
+.opts{display:grid;gap:7px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;padding:9px 12px;border-radius:9px;border:1.5px solid var(--line);background:var(--bg);font-size:.92rem;line-height:1.45}
+.opt:hover:not([disabled]){border-color:var(--navy)}
+.opt .L{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:700;background:var(--sunk)}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.ok .L{background:var(--good);color:#fff}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)}
+.opt.no .L{background:var(--bad);color:#fff}
+.opt.sel{border-color:var(--navy);background:var(--navy-soft)}
+.opt[disabled]{cursor:default}
+.fb{margin-top:10px;font-size:.88rem;padding:9px 12px;border-radius:8px}
+.fb.ok{background:var(--good-soft);color:var(--ink)}
+.fb.no{background:var(--bad-soft);color:var(--ink)}
+.fb b{margin-right:4px}
+.retry{margin-top:8px;font-size:.82rem;background:none;border:0;color:var(--navy);font-weight:700;padding:0;text-decoration:underline}
+
+/* classify widget */
+.cls .it{padding:12px 0;border-bottom:1px dashed var(--line)}
+.cls .it:last-child{border-bottom:0}
+.cls .it p{margin:0 0 8px;font-size:.93rem;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--line);background:var(--bg);border-radius:99px;padding:5px 12px;font-size:.8rem;font-weight:600}
+.chip:hover:not([disabled]){border-color:var(--navy)}
+.chip.ok{background:var(--good);border-color:var(--good);color:#fff}
+.chip.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.chip[disabled]{cursor:default}
+.cls .why{font-size:.84rem;color:var(--muted);margin-top:6px}
+.score{font-size:.85rem;font-weight:700;color:var(--muted)}
+
+/* simulator */
+.sim svg{width:100%;height:auto;display:block}
+.sim .ctl{display:grid;gap:10px;margin-top:10px}
+.sim input[type=range]{width:100%;accent-color:var(--navy)}
+.sim .out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.sim .out div{background:var(--sunk);border-radius:9px;padding:8px 10px;font-size:.78rem;color:var(--muted)}
+.sim .out b{display:block;font-size:1.05rem;color:var(--ink)}
+.state{font-weight:800;padding:8px 12px;border-radius:9px;text-align:center}
+.state.sh{background:var(--bad-soft);color:var(--bad)}
+.state.su{background:var(--gold-soft);color:var(--gold)}
+.state.eq{background:var(--good-soft);color:var(--good)}
+.tog{display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600}
+.tog input{width:18px;height:18px;accent-color:var(--dig)}
+
+/* calc */
+.calc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.calc{grid-template-columns:minmax(0,1fr)}}
+.calc label{font-size:.8rem;font-weight:600;color:var(--muted);display:grid;gap:4px}
+.calc input{font:inherit;font-size:.95rem;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.res{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--sunk);font-size:.92rem}
+.res big{font-size:1.4rem;font-weight:800;display:block}
+
+/* case */
+details.ans{margin-top:10px;border-radius:10px;border:1px dashed var(--gold);background:var(--gold-soft)}
+details.ans summary{cursor:pointer;padding:10px 14px;font-weight:700;color:var(--gold);font-size:.9rem}
+details.ans>div{padding:0 14px 12px;font-size:.92rem}
+details.ans.lock summary{color:var(--muted);cursor:not-allowed}
+textarea{font:inherit;font-size:.92rem;width:100%;min-height:92px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+textarea:focus{border-color:var(--navy);outline:none}
+.cq{margin:18px 0}
+.cq>b{display:block;margin-bottom:6px;font-size:.95rem}
+.hint{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+/* flashcards */
+.fc{perspective:1200px;margin:16px 0}
+.fc .inner{position:relative;min-height:230px;transition:transform .5s;transform-style:preserve-3d;cursor:pointer}
+.fc.flip .inner{transform:rotateY(180deg)}
+.fc .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;padding:24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border:1px solid var(--line);box-shadow:var(--shadow)}
+.fc .front{background:var(--navy);color:#fff}
+:root[data-theme="dark"] .fc .front{background:#1C2B4D;color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fc .front{background:#1C2B4D;color:var(--ink)}}
+.fc .front b{font-size:1.5rem;font-style:italic}
+.fc .back{background:var(--surface);transform:rotateY(180deg);font-size:1.02rem}
+.fc small{opacity:.7;font-size:.75rem;margin-top:10px}
+
+/* final */
+.big{font-size:2.6rem;font-weight:800;line-height:1}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--gold-bg);color:#1b1400;font-weight:800;padding:6px 14px;border-radius:99px}
+
+/* home */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+@media (max-width:620px){.steps{grid-template-columns:minmax(0,1fr)}}
+.steps div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.steps>div>b{display:block;font-size:1rem;margin-bottom:2px}
+.steps span{font-size:.85rem;color:var(--muted)}
+.steps i{font-style:normal;font-size:1.4rem}
+.plan td:nth-child(3){font-family:var(--mono);font-size:.8rem;white-space:nowrap}
+.plan .st{font-size:.75rem;font-weight:700;white-space:nowrap}
+.st.y{color:var(--good)}.st.n{color:var(--muted)}
+.hero{background:linear-gradient(135deg,#013880 0%,#0a4fa8 100%);color:#fff;border-radius:16px;padding:24px 22px;margin-bottom:20px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(1.6rem,1.2rem + 1.8vw,2.3rem);font-weight:800;margin:4px 0 8px}
+.hero p{opacity:.92;margin:0;max-width:56ch}
+.hero .eyebrow{color:#FFC72C}
+.hero::after{content:"";position:absolute;right:-40px;bottom:-60px;width:220px;height:220px;border-radius:50%;border:28px solid rgba(255,199,44,.18)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:.88rem;font-weight:600;z-index:40;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.foot{font-size:.78rem;color:var(--muted);margin-top:40px}
+ol.ref li{margin:.4em 0;font-size:.9rem}
+/* self-test (pola serviceman) */
+.quiz{scroll-margin-top:70px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow)}
+.qz-setup{display:flex;flex-direction:column;gap:14px}
+.qz-setup p{margin:0}
+.qz-lbl{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;font-size:.88rem;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.qz-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.qz-top .qz-lbl{margin:0}
+.qz-prog{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.qz-prog i{display:block;height:100%;background:var(--navy);width:0;transition:width .3s}
+.qz-q{font-size:1.18rem;font-weight:700;margin:0;line-height:1.4}
+.qz-opts{display:flex;flex-direction:column;gap:8px}
+.qz-opts button{text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;font-size:.95rem;line-height:1.45}
+.qz-opts button .k{font-family:var(--mono);font-size:.8rem;color:var(--muted);flex:none;padding-top:2px}
+.qz-opts button:hover:not(:disabled){border-color:var(--navy)}
+.qz-opts button:disabled{cursor:default}
+.qz-opts button.right{border-color:var(--good);background:var(--good-soft)}
+.qz-opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.qz-exp{border-radius:10px;padding:12px 14px;font-size:.93rem}
+.qz-exp.ok{background:var(--good-soft)}.qz-exp.no{background:var(--bad-soft)}
+.qz-exp b{display:block;margin-bottom:2px}
+.qz-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.res-big{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.res-big .pct{font-weight:800;font-size:3.4rem;line-height:1}
+.lo-bars{display:flex;flex-direction:column;gap:8px}
+.lo-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 44px;gap:10px;align-items:center;font-size:.86rem}
+@media (max-width:520px){.lo-row{grid-template-columns:minmax(0,1fr) 70px 40px}}
+.lo-row .b{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.lo-row .b i{display:block;height:100%}
+.lo-row .v{font-family:var(--mono);font-size:.78rem;text-align:right}
+.review{display:flex;flex-direction:column;gap:8px}
+.review details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.review summary{cursor:pointer;font-size:.92rem}
+.review .mk{font-family:var(--mono);font-weight:700;margin-right:6px}
+.review .mk.ok{color:var(--good)}.review .mk.no{color:var(--bad)}
+.review p{font-size:.88rem;margin:6px 0 0}
+.muted{color:var(--muted)}
+/* umpan balik studi kasus */
+.btn.sm{padding:7px 12px;font-size:.84rem}
+.fbk{margin-top:8px}
+.fbres{margin-top:10px}
+.gbox{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px}
+.ghead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.meter{display:flex;gap:4px}
+.meter i{width:22px;height:10px;border-radius:3px;background:var(--sunk)}
+.meter i.on{background:var(--navy)}
+.glv{font-weight:800}
+.gnote{font-size:.72rem;color:var(--muted);margin-left:auto}
+.crit{list-style:none;padding:0;margin:6px 0;display:grid;gap:5px}
+.crit li{font-size:.86rem;display:flex;gap:8px;align-items:flex-start}
+.crit li .m{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:.7rem;font-weight:800;margin-top:2px}
+.crit li.y .m{background:var(--good);color:#fff}
+.crit li.n .m{background:var(--sunk);color:var(--muted);border:1.5px dashed var(--muted)}
+.crit li.n span.h{color:var(--muted)}
+.gwarn{font-size:.84rem;background:var(--gold-soft);border-radius:8px;padding:8px 10px;margin-top:8px}
+.selfc{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.selfc label{display:flex;gap:8px;align-items:flex-start;font-size:.88rem;margin:6px 0;cursor:pointer}
+.selfc input{width:18px;height:18px;accent-color:var(--navy);flex:none;margin-top:2px}
+.stale{font-size:.8rem;color:var(--gold);font-weight:700;margin-top:6px}
+.csum{font-family:var(--mono);font-size:.75rem;font-weight:500;background:var(--sunk);color:var(--muted);padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle}
+
+/* widget topik 3 */
+.mlbl{display:grid;gap:4px;font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:8px}
+.mlbl input,.mlbl textarea{font:inherit;font-size:.9rem;font-weight:400;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.mlbl textarea{min-height:70px}
+.mgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:620px){.mgrid{grid-template-columns:minmax(0,1fr)}}
+.mmap{margin-top:12px;background:var(--sunk);border-radius:12px;padding:14px}
+.mtitle{font-weight:800;margin-bottom:8px}
+.mflow{display:flex;align-items:stretch;gap:6px}
+@media (max-width:700px){.mflow{flex-direction:column}.marrow{transform:rotate(90deg);align-self:center}}
+.mnode{flex:1;min-width:0;background:var(--surface);border:1.5px dashed var(--line);border-radius:10px;padding:10px;font-size:.82rem;display:flex;flex-direction:column;gap:4px}
+.mnode.on{border-style:solid;border-color:var(--navy)}
+.mnode b{font-size:.78rem;color:var(--navy)}
+.mnode span{color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere}
+.mnode.on span{color:var(--ink)}
+.marrow{align-self:center;color:var(--muted);font-weight:800}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 12px;font-size:.85rem;font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.chain{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.cnode{padding:12px 14px;border-radius:10px;background:var(--navy-soft);border:1.5px solid var(--navy);font-weight:700;font-size:.9rem;color:var(--navy)}
+.cnode.cut{background:var(--bad-soft);border-color:var(--bad);color:var(--bad);text-decoration:line-through;opacity:.75}
+.cnode.new{background:var(--gold-soft);border-color:var(--gold);color:var(--gold)}
+.carrow{color:var(--muted);font-weight:800}
+.bmc{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));grid-template-areas:"kp kp ka ka vp vp cr cr cs cs" "kp kp kr kr vp vp ch ch cs cs" "co co co co co rs rs rs rs rs";gap:6px}
+.bmc label{display:flex;flex-direction:column;gap:4px;background:var(--sunk);border-radius:10px;padding:8px}
+.bmc label span{font-size:.72rem;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.03em}
+.bmc textarea{min-height:92px;font-size:.84rem;padding:7px 8px;flex:1}
+.b-kp{grid-area:kp}.b-ka{grid-area:ka}.b-kr{grid-area:kr}.b-vp{grid-area:vp}.b-cr{grid-area:cr}.b-ch{grid-area:ch}.b-cs{grid-area:cs}.b-co{grid-area:co}.b-rs{grid-area:rs}
+.b-vp{background:var(--gold-soft)!important}
+.bmc textarea::placeholder,.mlbl textarea::placeholder,.mlbl input::placeholder{font-style:italic;opacity:.55}
+@media (max-width:760px){.bmc{grid-template-columns:minmax(0,1fr);grid-template-areas:"vp" "cs" "cr" "ch" "kp" "ka" "kr" "co" "rs"}}
+.calc3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.calc3{grid-template-columns:minmax(0,1fr)}}
+.calc3 fieldset{border:1px solid var(--line);border-radius:10px;padding:8px 10px 10px;margin:0;display:grid;gap:6px}
+.calc3 legend{font-size:.78rem;font-weight:800;color:var(--navy);padding:0 4px}
+.calc3 label{display:grid;gap:2px;font-size:.75rem;font-weight:600;color:var(--muted)}
+.calc3 input{font:inherit;font-size:.88rem;padding:6px 8px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.rvbar{display:flex;height:14px;border-radius:7px;overflow:hidden;margin-bottom:10px;background:var(--surface)}
+.rvbar i{display:block;min-width:0}
+.rvrow{display:grid;grid-template-columns:minmax(0,1fr) auto 44px;gap:8px;align-items:center;font-size:.88rem;padding:3px 0}
+.rvrow span i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
+.rvrow .hint{text-align:right}
+.rvrow.tot{border-top:1px solid var(--line);margin-top:4px;padding-top:6px;font-weight:800}
+.ukc{display:flex;gap:8px;align-items:flex-start;font-size:.88rem;margin:5px 0;cursor:pointer}
+.ukc input{width:18px;height:18px;accent-color:var(--navy);flex:none;margin-top:2px}
+
+/* logo ITS & tombol beranda */
+.top .logo{display:flex;align-items:center;flex:none;line-height:0}
+.top .logo img{height:44px;width:auto;display:block}
+.top .logo .mk{display:none}
+@media (max-width:640px){.top .logo .full{display:none}.top .logo .mk{display:block;height:34px}}
+.homebtn{flex:none;display:inline-flex;align-items:center;gap:6px;background:#FFC72C;color:#013880;font-weight:800;font-size:.82rem;line-height:1;text-decoration:none;padding:9px 13px;border-radius:9px;box-shadow:0 0 0 2px rgba(255,255,255,.28);white-space:nowrap}
+.homebtn:hover{background:#FFD65C}
+.homebtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+@media (max-width:560px){.homebtn .t{display:none}.homebtn{padding:9px 11px;font-size:.95rem}}
+
+/* ===== widget bersama ===== */
+.fig2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:14px 0;background:var(--surface);font-size:.86rem}
+.fig2 div{padding:8px 12px;border-bottom:1px solid var(--line)}
+.fig2 .h{font-weight:800;background:var(--navy);color:var(--navy-ink);font-size:.8rem;letter-spacing:.04em;text-transform:uppercase}
+.fig2 div:nth-child(odd){border-right:1px solid var(--line)}
+.fig2 div:nth-last-child(-n+2){border-bottom:0}
+/* hierarchy of aims */
+.aims{display:grid;gap:10px}
+.aims .lt{background:var(--navy);color:var(--navy-ink);border-radius:10px;padding:10px 14px;font-weight:700;font-size:.9rem;text-align:center}
+.aims .divs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:620px){.aims .divs{grid-template-columns:minmax(0,1fr)}}
+.aims .dv{background:var(--sunk);border-radius:10px;padding:10px 12px;font-size:.82rem;display:grid;gap:6px}
+.aims .dv b{color:var(--navy);font-size:.85rem}
+.aims label{display:grid;grid-template-columns:minmax(0,1fr) 46px;align-items:center;gap:6px;font-weight:600;color:var(--muted);font-size:.76rem}
+.aims label input{grid-column:1/-1;width:100%;accent-color:var(--navy)}
+.aims label output{font-family:var(--mono);color:var(--ink);text-align:right;grid-row:1;grid-column:2}
+.verdict{border-radius:10px;padding:10px 14px;font-weight:700;font-size:.92rem}
+.verdict.ok{background:var(--good-soft);color:var(--good)}
+.verdict.no{background:var(--bad-soft);color:var(--bad)}
+.verdict.mid{background:var(--gold-soft);color:var(--gold)}
+/* objective doctor */
+.odx{display:grid;gap:6px;margin-top:10px}
+.odx div{display:flex;gap:8px;align-items:flex-start;font-size:.88rem}
+.odx .m{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:800;margin-top:1px}
+.odx .y .m{background:var(--good);color:#fff}
+.odx .n .m{background:var(--bad-soft);color:var(--bad);border:1.5px solid var(--bad)}
+.odx .s .m{background:var(--sunk);color:var(--muted);border:1.5px dashed var(--muted)}
+.ex-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+/* org chart doctor */
+.orgt{width:100%;border-collapse:collapse;font-size:.86rem}
+.orgt td{padding:4px;border-bottom:1px dashed var(--line);vertical-align:middle}
+.orgt td:first-child{width:38px;font-family:var(--mono);font-weight:700;color:var(--muted);text-align:center}
+.orgt td:nth-child(3){width:96px}
+.orgt td:last-child{width:34px;text-align:center}
+.orgt input{font:inherit;font-size:.86rem;width:100%;padding:6px 8px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+.orgt .del{background:none;border:0;color:var(--muted);font-size:1rem;padding:2px 6px;border-radius:6px}
+.orgt .del:hover{background:var(--bad-soft);color:var(--bad)}
+.tree{margin-top:12px;background:var(--sunk);border-radius:12px;padding:14px;overflow-x:auto}
+.tree ul{list-style:none;margin:0;padding-left:22px;position:relative}
+.tree>ul{padding-left:0}
+.tree li{position:relative;padding:4px 0 4px 14px}
+.tree>ul>li{padding-left:0}
+.tree ul ul li::before{content:"";position:absolute;left:0;top:0;bottom:0;border-left:2px solid var(--line)}
+.tree ul ul li:last-child::before{bottom:auto;height:18px}
+.tree ul ul li::after{content:"";position:absolute;left:0;top:18px;width:12px;border-top:2px solid var(--line)}
+.onode{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--line);border-radius:9px;padding:5px 10px;font-size:.84rem;font-weight:600;white-space:nowrap}
+.onode .no{font-family:var(--mono);font-size:.72rem;background:var(--navy);color:var(--navy-ink);border-radius:5px;padding:1px 6px}
+.onode.fn{border-color:var(--gold)}
+.onode.dv{border-color:var(--good)}
+.onode.top{border-color:var(--navy)}
+.onode.warn{border-color:var(--bad);background:var(--bad-soft)}
+.olegend{display:flex;gap:12px;flex-wrap:wrap;font-size:.75rem;color:var(--muted);margin-top:8px}
+.olegend i{display:inline-block;width:12px;height:12px;border-radius:3px;border:2px solid;margin-right:4px;vertical-align:-2px}
+.issues{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:6px}
+.issues li{font-size:.87rem;padding:8px 10px;border-radius:9px;display:flex;gap:8px;align-items:flex-start}
+.issues li.bad{background:var(--bad-soft)}
+.issues li.ok{background:var(--good-soft)}
+.issues li.info{background:var(--gold-soft)}
+.issues li b.g{font-family:var(--mono);font-size:.72rem;flex:none;padding:2px 6px;border-radius:5px;background:var(--surface);margin-top:1px}
+/* location scoring */
+.locg{width:100%;border-collapse:collapse;font-size:.84rem}
+.locg th,.locg td{padding:6px;border-bottom:1px solid var(--line);text-align:center}
+.locg th{background:var(--sunk);font-size:.75rem}
+.locg td:first-child,.locg th:first-child{text-align:left;font-weight:600}
+.locg input{font:inherit;width:100%;max-width:120px;padding:5px 6px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);text-align:center}
+.locg select{font:inherit;font-size:.84rem;padding:5px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+.locg thead input{font-weight:700;max-width:none}
+.lbars{display:grid;gap:8px;margin-top:12px}
+.lbar{display:grid;grid-template-columns:140px minmax(0,1fr) 54px;gap:8px;align-items:center;font-size:.86rem}
+@media (max-width:520px){.lbar{grid-template-columns:90px minmax(0,1fr) 46px}}
+.lbar .b{height:14px;background:var(--sunk);border-radius:7px;overflow:hidden}
+.lbar .b i{display:block;height:100%;background:var(--navy);border-radius:7px;transition:width .3s}
+.lbar.win .b i{background:var(--good)}
+.lbar span:last-child{font-family:var(--mono);text-align:right}
+/* perceptual map */
+.pmap svg{width:100%;height:auto;display:block;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.pm-ax{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:10px}
+@media (max-width:620px){.pm-ax{grid-template-columns:minmax(0,1fr)}}
+.pm-ax label{display:grid;gap:3px;font-size:.75rem;font-weight:700;color:var(--muted)}
+.pm-ax input{font:inherit;font-size:.86rem;font-weight:400;padding:6px 8px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+.pm-rows{display:grid;gap:6px;margin-top:10px}
+.pm-row{display:grid;grid-template-columns:22px minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr) 28px;gap:8px;align-items:center;font-size:.8rem}
+@media (max-width:620px){.pm-row{grid-template-columns:22px minmax(0,1fr) 28px;}.pm-row .rg{grid-column:2/3}}
+.pm-row input[type=text]{font:inherit;font-size:.85rem;padding:5px 8px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.pm-row input[type=radio]{accent-color:var(--gold);width:18px;height:18px}
+.pm-row .rg{display:grid;grid-template-columns:20px minmax(0,1fr) 22px;gap:4px;align-items:center;color:var(--muted);font-weight:700}
+.pm-row .rg input{width:100%;accent-color:var(--navy)}
+.pm-row .rg output{font-family:var(--mono);color:var(--ink)}
+.pm-head{font-size:.72rem;color:var(--muted);font-weight:700}
+.legal{font-size:.78rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:8px;margin-top:10px}
+.stp{display:flex;gap:6px;align-items:stretch;margin:12px 0}
+@media (max-width:620px){.stp{flex-direction:column}}
+.stp div{flex:1;border-radius:10px;padding:10px 12px;font-size:.84rem;background:var(--navy-soft);border:1.5px solid var(--navy)}
+.stp div b{display:block;color:var(--navy);font-size:.9rem}
+.stp .ar{flex:none;align-self:center;border:0;background:none;padding:0;color:var(--muted);font-weight:800}
+.order{display:grid;gap:6px;margin-top:6px}
+.order button{text-align:left}
+.tbl-sm td,.tbl-sm th{font-size:.83rem}
+
+/* ===== widget Bab 8 ===== */
+.calc-in{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:8px 0 12px}
+.calc-in label{display:grid;gap:3px;font-size:.74rem;font-weight:700;color:var(--muted)}
+.calc-in input{font:inherit;font-size:.9rem;font-weight:500;padding:6px 8px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%;font-family:var(--mono)}
+.calc-in input:focus{border-color:var(--navy);outline:none}
+.calc-in .wide{grid-column:1/-1}
+.calc-in .rng{display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:6px;align-items:center}
+.calc-in .rng input[type=range]{accent-color:var(--navy);padding:0;border:0;background:none}
+.calc-in .rng output{font-family:var(--mono);font-size:.85rem;color:var(--ink);text-align:right}
+.unit-note{font-size:.76rem;color:var(--muted);margin:-4px 0 8px}
+.ftab{width:100%;border-collapse:collapse;font-size:.8rem;font-family:var(--mono);min-width:640px}
+.ftab th,.ftab td{padding:5px 7px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.ftab th{background:var(--sunk);font-family:var(--f);font-size:.72rem}
+.ftab td:first-child,.ftab th:first-child{text-align:left;font-family:var(--f);font-weight:600;position:sticky;left:0;background:var(--surface)}
+.ftab th:first-child{background:var(--sunk)}
+.ftab tr.key td{font-weight:800;color:var(--navy)}
+.ftab td.best{background:var(--good-soft);color:var(--good);font-weight:800}
+.ftab .grp th{background:var(--navy);color:var(--navy-ink);text-align:center}
+.ftab .grp th:first-child{background:var(--navy)}
+.ftab td.neg{color:var(--bad)}
+.ftab.narrow{min-width:0}
+.chartbox svg{width:100%;height:auto;display:block;background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-top:10px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:12px}
+.kpi{background:var(--sunk);border-radius:10px;padding:10px 12px}
+.kpi small{display:block;font-size:.72rem;color:var(--muted);font-weight:700}
+.kpi b{font-family:var(--mono);font-size:1.05rem}
+.kpi.warn{background:var(--bad-soft)}
+.kpi.ok{background:var(--good-soft)}
+.kpi span{display:block;font-size:.72rem;color:var(--muted)}
+.ordw{display:grid;gap:6px}
+.ordw button{text-align:left;font:inherit;font-size:.88rem;padding:9px 12px;border-radius:9px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.ordw button .n{flex:none;width:22px;height:22px;border-radius:50%;background:var(--sunk);display:grid;place-items:center;font-family:var(--mono);font-size:.75rem;font-weight:700}
+.ordw button.done{border-color:var(--good);background:var(--good-soft)}
+.ordw button.done .n{background:var(--good);color:#fff}
+.ordw button.shake{border-color:var(--bad);background:var(--bad-soft)}
+.formula{font-family:var(--mono);font-size:.86rem;background:var(--sunk);border-radius:8px;padding:8px 12px;margin:8px 0;overflow-x:auto;white-space:nowrap}
+.vbars{display:grid;gap:8px;margin-top:12px}
+.vbar{display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr) minmax(0,120px);gap:8px;align-items:center;font-size:.84rem}
+@media (max-width:560px){.vbar{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}.vbar .b{grid-column:1/-1;grid-row:2}}
+.vbar .b{height:14px;background:var(--sunk);border-radius:7px;overflow:hidden;position:relative}
+.vbar .b i{display:block;height:100%;background:var(--navy);border-radius:7px}
+.vbar.neg .b i{background:var(--bad)}
+.vbar.avg .b i{background:var(--gold-bg)}
+.vbar span:last-child{font-family:var(--mono);text-align:right}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <button class="iconbtn menubtn" id="menuBtn" aria-label="Buka menu" aria-expanded="false">☰</button>
+  <a class="logo" href="../" aria-label="Beranda mata kuliah Manajemen Strategi, ITS"><img class="full" src="../assets/its-logo-white.png" alt="Institut Teknologi Sepuluh Nopember" width="77" height="44"><img class="mk" src="../assets/its-mark-white.png" alt="ITS" width="23" height="34"></a>
+  <div class="brand"><b>Bab 8 · Implementasi Strategi: Keuangan</b><small>Manajemen Strategi · Magister Manajemen ITS</small></div>
+  <div class="prog" title="Kemajuan belajar"><span class="lbl" id="progLbl">0%</span><span class="bar"><i id="progBar"></i></span></div>
+  <a class="homebtn" href="../" title="Kembali ke beranda mata kuliah"><span aria-hidden="true">⌂</span><span class="t">Beranda</span></a>
+  <button class="iconbtn" id="themeBtn" aria-label="Ganti tema terang/gelap">◐</button>
+</header>
+
+<div class="shell">
+<nav class="side" id="side" aria-label="Navigasi materi"></nav>
+<main id="main">
+
+<!-- ================= HOME ================= -->
+<section class="view" data-view="home">
+  <div class="hero">
+    <div class="eyebrow">Bab 8 · Belajar Mandiri</div>
+    <h1>Implementasi Strategi: Isu Keuangan &amp; Akuntansi</h1>
+    <p>Strategi yang bagus tetap gagal bila tidak bisa didanai atau angkanya tidak masuk akal. Bab ini membekali Anda dengan alat untuk membuktikan bahwa rekomendasi Anda <b>layak secara finansial</b>: analisis EPS/EBIT, laporan keuangan proyeksi, valuasi perusahaan, dan keputusan IPO serta obligasi.</p>
+  </div>
+
+  <div class="card">
+    <h3>🎯 Capaian pembelajaran bab ini</h3>
+    <p style="margin:0 0 6px">Setelah menyelesaikan aplikasi ini, Anda mampu:</p>
+    <ol style="margin:0;padding-left:1.2em;font-size:.93rem">
+      <li>Menentukan struktur modal yang tepat dengan analisis EPS/EBIT untuk membandingkan pendanaan utang dan saham (LO 8.1).</li>
+      <li>Menyusun laporan keuangan proyeksi yang menunjukkan dampak rekomendasi beserta biayanya (LO 8.2).</li>
+      <li>Menghitung nilai perusahaan atau divisi dengan empat metode valuasi (LO 8.3).</li>
+      <li>Membahas rasio keuangan, IPO, kas, dan penerbitan obligasi sebagai keputusan strategis (LO 8.4).</li>
+    </ol>
+  </div>
+
+  <h3>Cara memakai aplikasi ini</h3>
+  <p>Aplikasi ini <b>bukan pengganti buku</b>. Setiap unit mengikuti tiga langkah:</p>
+  <div class="steps">
+    <div><i>📖</i><b>1. Baca</b><span>Buka halaman Bab 8 yang ditunjuk, dengan pertanyaan pemandu sebagai fokus.</span></div>
+    <div><i>✅</i><b>2. Cek</b><span>Centang "sudah membaca" untuk membuka soal. Soal berlabel <span style="font-weight:700">Cek Bacaan</span> hanya bisa dijawab dari buku.</span></div>
+    <div><i>🧮</i><b>3. Hitung &amp; terapkan</b><span>Gunakan kalkulator EPS/EBIT, simulator laporan proyeksi, dan kalkulator valuasi, lalu kerjakan studi kasus.</span></div>
+  </div>
+  <p class="hint">Kemajuan dan angka yang Anda masukkan tersimpan otomatis di peramban ini (bukan di server). Menu <b>Catatan &amp; Referensi</b> memungkinkan Anda menyalin atau mengunduh semuanya.</p>
+
+  <h3>Rencana belajar (± 5 jam)</h3>
+  <div class="tw"><table class="plan">
+    <thead><tr><th>#</th><th>Unit</th><th>Halaman buku</th><th>Status</th></tr></thead>
+    <tbody id="planBody"></tbody>
+  </table></div>
+  <p class="hint">Bacaan utama: David, F. R., &amp; David, F. R. (2023). <em>Strategic Management: A Competitive Advantage Approach, Concepts and Cases</em> (Global Edition). Pearson. Bab 8: <em>Implementing Strategies: Finance and Accounting Issues</em>, hlm. 269–297.</p>
+
+  <div class="co idn"><b class="t">🇮🇩 Kasus Indonesia di bab ini.</b> Selain mini-case Hasbro–Mattel dan latihan EPS/EBIT Coca-Cola dari buku, Anda akan menganalisis tiga kasus Indonesia: <b>laporan keuangan Garuda Indonesia 2018</b>, perjalanan <b>GoTo</b> dari IPO hingga penurunan nilai goodwill dan masuknya TikTok ke Tokopedia, serta <b>rights issue BRI</b> (2021) untuk membentuk holding ultra mikro.</div>
+
+  <h3>🔥 Pemanasan (5 menit)</h3>
+  <div class="card">
+    <p>Ingat kembali rekomendasi strategi yang Anda susun di Bab 6 atau organisasi yang Anda pakai di Bab 7.</p>
+    <div class="cq"><b>Rekomendasi strategi saya dan perkiraan biayanya</b><textarea data-note="warm_rec" placeholder="Contoh: membangun 2 pabrik baru di Jawa Tengah, perkiraan biaya Rp2 triliun…"></textarea></div>
+    <div class="cq"><b>Bila harus didanai hari ini, saya cenderung memilih utang atau saham? Mengapa?</b><textarea data-note="warm_fin" placeholder="Saya cenderung… karena…"></textarea></div>
+  </div>
+  <div class="pager"><span></span><a class="btn" href="#u1">Mulai Unit 1 →</a></div>
+</section>
+
+<!-- ================= UNIT 1 ================= -->
+<section class="view" data-view="u1" data-unit="1">
+  <div class="eyebrow">Unit 1 <span class="tag">Pengantar</span><span class="tag">± 20 menit</span></div>
+  <h2>Keuangan sebagai Syarat Implementasi</h2>
+  <div class="read" data-read="1">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 8 · hlm. 270–271 · Gambar 8-1</span></div>
+    <p style="margin:0 0 4px">Pembuka bab dan profil <em>Exemplary Strategist</em> (Jamie Dimon). Cari jawaban:</p>
+    <ul>
+      <li>Apa dua isu strategis yang selalu ditekankan Jamie Dimon?</li>
+      <li>Apa contoh keputusan keuangan dan akuntansi yang muncul saat mengimplementasikan strategi?</li>
+      <li>Apa lima aktivitas keuangan dan akuntansi yang menjadi inti implementasi strategi?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="1"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <h3>Dari "apa strateginya" ke "bagaimana mendanainya"</h3>
+  <p>Strategi hanya bisa diimplementasikan dengan berhasil bila organisasi <b>mengelola keuangannya secara efektif</b>. Buku memakai analogi quarterback: strategi terbaik yang disusun di <em>huddle</em> tidak otomatis menjadi touchdown; semua pemain harus menjalankannya. Di Bab 7 kita membahas orangnya; di bab ini kita membahas uangnya.</p>
+  <p>Jamie Dimon (JPMorgan Chase) menekankan dua hal: <b>melibatkan banyak orang dari berbagai fungsi</b> dalam keputusan (keuangan, SIM, akuntansi, pemasaran), dan <b>skala ekonomi</b>. Menurutnya, tumbuh demi tumbuh adalah strategi yang keliru; sumber daya sebaiknya diarahkan ke area yang membangun skala ekonomi.</p>
+
+  <h3>Keputusan keuangan dalam implementasi</h3>
+  <p>Buku mencontohkan sepuluh keputusan: menghimpun modal (utang jangka pendek/panjang, obligasi, divestasi, saham preferen atau biasa), sewa atau beli aset tetap, rasio pembayaran dividen, metode persediaan (LIFO, FIFO, nilai pasar), memperpanjang piutang atau tidak, diskon pembayaran cepat, jumlah kas yang disimpan, membeli saham treasuri atau tidak, menerima tawaran merger atau tidak, dan berapa harga yang diminta untuk divisi yang didivestasi.</p>
+  <p>Dari situ, buku memusatkan bab ini pada <b>lima aktivitas inti</b>:</p>
+  <ol>
+    <li><b>Menentukan struktur modal</b>: menghimpun modal yang dibutuhkan, dengan analisis EPS/EBIT (Unit 2–3).</li>
+    <li><b>Menyusun laporan keuangan proyeksi</b>: menunjukkan dampak rekomendasi (Unit 4).</li>
+    <li><b>Valuasi perusahaan</b>: bila menerima tawaran atau hendak mengakuisisi pesaing (Unit 5).</li>
+    <li><b>Menganalisis rasio keuangan</b> (Unit 6).</li>
+    <li><b>Mengelola IPO, kas, dan obligasi korporasi</b> (Unit 6).</li>
+  </ol>
+  <div class="card cls" data-widget="act5"><h4>🧩 Latihan: aktivitas keuangan yang mana?</h4></div>
+  <div class="co idn"><b class="t">🇮🇩 Konteks Indonesia.</b> Banyak pembahasan buku memakai pasar modal AS. Di Indonesia, padanannya adalah Bursa Efek Indonesia (BEI) dengan pengawas Otoritas Jasa Keuangan (OJK). Menambah modal melalui saham baru bagi pemegang saham lama disebut <em>rights issue</em> atau Penawaran Umum Terbatas dengan HMETD; tarif PPh badan umum adalah 22% (UU No. 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan), berbeda dari 21% di AS yang dipakai buku.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u1"></div>
+  <div class="pager"><a class="btn ghost" href="#home">← Beranda</a><a class="btn" href="#u2">Unit 2 →</a></div>
+</section>
+
+<!-- ================= UNIT 2 ================= -->
+<section class="view" data-view="u2" data-unit="2">
+  <div class="eyebrow">Unit 2 <span class="tag">LO 8.1</span><span class="tag">± 60 menit</span></div>
+  <h2>Struktur Modal dan Analisis EPS/EBIT</h2>
+  <div class="read" data-read="2">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 8 · hlm. 271–274 · Tabel 8-1, 8-2 · Gambar 8-2</span></div>
+    <p style="margin:0 0 4px">Subbab <em>Capital Structure</em> dan <em>EPS/EBIT Analysis</em>. Cari jawaban:</p>
+    <ul>
+      <li>Apa beda EPS, EBIT, EBT, EAT, saham beredar, dan saham yang diotorisasi?</li>
+      <li>Apa saja kekhawatiran khusus bila menerbitkan saham baru?</li>
+      <li>Apa empat langkah analisis EPS/EBIT, dan bagaimana membaca grafiknya?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="2"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <h3>Utang atau saham?</h3>
+  <p>Setelah rekomendasi dan biayanya disusun, perusahaan harus menentukan cara <b>paling menguntungkan</b> untuk menghimpun modal. Kas di neraca jarang cukup (dan bisa terkena pajak bila berada di luar negeri), divestasi bisnis adalah opsi (P&amp;G mendivestasi lebih dari seratus merek), tetapi biasanya dibutuhkan <b>utang, saham, atau kombinasi keduanya</b>. Proporsi utang terhadap ekuitas disebut <b><em>capital structure</em></b>.</p>
+  <div class="tw"><table class="tbl-sm">
+    <thead><tr><th>Istilah</th><th>Arti</th></tr></thead>
+    <tbody>
+      <tr><td>EPS</td><td><em>Earnings per share</em> = laba bersih ÷ jumlah saham beredar</td></tr>
+      <tr><td>EBIT</td><td><em>Earnings before interest and taxes</em>, disebut juga laba operasi</td></tr>
+      <tr><td>EBT / EAT</td><td>Laba sebelum pajak / laba setelah pajak (laba bersih)</td></tr>
+      <tr><td>Saham beredar</td><td>Saham yang diterbitkan dikurangi saham yang dibeli kembali (treasuri); menjadi penyebut EPS</td></tr>
+      <tr><td>Saham diotorisasi</td><td>Jumlah total saham yang boleh diterbitkan, biasanya jauh lebih besar dari saham beredar</td></tr>
+    </tbody>
+  </table></div>
+  <p>Secara teori, perusahaan sebaiknya memakai cukup utang untuk mendanai proyek yang hasilnya melebihi biaya utang. Namun di periode laba rendah, utang berlebihan membahayakan imbal hasil pemegang saham dan kelangsungan perusahaan, karena <b>kewajiban bunga tetap harus dibayar</b>. Penerbitan saham juga punya kekhawatiran: <b>dilusi kepemilikan, risiko pengambilalihan naik, dampak pada harga saham, kewajiban dividen untuk saham tambahan, dan EPS lebih rendah</b>.</p>
+  <p>Buku menyebut EPS sebagai "barangkali ukuran keberhasilan perusahaan terbaik", karena mencerminkan tujuan memaksimalkan kekayaan pemegang saham. <b>Analisis EPS/EBIT</b> membandingkan EPS dari pendanaan utang, saham, dan kombinasi pada berbagai skenario EBIT (pesimistis, realistis, optimistis).</p>
+
+  <h3>Empat langkah</h3>
+  <div class="ordw" id="epsSteps"></div>
+  <p class="hint">Klik langkah dalam urutan yang benar.</p>
+
+  <div class="card" id="epsTool">
+    <h4>🧮 Kalkulator EPS/EBIT</h4>
+    <div class="seg" id="epsPreset">
+      <button data-p="pg" aria-pressed="false">P&amp;G (Tabel 8-1)</button>
+      <button data-p="ko" aria-pressed="false">Coca-Cola (Exercise 8A)</button>
+      <button data-p="q24" aria-pressed="false">Soal 8-24</button>
+      <button data-p="idn" aria-pressed="false">🇮🇩 PT Nusantara Pangan (fiktif)</button>
+      <button data-p="mine" aria-pressed="false">Data saya</button>
+    </div>
+    <div class="calc-in" id="epsIn"></div>
+    <p class="unit-note" id="epsUnit"></p>
+    <div class="tw" style="margin:0"><table class="ftab" id="epsTbl"></table></div>
+    <div class="chartbox" id="epsChart"></div>
+    <div class="res" id="epsRes"></div>
+  </div>
+  <div class="co book"><b class="t">📖 Membaca hasil P&amp;G.</b> Pada EBIT pesimistis ($10 miliar), saham sedikit lebih unggul (EPS $2,96 vs $2,94). Pada EBIT realistis dan optimistis, utang lebih unggul ($5,36 vs $5,32 pada $18 miliar). Selisih $0,04 per saham tampak kecil, tetapi dengan 2.550 juta saham beredar setara <b>$102 juta</b>. Pilih garis tertinggi, kecuali ada alasan kuat untuk membatalkannya (Unit 3).</div>
+  <div class="co"><b class="t">🤔 Berpikir kritis.</b> Buku menyarankan suku bunga 3–5% untuk latihan, sesuai kondisi AS saat buku ditulis. Di Indonesia, biaya utang korporasi umumnya lebih tinggi dan mengikuti BI-Rate serta peringkat kredit perusahaan. Coba naikkan suku bunga pada preset PT Nusantara Pangan: pada tingkat berapa utang berhenti menjadi pilihan terbaik di skenario realistis?</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u2"></div>
+  <div class="pager"><a class="btn ghost" href="#u1">← Unit 1</a><a class="btn" href="#u3">Unit 3 →</a></div>
+</section>
+
+<!-- ================= UNIT 3 ================= -->
+<section class="view" data-view="u3" data-unit="3">
+  <div class="eyebrow">Unit 3 <span class="tag">LO 8.1</span><span class="tag">± 30 menit</span></div>
+  <h2>Keterbatasan EPS/EBIT dan Keputusan Pendanaan</h2>
+  <div class="read" data-read="3">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 8 · hlm. 275 · Tabel 8-3</span></div>
+    <p style="margin:0 0 4px">Tabel 8-3 dan subbab <em>EPS/EBIT Analysis: Limitations</em>. Cari jawaban:</p>
+    <ul>
+      <li>Apa tujuh keterbatasan atau pertimbangan dalam analisis EPS/EBIT?</li>
+      <li>Kapan keterbatasan itu cukup kuat untuk membatalkan pilihan dengan EPS tertinggi?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="3"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <h3>Tujuh pertimbangan (Tabel 8-3)</h3>
+  <div class="tw"><table class="tbl-sm">
+    <thead><tr><th>Pertimbangan</th><th>Inti</th></tr></thead>
+    <tbody>
+      <tr><td>1. Fleksibilitas</td><td>Utang atau saham hari ini bisa menimbulkan kewajiban tetap, <em>covenant</em>, atau batasan lain yang memengaruhi kemampuan menghimpun modal di masa depan.</td></tr>
+      <tr><td>2. Dilusi kepemilikan</td><td>Saham baru mengencerkan kepemilikan dan kendali. Bila ini menjadi kekhawatiran, utang bisa lebih menarik meski EPS saham lebih tinggi.</td></tr>
+      <tr><td>3. Timing</td><td>Bila suku bunga diperkirakan naik, mengunci utang berbunga tetap bisa lebih menarik; saat harga saham tinggi, saham bisa lebih menarik.</td></tr>
+      <tr><td>4. Situasi leverage</td><td>Bila leverage perusahaan sudah di atas rata-rata industri, saham bisa lebih menarik meski EPS utang lebih tinggi.</td></tr>
+      <tr><td>5. Kontinuitas</td><td>Analisis mengasumsikan harga saham, tarif pajak, dan suku bunga konstan di semua skenario.</td></tr>
+      <tr><td>6. Rentang EBIT</td><td>EBIT hanyalah estimasi dari tahun sebelumnya ditambah dampak strategi.</td></tr>
+      <tr><td>7. Dividen</td><td>Bila saham dipilih dan perusahaan membayar dividen, lebih banyak dana keluar sebagai dividen atas saham baru.</td></tr>
+    </tbody>
+  </table></div>
+  <p>Namun buku tegas: <b>kecuali ada alasan kuat</b>, EPS tertinggi pada baris terakhir harus menentukan pilihan pendanaan, karena EPS adalah ukuran kinerja yang sangat baik. Analisis EPS/EBIT sendiri tidak memperingatkan Anda tentang keterbatasan-keterbatasan ini; Anda yang harus memeriksanya.</p>
+  <div class="card cls" data-widget="lim7"><h4>🧩 Latihan: pertimbangan Tabel 8-3 yang mana?</h4></div>
+
+  <div class="co idn"><b class="t">🇮🇩 Contoh: rights issue BRI (2021).</b> Untuk membentuk holding ultra mikro bersama Pegadaian dan PNM, BRI menggelar <em>rights issue</em> dengan harga pelaksanaan Rp3.400 per saham dan menerbitkan sekitar 28,2 miliar saham baru. Dana yang terhimpun Rp95,9 triliun: Rp54,7 triliun berupa penyertaan nontunai pemerintah (inbreng saham Pegadaian dan PNM) dan Rp41,2 triliun tunai dari pemegang saham publik, dengan permintaan melebihi penawaran (<em>oversubscribed</em>). Pemerintah tetap mempertahankan kendali karena ikut menyerap haknya. Pertimbangan <b>dilusi kepemilikan</b> dan <b>leverage</b> bank jelas berperan dalam memilih ekuitas. Kasus lengkap ada di Studi Kasus 5.</div>
+  <div class="co"><b class="t">🤔 Berpikir kritis.</b> Buku menyatakan EPS adalah "barangkali ukuran keberhasilan terbaik". Kritik yang sering muncul: EPS bisa dinaikkan lewat <em>buyback</em> atau utang tanpa menciptakan nilai ekonomi, dan EPS mengabaikan risiko serta biaya modal ekuitas. Ukuran apa yang akan Anda pakai bersama EPS untuk menilai keputusan pendanaan (misalnya ROE, rasio utang, atau <em>interest coverage</em>)?</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u3"></div>
+  <div class="pager"><a class="btn ghost" href="#u2">← Unit 2</a><a class="btn" href="#u4">Unit 4 →</a></div>
+</section>
+
+<!-- ================= UNIT 4 ================= -->
+<section class="view" data-view="u4" data-unit="4">
+  <div class="eyebrow">Unit 4 <span class="tag">LO 8.2</span><span class="tag">± 60 menit</span></div>
+  <h2>Laporan Keuangan Proyeksi</h2>
+  <div class="read" data-read="4">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 8 · hlm. 275–284 · Tabel 8-4 s.d. 8-11 · Ethics &amp; Global Capsule 8</span></div>
+    <p style="margin:0 0 4px">Subbab <em>Projected Financial Statements</em>. Cari jawaban:</p>
+    <ul>
+      <li>Apa tujuh langkah menyusun laporan keuangan proyeksi?</li>
+      <li>Mengapa laba ditahan (RE) di neraca bukan uang yang tersedia untuk implementasi?</li>
+      <li>Mengapa kas dipakai sebagai <em>plug figure</em>, dan apa yang dilakukan bila kas terlalu tinggi atau rendah?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="4"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p><b><em>Projected financial statements</em></b> adalah laporan laba rugi dan neraca untuk tahun-tahun mendatang yang memperkirakan dampak rekomendasi. Sebagian besar lembaga keuangan meminta <b>proyeksi 3 tahun</b> setiap kali perusahaan mencari modal. Analisis ini sekaligus alat formulasi (membandingkan alternatif) dan implementasi (memantau dampak).</p>
+
+  <h3>Tujuh langkah (susun urutannya)</h3>
+  <div class="ordw" id="pfsSteps"></div>
+  <p class="hint">Klik langkah dalam urutan yang benar.</p>
+  <div class="co book"><b class="t">📖 Tiga pesan kunci buku.</b> (1) <b>Jangan memproyeksikan pertumbuhan historis secara buta</b>; pertimbangkan apa yang dulu dilakukan perusahaan untuk mencapainya (laba P&amp;G 2017 melonjak karena divestasi, bukan operasi). (2) <b>RE adalah angka kumulatif</b>, bukan uang di bank; RE turun bila perusahaan rugi atau membayar dividen melebihi laba bersih. (3) <b>Kas adalah angka penyeimbang</b>: bila hasilnya terlalu tinggi atau terlalu rendah, tinjau kembali asumsi utang, persediaan, piutang, atau aset tetap. Lembaga nirlaba memakai langkah yang sama, dengan aset neto menggantikan RE dan tanpa pajak atau dividen.</div>
+
+  <div class="card" id="pfsTool">
+    <h4>🧮 Simulator laporan keuangan proyeksi · PT Rasa Nusantara Tbk (fiktif, Rp miliar)</h4>
+    <p class="hint" style="margin-top:-4px">Versi sederhana satu tahun proyeksi, mengikuti langkah buku: laba rugi dulu (metode persentase penjualan), RE ke neraca, neraca dari bawah ke atas, kas sebagai penyeimbang. Ubah asumsi rekomendasi Anda.</p>
+    <div class="calc-in" id="pfsIn"></div>
+    <div class="tw" style="margin:0"><table class="ftab narrow" id="pfsTbl"></table></div>
+    <div class="kpis" id="pfsKpi"></div>
+    <div class="res" id="pfsRes"></div>
+  </div>
+
+  <h3>Etika: proyeksi yang "dipoles"</h3>
+  <p>Ethics Capsule 8 mengingatkan bahwa eksekutif dapat, secara legal, memoles proyeksi agar tampak lebih cerah (untuk menggalang dukungan) atau lebih suram (untuk menghalau calon pengakuisisi, atau "membuang" kabar buruk ke satu periode agar periode berikutnya tampak lebih baik). Mengutip <em>Financial Shenanigans</em> (Schilit), ada lima cara manipulasi laporan keuangan: mencatat pendapatan terlalu dini, mencatat pendapatan fiktif, menaikkan laba dengan keuntungan sekali-terjadi, menggeser beban ke periode lain, dan tidak mencatat kewajiban tertentu.</p>
+  <div class="card cls" data-widget="shen"><h4>🧩 Latihan: manipulasi jenis apa?</h4></div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh: laporan keuangan Garuda Indonesia 2018.</b> Garuda melaporkan laba bersih US$809,85 ribu untuk 2018 setelah mengakui pendapatan US$239,94 juta dari kerja sama konektivitas dalam penerbangan dengan PT Mahata Aero Teknologi, padahal dananya belum diterima. Dua komisaris menolak menandatangani laporan itu. Kementerian Keuangan dan OJK kemudian menyatakan laporan tersebut melanggar standar; OJK mendenda perusahaan dan direksinya, dan akuntan publiknya dibekukan izinnya selama 12 bulan. Ini contoh pola "mencatat pendapatan terlalu dini". Kasus lengkap ada di Studi Kasus 3.</div>
+  <div class="co idn"><b class="t">🇮🇩 Global Capsule 8: posisi Indonesia.</b> Buku menampilkan Indeks Persepsi Korupsi (IPK) 2016 dari Transparency International. Pada IPK 2025 (dirilis Februari 2026), skor Indonesia 34 dari 100 dan berada di peringkat 109, turun dari skor 37 (peringkat 99) pada IPK 2024. Bagi investor, persepsi korupsi memengaruhi seberapa jauh mereka memercayai angka dan proyeksi yang disajikan perusahaan.</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u4"></div>
+  <div class="pager"><a class="btn ghost" href="#u3">← Unit 3</a><a class="btn" href="#u5">Unit 5 →</a></div>
+</section>
+
+<!-- ================= UNIT 5 ================= -->
+<section class="view" data-view="u5" data-unit="5">
+  <div class="eyebrow">Unit 5 <span class="tag">LO 8.3</span><span class="tag">± 45 menit</span></div>
+  <h2>Valuasi Perusahaan</h2>
+  <div class="read" data-read="5">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 8 · hlm. 284–286 · Tabel 8-12, 8-13</span></div>
+    <p style="margin:0 0 4px">Subbab <em>Corporate Valuation</em>. Cari jawaban:</p>
+    <ul>
+      <li>Apa empat metode valuasi, dan apa kelemahan masing-masing?</li>
+      <li>Apa itu <em>premium</em> dan <em>discount</em> dalam akuisisi?</li>
+      <li>Mengapa nilai P&amp;G dengan metode kekayaan bersih menjadi negatif?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="5"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <p>Menilai harga sebuah bisnis penting karena perusahaan mengakuisisi perusahaan lain, membeli divisi, atau mendivestasi sebagian usahanya; buku menyebut sekitar $1,5 triliun merger terjadi di AS setiap tahun. Valuasi juga dipakai untuk pinjaman bank, perhitungan pajak, paket pensiun, perjanjian kemitraan, dan audit. <b>Valuasi bukan ilmu pasti</b>: faktor seperti pelanggan setia, paten, gugatan yang tertunda, atau peringkat kredit buruk tidak sepenuhnya tercermin di laporan keuangan, dan metode yang berbeda menghasilkan angka berbeda.</p>
+  <div class="formula">1. Kekayaan bersih = Ekuitas − (Goodwill + Aset tak berwujud)</div>
+  <div class="formula">2. Laba bersih = Laba bersih × 5</div>
+  <div class="formula">3. Rasio P/E = (Harga saham ÷ EPS) × Laba bersih</div>
+  <div class="formula">4. Saham beredar = Jumlah saham beredar × Harga saham (kapitalisasi pasar)</div>
+  <p>Metode 1 bisa negatif bila goodwill dan aset tak berwujud melebihi ekuitas, seperti P&amp;G; ini sinyal bahwa sebagian besar aset bersifat tak berwujud. Metode 2 konservatif dan lebih cocok untuk bisnis kecil; ingat bahwa laba bisa ditekan untuk menghemat pajak. Metode 3 identik secara aljabar dengan metode 4 bila angka laba dan saham diambil pada waktu yang sama. Untuk menilai divisi, analis bisa mengalikan nilai perusahaan dengan porsi pendapatan divisi tersebut.</p>
+  <p><b><em>Premium</em></b> adalah selisih harga akuisisi di atas kapitalisasi pasar (bila di bawahnya disebut <em>discount</em>). Meredith Corp. membayar premium 46% ($1,85 miliar) untuk Time Inc. Menurut buku, membeli perusahaan mirip membeli rumah: <b>membayar premium biasanya tidak bijak secara finansial</b>, kecuali ada teknologi, paten, atau skala ekonomi yang benar-benar dibutuhkan. Goodwill perusahaan S&amp;P 500 naik sekitar 70% dari $1,7 triliun (2007) menjadi lebih dari $3 triliun (2017).</p>
+
+  <div class="card" id="valTool">
+    <h4>🧮 Kalkulator valuasi empat metode</h4>
+    <div class="seg" id="valPreset">
+      <button data-p="pg" aria-pressed="false">P&amp;G (Tabel 8-12)</button>
+      <button data-p="idn" aria-pressed="false">🇮🇩 PT Rasa Nusantara (fiktif)</button>
+      <button data-p="mine" aria-pressed="false">Data saya</button>
+    </div>
+    <div class="calc-in" id="valIn"></div>
+    <p class="unit-note" id="valUnit"></p>
+    <div class="vbars" id="valRes"></div>
+    <div class="res" id="valNote"></div>
+  </div>
+  <div class="co idn"><b class="t">🇮🇩 Contoh: goodwill GoTo dan Tokopedia.</b> Merger Gojek–Tokopedia (2021) menciptakan goodwill yang besar di neraca GoTo. Pada laporan 2023, GoTo mencatat penurunan nilai (<em>impairment</em>) goodwill sebesar Rp78,77 triliun, terkait pembelian saham Tokopedia saat merger; tanpa beban nonkas itu, ruginya sekitar Rp11,75 triliun. Pada Desember 2023, TikTok sepakat membayar US$840 juta (sekitar Rp13,18 triliun) untuk 75,01% saham baru Tokopedia, sehingga GoTo memegang sekitar 24,99%. Inilah ilustrasi nyata mengapa buku memperingatkan tentang premium dan goodwill. Kasus lengkap ada di Studi Kasus 4.</div>
+  <div class="co"><b class="t">🤔 Exercise 8E: valuasi universitas.</b> Buku meminta mahasiswa menilai universitasnya dengan metode kekayaan bersih dan laba bersih. Untuk PTN-BH, apa makna "laba bersih" (surplus) dan "ekuitas" (aset neto)? Apakah metode yang dirancang untuk perusahaan masih bermakna bagi organisasi nirlaba yang tujuannya bukan memaksimalkan kekayaan pemegang saham?</div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u5"></div>
+  <div class="pager"><a class="btn ghost" href="#u4">← Unit 4</a><a class="btn" href="#u6">Unit 6 →</a></div>
+</section>
+
+<!-- ================= UNIT 6 ================= -->
+<section class="view" data-view="u6" data-unit="6">
+  <div class="eyebrow">Unit 6 <span class="tag">LO 8.4</span><span class="tag">± 40 menit</span></div>
+  <h2>Rasio Keuangan, IPO, Kas, dan Obligasi</h2>
+  <div class="read" data-read="6">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 8 · hlm. 286–290 · Tabel 8-14, 8-15 · Gambar 8-3</span></div>
+    <p style="margin:0 0 4px">Subbab <em>Manage Financial Ratios, IPOs, and Bonds</em> serta <em>Implications for Strategists/Students</em>. Cari jawaban:</p>
+    <ul>
+      <li>Dengan tiga cara apa rasio keuangan dibandingkan?</li>
+      <li>Kapan IPO tidak disarankan, dan berapa biaya awalnya?</li>
+      <li>Untuk empat tujuan apa perusahaan menerbitkan obligasi, dan apa kekhawatiran buku tentang obligasi untuk buyback dan dividen?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="6"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <h3>Rasio keuangan proyeksi</h3>
+  <p>Rasio keuangan (dibahas di Bab 4) dibandingkan dengan tiga cara: <b>perubahan dari waktu ke waktu, terhadap rata-rata industri, dan terhadap pesaing utama</b>. Rasio dari laporan aktual menunjukkan kekuatan dan kelemahan; rasio dari laporan <b>proyeksi</b> menunjukkan masalah atau keberhasilan yang kemungkinan muncul bila rekomendasi dijalankan. Bila rasio lancar proyeksi melonjak atau anjlok jauh dari rata-rata industri, kas harus dikelola. Rasio proyeksi P&amp;G di buku pun baru masuk akal setelah beberapa kali penyesuaian.</p>
+
+  <h3>IPO: go public</h3>
+  <p><em>Going public</em> berarti menjual sebagian perusahaan untuk menghimpun modal, dengan konsekuensi dilusi kendali pemilik. Buku tidak menyarankan IPO bagi perusahaan dengan penjualan di bawah $10 juta, karena biayanya bisa terlalu besar: rata-rata <b>$1 dari setiap $4</b> untuk pengacara, akuntan, dan penjamin emisi bila emisi di bawah $1 juta, dan <b>$1 dari setiap $20</b> untuk emisi di atas $20 juta. Ada pula biaya pelaporan dan kewajiban tata kelola sebagai perusahaan publik.</p>
+  <div class="co idn"><b class="t">🇮🇩 Contoh: IPO GoTo (2022).</b> GoTo mencatatkan saham di BEI pada 11 April 2022 dengan harga Rp338 per saham dan menghimpun sekitar Rp13,72 triliun dari 40,61 miliar saham, dengan kapitalisasi pasar sekitar Rp400 triliun pada saat pencatatan. Harga saham kemudian turun jauh di bawah harga IPO. Kasus ini menunjukkan bahwa kapitalisasi pasar (metode 4) mencerminkan ekspektasi saat itu, bukan nilai yang pasti.</div>
+
+  <h3>Saham treasuri, obligasi, dan dividen</h3>
+  <p>Membeli kembali saham (<em>treasury stock</em>) mengurangi saham beredar sehingga <b>EPS naik</b>; sebagian perusahaan melakukannya menjelang akhir kuartal agar EPS memenuhi ekspektasi. Kritiknya: buyback memakan kas yang bisa dipakai untuk tumbuh. <b>Obligasi korporasi</b> mirip meminjam ke bank, tetapi dananya dari investor; cocok bila neraca kuat dan peringkat kredit baik, dan harganya lebih tidak sensitif terhadap kejutan operasional dibandingkan harga saham. Perusahaan kecil atau merugi menghadapi kupon lebih tinggi.</p>
+  <div class="card cls" data-widget="bond"><h4>🧩 Latihan: untuk apa obligasi diterbitkan?</h4></div>
+  <div class="co"><b class="t">🤔 Dilema strategis menurut buku.</b> Menerbitkan obligasi untuk membeli kembali saham dan membayar dividen menenangkan pemegang saham, tetapi menambah utang tanpa menambah kapasitas. Menerbitkan obligasi untuk mendanai strategi yang dirumuskan dengan cermat bisa menambah pendapatan dan laba. Dalam konteks perusahaan terbuka Indonesia, kapan buyback masuk akal, dan kapan menjadi tanda kurangnya peluang investasi?</div>
+
+  <h3>Implikasi bagi strategist dan mahasiswa</h3>
+  <p>Gambar 8-3: untuk meraih dan mempertahankan keunggulan, perusahaan harus mengelola keuangannya lebih efisien daripada pesaing dengan alat seperti analisis EPS/EBIT, laporan proyeksi, dan valuasi. Dalam presentasi kasus, buku menekankan: <b>jangan menghindari analisis keuangan</b>. Audiens harus diyakinkan bahwa rekomendasi Anda layak secara finansial dan sepadan dengan biayanya. Tim yang menang kompetisi kasus biasanya mampu menunjukkan hal ini.</p>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u6"></div>
+  <div class="pager"><a class="btn ghost" href="#u5">← Unit 5</a><a class="btn" href="#cases">Studi Kasus →</a></div>
+</section>
+
+<!-- ================= CASES ================= -->
+<section class="view" data-view="cases">
+  <div class="eyebrow">Penerapan <span class="tag">± 120 menit</span></div>
+  <h2>Studi Kasus</h2>
+  <p class="lead">Dua kasus dari buku dan tiga kasus Indonesia. Alur setiap pertanyaan: <b>tulis jawaban → minta umpan balik aplikasi → nilai diri dengan checklist → buka arah jawaban</b>.</p>
+  <div class="co book"><b class="t">ℹ️ Tentang umpan balik otomatis.</b> Aplikasi memeriksa apakah konsep kunci dan penalaran ("karena", "sehingga") muncul dalam jawaban Anda. Aplikasi <b>tidak</b> bisa menilai apakah perhitungan atau argumen Anda benar. Skor 0–4 ini hanya umpan balik belajar, <b>bukan nilai</b>.</div>
+  <div id="caseList"></div>
+  <div class="pager"><a class="btn ghost" href="#u6">← Unit 6</a><a class="btn" href="#final">Kuis Akhir →</a></div>
+</section>
+
+<!-- ================= FINAL ================= -->
+<section class="view" data-view="final">
+  <div class="eyebrow">Self-test</div>
+  <h2>Kuis Akhir: Uji Pemahaman</h2>
+  <div class="quiz" id="finalBox"></div>
+</section>
+
+<!-- ================= FLASH ================= -->
+<section class="view" data-view="cards">
+  <div class="eyebrow">Penguatan</div>
+  <h2>Flashcard Istilah Kunci</h2>
+  <p class="lead">Ketuk kartu untuk membalik. Tandai yang sudah Anda kuasai; sisanya akan muncul lagi.</p>
+  <div class="row" style="justify-content:space-between"><span class="score" id="fcCount"></span><button class="btn ghost" id="fcShuffle" style="padding:6px 12px">⤮ Acak</button></div>
+  <div class="fc" id="fc" tabindex="0" role="button" aria-label="Balik kartu"><div class="inner"><div class="face front"><b id="fcF"></b><small>ketuk untuk membalik</small></div><div class="face back"><div id="fcB"></div></div></div></div>
+  <div class="row" style="justify-content:center">
+    <button class="btn ghost" id="fcPrev">←</button>
+    <button class="btn gold" id="fcKnow">✓ Sudah hafal</button>
+    <button class="btn ghost" id="fcNext">→</button>
+  </div>
+  <p class="hint" style="text-align:center;margin-top:10px"><button class="retry" id="fcReset">Ulang semua kartu</button></p>
+</section>
+
+<!-- ================= NOTES & REFS ================= -->
+<section class="view" data-view="notes">
+  <div class="eyebrow">Rangkuman</div>
+  <h2>Catatan Saya &amp; Referensi</h2>
+  <div class="card">
+    <h3>📝 Semua jawaban Anda</h3>
+    <p class="hint">Gabungan pemanasan, hasil kalkulator EPS/EBIT, simulator proyeksi, valuasi, dan studi kasus. Salin atau unduh untuk dikumpulkan bila diminta dosen.</p>
+    <div class="cq"><b>Nama &amp; NRP</b><textarea data-note="identity" style="min-height:44px" placeholder="Nama — NRP"></textarea></div>
+    <div class="row"><button class="btn" id="copyNotes">📋 Salin</button><button class="btn ghost" id="dlNotes">⬇ Unduh .txt</button><button class="btn ghost" id="resetAll" style="border-color:var(--bad);color:var(--bad)">Hapus semua kemajuan</button></div>
+    <pre id="notesPrev" style="white-space:pre-wrap;font-family:var(--f);font-size:.85rem;background:var(--sunk);padding:12px;border-radius:10px;margin-top:14px;max-height:300px;overflow:auto"></pre>
+  </div>
+
+  <h3>🧩 Ringkasan</h3>
+  <ul>
+    <li>Strategi hanya berhasil bila keuangan dikelola efektif. Lima aktivitas inti: struktur modal, laporan proyeksi, valuasi, rasio, serta IPO/kas/obligasi.</li>
+    <li>Analisis EPS/EBIT membandingkan EPS dari pendanaan saham, utang, dan kombinasi pada skenario EBIT pesimistis, realistis, dan optimistis. Pilih EPS tertinggi kecuali ada alasan kuat dari tujuh pertimbangan Tabel 8-3.</li>
+    <li>Laporan proyeksi disusun laba rugi dulu, RE dipindahkan ke neraca, neraca dari bawah ke atas, dan kas sebagai penyeimbang. Jangan memproyeksikan tren historis secara buta, dan sertakan catatan asumsi.</li>
+    <li>Empat metode valuasi menghasilkan angka berbeda; premium akuisisi dan goodwill perlu disikapi hati-hati.</li>
+    <li>Rasio proyeksi menguji kelayakan rekomendasi; IPO dan obligasi adalah keputusan strategis dengan biaya dan risiko masing-masing.</li>
+  </ul>
+  <div class="co book"><b class="t">➡️ Bab 9: Evaluasi Strategi dan Tata Kelola.</b> Pertanyaan pemantik: setelah strategi dijalankan dan didanai, bagaimana Anda tahu strategi itu berhasil, dan siapa yang mengawasinya?</div>
+
+  <h3>Referensi</h3>
+  <ol class="ref">
+    <li>David, F. R., &amp; David, F. R. (2023). <em>Strategic management: A competitive advantage approach, concepts and cases</em> (Global ed.). Pearson. Bab 8: <em>Implementing strategies: Finance and accounting issues</em>, hlm. 269–297, termasuk Mini-Case Hasbro dan Exercise 8A–8H.</li>
+    <li><a href="https://finance.detik.com/bursa-dan-valas/d-4603814/kisruh-laporan-keuangan-garuda-ditolak-komisaris-hingga-terbukti-cacat" target="_blank" rel="noopener">detikFinance. (2019, 28 Juni). Kisruh laporan keuangan Garuda: Ditolak komisaris hingga terbukti cacat.</a></li>
+    <li><a href="https://keuangan.kontan.co.id/news/gara-gara-lapkeu-2018-direksi-dan-komisaris-garuda-indonesia-didenda-rp-100-juta" target="_blank" rel="noopener">Kontan. (2019, 28 Juni). Gara-gara lapkeu 2018, direksi dan komisaris Garuda Indonesia didenda Rp100 juta.</a></li>
+    <li><a href="https://investasi.kontan.co.id/news/listing-hari-ini-goto-gojek-tokopedia-goto-raup-dana-ipo-rp-137-triliun" target="_blank" rel="noopener">Kontan. (2022, 11 April). Listing hari ini, GoTo raup dana IPO Rp13,7 triliun.</a></li>
+    <li><a href="https://finance.detik.com/bursa-dan-valas/d-7250364/tanpa-hitung-goodwill-non-cash-rugi-goto-berkurang-60-di-2023" target="_blank" rel="noopener">detikFinance. (2024, Maret). Tanpa hitung goodwill non-cash, rugi GOTO berkurang 60% di 2023.</a></li>
+    <li><a href="https://industri.kontan.co.id/news/gelontorkan-rp-1318-triliun-tiktok-beli-saham-tokopedia-di-harga-premium" target="_blank" rel="noopener">Kontan. (2023, 14 Desember). Gelontorkan Rp13,18 triliun, TikTok beli saham Tokopedia.</a></li>
+    <li><a href="https://keuangan.kontan.co.id/news/rights-issue-oversubscribed-bri-bbri-berhasil-galang-dana-hingga-rp-959-triliun" target="_blank" rel="noopener">Kontan. (2021, 29 September). Rights issue oversubscribed, BRI berhasil galang dana hingga Rp95,9 triliun.</a></li>
+    <li><a href="https://www.medcom.id/ekonomi/keuangan/nN941P9K-rights-issue-bbri-topang-pembentukan-holding-bumn-umi" target="_blank" rel="noopener">Medcom.id. (2021, 8 September). Rights issue BBRI topang pembentukan holding BUMN UMi.</a></li>
+    <li><a href="https://finansial.bisnis.com/read/20210831/90/1435953/harga-pelaksanaan-rights-issue-bbri-ditetapkan-rp3400-per-saham" target="_blank" rel="noopener">Bisnis.com. (2021, 31 Agustus). Harga pelaksanaan rights issue BBRI ditetapkan Rp3.400 per saham.</a></li>
+    <li><a href="https://investortrust.id/national/94256/indeks-persepsi-korupsi-indonesia-merosot-10-peringkat-kpk-panggilan-untuk-introspeksi" target="_blank" rel="noopener">Investortrust. (2026, 11 Februari). Indeks Persepsi Korupsi Indonesia merosot 10 peringkat.</a></li>
+    <li><a href="https://news.detik.com/berita/d-7773057/indeks-persepsi-korupsi-indonesia-2024-naik-jadi-37-peringkat-99" target="_blank" rel="noopener">detikNews. (2025, 11 Februari). Indeks Persepsi Korupsi Indonesia 2024 naik jadi 37, peringkat 99.</a></li>
+    <li>Undang-Undang No. 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan (tarif PPh badan 22%).</li>
+    <li>Schilit, H. (2002). <em>Financial shenanigans</em> (2nd ed.). McGraw-Hill.</li>
+  </ol>
+  <p class="foot">Materi ini adalah ringkasan dan adaptasi untuk keperluan pembelajaran mata kuliah Manajemen Strategi, Magister Manajemen ITS. Mahasiswa tetap wajib membaca bab asli pada buku acuan. Angka perusahaan fiktif hanya untuk latihan; fakta kasus Indonesia diambil dari sumber media yang dicantumkan. Pengembang materi: Dr. Imam Baihaqi.</p>
+</section>
+
+</main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+/* ---------------- storage (safe) ---------------- */
+var KEY="stratman-ch08-v1", S={read:{},q:{},done:{},cls:{},notes:{},final:null,known:{},cs:{},eps:null,pfs:null,val:null,ord:{}};
+try{var raw=localStorage.getItem(KEY); if(raw){var o=JSON.parse(raw); for(var k in o) S[k]=o[k];}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} updateProgress();}
+try{var th=localStorage.getItem("stratman-theme"); if(th) document.documentElement.setAttribute("data-theme",th);}catch(e){}
+
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove("on")},1800)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=a[i];a[i]=a[j];a[j]=x;}return a}
+function num(n,d){if(!isFinite(n))return "–";return Number(n).toLocaleString("id-ID",{minimumFractionDigits:d||0,maximumFractionDigits:d||0})}
+
+/* ---------------- units meta ---------------- */
+var UNITS=[
+ {id:"u1",t:"Keuangan sebagai Syarat Implementasi",pg:"hlm. 270–271"},
+ {id:"u2",t:"Struktur Modal & EPS/EBIT",pg:"hlm. 271–274"},
+ {id:"u3",t:"Keterbatasan EPS/EBIT",pg:"hlm. 275"},
+ {id:"u4",t:"Laporan Keuangan Proyeksi",pg:"hlm. 275–284"},
+ {id:"u5",t:"Valuasi Perusahaan",pg:"hlm. 284–286"},
+ {id:"u6",t:"Rasio, IPO, Kas & Obligasi",pg:"hlm. 286–290"}
+];
+
+/* ---------------- unit quizzes ---------------- */
+var QZ={
+u1:[
+ {k:"c",q:"Menurut buku, mengapa keuangan menjadi syarat implementasi strategi?",o:["Karena strategi hanya berhasil bila organisasi mengelola keuangannya secara efektif, termasuk mendanai rekomendasi","Karena manajer keuangan yang merumuskan strategi","Karena laporan keuangan menggantikan rencana strategis","Karena semua strategi harus didanai saham"],a:0,e:"Gambar 8-1 menempatkan isu keuangan dan akuntansi sebagai bagian implementasi."},
+ {k:"c",q:"Keputusan 'berapa harga yang diminta untuk divisi yang akan didivestasi' termasuk aktivitas…",o:["Struktur modal","Valuasi perusahaan","Rasio keuangan","Laporan proyeksi"],a:1,e:"Valuasi diperlukan saat membeli atau menjual bisnis atau divisi."},
+ {k:"r",pg:"hlm. 270 (Exemplary Strategist)",q:"Selain pentingnya melibatkan banyak orang dalam pengambilan keputusan, isu strategis kedua yang selalu ditekankan Jamie Dimon adalah…",o:["Diversifikasi tidak terkait","Skala ekonomi","Pemotongan dividen","Kerja jarak jauh"],a:1,e:"Dimon menilai tumbuh demi tumbuh adalah strategi keliru; sumber daya diarahkan ke skala ekonomi."}
+],
+u2:[
+ {k:"c",q:"Pada analisis EPS/EBIT, baris bunga untuk kolom pendanaan 100% saham diisi…",o:["Modal yang dibutuhkan × suku bunga","Nol","Setengah dari bunga utang","Dividen per saham"],a:1,e:"Tidak ada bunga baru bila seluruhnya didanai saham."},
+ {k:"c",q:"Jumlah saham pada kolom pendanaan 100% saham dihitung sebagai…",o:["Saham beredar saja","Saham beredar + (modal yang dibutuhkan ÷ harga saham)","Saham diotorisasi","Modal ÷ EPS"],a:1,e:"Saham baru = modal ÷ harga saham, ditambahkan ke saham beredar."},
+ {k:"r",pg:"Tabel 8-2, hlm. 273",q:"Menurut Tabel 8-2, EPS P&G dengan pendanaan 100% utang pada EBIT optimistis $18.000 juta adalah…",o:["$5,32","$5,34","$5,36","$4,45"],a:2,e:"Saham $5,32, kombinasi 60/40 $5,34, utang $5,36."}
+],
+u3:[
+ {k:"c",q:"EPS tertinggi diperoleh dari pendanaan saham, tetapi pendiri khawatir kehilangan kendali. Pertimbangan Tabel 8-3 yang relevan adalah…",o:["Kontinuitas","Dilusi kepemilikan","Rentang EBIT","Timing"],a:1,e:"Bila dilusi menjadi kekhawatiran, utang bisa lebih menarik meski EPS saham lebih tinggi."},
+ {k:"c",q:"Menurut buku, kapan pilihan dengan EPS tertinggi boleh dibatalkan?",o:["Kapan saja manajer tidak setuju","Hanya bila ada alasan kuat dari pertimbangan seperti di Tabel 8-3","Tidak pernah","Bila selisih EPS kurang dari $1"],a:1,e:"Kecuali ada alasan kuat, EPS tertinggi harus menentukan pilihan."},
+ {k:"r",pg:"Tabel 8-3, hlm. 275",q:"Pertimbangan 'Kontinuitas' dalam Tabel 8-3 merujuk pada asumsi bahwa…",o:["Perusahaan akan terus membayar dividen","Harga saham, tarif pajak, dan suku bunga konstan di semua skenario","CEO tidak berganti","Penjualan tumbuh konstan"],a:1,e:"Analisis mengasumsikan ketiga variabel itu tidak berubah antar-skenario."}
+],
+u4:[
+ {k:"c",q:"Mengapa laba ditahan (RE) di neraca bukan dana yang tersedia untuk implementasi strategi?",o:["Karena RE sudah dibagikan sebagai dividen","Karena RE adalah angka kumulatif laba yang diinvestasikan kembali selama bertahun-tahun, bukan uang kas di bank","Karena RE dilarang dipakai oleh OJK","Karena RE hanya ada di laporan laba rugi"],a:1,e:"RE bisa besar, kecil, atau negatif; ia bukan saldo kas."},
+ {k:"c",q:"Dalam laporan proyeksi, akun yang dipakai sebagai plug figure untuk menyeimbangkan neraca adalah…",o:["Laba ditahan","Kas","Utang jangka panjang","Goodwill"],a:1,e:"Bila kas terlalu tinggi atau rendah, asumsi lain yang ditinjau ulang."},
+ {k:"r",pg:"Ethics Capsule 8, hlm. 277",q:"Menurut Ethics Capsule 8, salah satu alasan eksekutif sengaja menyajikan proyeksi yang lebih suram adalah…",o:["Menaikkan harga saham","Menghalau calon pengakuisisi","Menarik investor baru","Mendapat pinjaman bank"],a:1,e:"Alasan lain: memasukkan kabar buruk ke satu periode agar periode berikutnya tampak lebih baik."}
+],
+u5:[
+ {k:"c",q:"Nilai perusahaan dengan metode kekayaan bersih bisa negatif bila…",o:["Laba bersih negatif","Goodwill dan aset tak berwujud melebihi ekuitas pemegang saham","Harga saham turun","Jumlah saham beredar terlalu banyak"],a:1,e:"Ini terjadi pada P&G di Tabel 8-12."},
+ {k:"c",q:"Perusahaan membayar Rp1.300 per saham untuk target yang harga pasarnya Rp1.000. Selisih 30% disebut…",o:["Discount","Premium","Goodwill impairment","Dividend yield"],a:1,e:"Premium = harga beli di atas kapitalisasi pasar."},
+ {k:"r",pg:"Tabel 8-12, hlm. 285",q:"Menurut Tabel 8-12, nilai rata-rata P&G dari empat metode adalah sekitar…",o:["$76.630 juta","$135.947 juta","$240.134 juta","($13.108 juta)"],a:1,e:"Rata-rata dari −13.108, 76.630, 240.134, dan 240.134."}
+],
+u6:[
+ {k:"c",q:"Membeli kembali saham sendiri (treasury stock) cenderung…",o:["Menurunkan EPS","Menaikkan EPS karena saham beredar berkurang","Menambah utang otomatis","Menambah saham diotorisasi"],a:1,e:"Penyebut EPS mengecil."},
+ {k:"c",q:"Rasio keuangan proyeksi berguna terutama untuk…",o:["Menggantikan audit","Mengungkap masalah atau keberhasilan yang mungkin muncul bila rekomendasi dijalankan","Menghitung pajak","Menentukan harga IPO"],a:1,e:"Dibandingkan dengan masa lalu, industri, dan pesaing."},
+ {k:"r",pg:"hlm. 287",q:"Menurut buku, IPO tidak disarankan bagi perusahaan dengan penjualan di bawah…",o:["$1 juta","$10 juta","$100 juta","$1 miliar"],a:1,e:"Biaya awal bisa terlalu besar dibanding arus kas yang dihasilkan."}
+]};
+
+/* ---------------- classify widgets ---------------- */
+var CL={
+act5:{o:["Struktur modal","Laporan proyeksi","Valuasi","Rasio keuangan","IPO/kas/obligasi"],it:[
+ ["Memutuskan apakah pembangunan dua pabrik baru didanai utang bank atau saham baru.","Struktur modal","Inti analisis EPS/EBIT."],
+ ["Menunjukkan kepada bank dampak ekspansi terhadap laba rugi dan neraca tiga tahun ke depan.","Laporan proyeksi","Bank biasanya meminta proyeksi 3 tahun."],
+ ["Menilai apakah tawaran merger dari pesaing layak diterima.","Valuasi","Perlu mengetahui nilai perusahaan."],
+ ["Rasio lancar proyeksi melonjak dari 1,0 menjadi 5,0 setelah rekomendasi dimasukkan.","Rasio keuangan","Tanda kas perlu dikelola atau asumsi ditinjau ulang."],
+ ["Mencatatkan saham di BEI untuk mendanai ekspansi regional.","IPO/kas/obligasi","Go public."],
+ ["Menentukan berapa banyak kas yang disimpan di neraca.","IPO/kas/obligasi","Keputusan pengelolaan kas."],
+ ["Menentukan harga jual divisi yang tidak lagi sesuai misi.","Valuasi","Contoh keputusan nomor 10 di buku."]
+]},
+lim7:{o:["Fleksibilitas","Dilusi kepemilikan","Timing","Leverage","Kontinuitas","Rentang EBIT","Dividen"],it:[
+ ["Pinjaman bank mensyaratkan covenant yang melarang utang baru selama lima tahun.","Fleksibilitas","Kewajiban hari ini membatasi pendanaan besok."],
+ ["Keluarga pendiri tidak ingin porsi kepemilikannya turun di bawah 51%.","Dilusi kepemilikan","Kendali menjadi pertimbangan utama."],
+ ["Bank sentral diperkirakan menaikkan suku bunga tahun depan; perusahaan bisa mengunci bunga tetap sekarang.","Timing","Utang berbunga tetap lebih menarik bila bunga akan naik."],
+ ["Rasio utang terhadap ekuitas perusahaan sudah dua kali rata-rata industri.","Leverage","Saham bisa lebih menarik meski EPS utang lebih tinggi."],
+ ["Analisis memakai harga saham yang sama untuk skenario pesimistis dan optimistis.","Kontinuitas","Asumsi variabel konstan."],
+ ["Proyeksi EBIT hanya menambahkan 10% pada laba operasi tahun lalu tanpa analisis.","Rentang EBIT","EBIT adalah estimasi."],
+ ["Perusahaan membagikan 60% laba sebagai dividen, dan saham baru akan menambah dividen yang harus dibayar.","Dividen","Lebih banyak dana keluar bila memilih saham."]
+]},
+shen:{o:["Pendapatan prematur","Pendapatan fiktif","Laba sekali-terjadi","Menggeser beban","Tidak mencatat kewajiban"],it:[
+ ["Mengakui seluruh nilai kontrak 10 tahun sebagai pendapatan tahun ini, padahal pembayaran belum diterima.","Pendapatan prematur","Pola yang dipersoalkan pada laporan Garuda 2018."],
+ ["Mencatat penjualan kepada pelanggan yang tidak pernah ada.","Pendapatan fiktif","Pendapatan yang tidak terjadi."],
+ ["Laba melonjak karena penjualan gedung kantor, lalu disajikan seolah kinerja operasi membaik.","Laba sekali-terjadi","Keuntungan yang tidak berulang."],
+ ["Biaya pemasaran tahun ini ditangguhkan dan dicatat sebagai beban tahun depan.","Menggeser beban","Laba tahun ini tampak lebih tinggi."],
+ ["Jaminan atas utang anak usaha tidak diungkapkan di laporan keuangan.","Tidak mencatat kewajiban","Kewajiban tersembunyi."]
+]},
+bond:{o:["Akuisisi","Buyback saham","Refinancing","Inisiatif strategis"],it:[
+ ["Anheuser-Busch InBev menerbitkan obligasi $46 miliar untuk membeli SABMiller.","Akuisisi","Contoh di buku."],
+ ["Perusahaan menerbitkan obligasi untuk membeli kembali 5% sahamnya.","Buyback saham","Menambah saham treasuri; buku mempertanyakan kehati-hatiannya."],
+ ["Obligasi baru berkupon 7% diterbitkan untuk melunasi pinjaman lama berbunga 10%.","Refinancing","Membiayai ulang utang lama."],
+ ["Obligasi diterbitkan untuk membangun jaringan pusat data baru sesuai rencana strategis.","Inisiatif strategis","Mendanai strategi yang dirumuskan."]
+]}
+};
+
+/* ---------------- ordering widgets ---------------- */
+var ORD={
+ epsSteps:["Kumpulkan data input: modal yang dibutuhkan, saham beredar, suku bunga, tarif pajak, harga saham, rentang EBIT","Susun tabel komputasi untuk pendanaan saham, utang, dan kombinasi pada tiga skenario EBIT","Isi tabel baris demi baris: EBIT, bunga, EBT, pajak, EAT, jumlah saham, EPS","Gambar grafik EPS/EBIT dan pilih garis tertinggi, kecuali ada alasan kuat (Tabel 8-3)"],
+ pfsSteps:["Susun proyeksi laba rugi lebih dulu; mulai dari peramalan penjualan","Proyeksikan HPP dan beban operasi dengan metode persentase penjualan","Hitung proyeksi laba bersih","Kurangi dividen; sisanya (RE) ditambahkan ke RE tahun lalu di neraca","Proyeksikan neraca dari bawah ke atas: ekuitas, kewajiban jangka panjang, kewajiban lancar, aset tetap, aset lancar","Gunakan kas sebagai plug figure, lalu sesuaikan asumsi bila kas terlalu tinggi atau rendah","Tulis catatan yang menjelaskan alasan perubahan penting"]
+};
+
+/* ---------------- cases ---------------- */
+var CASES=[
+ {id:"c1",t:"Studi Kasus 1 — Hasbro ingin mengambil alih Mattel",src:"David & David (2023), Mini-Case, hlm. 296",
+  body:"<p>Hasbro Inc., pembuat mainan terbesar di AS (Nerf, Transformers, My Little Pony), berupaya melakukan <em>hostile takeover</em> atas pesaing terbesar kedua, Mattel Inc. (Barbie, American Girl, Fisher-Price, Hot Wheels). Menurut kasus (akhir 2017), Mattel merugi dan nilai pasarnya turun di bawah $5 miliar, sementara Hasbro bernilai sekitar $11 miliar. Saham Hasbro naik 18% dalam setahun ke $92; saham Mattel turun 47% ke $14. Hasbro tidak memiliki pabrik, sedangkan Mattel memiliki pabrik sendiri. Hasbro dekat dengan Hollywood, termasuk mainan Star Wars dan Disney Princess. Industri tertekan: Toys \"R\" Us menutup semua toko dan Lego memangkas 8% staf globalnya. Beberapa tahun sebelumnya, justru Mattel yang ingin membeli Hasbro.</p><p>Bila digabung, perusahaan akan menguasai sekitar 35% pasar mainan AS dan 22% penjualan global; di kategori model kendaraan (termasuk Hot Wheels) pangsanya 62% pasar AS. Mattel telah menangguhkan dividen agar tetap solven, dan lembaga pemeringkat menurunkan peringkatnya saat perusahaan mencari tambahan utang.</p>",
+  qs:[
+   ["Gunakan kalkulator valuasi di Unit 5 dengan data laporan keuangan terbaru Hasbro dan Mattel. Bandingkan nilai keduanya hari ini dengan angka $11 miliar dan $5 miliar pada akhir 2017. Metode mana yang paling masuk akal untuk masing-masing perusahaan, dan mengapa?","Hitung keempat metode dan rata-ratanya untuk kedua perusahaan, lalu bandingkan dengan angka 2017. Metode kekayaan bersih bisa menyesatkan bila goodwill dan merek tak berwujud besar (keduanya kaya merek). Metode laba bersih × 5 tidak bermakna bila laba negatif (seperti Mattel saat itu). Kapitalisasi pasar mencerminkan ekspektasi pasar. Jawaban kuat menyebut tanggal dan sumber data."],
+   ["Apa keuntungan dan kerugian penggabungan Hasbro dan Mattel dari sisi keuangan dan strategi? Kaitkan dengan premium akuisisi dan goodwill.","Keuntungan: skala ekonomi, portofolio merek saling melengkapi, daya tawar terhadap ritel, kapasitas pabrik Mattel bagi Hasbro yang tidak memiliki pabrik. Kerugian: premium di atas kapitalisasi pasar akan menjadi goodwill yang berisiko impairment, Mattel membawa utang dan peringkat kredit yang turun, integrasi budaya, dan risiko antimonopoli. Buku mengingatkan bahwa membayar premium biasanya tidak bijak kecuali ada skala ekonomi yang benar-benar dibutuhkan."],
+   ["Seberapa besar kemungkinan regulator antimonopoli menyetujui penggabungan dua pemain terbesar industri? Bagaimana jawaban Anda bila transaksi serupa terjadi di Indonesia?","Pangsa gabungan 35% pasar AS dan 62% di model kendaraan kemungkinan memicu pemeriksaan ketat dan mungkin syarat divestasi merek tertentu. Di Indonesia, penggabungan usaha yang memenuhi ambang nilai wajib diberitahukan kepada KPPU, yang menilai dampaknya terhadap konsentrasi pasar."]
+  ]},
+ {id:"c2",t:"Studi Kasus 2 — EPS/EBIT Coca-Cola untuk empat pabrik baru",src:"David & David (2023), Exercise 8A, hlm. 292 · gunakan preset Coca-Cola di Unit 2",
+  body:"<p>Coca-Cola membutuhkan <b>$5.000 juta</b> untuk membangun empat pabrik baru di luar AS (strategi <em>market development</em>). Data: suku bunga 5%, tarif pajak 21%, harga saham $45,54 (2 Januari 2018), saham beredar 4.255 juta, EBIT pesimistis $7.000 juta, realistis $9.000 juta, dan optimistis $11.000 juta. Bandingkan pendanaan 100% utang, 100% saham, dan kombinasi 50-50.</p><p>Buka <a href=\"#u2\">Unit 2</a>, pilih preset <b>Coca-Cola (Exercise 8A)</b>, dan baca tabel serta grafiknya.</p>",
+  qs:[
+   ["Laporkan EPS untuk ketiga alternatif pada ketiga skenario, dan tentukan alternatif terbaik di setiap skenario.","Dengan data tersebut, saham unggul pada EBIT pesimistis ($7.000 juta) dan realistis ($9.000 juta), sedangkan utang unggul pada EBIT optimistis ($11.000 juta); kombinasi 50-50 selalu berada di antaranya. Titik impas EBIT antara utang dan saham sekitar $9.900 juta: di bawahnya, beban bunga $250 juta lebih berat daripada dilusi sekitar 110 juta saham baru; di atasnya, sebaliknya. Jawaban kuat menyebut angka EPS dari kalkulator dan titik impas ini."],
+   ["Tulis rekomendasi tiga kalimat untuk CFO Coca-Cola.","Contoh: (1) Karena EBIT realistis ($9.000 juta) berada di bawah titik impas sekitar $9.900 juta, saham atau kombinasi menghasilkan EPS lebih tinggi daripada utang. (2) Bila manajemen yakin EBIT akan mendekati skenario optimistis, utang menjadi pilihan terbaik dan menghindari dilusi. (3) Kombinasi 50-50 dapat menjadi lindung nilai atas ketidakpastian EBIT, sambil memantau rasio utang dan covenant."],
+   ["Pertimbangan Tabel 8-3 mana yang paling mungkin membuat CFO tidak memilih alternatif dengan EPS tertinggi? Bagaimana jawaban Anda berubah bila suku bunga 9%?","Kandidat: dilusi kepemilikan dan dividen (saham baru menambah dividen yang harus dibayar), timing (bila bunga diperkirakan naik, mengunci utang sekarang menarik), leverage, dan kontinuitas (pabrik di luar AS membawa risiko kurs yang tidak dimodelkan). Dengan bunga 9%, beban bunga utang naik menjadi $450 juta dan titik impas naik ke sekitar $17.900 juta, sehingga saham unggul di ketiga skenario. Mahasiswa perlu menghitung ulang di kalkulator untuk melihatnya."]
+  ]},
+ {id:"c3",t:"Studi Kasus 3 — 🇮🇩 Laporan keuangan Garuda Indonesia 2018",src:"detikFinance (28 Jun 2019); Kontan (28 Jun 2019)",
+  body:"<p>Garuda Indonesia, yang lama merugi, melaporkan <b>laba bersih US$809,85 ribu</b> (sekitar Rp11,33 miliar) untuk tahun buku 2018. Laba itu dimungkinkan oleh pengakuan pendapatan sebesar <b>US$239,94 juta</b> dari perjanjian dengan PT Mahata Aero Teknologi terkait layanan konektivitas dalam penerbangan, padahal pembayarannya belum diterima (masih berupa piutang). Manajemen berargumen bahwa nilai itu wajar karena Mahata menjual slot iklan WiFi kepada sekitar 50 juta penumpang Garuda Group.</p><p>Pada RUPS 24 April 2019, dua komisaris, Chairal Tanjung dan Dony Oskaria, menyatakan <em>dissenting opinion</em> dan menolak menandatangani laporan keuangan karena menilai pengakuan pendapatan itu tidak sesuai standar akuntansi. Kementerian Keuangan dan OJK kemudian memeriksa laporan tersebut. Pada Juni 2019, Kementerian Keuangan menyatakan audit tidak sepenuhnya mengikuti standar dan membekukan izin akuntan publik yang mengaudit selama 12 bulan, serta memberi peringatan tertulis kepada kantor akuntannya. OJK mendenda Garuda serta direksi dan komisarisnya masing-masing Rp100 juta, dan memerintahkan perbaikan laporan; setelah disajikan ulang, Garuda membukukan rugi untuk 2018.</p>",
+  qs:[
+   ["Pola manipulasi mana dari Ethics Capsule 8 (Schilit) yang paling sesuai dengan kasus ini? Jelaskan mekanismenya: bagaimana satu keputusan pengakuan pendapatan mengubah rugi menjadi laba?","Paling sesuai dengan 'mencatat pendapatan terlalu dini' (pendapatan diakui sebelum diterima dan sebelum kewajiban kinerja terpenuhi). Pendapatan US$239,94 juta langsung menaikkan laba sebelum pajak; tanpanya Garuda rugi. Karena pendapatan berupa piutang, laba naik tanpa kas masuk, sehingga laba tidak mencerminkan arus kas."],
+   ["Bila Anda analis yang menyusun laporan keuangan proyeksi Garuda 2019–2021 berdasarkan laporan 2018 yang belum disajikan ulang, kesalahan apa yang akan terjadi? Kaitkan dengan peringatan buku tentang memproyeksikan angka historis secara buta.","Proyeksi akan memakai basis pendapatan dan laba yang terlalu tinggi, sehingga laba, RE, dan rasio proyeksi ikut terlalu optimistis. Buku memperingatkan untuk mempelajari laporan tahunan dan mencari penyebab perubahan (seperti divestasi P&G) sebelum memproyeksikan. Pendapatan sekali-terjadi atau yang belum terealisasi harus dikeluarkan dari basis proyeksi."],
+   ["Peran apa yang dimainkan Dewan Komisaris dalam kasus ini? Apa pelajarannya bagi tata kelola dan bagi implementasi strategi di BUMN?","Dua komisaris menjalankan fungsi pengawasan dengan menolak menandatangani; sistem dua dewan memungkinkan pengawasan independen terhadap direksi. Pelajarannya: tekanan menunjukkan perbaikan kinerja (termasuk target laba) bisa mendorong manipulasi; perlu komite audit yang kuat, auditor independen, dan budaya yang menghargai keberatan. Implementasi strategi yang dibangun di atas angka tidak jujur pada akhirnya merusak kepercayaan investor dan regulator."]
+  ]},
+ {id:"c4",t:"Studi Kasus 4 — 🇮🇩 GoTo: dari IPO, goodwill, hingga TikTok di Tokopedia",src:"Kontan (11 Apr 2022; 14 Des 2023); detikFinance (Mar 2024)",
+  body:"<p>Gojek dan Tokopedia bergabung pada 2021 menjadi GoTo. Pada <b>11 April 2022</b>, GoTo mencatatkan saham di BEI dengan harga IPO <b>Rp338</b> per saham, menghimpun sekitar <b>Rp13,72 triliun</b> dari 40,61 miliar saham; permintaan melebihi penawaran, dan kapitalisasi pasar saat pencatatan sekitar <b>Rp400 triliun</b>, terbesar keempat di BEI saat itu. Harga saham kemudian turun jauh di bawah harga IPO.</p><p>Pada <b>Desember 2023</b>, GoTo dan TikTok mengumumkan bahwa Tokopedia akan menerbitkan saham baru yang mewakili 75,01% modalnya kepada TikTok senilai <b>US$840 juta</b> (sekitar Rp13,18 triliun); GoTo memegang sekitar 24,99% dan menurut perusahaan tidak akan terdilusi lebih lanjut oleh pendanaan TikTok selanjutnya. Transaksi dirampungkan akhir Januari 2024. Dalam laporan 2023, GoTo mencatat <b>penurunan nilai goodwill Rp78,77 triliun</b> yang berasal dari pembelian saham Tokopedia saat merger; tanpa beban nonkas ini, rugi GoTo sekitar Rp11,75 triliun, turun 60% dari tahun sebelumnya, dengan pendapatan Rp14,79 triliun (naik 30%).</p>",
+  qs:[
+   ["Dengan konsep di Unit 5, jelaskan mengapa goodwill besar muncul dari merger Gojek–Tokopedia dan apa arti penurunan nilainya bagi metode valuasi kekayaan bersih.","Goodwill muncul karena harga yang dibayar dalam merger melebihi nilai buku aset bersih Tokopedia (premium). Impairment berarti nilai yang diharapkan dari premium itu tidak lagi didukung kinerja atau valuasi baru, misalnya harga transaksi dengan TikTok. Pada metode kekayaan bersih, goodwill dikurangkan dari ekuitas, sehingga perusahaan dengan goodwill besar bisa bernilai rendah atau negatif menurut metode ini; impairment menurunkan ekuitas dan goodwill sekaligus."],
+   ["Kapitalisasi pasar GoTo sekitar Rp400 triliun saat IPO. Apa yang ditunjukkan penurunan harga saham setelahnya tentang metode 3 dan 4 (P/E dan kapitalisasi pasar)? Apakah metode P/E bisa dipakai untuk perusahaan yang merugi?","Kapitalisasi pasar mencerminkan ekspektasi investor pada satu waktu dan bisa berubah drastis; ia bukan nilai intrinsik. Metode P/E tidak bermakna bila EPS negatif. Untuk perusahaan teknologi yang merugi, analis biasanya memakai kelipatan pendapatan atau arus kas diskonto, yang tidak dibahas detail di bab ini. Ini menunjukkan keterbatasan empat metode buku."],
+   ["Dari sudut pandang GoTo, apakah melepas kendali Tokopedia kepada TikTok merupakan keputusan keuangan yang mendukung implementasi strategi? Pertimbangkan kas, fokus bisnis, dan nilai pemegang saham.","Argumen pendukung: tidak perlu menanggung kebutuhan investasi besar e-commerce yang bersaing ketat, tetap mendapat bagian ekonomi 24,99% tanpa dilusi lebih lanjut, kemitraan dengan platform besar, dan fokus pada on-demand dan fintech menuju profitabilitas. Argumen kontra: kehilangan kendali atas aset inti hasil merger, valuasi transaksi lebih rendah dari ekspektasi saat merger (terlihat dari impairment). Jawaban kuat menimbang keduanya dengan konsep valuasi dan struktur modal."]
+  ]},
+ {id:"c5",t:"Studi Kasus 5 — 🇮🇩 Rights issue BRI untuk holding ultra mikro (2021)",src:"Kontan (29 Sep 2021); Medcom.id (8 Sep 2021); Bisnis.com (31 Agu 2021)",
+  body:"<p>Pemerintah membentuk <b>holding ultra mikro (UMi)</b> dengan BRI sebagai induk, Pegadaian dan PNM sebagai anggota. Strateginya: mengintegrasikan layanan bagi usaha ultra mikro dan UMKM, termasuk co-location kantor, produk bersama, dan aplikasi pemasaran terpadu.</p><p>Untuk mewujudkannya, BRI menggelar <b>rights issue</b> (PMHMETD I) dengan harga pelaksanaan <b>Rp3.400</b> per saham dan menerbitkan sekitar <b>28,2 miliar saham baru</b> seri B (sampai 18,62% dari modal setelah transaksi). Pemerintah mengambil haknya secara nontunai dengan menyetorkan (inbreng) seluruh saham seri B miliknya di Pegadaian dan PNM. Dana yang terhimpun <b>Rp95,9 triliun</b>: <b>Rp54,7 triliun</b> berupa penyertaan nontunai pemerintah dan <b>Rp41,2 triliun</b> tunai dari pemegang saham publik (Rp27,9 triliun dari investor asing). Permintaan melebihi saham yang ditawarkan, dan BRI menyatakan kepemilikan publik tetap di atas 40%.</p>",
+  qs:[
+   ["Mengapa ekuitas (rights issue), bukan utang atau obligasi, menjadi pilihan pendanaan yang masuk akal untuk strategi ini? Gunakan minimal dua pertimbangan Tabel 8-3.","Leverage: bank memiliki batas permodalan, dan menambah utang tidak memperkuat modal inti untuk ekspansi kredit. Dilusi kepemilikan: rights issue memberi hak kepada pemegang saham lama, dan pemerintah mempertahankan kendali dengan inbreng. Timing: permintaan tinggi (oversubscribed) dan harga saham yang mendukung. Fleksibilitas: modal tambahan menjaga ruang pendanaan di masa depan. Inbreng juga memungkinkan pengalihan saham Pegadaian dan PNM tanpa kas."],
+   ["Pemegang saham publik yang tidak menebus haknya mengalami dilusi. Bagaimana Anda menjelaskan dampaknya terhadap EPS jangka pendek dan mengapa investor tetap menebus (oversubscribed)?","Saham baru sekitar 28,2 miliar menambah penyebut EPS, sehingga EPS jangka pendek turun kecuali laba naik sebanding. Investor menebus karena mengharapkan laba tambahan dari integrasi Pegadaian dan PNM (aset dan pendapatan baru langsung masuk konsolidasi), harga pelaksanaan dinilai menarik, dan untuk menghindari dilusi kepemilikan. Ini contoh trade-off antara EPS jangka pendek dan nilai jangka panjang."],
+   ["Rancang garis besar laporan keuangan proyeksi tiga tahun yang akan Anda minta dari manajemen untuk menilai apakah holding UMi berhasil diimplementasikan. Akun dan rasio apa yang paling Anda pantau?","Laba rugi: pendapatan bunga segmen ultra mikro, biaya dana, biaya kredit (provisi), beban integrasi. Neraca: penyaluran kredit UMi, kualitas kredit, modal (efek inbreng), goodwill atau selisih dari kombinasi bisnis. Rasio: rasio kecukupan modal, NPL segmen UMi, ROE dan ROA, rasio biaya terhadap pendapatan, dan EPS dibandingkan sebelum rights issue. Sertakan catatan asumsi sebagaimana langkah 7 buku."]
+  ]}
+];
+
+/* ---------------- self-test bank ---------------- */
+var LO_NAMES={1:"Keuangan & implementasi",2:"EPS/EBIT",3:"Keterbatasan EPS/EBIT",4:"Laporan proyeksi",5:"Valuasi",6:"Rasio, IPO, obligasi"};
+var FINAL=[
+ [1,"Lima aktivitas keuangan dan akuntansi inti dalam implementasi strategi menurut buku adalah…",["Struktur modal, laporan proyeksi, valuasi, rasio keuangan, serta IPO/kas/obligasi","Audit, pajak, penggajian, pengadaan, perbendaharaan","Penganggaran, akuntansi biaya, audit internal, pajak, investasi","SWOT, IE, BCG, QSPM, SPACE"],0,"Dibahas berurutan dalam bab ini."],
+ [1,"Menurut Jamie Dimon, keputusan bisnis umumnya lebih baik bila…",["Diambil cepat oleh CEO","Didahului analisis rinci dan melibatkan banyak orang dari berbagai fungsi","Diserahkan kepada konsultan","Didasarkan intuisi"],1,"Dimon menekankan kolaborasi lintas fungsi."],
+ [1,"Memilih antara menyewa atau membeli aset tetap adalah contoh…",["Keputusan pemasaran","Keputusan keuangan dalam implementasi","Keputusan SDM","Analisis eksternal"],1,"Termasuk sepuluh contoh di buku."],
+ [1,"Tarif PPh badan umum di Indonesia yang relevan untuk analisis EPS/EBIT adalah…",["21%","22%","25%","30%"],1,"UU HPP (UU No. 7 Tahun 2021); buku memakai 21% untuk AS."],
+ [2,"Struktur modal adalah…",["Komposisi aset lancar dan tetap","Proporsi utang terhadap ekuitas di neraca","Jumlah saham diotorisasi","Rasio laba terhadap penjualan"],1,"Ditentukan dengan analisis EPS/EBIT."],
+ [2,"Mengapa buku menyebut EPS sebagai ukuran yang tepat untuk keputusan pendanaan?",["Karena mudah dihitung","Karena mencerminkan tujuan memaksimalkan kekayaan pemegang saham","Karena diwajibkan regulator","Karena tidak dipengaruhi utang"],1,"Bila tujuannya maksimalisasi laba, fokus pada EAT."],
+ [2,"Kekhawatiran khusus penerbitan saham baru menurut buku TIDAK termasuk…",["Dilusi kepemilikan","Risiko pengambilalihan naik","Kewajiban bunga tetap","Dividen untuk saham tambahan"],2,"Kewajiban bunga tetap adalah risiko utang."],
+ [2,"Bunga pada kolom kombinasi 60% saham–40% utang untuk kebutuhan $5.000 juta dengan bunga 5% adalah…",["$250 juta","$150 juta","$100 juta","$0"],2,"$5.000 × 40% × 5% = $100 juta, seperti Tabel 8-2."],
+ [2,"Bila EPS dari ketiga alternatif hampir sama pada EBIT yang sama, buku menyarankan untuk…",["Langsung memilih saham","Memeriksa apakah modal yang dihimpun terlalu kecil atau rentang EBIT terlalu sempit","Membatalkan strategi","Memilih utang"],1,"Selisih seharusnya terlihat bila kebutuhan modal besar."],
+ [2,"Selisih EPS $0,04 pada P&G dengan 2.550 juta saham setara dengan…",["$10,2 juta","$102 juta","$1,02 miliar","$4 juta"],1,"2.550 × 0,04 = $102 juta."],
+ [3,"Leverage perusahaan sudah jauh di atas rata-rata industri. Menurut Tabel 8-3, pendanaan yang mungkin lebih menarik adalah…",["Utang, karena EPS lebih tinggi","Saham, meski EPS utang lebih tinggi","Obligasi tanpa jaminan","Tidak mendanai sama sekali"],1,"Pertimbangan situasi leverage."],
+ [3,"Suku bunga diperkirakan naik tahun depan. Menurut Tabel 8-3, hal ini…",["Membuat utang berbunga tetap lebih menarik sekarang","Membuat saham selalu lebih baik","Tidak relevan","Membatalkan analisis"],0,"Pertimbangan timing."],
+ [3,"Asumsi bahwa harga saham, pajak, dan bunga konstan di semua skenario disebut keterbatasan…",["Fleksibilitas","Kontinuitas","Rentang EBIT","Dividen"],1,"Tabel 8-3 nomor 5."],
+ [3,"Dalam rights issue BRI 2021, pemerintah mengambil haknya dengan cara…",["Menyetor tunai Rp95,9 triliun","Inbreng saham seri B Pegadaian dan PNM","Menerbitkan obligasi negara","Menjual saham BRI"],1,"Penyertaan nontunai Rp54,7 triliun."],
+ [3,"Pertimbangan 'dividen' dalam Tabel 8-3 berarti…",["Utang menambah dividen","Bila saham dipilih dan perusahaan membayar dividen, lebih banyak dana keluar sebagai dividen","Dividen menaikkan EPS","Dividen harus dihentikan"],1,"Saham tambahan juga berhak atas dividen."],
+ [4,"Langkah pertama menyusun laporan keuangan proyeksi menurut buku adalah…",["Menyusun neraca","Menyusun proyeksi laba rugi, dimulai dari peramalan penjualan","Menghitung kas","Menulis catatan"],1,"Laba rugi sebelum neraca."],
+ [4,"Metode persentase penjualan TIDAK cocok untuk memproyeksikan…",["Harga pokok penjualan","Beban operasi","Bunga, dividen, dan pajak","Piutang usaha"],2,"Item ini diperlakukan terpisah."],
+ [4,"Laba bersih proyeksi Rp500 miliar, dividen Rp200 miliar, RE tahun lalu Rp3.000 miliar. RE proyeksi di neraca adalah…",["Rp3.500 miliar","Rp3.300 miliar","Rp300 miliar","Rp2.800 miliar"],1,"3.000 + (500 − 200) = 3.300."],
+ [4,"RE di neraca turun dari satu tahun ke tahun berikutnya bila…",["Perusahaan menerbitkan saham","Perusahaan rugi atau membayar dividen melebihi laba bersih","Perusahaan menambah utang","Perusahaan membeli aset tetap"],1,"Dua penyebab umum menurut buku."],
+ [4,"Neraca proyeksi disusun dengan urutan…",["Dari atas ke bawah, mulai kas","Dari bawah ke atas: ekuitas, kewajiban, lalu aset, dengan kas sebagai penyeimbang","Acak","Mulai dari goodwill"],1,"Langkah 5 dan 6."],
+ [4,"Kas proyeksi jauh lebih tinggi dari wajar. Tindakan yang disarankan buku adalah…",["Membiarkannya","Meninjau ulang asumsi, misalnya melunasi utang, meninjau persediaan/piutang/aset tetap, atau menambah saham treasuri","Menghapus laba","Menaikkan pendapatan"],1,"Kas tinggi menandakan estimasi lain perlu ditinjau."],
+ [4,"Mengakui pendapatan kontrak multi-tahun sekaligus sebelum dibayar adalah pola manipulasi…",["Pendapatan fiktif","Pendapatan prematur","Menggeser beban","Laba sekali-terjadi"],1,"Pola yang dipersoalkan pada laporan Garuda 2018."],
+ [4,"Mengapa laba bersih P&G 2017 tidak boleh begitu saja diproyeksikan ke depan?",["Karena tarif pajak naik","Karena lonjakannya berasal dari divestasi (kejadian tidak berulang)","Karena P&G mengganti CEO","Karena penjualan naik tajam"],1,"Pelajari laporan tahunan sebelum memproyeksikan."],
+ [5,"Metode valuasi laba bersih menurut buku adalah…",["Laba bersih × 5","Laba bersih × P/E","Laba bersih ÷ saham","Laba bersih − goodwill"],0,"Aturan praktis konservatif; lebih cocok untuk bisnis kecil."],
+ [5,"Metode P/E identik secara aljabar dengan metode…",["Kekayaan bersih","Laba bersih","Jumlah saham beredar × harga saham","Arus kas diskonto"],2,"Bila angka laba dan saham diambil pada waktu yang sama."],
+ [5,"Membayar premium dalam akuisisi menurut buku…",["Selalu bijak","Biasanya tidak bijak secara finansial, kecuali ada teknologi, paten, atau skala ekonomi yang benar-benar dibutuhkan","Diwajibkan hukum","Menurunkan goodwill"],1,"Mirip membeli rumah di atas harga pasar."],
+ [5,"Untuk menilai sebuah divisi, sebagian analis…",["Mengalikan nilai perusahaan dengan porsi pendapatan divisi","Memakai laba divisi × 10","Memakai harga saham saja","Memakai nilai aset tetap divisi"],0,"Pendekatan sederhana yang disebut buku."],
+ [5,"Penurunan nilai goodwill GoTo Rp78,77 triliun pada 2023 terutama terkait…",["Pembelian saham Tokopedia saat merger","IPO 2022","Pembelian kembali saham","Utang obligasi"],0,"Goodwill dari kombinasi bisnis 2021."],
+ [5,"Nilai P&G dengan metode kekayaan bersih negatif karena…",["Laba bersih negatif","Goodwill + aset tak berwujud ($68.886 juta) melebihi ekuitas ($55.778 juta)","Harga saham terlalu rendah","Utang terlalu besar"],1,"Sinyal bahwa sebagian besar aset tak berwujud."],
+ [6,"Rasio keuangan dibandingkan dengan tiga cara, yaitu…",["Antar-departemen, antar-produk, antar-cabang","Dari waktu ke waktu, terhadap rata-rata industri, dan terhadap pesaing utama","Terhadap anggaran, target, dan KPI","Terhadap inflasi, kurs, dan suku bunga"],1,"Dibahas di Bab 4 dan Bab 8."],
+ [6,"Biaya rata-rata IPO untuk emisi di atas $20 juta menurut buku adalah sekitar…",["$1 dari setiap $4","$1 dari setiap $20","$1 dari setiap $100","Gratis"],1,"Untuk emisi di bawah $1 juta sekitar $1 dari setiap $4."],
+ [6,"Dibandingkan harga saham, harga obligasi korporasi…",["Lebih sensitif terhadap kejutan operasional","Kurang sensitif terhadap kejutan operasional harian atau kuartalan","Tidak pernah berubah","Selalu lebih murah"],1,"Sehingga lebih bisa diprediksi untuk perencanaan pendanaan."],
+ [6,"Kekhawatiran buku tentang penerbitan obligasi adalah bila dananya dipakai untuk…",["Mendanai strategi baru","Membeli kembali saham dan membayar dividen","Refinancing","Akuisisi strategis"],1,"Menambah utang tanpa menambah kapasitas."],
+ [6,"Harga IPO GoTo pada April 2022 adalah…",["Rp100","Rp338","Rp1.000","Rp3.400"],1,"Rp3.400 adalah harga rights issue BRI."],
+ [6,"Pesan buku bagi mahasiswa dalam presentasi kasus adalah…",["Lewati analisis keuangan bila waktu terbatas","Tunjukkan bahwa rekomendasi layak secara finansial dengan EPS/EBIT, laporan proyeksi, dan valuasi","Cukup tampilkan SWOT","Fokus pada pemasaran saja"],1,"Tim pemenang kompetisi kasus biasanya mampu melakukannya."]
+];
+
+/* ---------------- rubrik ---------------- */
+var RUB={
+ c1_0:{need:3,cr:[
+  ["Data terbaru & sumber","20\\d\\d|laporan|10-k|annual|sumber|data","Sebutkan tahun dan sumber data."],
+  ["Hasil valuasi","miliar|billion|\\$|nilai|kapitalisasi|market cap","Berapa nilai keduanya sekarang?"],
+  ["Perbandingan dengan 2017","2017|11 miliar|5 miliar|dibanding|naik|turun","Bandingkan dengan angka 2017."],
+  ["Pemilihan metode","metode|kekayaan bersih|net worth|laba bersih|p/e|goodwill|negatif","Metode mana yang paling masuk akal?"]],
+  self:["Saya menyebut tanggal dan sumber angka yang saya pakai"]},
+ c1_1:{need:3,cr:[
+  ["Keuntungan","skala|merek|portofolio|daya tawar|pabrik|sinergi","Apa keuntungannya?"],
+  ["Kerugian","utang|peringkat|integrasi|budaya|risiko|antimonopoli","Apa kerugiannya?"],
+  ["Premium & goodwill","premium|goodwill|impairment|di atas harga","Kaitkan dengan premium dan goodwill."],
+  ["Kondisi Mattel","mattel|dividen|rugi|solven|kredit","Bagaimana kondisi keuangan Mattel memengaruhi keputusan?"]],
+  self:["Saya menimbang keuntungan dan kerugian secara seimbang"]},
+ c1_2:{need:3,cr:[
+  ["Pangsa pasar","35|62|22|pangsa|konsentrasi|dominan","Gunakan data pangsa pasar."],
+  ["Regulator AS","antitrust|antimonopoli|ftc|doj|regulator","Bagaimana sikap regulator?"],
+  ["Syarat/remedi","divestasi|syarat|remedi|ditolak|disetujui","Apa kemungkinan hasilnya?"],
+  ["Konteks Indonesia","kppu|indonesia|pemberitahuan|merger","Bagaimana di Indonesia?"]],
+  self:["Saya membedakan pasar AS secara umum dan kategori tertentu"]},
+ c2_0:{need:3,cr:[
+  ["Angka EPS","\\d+[,.]\\d+|eps","Laporkan angka EPS."],
+  ["Tiga skenario","pesimis|realistis|optimis|7\\.?000|9\\.?000|11\\.?000","Bahas ketiga skenario."],
+  ["Alternatif terbaik","utang|debt|saham|kombinasi|terbaik|tertinggi","Alternatif mana yang terbaik?"],
+  ["Penjelasan","titik impas|break.?even|dilusi|bunga|saham baru|garis","Mengapa alternatif itu unggul?"]],
+  self:["Angka saya cocok dengan hasil kalkulator"]},
+ c2_1:{need:3,cr:[
+  ["Rekomendasi jelas","rekomendasi|sebaiknya|danai|pilih|gunakan","Apa rekomendasinya?"],
+  ["Alasan EPS","eps|pemegang saham|nilai","Apa alasan finansialnya?"],
+  ["Risiko/syarat","leverage|covenant|risiko|pantau|fleksibilitas|kurs","Apa yang perlu dipantau?"]],
+  self:["Rekomendasi saya benar-benar tiga kalimat dan bisa dibaca CFO dalam 20 detik"]},
+ c2_2:{need:3,cr:[
+  ["Pertimbangan Tabel 8-3","leverage|fleksibilitas|timing|dilusi|kontinuitas|dividen|rentang","Pertimbangan mana yang relevan?"],
+  ["Konteks Coca-Cola","pabrik|luar|kurs|global|utang","Kaitkan dengan situasi Coca-Cola."],
+  ["Skenario bunga 9%","9|bunga naik|hitung ulang","Apa yang berubah bila bunga 9%?"],
+  ["Hasil hitung ulang","berubah|tetap|selisih|titik impas|mengecil","Apakah urutan alternatif berubah?"]],
+  self:["Saya benar-benar menghitung ulang dengan bunga 9% di kalkulator"]},
+ c3_0:{need:3,cr:[
+  ["Pola Schilit","prematur|terlalu dini|premature|pendapatan dini","Pola mana yang sesuai?"],
+  ["Angka kunci","239|809|mahata","Gunakan angka kasus."],
+  ["Mekanisme laba","laba|rugi|pendapatan|naik|berubah","Bagaimana rugi berubah menjadi laba?"],
+  ["Kas vs akrual","piutang|kas|belum diterima|belum dibayar|akrual","Apa hubungannya dengan kas?"]],
+  self:["Saya menjelaskan mekanisme akuntansinya, bukan hanya menyebut 'manipulasi'"]},
+ c3_1:{need:3,cr:[
+  ["Kesalahan proyeksi","terlalu tinggi|optimis|overstate|salah|basis","Kesalahan apa yang terjadi?"],
+  ["Dampak berantai","re|laba ditahan|rasio|neraca|ekuitas","Akun apa saja yang ikut salah?"],
+  ["Peringatan buku","historis|buta|laporan tahunan|penyebab|divestasi|p&g","Kaitkan dengan peringatan buku."],
+  ["Perbaikan","keluarkan|sekali|normalisasi|disajikan ulang|restate","Bagaimana memperbaikinya?"]],
+  self:["Saya menyebut akun spesifik yang terdampak"]},
+ c3_2:{need:3,cr:[
+  ["Peran komisaris","komisaris|pengawas|dissent|menolak","Apa peran komisaris?"],
+  ["Sistem dua dewan","dua dewan|direksi|uu pt|two-tier","Kaitkan dengan sistem dua dewan."],
+  ["Tekanan kinerja","tekanan|target|kinerja|insentif","Apa pemicunya?"],
+  ["Pelajaran tata kelola","komite audit|auditor|independen|budaya|transparan|kepercayaan","Apa pelajarannya?"]],
+  self:["Saya mengaitkan kasus ini dengan implementasi strategi, bukan hanya akuntansi"]},
+ c4_0:{need:3,cr:[
+  ["Asal goodwill","premium|di atas nilai buku|harga beli|merger","Dari mana goodwill berasal?"],
+  ["Arti impairment","impairment|penurunan nilai|78|tidak didukung","Apa arti penurunan nilainya?"],
+  ["Metode kekayaan bersih","kekayaan bersih|net worth|ekuitas|dikurangkan|metode 1","Bagaimana pengaruhnya pada metode 1?"]],
+  self:["Saya membedakan dampak kas dan nonkas"]},
+ c4_1:{need:3,cr:[
+  ["Kapitalisasi = ekspektasi","ekspektasi|persepsi|pasar|berubah|400","Apa yang ditunjukkan kapitalisasi pasar?"],
+  ["P/E untuk perusahaan rugi","rugi|negatif|tidak bermakna|eps negatif","Bisakah P/E dipakai?"],
+  ["Alternatif metode","pendapatan|revenue|arus kas|dcf|diskonto|kelipatan","Metode apa yang lebih cocok?"]],
+  self:["Saya menyebut keterbatasan empat metode buku"]},
+ c4_2:{need:3,cr:[
+  ["Kas & investasi","kas|investasi|modal|pendanaan|dana","Bagaimana dampaknya pada kas?"],
+  ["Fokus bisnis","fokus|on-demand|fintech|gojek|profitab","Bagaimana dampaknya pada fokus?"],
+  ["Nilai pemegang saham","pemegang saham|nilai|24,99|dilusi|valuasi","Bagaimana dampaknya pada nilai?"],
+  ["Sikap kritis","namun|tetapi|kehilangan kendali|kontra|risiko","Apa argumen kontranya?"]],
+  self:["Saya menimbang argumen pendukung dan kontra"]},
+ c5_0:{need:3,cr:[
+  ["Pertimbangan Tabel 8-3","leverage|dilusi|timing|fleksibilitas","Gunakan pertimbangan Tabel 8-3."],
+  ["Konteks bank","modal|permodalan|car|kecukupan|kredit","Mengapa modal penting bagi bank?"],
+  ["Inbreng","inbreng|nontunai|pegadaian|pnm","Apa peran inbreng?"],
+  ["Kendali pemerintah","pemerintah|kendali|mayoritas|40%","Bagaimana kendali tetap terjaga?"]],
+  self:["Saya menjelaskan mengapa utang kurang cocok, bukan hanya mengapa ekuitas cocok"]},
+ c5_1:{need:3,cr:[
+  ["Dilusi & EPS","dilusi|eps|penyebut|saham baru|28","Bagaimana dampaknya pada EPS?"],
+  ["Alasan menebus","laba tambahan|integrasi|harga menarik|prospek|hindari dilusi","Mengapa investor menebus?"],
+  ["Trade-off waktu","jangka pendek|jangka panjang|trade-off","Apa trade-off-nya?"]],
+  self:["Saya membedakan dampak jangka pendek dan jangka panjang"]},
+ c5_2:{need:3,cr:[
+  ["Laba rugi","pendapatan bunga|biaya dana|provisi|beban|laba","Akun laba rugi apa?"],
+  ["Neraca","kredit|modal|aset|goodwill|neraca","Akun neraca apa?"],
+  ["Rasio","car|npl|roe|roa|bopo|biaya terhadap pendapatan|eps","Rasio apa yang dipantau?"],
+  ["Catatan asumsi","catatan|asumsi|langkah 7","Apakah Anda menyertakan catatan asumsi?"]],
+  self:["Rancangan saya bisa langsung dipakai sebagai permintaan data ke manajemen"]}
+};
+var CONN=["karena","sehingga","akibatnya","oleh karena itu","maka","sebab","menyebabkan","artinya","dengan demikian","namun","tetapi","sedangkan","jika","bila","agar","membuat","berdampak","because","therefore"];
+var LV=["Belum terlihat","Perlu diperkuat","Cukup","Baik","Sangat baik"];
+
+/* ---------------- glossary ---------------- */
+var GLOSS=[
+ ["Capital structure","Proporsi utang terhadap ekuitas di neraca"],
+ ["EPS","Earnings per share: laba bersih ÷ jumlah saham beredar"],
+ ["EBIT","Earnings before interest and taxes; laba operasi"],
+ ["EBT / EAT","Laba sebelum pajak / laba setelah pajak (laba bersih)"],
+ ["Shares outstanding","Saham diterbitkan dikurangi saham treasuri; penyebut EPS"],
+ ["Shares authorized","Jumlah maksimum saham yang boleh diterbitkan"],
+ ["EPS/EBIT analysis","Membandingkan EPS dari pendanaan saham, utang, dan kombinasi pada berbagai skenario EBIT"],
+ ["Break-even EBIT","Tingkat EBIT di mana EPS dua alternatif pendanaan sama"],
+ ["Dilution of ownership","Turunnya porsi kepemilikan dan kendali akibat saham baru"],
+ ["Rights issue (HMETD)","Penawaran saham baru kepada pemegang saham lama secara proporsional"],
+ ["Projected financial statements","Laporan laba rugi dan neraca masa depan yang memperkirakan dampak rekomendasi"],
+ ["Percentage-of-sales method","Memproyeksikan HPP dan beban sebagai persentase penjualan"],
+ ["Retained earnings (RE)","Akumulasi laba bersih dikurangi dividen; bukan uang kas"],
+ ["Plug figure","Akun penyeimbang neraca proyeksi; dalam buku: kas"],
+ ["Financial shenanigans","Lima cara memanipulasi laporan keuangan menurut Schilit"],
+ ["Corporate valuation","Menentukan nilai uang suatu perusahaan atau divisi"],
+ ["Net worth method","Ekuitas − (goodwill + aset tak berwujud)"],
+ ["Net income method","Laba bersih × 5"],
+ ["Price-earnings ratio method","(Harga saham ÷ EPS) × laba bersih"],
+ ["Outstanding shares method","Saham beredar × harga saham (kapitalisasi pasar)"],
+ ["Goodwill","Kelebihan harga akuisisi di atas nilai buku aset bersih yang dibeli"],
+ ["Premium / discount","Selisih harga akuisisi di atas / di bawah kapitalisasi pasar"],
+ ["Treasury stock","Saham yang dibeli kembali perusahaan; mengurangi saham beredar"],
+ ["IPO","Initial public offering: penawaran saham perdana ke publik"],
+ ["Corporate bond","Surat utang yang dananya berasal dari investor, dicatat sebagai utang jangka panjang"]
+];
+
+/* ================= render: sidebar & plan ================= */
+var NAV=[["grp","Mulai"],["home","Beranda","⌂"],["grp","Pendanaan Strategi"],["u1"],["u2"],["u3"],["grp","Proyeksi & Valuasi"],["u4"],["u5"],["u6"],["grp","Penerapan & Evaluasi"],["cases","Studi Kasus","📂"],["final","Kuis Akhir","🏁"],["cards","Flashcard","🃏"],["notes","Catatan & Referensi","📝"]];
+function renderSide(){
+  var h="";
+  NAV.forEach(function(n){
+    if(n[0]==="grp"){h+='<div class="grp">'+n[1]+'</div>';return}
+    var u=UNITS.filter(function(x){return x.id===n[0]})[0];
+    if(u){var i=UNITS.indexOf(u)+1;h+='<a href="#'+u.id+'" data-nav="'+u.id+'" class="'+(S.done[u.id]?"done":"")+'"><span class="n">'+(S.done[u.id]?"✓":i)+'</span>'+u.t+'</a>'}
+    else{var dn=(n[0]==="final"&&S.final&&S.final.best>=80)||(n[0]==="cases"&&casesDone()); h+='<a href="#'+n[0]+'" data-nav="'+n[0]+'" class="'+(dn?"done":"")+'"><span class="n ico">'+(dn?"✓":n[2])+'</span>'+n[1]+'</a>'}
+  });
+  $("#side").innerHTML=h; markNav();
+  var pb="";UNITS.forEach(function(u,i){pb+='<tr><td>'+(i+1)+'</td><td><a href="#'+u.id+'">'+u.t+'</a></td><td>'+u.pg+'</td><td class="st '+(S.done[u.id]?"y":"n")+'">'+(S.done[u.id]?"✓ selesai":(S.read[i+1]?"dibaca":"—"))+'</td></tr>'});
+  pb+='<tr><td>'+(UNITS.length+1)+'</td><td><a href="#cases">Studi kasus ('+CASES.length+')</a></td><td>hlm. 292–296 + kasus Indonesia</td><td class="st '+(casesDone()?"y":"n")+'">'+(casesDone()?"✓ selesai":"—")+'</td></tr>';
+  pb+='<tr><td>'+(UNITS.length+2)+'</td><td><a href="#final">Kuis akhir</a></td><td>—</td><td class="st '+(S.final&&S.final.best>=80?"y":"n")+'">'+(S.final?("terbaik "+S.final.best+"%"):"—")+'</td></tr>';
+  $("#planBody").innerHTML=pb;
+}
+function casesDone(){var n=0,t=0;CASES.forEach(function(c){c.qs.forEach(function(q,i){t++;if((S.notes[c.id+"_"+i]||"").trim().length>=40)n++})});return n>=t}
+function updateProgress(){
+  var tot=UNITS.length+2,d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  if(casesDone())d++; if(S.final&&S.final.best>=80)d++;
+  var p=Math.round(d/tot*100);$("#progBar").style.width=p+"%";$("#progLbl").textContent=p+"%";
+}
+
+/* ================= quizzes ================= */
+function seededOrder(key,n){var h=2166136261;for(var c=0;c<key.length;c++){h^=key.charCodeAt(c);h=Math.imul(h,16777619)}var a=[];for(var i=0;i<n;i++)a.push(i);for(var k=n-1;k>0;k--){h=Math.imul(h^(h>>>15),2246822507)>>>0;var r=h%(k+1),x=a[k];a[k]=a[r];a[r]=x}return a}
+function renderQuiz(box,uid){
+  var qs=QZ[uid], h='<div class="lockmsg"><div>🔒 <b>Soal terkunci.</b><br>Baca halaman buku yang ditunjuk, lalu centang "Saya sudah membaca" di atas.</div></div><div class="qbody">';
+  qs.forEach(function(q,i){
+    h+='<div class="q" data-qi="'+i+'"><span class="kind '+(q.k==="r"?"rb":"")+'">'+(q.k==="r"?"📖 Cek bacaan · "+q.pg:"Konsep")+'</span><div class="qt">'+(i+1)+'. '+esc(q.q)+'</div><div class="opts">';
+    seededOrder(uid+"_"+i,q.o.length).forEach(function(j,pos){h+='<button class="opt" data-j="'+j+'"><span class="L">'+"ABCD"[pos]+'</span><span>'+esc(q.o[j])+'</span></button>'});
+    h+='</div><div class="fbx"></div></div>';
+  });
+  h+='<div class="score" id="sc_'+uid+'"></div></div>';
+  box.innerHTML=h;
+  $$(".q",box).forEach(function(qe){
+    var i=+qe.dataset.qi;
+    $$(".opt",qe).forEach(function(b){b.addEventListener("click",function(){answer(uid,i,+b.dataset.j,qe)})});
+    var prev=S.q[uid+"_"+i]; if(prev!=null) paint(uid,i,prev,qe);
+  });
+  lockState(box,uid); scoreUnit(uid);
+}
+function answer(uid,i,j,qe){S.q[uid+"_"+i]=j;paint(uid,i,j,qe);scoreUnit(uid);save();}
+function paint(uid,i,j,qe){
+  var q=QZ[uid][i],ok=j===q.a;
+  $$(".opt",qe).forEach(function(b){var k=+b.dataset.j;b.disabled=true;b.classList.remove("ok","no");if(k===j)b.classList.add(ok?"ok":"no");if(ok&&k===q.a)b.classList.add("ok")});
+  var fb=$(".fbx",qe);
+  fb.innerHTML='<div class="fb '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat.")+'</b>'+(ok?esc(q.e):(q.k==="r"?"Buka kembali "+esc(q.pg)+", dan cari bagian yang relevan.":"Baca ulang ringkasan di atas, lalu coba lagi."))+'</div>'+(ok?"":'<button class="retry">Coba lagi</button>');
+  var r=$(".retry",fb); if(r) r.addEventListener("click",function(){delete S.q[uid+"_"+i];save();$$(".opt",qe).forEach(function(b){b.disabled=false;b.classList.remove("ok","no")});fb.innerHTML="";scoreUnit(uid)});
+}
+function scoreUnit(uid){
+  var qs=QZ[uid],c=0;qs.forEach(function(q,i){if(S.q[uid+"_"+i]===q.a)c++});
+  var el=$("#sc_"+uid); if(el) el.textContent=c+" / "+qs.length+" benar"+(c===qs.length?" · Unit selesai ✓":"");
+  var was=!!S.done[uid]; S.done[uid]=c===qs.length;
+  if(S.done[uid]&&!was){toast("Unit selesai! 🎉");} if(was!==S.done[uid]){save();renderSide();}
+}
+function lockState(box,uid){var n=+uid.slice(1);box.classList.toggle("locked",!S.read[n])}
+
+/* ================= classify ================= */
+function renderClassify(el){
+  var key=el.dataset.widget,w=CL[key],h='';
+  w.it.forEach(function(it,i){
+    h+='<div class="it" data-i="'+i+'"><p>'+esc(it[0])+'</p><div class="chips">';
+    w.o.forEach(function(o){h+='<button class="chip" data-o="'+esc(o)+'">'+esc(o)+'</button>'});
+    h+='</div><div class="why"></div></div>';
+  });
+  h+='<div class="score" style="margin-top:10px"></div>';
+  el.insertAdjacentHTML("beforeend",h);
+  $$(".it",el).forEach(function(row){
+    var i=+row.dataset.i;
+    $$(".chip",row).forEach(function(c){c.addEventListener("click",function(){
+      var it=w.it[i],ok=c.dataset.o===it[1];
+      if(ok){S.cls[key+"_"+i]=1;paintCls(row,it);save();clsScore(el,key)}
+      else{c.classList.add("no");c.disabled=true;$(".why",row).textContent="Belum tepat. Coba pilihan lain.";}
+    })});
+    if(S.cls[key+"_"+i])paintCls(row,w.it[i]);
+  });
+  clsScore(el,key);
+}
+function paintCls(row,it){$$(".chip",row).forEach(function(c){c.disabled=true;c.classList.remove("no");if(c.dataset.o===it[1])c.classList.add("ok")});$(".why",row).innerHTML="✓ "+esc(it[2])}
+function clsScore(el,key){var w=CL[key],c=0;w.it.forEach(function(_,i){if(S.cls[key+"_"+i])c++});$(".score",el).textContent=c+" / "+w.it.length+" tepat"}
+
+
+/* ================= helpers ================= */
+function pnum(v){
+  if(typeof v==="number")return v;
+  var s=String(v==null?"":v).trim().replace(/\s/g,"").replace(/^rp/i,"").replace(/\$/g,"");
+  if(!s)return NaN;
+  if(s.indexOf(",")>=0){s=s.replace(/\./g,"").replace(",",".")}
+  else if((s.match(/\./g)||[]).length>1||/^-?\d{1,3}\.\d{3}$/.test(s)){s=s.replace(/\./g,"")}
+  return parseFloat(s);
+}
+function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||"#888"}
+
+/* ================= ordering widgets ================= */
+function ordWidget(id){
+  var box=$("#"+id),steps=ORD[id],order=seededOrder(id,steps.length);
+  S.ord[id]=S.ord[id]||0;
+  function render(){
+    var n=S.ord[id];
+    box.innerHTML=order.map(function(k){var done=k<n;return '<button data-k="'+k+'" class="'+(done?"done":"")+'"'+(done?" disabled":"")+'><span class="n">'+(done?(k+1):"?")+'</span><span>'+esc(steps[k])+'</span></button>'}).join("")+(n>=steps.length?'<p class="hint" style="margin:4px 0 0">✓ Urutan benar. <button class="retry" data-reset="1">Ulangi</button></p>':'');
+    $$("button[data-k]",box).forEach(function(b){b.addEventListener("click",function(){
+      var k=+b.dataset.k;
+      if(k===S.ord[id]){S.ord[id]++;save();render();if(S.ord[id]>=steps.length)toast("Urutan benar! 🎉")}
+      else{b.classList.add("shake");setTimeout(function(){b.classList.remove("shake")},500);toast("Belum tepat. Langkah ke-"+(S.ord[id]+1)+" yang mana?")}
+    })});
+    var r=$("[data-reset]",box);if(r)r.addEventListener("click",function(){S.ord[id]=0;save();render()});
+  }
+  render();
+}
+
+/* ================= Unit 2: EPS/EBIT ================= */
+var EPSP={
+ pg:{n:"P&G (Tabel 8-1)",mu:"juta US$",cu:"US$",d:2,v:{cap:"5000",sh:"2550",pr:"94.17",ir:"5",tx:"23",e1:"10000",e2:"15000",e3:"18000",mix:60}},
+ ko:{n:"Coca-Cola (Exercise 8A)",mu:"juta US$",cu:"US$",d:2,v:{cap:"5000",sh:"4255",pr:"45.54",ir:"5",tx:"21",e1:"7000",e2:"9000",e3:"11000",mix:50}},
+ q24:{n:"Soal 8-24",mu:"juta US$",cu:"US$",d:3,v:{cap:"200",sh:"500",pr:"20",ir:"5",tx:"20",e1:"100",e2:"200",e3:"300",mix:50}},
+ idn:{n:"PT Nusantara Pangan Tbk (fiktif)",mu:"juta Rp",cu:"Rp",d:1,v:{cap:"2.000.000",sh:"10.000",pr:"1.500",ir:"8",tx:"22",e1:"1.500.000",e2:"2.500.000",e3:"3.500.000",mix:50}},
+ mine:{n:"Data saya",mu:"juta (mata uang Anda)",cu:"",d:2,v:{cap:"",sh:"",pr:"",ir:"",tx:"22",e1:"",e2:"",e3:"",mix:50}}
+};
+var EPSF=[["cap","Modal yang dibutuhkan"],["sh","Saham beredar (juta lembar)"],["pr","Harga saham per lembar"],["ir","Suku bunga utang (%)"],["tx","Tarif pajak (%)"],["e1","EBIT pesimistis"],["e2","EBIT realistis"],["e3","EBIT optimistis"]];
+var EPSLAST=null;
+function epsCalc(v){
+  var cap=pnum(v.cap),sh=pnum(v.sh),pr=pnum(v.pr),ir=pnum(v.ir)/100,tx=pnum(v.tx)/100,E=[pnum(v.e1),pnum(v.e2),pnum(v.e3)],mix=(+v.mix||50)/100;
+  if([cap,sh,pr,ir,tx].concat(E).some(function(x){return !isFinite(x)})||sh<=0||pr<=0)return null;
+  var ST=[["Saham 100%",1],["Utang 100%",0],["Kombinasi "+Math.round(mix*100)+"/"+Math.round(100-mix*100),mix]];
+  var R=ST.map(function(s){var f=s[1],I=cap*(1-f)*ir,N=sh+cap*f/pr;return {n:s[0],f:f,I:I,N:N,rows:E.map(function(e){var ebt=e-I,tax=ebt>0?ebt*tx:0,eat=ebt-tax;return {e:e,I:I,ebt:ebt,tax:tax,eat:eat,N:N,eps:eat/N}})}});
+  var newSh=cap/pr,be=newSh>0?(cap*ir)*(sh+newSh)/newSh:NaN;
+  return {R:R,E:E,be:be,sh:sh,cap:cap,ir:ir};
+}
+function epsTool(){
+  S.eps=S.eps||{cur:"pg",sets:{}};
+  function cur(){if(!S.eps.sets[S.eps.cur])S.eps.sets[S.eps.cur]=JSON.parse(JSON.stringify(EPSP[S.eps.cur].v));return S.eps.sets[S.eps.cur]}
+  function inputs(){
+    var v=cur(),P=EPSP[S.eps.cur];
+    $("#epsIn").innerHTML=EPSF.map(function(f){return '<label>'+f[1]+'<input type="text" inputmode="decimal" data-ef="'+f[0]+'" value="'+esc(v[f[0]])+'"></label>'}).join("")+'<label class="wide">Porsi saham pada alternatif kombinasi<span class="rng"><input type="range" min="10" max="90" step="10" data-ef="mix" value="'+v.mix+'"><output>'+v.mix+'% saham</output></span></label>';
+    $("#epsUnit").textContent="Satuan: modal dan EBIT dalam "+P.mu+"; saham dalam juta lembar; harga dan EPS per lembar"+(P.cu?" ("+P.cu+")":"")+". Pemisah ribuan titik atau tanpa pemisah; desimal koma atau titik.";
+    $$("[data-ef]").forEach(function(e){e.addEventListener("input",function(){var v=cur();v[e.dataset.ef]=e.type==="range"?+e.value:e.value;if(e.type==="range")e.nextElementSibling.textContent=e.value+"% saham";save();clearTimeout(e._h);e._h=setTimeout(draw,200)})});
+    $$("#epsPreset button").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.p===S.eps.cur))});
+  }
+  function draw(){
+    var P=EPSP[S.eps.cur],c=epsCalc(cur());EPSLAST=c?{c:c,P:P}:null;
+    if(!c){$("#epsTbl").innerHTML="";$("#epsChart").innerHTML="";$("#epsRes").innerHTML="Lengkapi semua input dengan angka.";return}
+    var sc=["Pesimistis","Realistis","Optimistis"],best=[0,1,2].map(function(j){var b=0;c.R.forEach(function(s,i){if(s.rows[j].eps>c.R[b].rows[j].eps)b=i});return b});
+    var h='<thead><tr class="grp"><th></th>'+c.R.map(function(s){return '<th colspan="3">'+s.n+'</th>'}).join("")+'</tr><tr><th>'+P.mu+'</th>'+c.R.map(function(){return sc.map(function(x){return '<th>'+x+'</th>'}).join("")}).join("")+'</tr></thead><tbody>';
+    var rows=[["EBIT","e",0],["Bunga","I",0],["EBT","ebt",0],["Pajak","tax",0],["EAT","eat",0],["Jumlah saham (juta)","N",0],["EPS ("+(P.cu||"per lembar")+")","eps",P.d]];
+    rows.forEach(function(r){h+='<tr class="'+(r[1]==="eps"?"key":"")+'"><td>'+r[0]+'</td>';c.R.forEach(function(s,i){s.rows.forEach(function(x,j){var val=x[r[1]];h+='<td class="'+(r[1]==="eps"&&best[j]===i?"best":"")+(val<0?" neg":"")+'">'+num(val,r[2])+'</td>'})});h+='</tr>'});
+    $("#epsTbl").innerHTML=h+'</tbody>';
+    // chart
+    var W=520,H=300,m={l:58,r:16,t:16,b:40},pw=W-m.l-m.r,ph=H-m.t-m.b;
+    var xs=c.E,xmin=Math.min.apply(null,xs),xmax=Math.max.apply(null,xs);if(xmax===xmin)xmax=xmin+1;
+    var all=[];c.R.forEach(function(s){s.rows.forEach(function(x){all.push(x.eps)})});var ymin=Math.min.apply(null,all),ymax=Math.max.apply(null,all);var pad=(ymax-ymin)*0.08||1;ymin-=pad;ymax+=pad;
+    var X=function(v){return m.l+(v-xmin)/(xmax-xmin)*pw},Y=function(v){return m.t+ph-(v-ymin)/(ymax-ymin)*ph};
+    var cols=[css("--navy"),css("--bad"),css("--gold")],dash=["","6 4","2 3"];
+    var g='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Grafik EPS/EBIT">';
+    for(var k=0;k<=4;k++){var yv=ymin+(ymax-ymin)*k/4;g+='<line x1="'+m.l+'" x2="'+(W-m.r)+'" y1="'+Y(yv)+'" y2="'+Y(yv)+'" stroke="'+css("--line")+'"/><text x="'+(m.l-6)+'" y="'+(Y(yv)+4)+'" text-anchor="end" font-size="10" font-family="JetBrains Mono,monospace" fill="'+css("--muted")+'">'+num(yv,P.d)+'</text>'}
+    xs.forEach(function(xv,j){g+='<text x="'+X(xv)+'" y="'+(H-m.b+16)+'" text-anchor="middle" font-size="10" font-family="JetBrains Mono,monospace" fill="'+css("--muted")+'">'+num(xv,0)+'</text>'});
+    g+='<text x="'+(m.l+pw/2)+'" y="'+(H-6)+'" text-anchor="middle" font-size="11" fill="'+css("--muted")+'" font-family="Plus Jakarta Sans,sans-serif">EBIT ('+esc(P.mu)+')</text>';
+    if(isFinite(c.be)&&c.be>xmin&&c.be<xmax){g+='<line x1="'+X(c.be)+'" x2="'+X(c.be)+'" y1="'+m.t+'" y2="'+(m.t+ph)+'" stroke="'+css("--muted")+'" stroke-dasharray="3 3"/><text x="'+(X(c.be)+4)+'" y="'+(m.t+10)+'" font-size="10" fill="'+css("--muted")+'" font-family="Plus Jakarta Sans,sans-serif">titik impas</text>'}
+    c.R.forEach(function(s,i){var pts=s.rows.map(function(x){return X(x.e)+","+Y(x.eps)}).join(" ");g+='<polyline points="'+pts+'" fill="none" stroke="'+cols[i]+'" stroke-width="2.5" stroke-dasharray="'+dash[i]+'"/>';s.rows.forEach(function(x){g+='<circle cx="'+X(x.e)+'" cy="'+Y(x.eps)+'" r="3.5" fill="'+cols[i]+'"/>'})});
+    g+='</svg><div class="olegend" style="margin-top:6px">'+c.R.map(function(s,i){return '<span><i style="border-color:'+cols[i]+';background:'+cols[i]+'"></i>'+s.n+'</span>'}).join("")+'</div>';
+    $("#epsChart").innerHTML=g;
+    // verdict
+    var msg=sc.map(function(x,j){return x+": <b>"+c.R[best[j]].n+"</b>"}).join(" · ");
+    var j2=2,bi=best[j2],wi=[0,1,2].sort(function(a,b){return c.R[a].rows[j2].eps-c.R[b].rows[j2].eps})[0],f10=Math.pow(10,P.d),diff=Math.round(c.R[bi].rows[j2].eps*f10)/f10-Math.round(c.R[wi].rows[j2].eps*f10)/f10;
+    var beTxt=isFinite(c.be)?(' Titik impas EBIT antara saham dan utang ≈ <b>'+num(c.be,0)+'</b> '+esc(P.mu)+': di atasnya utang menghasilkan EPS lebih tinggi, di bawahnya saham.'):"";
+    $("#epsRes").innerHTML='EPS tertinggi per skenario: '+msg+'.'+beTxt+' Pada skenario optimistis, selisih EPS terbaik dan terburuk ('+num(diff,P.d)+') × '+num(c.sh,0)+' juta saham ≈ <b>'+num(diff*c.sh,0)+'</b> juta'+(P.cu?" "+P.cu:"")+'.'+(Math.abs(diff)/Math.abs(c.R[bi].rows[j2].eps||1)<0.03?' Garis-garis pada grafik hampir berimpit karena selisih EPS relatif kecil; baca angka di tabel.':'')+' Ingat pertimbangan Tabel 8-3 sebelum memutuskan.';
+  }
+  $$("#epsPreset button").forEach(function(b){b.addEventListener("click",function(){S.eps.cur=b.dataset.p;save();inputs();draw()})});
+  inputs();draw();epsTool.redraw=draw;
+}
+
+/* ================= Unit 4: projected statements ================= */
+var PFSF=[
+ ["grp","Tahun terakhir (aktual)"],
+ ["rev","Pendapatan","10.000"],["cogs","HPP (% pendapatan)","60"],["opex","Beban operasi (% pendapatan)","25"],["int","Beban bunga","150"],["tax","Tarif pajak (%)","22"],["div0","Dividen tahun lalu","300"],
+ ["cash","Kas","800"],["oca","Aset lancar lain","2.500"],["ppe","Aset tetap","6.000"],["gw","Goodwill & aset tak berwujud","700"],
+ ["cl","Kewajiban lancar","2.200"],["ltd","Utang jangka panjang","3.000"],["pic","Modal disetor","2.500"],["re","Laba ditahan (RE)","2.300"],
+ ["grp","Asumsi rekomendasi (tahun proyeksi)"],
+ ["g","Pertumbuhan pendapatan (%)","12"],["xop","Tambahan beban R&D/iklan","200"],["capex","Tambahan aset tetap (capex bersih)","1.500"],["nd","Utang baru","800"],["nr","Suku bunga utang baru (%)","9"],["ne","Saham baru","600"],["div1","Dividen proyeksi","330"]
+];
+function pfsTool(){
+  S.pfs=S.pfs||{};
+  PFSF.forEach(function(f){if(f[0]!=="grp"&&S.pfs[f[0]]==null)S.pfs[f[0]]=f[2]});
+  $("#pfsIn").innerHTML=PFSF.map(function(f){return f[0]==="grp"?'<p class="qz-lbl wide" style="margin:6px 0 0">'+f[1]+'</p>':'<label>'+f[1]+'<input type="text" inputmode="decimal" data-pf="'+f[0]+'" value="'+esc(S.pfs[f[0]])+'"></label>'}).join("")+'<div class="wide"><button class="btn sm ghost" id="pfsReset">Kembalikan angka contoh</button></div>';
+  $$("[data-pf]").forEach(function(e){e.addEventListener("input",function(){S.pfs[e.dataset.pf]=e.value;save();clearTimeout(e._h);e._h=setTimeout(draw,200)})});
+  $("#pfsReset").addEventListener("click",function(){S.pfs={};save();pfsTool()});
+  function draw(){
+    var v={};for(var k in S.pfs)v[k]=pnum(S.pfs[k]);
+    if(Object.keys(v).some(function(k){return !isFinite(v[k])})){$("#pfsRes").textContent="Lengkapi semua input dengan angka.";return}
+    function inc(rev,extra,intr){var cogs=rev*v.cogs/100,op=rev*v.opex/100+extra,ebit=rev-cogs-op,ebt=ebit-intr,tax=ebt>0?ebt*v.tax/100:0;return {rev:rev,cogs:cogs,op:op,ebit:ebit,int:intr,ebt:ebt,tax:tax,ni:ebt-tax}}
+    var A=inc(v.rev,0,v.int),r1=v.rev*(1+v.g/100),B=inc(r1,v.xop,v.int+v.nd*v.nr/100);
+    var sc=v.rev?r1/v.rev:1,re1=v.re+B.ni-v.div1;
+    var b0={cash:v.cash,oca:v.oca,ppe:v.ppe,gw:v.gw,cl:v.cl,ltd:v.ltd,pic:v.pic,re:v.re};
+    var b1={oca:v.oca*sc,ppe:v.ppe+v.capex,gw:v.gw,cl:v.cl*sc,ltd:v.ltd+v.nd,pic:v.pic+v.ne,re:re1};
+    b1.cash=(b1.cl+b1.ltd+b1.pic+b1.re)-(b1.oca+b1.ppe+b1.gw);
+    var ta0=b0.cash+b0.oca+b0.ppe+b0.gw,tl0=b0.cl+b0.ltd+b0.pic+b0.re,ta1=b1.cash+b1.oca+b1.ppe+b1.gw;
+    var rows=[["LABA RUGI"],["Pendapatan",A.rev,B.rev],["HPP",A.cogs,B.cogs],["Beban operasi",A.op,B.op],["EBIT",A.ebit,B.ebit,1],["Bunga",A.int,B.int],["Pajak",A.tax,B.tax],["Laba bersih",A.ni,B.ni,1],["Dividen",v.div0,v.div1],["NERACA"],["Kas (plug)",b0.cash,b1.cash,1],["Aset lancar lain",b0.oca,b1.oca],["Aset tetap",b0.ppe,b1.ppe],["Goodwill & tak berwujud",b0.gw,b1.gw],["Total aset",ta0,ta1,1],["Kewajiban lancar",b0.cl,b1.cl],["Utang jangka panjang",b0.ltd,b1.ltd],["Modal disetor",b0.pic,b1.pic],["Laba ditahan",b0.re,b1.re],["Total kewajiban + ekuitas",tl0,b1.cl+b1.ltd+b1.pic+b1.re,1]];
+    $("#pfsTbl").innerHTML='<thead><tr><th>Rp miliar</th><th>Aktual</th><th>Proyeksi</th><th>Δ%</th></tr></thead><tbody>'+rows.map(function(r){if(r.length===1)return '<tr class="grp"><th colspan="4" style="text-align:left">'+r[0]+'</th></tr>';var d=r[1]?((r[2]-r[1])/Math.abs(r[1])*100):NaN;return '<tr class="'+(r[3]?"key":"")+'"><td>'+r[0]+'</td><td class="'+(r[1]<0?"neg":"")+'">'+num(r[1],0)+'</td><td class="'+(r[2]<0?"neg":"")+'">'+num(r[2],0)+'</td><td>'+(isFinite(d)?(d>=0?"+":"")+num(d,1)+"%":"–")+'</td></tr>'}).join("")+'</tbody>';
+    var bal0=Math.abs(ta0-tl0)>0.5;
+    function ratios(b,ni,ta){var eq=b.pic+b.re;return {cr:(b.cash+b.oca)/b.cl,de:(b.cl+b.ltd)/eq,roe:ni/eq*100,roa:ni/ta*100}}
+    var R0=ratios(b0,A.ni,ta0),R1=ratios(b1,B.ni,ta1);
+    var crWarn=b1.cash<0||R1.cr>R0.cr*1.8||R1.cr<1;
+    $("#pfsKpi").innerHTML=[["Rasio lancar",R0.cr,R1.cr,2,"x",crWarn],["Utang/ekuitas",R0.de,R1.de,2,"x",R1.de>R0.de*1.5],["ROE",R0.roe,R1.roe,1,"%",false],["ROA",R0.roa,R1.roa,1,"%",false]].map(function(k){return '<div class="kpi '+(k[5]?"warn":"")+'"><small>'+k[0]+'</small><b>'+num(k[2],k[3])+k[4]+'</b><span>aktual '+num(k[1],k[3])+k[4]+'</span></div>'}).join("")+'<div class="kpi"><small>RE: '+num(v.re,0)+' + '+num(B.ni,0)+' − '+num(v.div1,0)+'</small><b>'+num(re1,0)+'</b><span>laba ditahan proyeksi</span></div>';
+    var msg="";
+    if(bal0)msg+='⚠️ Neraca aktual tidak seimbang (aset '+num(ta0,0)+' vs kewajiban + ekuitas '+num(tl0,0)+'). Periksa input. ';
+    if(b1.cash<0)msg+='<b>Kas proyeksi negatif ('+num(b1.cash,0)+').</b> Rekomendasi belum terdanai: tambah utang atau saham baru, kurangi capex atau dividen, atau tinjau asumsi modal kerja.';
+    else if(R1.cr>R0.cr*1.8)msg+='<b>Kas proyeksi sangat tinggi</b> (rasio lancar naik dari '+num(R0.cr,2)+' ke '+num(R1.cr,2)+'). Sesuai saran buku, pertimbangkan meminjam lebih sedikit, melunasi utang, menambah saham treasuri, atau meninjau ulang asumsi aset.';
+    else if(R1.cr<1)msg+='<b>Rasio lancar proyeksi di bawah 1.</b> Likuiditas ketat; pertimbangkan tambahan pendanaan jangka panjang.';
+    else msg+='Kas proyeksi berada dalam kisaran wajar. Tulis catatan yang menjelaskan asumsi utama Anda (langkah 7).';
+    msg+=' <span class="hint">Penyederhanaan: satu tahun proyeksi, capex dianggap bersih setelah penyusutan, aset lancar lain dan kewajiban lancar mengikuti pertumbuhan penjualan.</span>';
+    $("#pfsRes").innerHTML=msg;
+    pfsTool.last={A:A,B:B,b1:b1,R0:R0,R1:R1,re1:re1};
+  }
+  draw();
+}
+
+/* ================= Unit 5: valuation ================= */
+var VALP={
+ pg:{n:"P&G (Tabel 8-12)",mu:"juta US$",cu:"US$",v:{se:"55778",gw:"44699",it:"24187",ni:"15326",pr:"94.17",sh:"2550",eps:"6.01019",off:""}},
+ idn:{n:"PT Rasa Nusantara Tbk (fiktif)",mu:"juta Rp",cu:"Rp",v:{se:"4.800.000",gw:"700.000",it:"0",ni:"1.053.000",pr:"1.200",sh:"8.000",eps:"",off:"1.500"}},
+ mine:{n:"Data saya",mu:"juta (mata uang Anda)",cu:"",v:{se:"",gw:"",it:"",ni:"",pr:"",sh:"",eps:"",off:""}}
+};
+var VALF=[["se","Ekuitas pemegang saham"],["gw","Goodwill"],["it","Aset tak berwujud"],["ni","Laba bersih"],["pr","Harga saham per lembar"],["sh","Saham beredar (juta lembar)"],["eps","EPS (kosongkan = laba ÷ saham)"],["off","Harga tawaran per lembar (opsional)"]];
+function valTool(){
+  S.val=S.val||{cur:"pg",sets:{}};
+  function cur(){if(!S.val.sets[S.val.cur])S.val.sets[S.val.cur]=JSON.parse(JSON.stringify(VALP[S.val.cur].v));return S.val.sets[S.val.cur]}
+  function inputs(){
+    var v=cur(),P=VALP[S.val.cur];
+    $("#valIn").innerHTML=VALF.map(function(f){return '<label>'+f[1]+'<input type="text" inputmode="decimal" data-vf="'+f[0]+'" value="'+esc(v[f[0]])+'"></label>'}).join("");
+    $("#valUnit").textContent="Satuan: nilai uang dalam "+P.mu+"; harga dan EPS per lembar"+(P.cu?" ("+P.cu+")":"")+".";
+    $$("[data-vf]").forEach(function(e){e.addEventListener("input",function(){cur()[e.dataset.vf]=e.value;save();clearTimeout(e._h);e._h=setTimeout(draw,200)})});
+    $$("#valPreset button").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.p===S.val.cur))});
+  }
+  function draw(){
+    var v=cur(),P=VALP[S.val.cur],se=pnum(v.se),gw=pnum(v.gw)||0,it=pnum(v.it)||0,ni=pnum(v.ni),pr=pnum(v.pr),sh=pnum(v.sh),eps=pnum(v.eps),off=pnum(v.off);
+    if(![se,ni,pr,sh].every(isFinite)){$("#valRes").innerHTML="";$("#valNote").textContent="Lengkapi ekuitas, laba bersih, harga saham, dan saham beredar.";valTool.last=null;return}
+    if(!isFinite(eps))eps=ni/sh;
+    var M=[["1. Kekayaan bersih",se-(gw+it)],["2. Laba bersih × 5",ni*5],["3. Rasio P/E",eps>0?(pr/eps)*ni:NaN],["4. Kapitalisasi pasar",sh*pr]];
+    var ok=M.filter(function(m){return isFinite(m[1])}),avg=ok.reduce(function(a,m){return a+m[1]},0)/(ok.length||1);
+    var mx=Math.max.apply(null,M.concat([["",avg]]).map(function(m){return isFinite(m[1])?Math.abs(m[1]):0}))||1;
+    $("#valRes").innerHTML=M.concat([["Rata-rata metode yang valid",avg,1]]).map(function(m){return '<div class="vbar'+(m[1]<0?" neg":"")+(m[2]?" avg":"")+'"><span>'+(m[2]?"<b>"+m[0]+"</b>":m[0])+'</span><span class="b"><i style="width:'+(isFinite(m[1])?Math.abs(m[1])/mx*100:0)+'%"></i></span><span>'+(isFinite(m[1])?num(m[1],0):"tidak valid")+'</span></div>'}).join("");
+    var n=[];
+    if(M[0][1]<0)n.push("Metode 1 negatif: goodwill dan aset tak berwujud ("+num(gw+it,0)+") melebihi ekuitas ("+num(se,0)+"). Sebagian besar aset bersifat tak berwujud.");
+    if(ni<0)n.push("Laba bersih negatif membuat metode 2 negatif dan metode 3 tidak bermakna.");
+    if(eps>0&&Math.abs(M[2][1]-M[3][1])/M[3][1]<0.01)n.push("Metode 3 sama dengan metode 4 karena EPS dan saham diambil pada titik waktu yang sama.");
+    if(isFinite(off)&&off>0){var prem=(off/pr-1)*100;n.push("Harga tawaran "+num(off,2)+" per lembar berarti "+(prem>=0?"<b>premium "+num(prem,1)+"%</b>":"<b>discount "+num(-prem,1)+"%</b>")+" terhadap harga pasar, atau total "+num(off*sh,0)+" "+esc(P.mu)+" ("+(prem>=0?"+":"")+num(off*sh-sh*pr,0)+" di atas kapitalisasi pasar). Selisih di atas nilai buku aset bersih akan dicatat pembeli sebagai goodwill.")}
+    n.push("Satuan: "+esc(P.mu)+". Valuasi bukan ilmu pasti; gunakan rata-rata sebagai titik awal negosiasi, bukan jawaban akhir.");
+    $("#valNote").innerHTML=n.join(" ");
+    valTool.last={P:P,M:M,avg:avg};
+  }
+  $$("#valPreset button").forEach(function(b){b.addEventListener("click",function(){S.val.cur=b.dataset.p;save();inputs();draw()})});
+  inputs();draw();
+}
+
+/* ================= notes ================= */
+function notesText(){
+  var L=["MANAJEMEN STRATEGI — MAGISTER MANAJEMEN ITS","Bab 8: Implementing Strategies: Finance and Accounting Issues","",(S.notes.identity||"Nama — NRP"),"","== PEMANASAN ==","Rekomendasi & biaya:",S.notes.warm_rec||"-","","Utang atau saham:",S.notes.warm_fin||"-",""];
+  if(EPSLAST){var c=EPSLAST.c,P=EPSLAST.P;L.push("== ANALISIS EPS/EBIT: "+P.n+" ==");c.R.forEach(function(s){L.push(s.n+": EPS "+s.rows.map(function(x){return num(x.eps,P.d)}).join(" / "))});L.push("Titik impas EBIT saham vs utang: "+num(c.be,0)+" "+P.mu,"")}
+  if(pfsTool.last){var t=pfsTool.last;L.push("== LAPORAN PROYEKSI (Rp miliar) ==","Pendapatan "+num(t.B.rev,0)+"; laba bersih "+num(t.B.ni,0)+"; RE "+num(t.re1,0)+"; kas (plug) "+num(t.b1.cash,0),"Rasio lancar "+num(t.R0.cr,2)+" → "+num(t.R1.cr,2)+"; D/E "+num(t.R0.de,2)+" → "+num(t.R1.de,2)+"; ROE "+num(t.R0.roe,1)+"% → "+num(t.R1.roe,1)+"%","")}
+  if(valTool.last){var q=valTool.last;L.push("== VALUASI: "+q.P.n+" ("+q.P.mu+") ==");q.M.forEach(function(m){L.push(m[0]+": "+(isFinite(m[1])?num(m[1],0):"tidak valid"))});L.push("Rata-rata: "+num(q.avg,0),"")}
+  CASES.forEach(function(c){L.push("== "+c.t.toUpperCase()+" ==");c.qs.forEach(function(q,i){L.push((i+1)+". "+q[0]);L.push(S.notes[c.id+"_"+i]||"-");if(S.cs&&S.cs[c.id+"_"+i])L.push("[Umpan balik aplikasi: "+grade(c.id+"_"+i).lv+"/4]");L.push("")})});
+  var d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
+  L.push("== KEMAJUAN ==","Unit selesai: "+d+"/"+UNITS.length,"Kuis akhir (skor terbaik): "+(S.final?S.final.best+"%":"belum"));
+  return L.join("\n");
+}
+
+/* ================= cases ================= */
+function norm(t){return (t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}
+function grade(id){
+  var r=RUB[id],t=norm(S.notes[id]),words=t.split(/\s+/).filter(Boolean).length;
+  var hits=r.cr.map(function(c){return new RegExp(c[1],"i").test(t)}),h=hits.filter(Boolean).length;
+  var conn=CONN.filter(function(w){return new RegExp("(^|[^a-z])"+w+"([^a-z]|$)").test(t)}).length;
+  var cov=Math.min(h,r.need)/r.need,raw=3*cov+(conn>=2?1:conn===1?.5:0),warn=[];
+  if(words<25){raw=Math.min(raw,2);warn.push("Jawaban terlalu singkat ("+words+" kata). Kembangkan penjelasan Anda.")}
+  if(h>=2&&conn===0&&words/h<7){raw=Math.min(raw,1);warn.push("Jawaban tampak seperti daftar kata kunci. Jelaskan hubungan antarkonsep dengan kalimat utuh.")}
+  else if(conn===0) warn.push("Belum ada penalaran sebab-akibat. Gunakan \"karena\", \"sehingga\", atau \"akibatnya\" untuk menunjukkan alur pikir.");
+  return {lv:Math.max(0,Math.min(4,Math.floor(raw+1e-9))),hits:hits,h:h,conn:conn,words:words,warn:warn,len:(S.notes[id]||"").length};
+}
+function renderGrade(id){
+  var box=$('.fbres[data-for="'+id+'"]'),st=S.cs[id];if(!box)return;
+  if(!st){box.innerHTML="";return}
+  var r=RUB[id],g=grade(id);
+  var h='<div class="gbox"><div class="ghead"><span class="meter">'+[0,1,2,3].map(function(k){return '<i class="'+(k<g.lv?"on":"")+'"></i>'}).join("")+'</span><span class="glv">'+g.lv+'/4 · '+LV[g.lv]+'</span><span class="gnote">umpan balik otomatis, bukan nilai</span></div>';
+  h+='<p class="hint" style="margin:0 0 4px">Konsep kunci ('+g.h+' dari '+r.cr.length+' muncul; minimal '+r.need+' untuk cakupan penuh):</p><ul class="crit">';
+  r.cr.forEach(function(c,k){h+='<li class="'+(g.hits[k]?"y":"n")+'"><span class="m">'+(g.hits[k]?"✓":"")+'</span><span><b>'+esc(c[0])+'</b>'+(g.hits[k]?'':' <span class="h">· '+esc(c[2])+'</span>')+'</span></li>'});
+  h+='</ul><ul class="crit"><li class="'+(g.conn>=2?"y":"n")+'"><span class="m">'+(g.conn>=2?"✓":"")+'</span><span><b>Penalaran</b> <span class="h">· '+g.conn+' penghubung sebab-akibat'+(g.conn<2?" (target ≥ 2)":"")+'</span></span></li></ul>';
+  g.warn.forEach(function(w){h+='<div class="gwarn">⚠️ '+esc(w)+'</div>'});
+  if(st.len!==g.len) h+='<div class="stale">✎ Jawaban sudah diubah sejak dinilai. Klik "Nilai ulang" untuk memperbarui.</div>';
+  h+='<div class="selfc"><b style="font-size:.9rem">Penilaian diri: centang yang benar-benar sudah Anda lakukan</b>';
+  r.self.forEach(function(sx,k){h+='<label><input type="checkbox" data-self="'+id+'" data-k="'+k+'" '+(st.self&&st.self[k]?"checked":"")+'> '+esc(sx)+'</label>'});
+  h+=st.selfDone?'<p class="hint" style="margin:6px 0 0">✓ Penilaian diri tersimpan. Arah jawaban di bawah sudah terbuka.</p>':'<button class="btn sm" data-selfdone="'+id+'" style="margin-top:6px">Selesai, buka arah jawaban</button>';
+  h+='</div></div>';
+  box.innerHTML=h;
+  $$('[data-self]',box).forEach(function(c){c.addEventListener("change",function(){st.self=st.self||[];st.self[+c.dataset.k]=c.checked;save()})});
+  var sd=$('[data-selfdone]',box);if(sd)sd.addEventListener("click",function(){st.selfDone=true;save();renderGrade(id);refreshAnsLocks();updateCaseSums();var d=$('details.ans[data-for="'+id+'"]');if(d){d.open=true}});
+  var gb=$('[data-grade="'+id+'"]');if(gb)gb.textContent="↻ Nilai ulang";
+}
+function updateCaseSums(){
+  CASES.forEach(function(c){var el=$('[data-csum="'+c.id+'"]');if(!el)return;var n=0,tot=0;c.qs.forEach(function(q,i){var id=c.id+"_"+i;if(S.cs[id]){n++;tot+=grade(id).lv}});
+    el.textContent=n?("umpan balik rata-rata "+(tot/n).toFixed(1).replace(".",",")+"/4 · "+n+"/"+c.qs.length+" dinilai"):"belum dinilai"});
+}
+function renderCases(){
+  S.cs=S.cs||{};
+  var h="";
+  CASES.forEach(function(c){
+    h+='<div class="card"><h3>📂 '+c.t+' <span class="csum" data-csum="'+c.id+'"></span></h3><p class="hint" style="margin-top:-6px">Sumber: '+c.src+'</p>'+c.body;
+    h+='<h4 style="margin-top:18px">Pertanyaan diskusi</h4>';
+    c.qs.forEach(function(q,i){
+      var id=c.id+"_"+i;
+      h+='<div class="cq"><b>'+(i+1)+'. '+esc(q[0])+'</b><textarea data-note="'+id+'" placeholder="Tulis jawaban Anda dalam kalimat utuh…"></textarea>';
+      h+='<div class="fbk"><button class="btn sm ghost" data-grade="'+id+'">🔍 Minta umpan balik</button><div class="fbres" data-for="'+id+'"></div></div>';
+      h+='<details class="ans" data-for="'+id+'"><summary>🔑 Arah jawaban</summary><div>'+esc(q[1])+'</div></details>';
+      h+='</div>';
+    });
+    h+='</div>';
+  });
+  $("#caseList").innerHTML=h;
+  $$("[data-grade]").forEach(function(b){b.addEventListener("click",function(){
+    var id=b.dataset.grade,len=(S.notes[id]||"").trim().length;
+    if(len<40){toast("Tulis jawaban Anda dulu (min. 40 karakter)");return}
+    var prev=S.cs[id]||{};S.cs[id]={len:(S.notes[id]||"").length,self:prev.self||[],selfDone:prev.selfDone||false};save();renderGrade(id);updateCaseSums();
+  })});
+  $$("details.ans").forEach(function(d){
+    d.addEventListener("click",function(e){if(d.classList.contains("lock")&&!d.open){e.preventDefault();toast("Minta umpan balik dan selesaikan penilaian diri dulu")}});
+  });
+  Object.keys(S.cs).forEach(renderGrade);
+  refreshAnsLocks();updateCaseSums();
+}
+function refreshAnsLocks(){$$("details.ans").forEach(function(d){var st=S.cs&&S.cs[d.dataset.for];d.classList.toggle("lock",!(st&&st.selfDone))})}
+
+/* ================= notes binding ================= */
+function bindNotes(){
+  $$("textarea[data-note],input[data-note]").forEach(function(t){
+    t.value=S.notes[t.dataset.note]||"";
+    t.addEventListener("input",function(){S.notes[t.dataset.note]=t.value;clearTimeout(t._h);t._h=setTimeout(function(){save();refreshAnsLocks();renderSide();notesPreview();if(S.cs&&S.cs[t.dataset.note])renderGrade(t.dataset.note)},350)});
+  });
+}
+function notesPreview(){var p=$("#notesPrev");if(p)p.textContent=notesText()}
+
+/* ================= self-test ================= */
+var quizEl=null, run=null;
+function setupQuiz(){
+  quizEl=$("#finalBox");
+  var best=S.final?S.final.best:null;
+  quizEl.innerHTML='<div class="qz-setup"><p>Soal diambil dari keenam unit Bab 8 dan kasus Indonesia. Anda mendapat umpan balik setelah setiap jawaban, dan rincian per unit di akhir. Bab dianggap tuntas bila skor ≥ 80%.</p>'+
+   '<div><p class="qz-lbl">Panjang</p><div class="seg" id="qzLen"><button data-n="10" aria-pressed="true">Cepat · 10 soal</button><button data-n="20" aria-pressed="false">Standar · 20</button><button data-n="'+FINAL.length+'" aria-pressed="false">Lengkap · semua '+FINAL.length+'</button></div></div>'+
+   '<div><p class="qz-lbl">Fokus</p><div class="seg" id="qzLo"><button data-lo="0" aria-pressed="true">Semua unit</button>'+Object.keys(LO_NAMES).map(function(k){return '<button data-lo="'+k+'" aria-pressed="false" title="'+LO_NAMES[k]+'">Unit '+k+'</button>'}).join("")+'</div></div>'+
+   '<div class="row"><button class="btn" id="qzStart">Mulai self-test</button>'+(best!=null?'<span class="muted" style="font-family:var(--mono);font-size:.8rem">Skor terbaik di perangkat ini: '+best+'%</span>':'')+'</div></div>';
+  var n=10, lo=0;
+  $$("#qzLen button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLen button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});n=+b.dataset.n})});
+  $$("#qzLo button").forEach(function(b){b.addEventListener("click",function(){$$("#qzLo button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});lo=+b.dataset.lo})});
+  $("#qzStart").addEventListener("click",function(){
+    var pool=FINAL.map(function(q,i){return i}).filter(function(i){return !lo||FINAL[i][0]===lo});
+    pool=shuffle(pool).slice(0,Math.min(n,pool.length));
+    run={qs:pool.map(function(i){var q=FINAL[i],order=shuffle(q[2].map(function(_,j){return j}));return {lo:q[0],text:q[1],opts:order.map(function(j){return q[2][j]}),ans:order.indexOf(q[3]),exp:q[4]}}),i:0,picks:[]};
+    showQ();
+  });
+}
+function showQ(){
+  var r=run,q=r.qs[r.i],picked=r.picks[r.i],sofar=r.picks.filter(function(p,k){return p===r.qs[k].ans}).length;
+  quizEl.innerHTML='<div class="qz-top"><span class="qz-lbl">Soal '+(r.i+1)+' dari '+r.qs.length+' · Unit '+q.lo+' '+LO_NAMES[q.lo]+'</span><span class="muted" style="font-family:var(--mono);font-size:.8rem">'+sofar+' benar sejauh ini</span></div>'+
+   '<div class="qz-prog"><i style="width:'+(r.i/r.qs.length*100)+'%"></i></div>'+
+   '<p class="qz-q">'+esc(q.text)+'</p>'+
+   '<div class="qz-opts">'+q.opts.map(function(o,j){return '<button data-j="'+j+'"><span class="k">'+"ABCD"[j]+'</span><span>'+esc(o)+'</span></button>'}).join("")+'</div>'+
+   '<div id="qzExp"></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzQuit">Keluar</button><button class="btn" id="qzNext" '+(picked==null?"disabled":"")+'>'+(r.i===r.qs.length-1?"Lihat hasil":"Soal berikutnya")+'</button></div>';
+  function lock(j){
+    $$(".qz-opts button",quizEl).forEach(function(b){b.disabled=true;var k=+b.dataset.j;if(k===q.ans)b.classList.add("right");else if(k===j)b.classList.add("wrong")});
+    var ok=j===q.ans;
+    $("#qzExp").innerHTML='<div class="qz-exp '+(ok?"ok":"no")+'"><b>'+(ok?"Tepat.":"Belum tepat. Jawabannya "+"ABCD"[q.ans]+".")+'</b>'+esc(q.exp)+'</div>';
+    $("#qzNext").disabled=false;
+  }
+  if(picked!=null)lock(picked);
+  $$(".qz-opts button",quizEl).forEach(function(b){b.addEventListener("click",function(){var j=+b.dataset.j;r.picks[r.i]=j;lock(j);$("#qzNext").focus()})});
+  $("#qzNext").addEventListener("click",function(){if(r.i<r.qs.length-1){r.i++;showQ()}else results()});
+  $("#qzQuit").addEventListener("click",setupQuiz);
+}
+function results(){
+  var r=run,right=r.qs.filter(function(q,k){return r.picks[k]===q.ans}).length,pct=Math.round(right/r.qs.length*100);
+  S.final={best:Math.max(pct,S.final?S.final.best:0),n:(S.final?S.final.n:0)+1,last:pct};save();renderSide();
+  var by={};r.qs.forEach(function(q,k){by[q.lo]=by[q.lo]||{r:0,t:0};by[q.lo].t++;if(r.picks[k]===q.ans)by[q.lo].r++});
+  var verdict=pct>=80?"Pemahaman kuat. Bab 8 tuntas.":pct>=65?"Fondasi sudah baik. Tinjau unit di bawah 70%.":"Pelajari ulang unit yang lemah (dan halaman bukunya), lalu coba lagi.";
+  quizEl.innerHTML='<div class="res-big"><span class="pct" style="color:'+(pct>=65?"var(--good)":"var(--bad)")+'">'+pct+'%</span><span>'+right+' dari '+r.qs.length+' benar. '+verdict+'</span></div>'+
+   (pct>=80?'<div><span class="badge">🏅 Bab 8 tuntas</span></div>':'')+
+   '<div><p class="qz-lbl">Per unit</p><div class="lo-bars">'+Object.keys(by).sort().map(function(k){var v=by[k],p=Math.round(v.r/v.t*100);return '<div class="lo-row"><span><b style="font-family:var(--mono)">U'+k+'</b> '+LO_NAMES[k]+(p<70?' · <a href="#u'+k+'">tinjau</a>':'')+'</span><span class="b"><i style="width:'+p+'%;background:'+(p>=70?"var(--good)":"var(--bad)")+'"></i></span><span class="v">'+v.r+'/'+v.t+'</span></div>'}).join("")+'</div></div>'+
+   '<div><p class="qz-lbl">Tinjau jawaban Anda</p><div class="review">'+r.qs.map(function(q,k){var ok=r.picks[k]===q.ans;return '<details '+(ok?"":"open")+'><summary><span class="mk '+(ok?"ok":"no")+'">'+(ok?"✓":"✗")+'</span>'+esc(q.text)+'</summary><p><b>Jawaban Anda:</b> '+esc(q.opts[r.picks[k]])+(ok?'':'<br><b>Jawaban benar:</b> '+esc(q.opts[q.ans]))+'</p><p class="muted">'+esc(q.exp)+'</p></details>'}).join("")+'</div></div>'+
+   '<div class="qz-nav"><button class="btn ghost" id="qzNew">Ubah pengaturan</button><button class="btn" id="qzAgain">Ulangi dengan soal baru</button></div>';
+  $("#qzNew").addEventListener("click",setupQuiz);
+  $("#qzAgain").addEventListener("click",function(){setupQuiz();$("#qzStart").click()});
+  quizEl.scrollIntoView({block:"start"});
+}
+
+/* ================= flashcards ================= */
+var deck=[],di=0;
+function buildDeck(){deck=GLOSS.map(function(g,i){return i}).filter(function(i){return !S.known[i]});if(!deck.length){deck=GLOSS.map(function(g,i){return i})}di=0;showCard()}
+function showCard(){var fc=$("#fc");fc.classList.remove("flip");var g=GLOSS[deck[di]];$("#fcF").textContent=g[0];$("#fcB").textContent=g[1];
+  var k=Object.keys(S.known).length;$("#fcCount").textContent="Kartu "+(di+1)+" / "+deck.length+" · dikuasai "+k+" / "+GLOSS.length}
+function cards(){
+  var fc=$("#fc");function flip(){fc.classList.toggle("flip")}
+  fc.addEventListener("click",flip);fc.addEventListener("keydown",function(e){if(e.key===" "||e.key==="Enter"){e.preventDefault();flip()}});
+  $("#fcNext").addEventListener("click",function(){di=(di+1)%deck.length;showCard()});
+  $("#fcPrev").addEventListener("click",function(){di=(di-1+deck.length)%deck.length;showCard()});
+  $("#fcShuffle").addEventListener("click",function(){deck=shuffle(deck);di=0;showCard()});
+  $("#fcKnow").addEventListener("click",function(){S.known[deck[di]]=1;save();deck.splice(di,1);if(!deck.length){toast("Semua kartu dikuasai! 🎉");buildDeck();return}if(di>=deck.length)di=0;showCard()});
+  $("#fcReset").addEventListener("click",function(){S.known={};save();buildDeck()});
+  buildDeck();
+}
+
+/* ================= routing ================= */
+function markNav(){var v=current();$$(".side a").forEach(function(a){a.classList.toggle("on",a.dataset.nav===v)})}
+function current(){var h=(location.hash||"#home").slice(1);return $('[data-view="'+h+'"]')?h:"home"}
+function route(){
+  var v=current();$$(".view").forEach(function(s){s.hidden=s.dataset.view!==v});
+  markNav();$("#side").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");
+  window.scrollTo(0,0);
+  if(v==="notes")notesPreview();
+  if(v==="u2"&&epsTool.redraw)epsTool.redraw();
+  document.title=(v==="home"?"Bab 8":($('[data-view="'+v+'"] h2')||{}).textContent)+" · Implementasi Strategi: Keuangan";
+}
+
+/* ================= init ================= */
+$$("[data-quiz]").forEach(function(b){renderQuiz(b,b.dataset.quiz)});
+$$("[data-widget]").forEach(renderClassify);
+$$("[data-readchk]").forEach(function(c){
+  var n=+c.dataset.readchk;c.checked=!!S.read[n];
+  c.addEventListener("change",function(){S.read[n]=c.checked;save();var b=$('[data-quiz="u'+n+'"]');lockState(b,"u"+n);renderSide();if(c.checked)toast("Soal cek pemahaman terbuka ↓")});
+});
+setupQuiz();renderCases();bindNotes();ordWidget("epsSteps");ordWidget("pfsSteps");epsTool();pfsTool();valTool();cards();renderSide();updateProgress();
+window.addEventListener("hashchange",route);route();
+
+$("#menuBtn").addEventListener("click",function(){var o=$("#side").classList.toggle("open");this.setAttribute("aria-expanded",o)});
+$("#themeBtn").addEventListener("click",function(){
+  var r=document.documentElement,cur=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),nx=cur==="dark"?"light":"dark";
+  r.setAttribute("data-theme",nx);try{localStorage.setItem("stratman-theme",nx)}catch(e){}
+  if(epsTool.redraw)epsTool.redraw();
+});
+$("#copyNotes").addEventListener("click",function(){var t=notesText();
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast("Tersalin ke clipboard")},function(){var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("Tersalin")}catch(e){toast("Gagal menyalin")}ta.remove()})});
+$("#dlNotes").addEventListener("click",function(){var b=new Blob([notesText()],{type:"text/plain;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="Bab08_Catatan_"+((S.notes.identity||"mahasiswa").replace(/[^\w]+/g,"_").slice(0,40))+".txt";document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)});
+$("#resetAll").addEventListener("click",function(){
+  if(this.dataset.confirm!=="1"){this.dataset.confirm="1";this.textContent="Klik lagi untuk konfirmasi";var me=this;setTimeout(function(){me.dataset.confirm="";me.textContent="Hapus semua kemajuan"},3000);return}
+  try{localStorage.removeItem(KEY)}catch(e){} location.hash="#home";location.reload();
+});
+})();
+</script>
+</body>
+</html>
