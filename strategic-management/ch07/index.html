@@ -460,6 +460,64 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
 .order{display:grid;gap:6px;margin-top:6px}
 .order button{text-align:left}
 .tbl-sm td,.tbl-sm th{font-size:.83rem}
+
+/* ===== diagram & peta konsep ===== */
+.dgm{margin:14px 0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.dgm svg text{user-select:none}
+.dgm [data-k]:focus-visible rect,.dgm [data-k]:focus-visible path{stroke:#FFC72C!important;stroke-width:3!important}
+.dgm-cap{font-size:.76rem;color:var(--muted);margin:8px 0 0}
+.dgm-info{background:var(--sunk);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:.88rem}
+.dgm-info p{margin:4px 0 0}
+.dgm-info .tag{margin-left:6px}
+.dgm-scroll{overflow-x:auto;margin-top:8px}
+.dgm-scroll svg{min-width:520px}
+.dgm-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:620px){.dgm-two{grid-template-columns:minmax(0,1fr)}}
+.dgm-sl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.85rem;font-weight:600;margin-top:8px}
+.dgm-sl input{flex:1;min-width:140px;accent-color:var(--navy)}
+.pol{display:grid;gap:4px}
+.pol-row{display:grid;grid-template-columns:minmax(0,1.1fr) auto minmax(0,1.4fr);gap:10px;align-items:center;margin-left:calc(var(--lv)*18px)}
+@media (max-width:620px){.pol-row{grid-template-columns:minmax(0,1fr);margin-left:0}.pol-arrow{display:none}}
+.pol-obj{background:var(--navy-soft);border:1.5px solid var(--navy);border-radius:10px;padding:8px 12px;font-size:.86rem}
+.pol-obj small{display:block;font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--navy)}
+.pol-arrow{font-size:.72rem;color:var(--muted);font-weight:700;white-space:nowrap}
+.pol-pols{display:grid;gap:4px}
+.pol-pols span{background:var(--gold-soft);border-radius:8px;padding:6px 10px;font-size:.82rem}
+.pol-down{font-size:.72rem;color:var(--muted);font-weight:700;text-align:center;padding:2px 0}
+.cmap{display:grid;gap:10px;margin:12px 0}
+.cmap-core{background:var(--navy);color:var(--navy-ink);border-radius:14px;padding:14px 16px;text-align:center;font-weight:800;font-size:1.02rem}
+.cmap-core small{display:block;font-weight:500;opacity:.85;font-size:.82rem;margin-top:2px}
+.cmap-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.cmap-node{background:var(--surface);border:1.5px solid var(--line);border-top:4px solid var(--navy);border-radius:12px;padding:10px 12px;text-decoration:none;color:inherit;display:block}
+.cmap-node:hover{border-color:var(--navy)}
+.cmap-node b{display:block;font-size:.9rem}
+.cmap-node small{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+.cmap-node .chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.cmap-node .chips span{font-size:.72rem;background:var(--sunk);border-radius:99px;padding:2px 8px}
+.kc-filter{font:inherit;width:100%;padding:9px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);margin:6px 0 10px}
+.kc{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}
+.kc summary{cursor:pointer;padding:11px 14px;font-weight:700;display:flex;gap:10px;align-items:baseline;list-style:none}
+.kc summary::-webkit-details-marker{display:none}
+.kc summary::before{content:"▸";color:var(--muted);transition:transform .2s}
+.kc[open] summary::before{transform:rotate(90deg)}
+.kc summary small{margin-left:auto;font-family:var(--mono);font-size:.7rem;color:var(--muted);font-weight:500;white-space:nowrap}
+.kc .kb{padding:0 14px 12px 32px;font-size:.9rem}
+.kc .kb p{margin:0 0 6px}
+.kc .kb .why{color:var(--muted)}
+/* rasio */
+.rtab td,.rtab th{font-size:.82rem;vertical-align:top}
+.rtab td:nth-child(2){font-family:var(--mono);font-size:.78rem;white-space:nowrap}
+.rtab tr[hidden]{display:none}
+.rcat{display:inline-block;font-size:.66rem;font-weight:800;color:#fff;border-radius:5px;padding:1px 6px;margin-right:4px;vertical-align:1px}
+.rres td input{font:inherit;font-family:var(--mono);font-size:.8rem;width:70px;padding:3px 5px;border-radius:6px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);text-align:right}
+.rres td.up{color:var(--good)} .rres td.down{color:var(--bad)}
+.rres td.flag{font-family:var(--f);font-size:.75rem;white-space:normal;min-width:150px;text-align:left}
+.dup{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:stretch;margin-top:10px}
+@media (max-width:620px){.dup{grid-template-columns:minmax(0,1fr)}}
+.dup div{background:var(--sunk);border-radius:10px;padding:10px 12px;font-size:.84rem}
+.dup b{display:block;font-family:var(--mono);font-size:1.15rem}
+.dup-res{margin-top:10px;background:var(--navy);color:var(--navy-ink);border-radius:10px;padding:12px 14px;font-weight:700;text-align:center}
+.dup-res b{font-family:var(--mono);font-size:1.3rem}
 </style>
 </head>
 <body>
@@ -521,7 +579,58 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
     <div class="cq"><b>Organisasi pilihan saya, dan strategi utamanya saat ini</b><textarea data-note="warm_org" placeholder="Organisasi: … Strategi yang sedang dijalankan (mis. market development ke Indonesia Timur): …"></textarea></div>
     <div class="cq"><b>Menurut pengalaman saya, mengapa strategi di organisasi ini sering tidak terlaksana sesuai rencana?</b><textarea data-note="warm_gap" placeholder="Contoh: target tidak diturunkan ke unit, anggaran dibagi rata, struktur tidak berubah…"></textarea></div>
   </div>
-  <div class="pager"><span></span><a class="btn" href="#u1">Mulai Unit 1 →</a></div>
+  <div class="pager"><a class="btn ghost" href="#konsep">🧭 Lihat peta konsep</a><a class="btn" href="#u1">Mulai Unit 1 →</a></div>
+</section>
+
+
+<!-- ================= KONSEP INTI ================= -->
+<section class="view" data-view="konsep">
+  <div class="eyebrow">Peta Konsep</div>
+  <h2>Konsep Inti Bab 7</h2>
+  <p class="lead">Gunakan halaman ini sebagai peta sebelum masuk ke unit, dan sebagai ringkasan untuk mengulang. Diagram digambar ulang dan diadaptasi dari buku; rujukan gambar dan halaman tercantum di setiap diagram.</p>
+
+  <h3>Di mana Bab 7 dalam proses manajemen strategis?</h3>
+  <div class="dgm" data-dgm="model" data-ch="7"></div>
+
+  <h3>Peta konsep bab</h3>
+  <div class="cmap">
+    <div class="cmap-core">Implementasi strategi = perubahan<small>Strategi baru dijalankan lewat sasaran, kebijakan, sumber daya, struktur, orang, operasi, dan pasar</small></div>
+    <div class="cmap-grid">
+      <a class="cmap-node" href="#u1"><small>Unit 1 · LO 7.1</small><b>Formulasi → implementasi</b><div class="chips"><span>efektivitas vs efisiensi</span><span>tanggung jawab bergeser</span><span>keterlibatan</span></div></a>
+      <a class="cmap-node" href="#u2"><small>Unit 2 · LO 7.2</small><b>Sasaran tahunan</b><div class="chips"><span>hierarki sasaran</span><span>konsistensi vertikal/horizontal</span><span>terukur</span></div></a>
+      <a class="cmap-node" href="#u3"><small>Unit 3 · LO 7.3–7.4</small><b>Kebijakan, sumber daya, konflik</b><div class="chips"><span>hierarki kebijakan</span><span>4 jenis sumber daya</span><span>trade-off</span></div></a>
+      <a class="cmap-node" href="#u4"><small>Unit 4 · LO 7.5–7.6</small><b>Struktur mengikuti strategi</b><div class="chips"><span>Chandler</span><span>7 tipe struktur</span><span>gejala struktur buruk</span></div></a>
+      <a class="cmap-node" href="#u5"><small>Unit 5 · LO 7.7</small><b>Bagan organisasi</b><div class="chips"><span>15 pedoman</span><span>unity of command</span><span>rentang kendali</span></div></a>
+      <a class="cmap-node" href="#u6"><small>Unit 6 · LO 7.8</small><b>Produksi/operasi</b><div class="chips"><span>restructuring</span><span>reengineering</span><span>resistensi</span><span>lokasi</span></div></a>
+      <a class="cmap-node" href="#u7"><small>Unit 7 · LO 7.9</small><b>Sumber daya manusia</b><div class="chips"><span>bonus ganda</span><span>budaya</span><span>keberagaman</span><span>well-being</span></div></a>
+      <a class="cmap-node" href="#u8"><small>Unit 8 · LO 7.10</small><b>Pemasaran</b><div class="chips"><span>STP</span><span>perceptual map</span><span>media sosial</span></div></a>
+    </div>
+  </div>
+
+  <h3>Siklus keunggulan bersaing</h3>
+  <div class="dgm" data-dgm="cycle" data-ch="7"></div>
+
+  <h3>Konsep kunci</h3>
+  <input class="kc-filter" type="search" placeholder="Cari konsep, mis. 'konflik' atau 'matriks'…" data-kcf aria-label="Cari konsep">
+  <div data-kclist>
+    <details class="kc"><summary>Formulasi vs implementasi <small>hlm. 231 · Gbr 7-2</small></summary><div class="kb"><p>Formulasi memosisikan kekuatan sebelum aksi (efektivitas, proses intelektual, sedikit orang); implementasi mengelola kekuatan selama aksi (efisiensi, proses operasional, banyak orang). Implementasi jauh lebih sulit dilakukan dengan baik.</p><p class="why">Mengapa penting: tanggung jawab bergeser ke manajer divisi dan fungsional; tanpa keterlibatan mereka sejak awal, strategi datang sebagai kejutan. <a href="#u1">Unit 1 →</a></p></div></details>
+    <details class="kc"><summary>Sasaran tahunan (annual objectives) <small>hlm. 231–233</small></summary><div class="kb"><p>Tonggak capaian tahunan yang menjadi dasar alokasi sumber daya, evaluasi manajer, pemantauan kemajuan, penetapan prioritas, dan menjaga rencana tetap pada jalurnya.</p><p class="why">Ciri yang baik: terukur, konsisten, wajar, menantang, jelas, dikomunikasikan, berbatas waktu, disertai reward dan sanksi. <a href="#u2">Unit 2 →</a></p></div></details>
+    <details class="kc"><summary>Hierarki sasaran & konsistensi <small>hlm. 232 · Gbr 7-3</small></summary><div class="kb"><p>Sasaran jangka panjang perusahaan diturunkan menjadi sasaran divisi, lalu sasaran fungsi. Konsistensi vertikal: dari atas ke bawah; konsistensi horizontal: antarfungsi selevel.</p><p class="why">Contoh lokal: IKU PTN diturunkan ke fakultas, departemen, dan prodi. <a href="#u2">Unit 2 →</a></p></div></details>
+    <details class="kc"><summary>Kebijakan (policies) <small>hlm. 233–235 · Tbl 7-3, 7-4</small></summary><div class="kb"><p>Pedoman, metode, prosedur, aturan, formulir, dan praktik administratif yang mendukung sasaran. Kebijakan menetapkan batas, memperjelas harapan, menjadi dasar kontrol, menghemat waktu keputusan, dan mendorong delegasi.</p><p class="why">Setiap level sasaran butuh kebijakan pendukungnya sendiri (hierarki kebijakan). <a href="#u3">Unit 3 →</a></p></div></details>
+    <details class="kc"><summary>Alokasi sumber daya <small>hlm. 235</small></summary><div class="kb"><p>Membagi sumber daya finansial, fisik, manusia, dan teknologi menurut prioritas sasaran tahunan. Penghambat: perlindungan sumber daya, fokus finansial jangka pendek, politik, target kabur, enggan risiko, kurang pengetahuan.</p><p class="why">Anggaran "bagi rata" adalah gejala alokasi yang tidak berbasis strategi. <a href="#u3">Unit 3 →</a></p></div></details>
+    <details class="kc"><summary>Konflik dan trade-off <small>hlm. 235–236 · Tbl 7-5</small></summary><div class="kb"><p>Ketidaksepakatan tentang isu, dipicu sumber daya terbatas dan perbedaan harapan. Tidak selalu buruk; ketiadaan konflik bisa menandakan apatis. Dikelola dengan mengabaikan, memisahkan, kompromi, menukar anggota, atau pertemuan terbuka.</p><p class="why"><a href="#u3">Unit 3 →</a></p></div></details>
+    <details class="kc"><summary>Structure follows strategy (Chandler) <small>hlm. 236–237 · Tbl 7-6</small></summary><div class="kb"><p>Strategi baru menuntut struktur baru karena struktur menentukan cara sasaran/kebijakan ditetapkan dan cara sumber daya dialokasikan. Namun perubahan struktur tidak menyelamatkan strategi yang buruk.</p><p class="why">Gejala struktur tidak efektif: terlalu banyak lapisan dan rapat, rentang kendali terlalu besar, banyak sasaran tidak tercapai. <a href="#u4">Unit 4 →</a></p></div></details>
+    <details class="kc"><summary>Tujuh tipe struktur <small>hlm. 237–242 · Tbl 7-7–7-9 · Gbr 7-4</small></summary><div class="kb"><p>Fungsional; divisional menurut wilayah, produk, pelanggan, atau proses; SBU; dan matriks. Kecil cenderung fungsional, menengah divisional, besar SBU atau matriks.</p><p class="why">Lihat galeri struktur di <a href="#u4">Unit 4 →</a></p></div></details>
+    <details class="kc"><summary>Pedoman bagan organisasi <small>hlm. 242–245 · Tbl 7-10</small></summary><div class="kb"><p>Antara lain: pisahkan chair dan CEO, gelar president untuk kepala divisi, hanya presiden divisi melapor ke COO, eksekutif fungsional ke CEO, satu atasan per orang, rentang kendali ≤ ±10, SBU bila lebih dari 10 divisi.</p><p class="why">Di Indonesia, sistem dua dewan (UU PT) sudah memisahkan pengawasan dan pengurusan. <a href="#u5">Unit 5 →</a></p></div></details>
+    <details class="kc"><summary>Restructuring vs reengineering <small>hlm. 246</small></summary><div class="kb"><p>Restructuring mengurangi karyawan, unit, dan lapisan demi biaya (kepentingan pemegang saham). Reengineering mendesain ulang pekerjaan dan proses (kepentingan karyawan dan pelanggan), biasanya tanpa mengubah bagan.</p><p class="why"><a href="#u6">Unit 6 →</a></p></div></details>
+    <details class="kc"><summary>Resistensi terhadap perubahan <small>hlm. 246–247</small></summary><div class="kb"><p>Bersumber dari takut rugi ekonomi, ketidaknyamanan, ketidakpastian, dan putusnya pola sosial; bisa menjadi ancaman terbesar implementasi. Diredam dengan melibatkan pihak terdampak, pelatihan, dan komunikasi alasan perubahan.</p><p class="why"><a href="#u6">Unit 6 →</a></p></div></details>
+    <details class="kc"><summary>Mengaitkan kinerja dan imbalan <small>hlm. 247–248</small></summary><div class="kb"><p>Sistem bonus ganda: bonus dari sasaran tahunan dan jangka panjang, porsinya berbeda menurut level. Sistem imbalan membentuk budaya; target yang salah dapat memicu perilaku menyimpang (Wells Fargo).</p><p class="why"><a href="#u7">Unit 7 →</a></p></div></details>
+    <details class="kc"><summary>Budaya yang mendukung strategi <small>hlm. 250–251 · Tbl 7-13</small></summary><div class="kb"><p>Pertahankan aspek budaya yang mendukung, ubah yang menghambat, melalui rekrutmen, pelatihan, promosi, role modeling, sistem imbalan, serta kebijakan dan prosedur.</p><p class="why"><a href="#u7">Unit 7 →</a></p></div></details>
+    <details class="kc"><summary>Segmentasi, targeting, positioning <small>hlm. 252–255 · Gbr 7-9, 7-10</small></summary><div class="kb"><p>Kontribusi terpenting pemasaran bagi manajemen strategis. Segmentasi membagi pasar; targeting memilih segmen; positioning merancang marketing mix yang memberi nilai unik.</p><p class="why"><a href="#u8">Unit 8 →</a></p></div></details>
+    <details class="kc"><summary>Perceptual mapping <small>hlm. 255–256 · Gbr 7-11, 7-12</small></summary><div class="kb"><p>Peta dua dimensi posisi merek di benak konsumen dibandingkan pesaing; garis best fit membantu melihat merek yang over/underserving dan ruang kosong.</p><p class="why">Coba preset Marriott (Gambar 7-12) di <a href="#u8">Unit 8 →</a></p></div></details>
+    <details class="kc"><summary>Komunikasi pemasaran di media sosial <small>hlm. 256–257 · Tbl 7-14</small></summary><div class="kb"><p>Hubungan dua arah; dengarkan percakapan di luar website, attract bukan sell, dan jangan mengendalikan percakapan online.</p><p class="why">Kasus Esteh Indonesia dan Eiger. <a href="#u8">Unit 8 →</a></p></div></details>
+  </div>
+  <div class="pager"><a class="btn ghost" href="#home">← Beranda</a><a class="btn" href="#u1">Unit 1 →</a></div>
 </section>
 
 <!-- ================= UNIT 1 ================= -->
@@ -543,6 +652,7 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
   <p>Proses manajemen strategis tidak berhenti saat strategi dipilih. Strategi harus diterjemahkan menjadi tindakan, dan terjemahan ini jauh lebih mudah bila manajer dan karyawan <b>memahami bisnisnya, merasa menjadi bagian organisasi, dan dilibatkan sejak formulasi</b>. Tanpa pemahaman dan komitmen, implementasi menghadapi masalah besar. Buku mengutip Vince Lombardi: <em>"The best game plan in the world never blocked or tackled anybody."</em></p>
   <p>Banyak organisasi menghabiskan waktu, uang, dan tenaga untuk menyusun rencana strategis, tetapi memperlakukan cara menjalankannya sebagai urusan belakangan. Menurut David &amp; David, <b>perubahan terjadi melalui implementasi dan evaluasi, bukan melalui rencana</b>.</p>
 
+  <div class="dgm" data-dgm="model" data-ch="7"></div>
   <h3>Dua pekerjaan yang berbeda</h3>
   <p>Formulasi dan implementasi saling terkait, tetapi berbeda secara mendasar. Dalam organisasi yang tidak terlalu kecil, transisi ke implementasi berarti <b>tanggung jawab bergeser dari para strategist ke manajer divisi dan fungsional</b>. Masalah muncul bila keputusan formulasi datang sebagai kejutan bagi manajer menengah dan bawah. Manajer dan karyawan lebih termotivasi oleh kepentingan pribadi daripada kepentingan organisasi, kecuali keduanya selaras. Karena itu, mereka sebaiknya dilibatkan sejauh mungkin di kedua tahap.</p>
   <div class="fig2" role="table" aria-label="Perbandingan formulasi dan implementasi (diadaptasi dari Gambar 7-2)">
@@ -595,6 +705,7 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
 
   <h3>Hierarki sasaran (<em>hierarchy of aims</em>)</h3>
   <p>Gambar 7-3 memperlihatkan Stamus Company yang ingin <b>menggandakan pendapatan dalam dua tahun</b>. Sasaran itu diturunkan menjadi sasaran pertumbuhan tiap divisi, lalu menjadi sasaran fungsi (R&amp;D, produksi, pemasaran, keuangan, SDM). Coba versi rupiah di bawah: apakah kombinasi pertumbuhan divisi cukup untuk mencapai sasaran perusahaan?</p>
+  <div class="dgm" data-dgm="aims"></div>
   <div class="card" id="aimsTool">
     <h4>🧩 Simulator hierarki sasaran · PT Rasa Nusantara (fiktif)</h4>
     <p class="hint" style="margin-top:-4px">Diadaptasi dari Gambar 7-3 dan Tabel 7-1. Pendapatan awal Rp20 miliar; geser pertumbuhan tiap divisi.</p>
@@ -663,6 +774,8 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
     </tbody>
   </table></div>
   <p>Kebijakan sebaiknya tertulis. Tabel 7-3 menunjukkan <b>hierarki kebijakan</b>: kebijakan mendukung strategi perusahaan, sasaran divisi, dan sasaran departemen. Buku memberi contoh kebijakan kerja dari rumah: sejumlah perusahaan AS (IBM, Aetna, Bank of America, Best Buy, Reddit) meninggalkan kebijakan itu demi kolaborasi dan kontrol hari kerja yang lebih besar.</p>
+  <h4>Hierarki kebijakan (Tabel 7-3)</h4>
+  <div class="dgm" data-dgm="policies"></div>
   <div class="card cls" data-widget="osp"><h4>🧩 Latihan: strategi, sasaran, atau kebijakan?</h4></div>
 
   <h3>Alokasi sumber daya</h3>
@@ -719,6 +832,8 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
       <tr><td>Matriks</td><td>Aliran wewenang vertikal (proyek/produk) dan horizontal (fungsi)</td><td>Proyek besar yang butuh spesialis bersama, mis. konstruksi dan kesehatan</td></tr>
     </tbody>
   </table></div>
+  <h4>Galeri struktur: pilih tipe untuk melihat skemanya</h4>
+  <div class="dgm" data-dgm="structs"></div>
   <p><b>Fungsional</b> unggul karena sederhana, murah, memanfaatkan spesialisasi, dan keputusan cepat, tetapi akuntabilitas terdorong ke puncak, delegasi dan pengembangan karier minim, serta rawan pemikiran jangka pendek dan masalah komunikasi antarfungsi (Tabel 7-7). <b>Divisional</b> memberi akuntabilitas jelas, kontrol lokal, peluang karier, dan iklim kompetitif internal, tetapi mahal, menggandakan fungsi, menuntut manajer yang cakap dan sistem kontrol rumit, dan persaingan antardivisi bisa disfungsional (Tabel 7-8). <b>Matriks</b> menghemat sumber daya fungsional bersama dan memperjelas sasaran proyek, tetapi melanggar prinsip <em>unity of command</em> karena karyawan punya dua atasan (Tabel 7-9).</p>
   <div class="co book"><b class="t">📖 Pola umum menurut ukuran.</b> Perusahaan kecil cenderung fungsional (sentralistik), menengah cenderung divisional (desentralistik), dan besar cenderung memakai SBU atau matriks. Tetapi tidak ada satu struktur optimal untuk strategi tertentu.</div>
   <div class="card cls" data-widget="struct"><h4>🧩 Latihan: struktur apa yang paling cocok?</h4></div>
@@ -873,6 +988,8 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
       <tr><td>7. Kembangkan program <em>well-being</em></td><td>Dari sekadar <em>wellness</em> (kesehatan fisik) ke <em>well-being</em>: keuangan, jejaring sosial, keseimbangan kerja-hidup.</td></tr>
     </tbody>
   </table></div>
+  <h4>Ilustrasi sistem bonus ganda</h4>
+  <div class="dgm" data-dgm="paymix"></div>
   <div class="card cls" data-widget="hr"><h4>🧩 Latihan: isu SDM yang mana?</h4></div>
 
   <h3>Budaya: ketika target menggerus integritas</h3>
@@ -913,12 +1030,15 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
   </div>
   <p>Contoh buku: P&amp;G memosisikan deterjennya untuk segmen berbeda. Era "efektif menghilangkan noda", Cheer "melindungi warna", dan Ivory "aman untuk pakaian bayi". Mengganti nama merek juga taktik reposisi: Wal-Mart Stores Inc. menjadi Walmart, Inc. seiring strategi pertumbuhan online. Mini-case De Beers (Studi Kasus 1) menunjukkan reposisi untuk menjangkau milenial.</p>
 
+  <h4>Positioning: empat P untuk target pasar</h4>
+  <div class="dgm" data-dgm="pos4p"></div>
   <h3>Perceptual mapping</h3>
   <p><b><em>Perceptual mapping</em></b> adalah representasi skematis tentang bagaimana barang atau jasa perusahaan dibandingkan pesaing <b>di benak konsumen</b>. Lima langkahnya: (1) pilih kriteria kunci pembeda produk di industri; (2) gambar peta dua dimensi dengan kriteria di tiap sumbu; (3) plot merek pesaing utama dalam empat kuadran; (4) nilai apakah posisi merek Anda ideal relatif pesaing; (5) reposisi bila perlu. Pemasar juga menarik <b>garis <em>best fit</em></b>: merek jauh di atas garis mungkin melayani berlebihan (biaya tinggi), merek jauh di bawahnya mungkin kurang melayani, dan bagian garis yang kosong bisa menjadi peluang.</p>
   <div class="card pmap" id="pmTool">
     <h4>🧩 Pembuat perceptual map</h4>
     <div class="seg" id="pmPreset">
       <button data-p="book" aria-pressed="false">Gambar 7-11 · asuransi mobil AS</button>
+      <button data-p="marriott" aria-pressed="false">Gambar 7-12 · Marriott</button>
       <button data-p="kopi" aria-pressed="false">🇮🇩 Kedai kopi (ilustrasi)</button>
       <button data-p="univ" aria-pressed="false">Exercise 7C · universitas</button>
       <button data-p="mine" aria-pressed="false">Peta saya</button>
@@ -931,7 +1051,7 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
     <div class="pm-rows" id="pmRows"></div>
     <div class="row" style="margin-top:8px"><label class="tog"><input type="checkbox" id="pmFit" checked> Tampilkan garis best fit</label><span class="hint" style="margin:0">⦿ = merek Anda (dibandingkan terhadap garis)</span></div>
     <div class="res" id="pmRes"></div>
-    <p class="legal">Posisi pada preset adalah ilustrasi pembelajaran, bukan hasil survei. Posisi Gambar 7-11 diperkirakan dari gambar di buku. Untuk analisis nyata, dasarkan skor pada data (survei konsumen, ulasan, harga rata-rata) dan cantumkan sumbernya, sebagaimana saran buku di <em>Implications for Students</em>.</p>
+    <p class="legal">Posisi pada preset adalah ilustrasi pembelajaran, bukan hasil survei. Posisi Gambar 7-11 dan 7-12 diperkirakan dari gambar di buku. Untuk analisis nyata, dasarkan skor pada data (survei konsumen, ulasan, harga rata-rata) dan cantumkan sumbernya, sebagaimana saran buku di <em>Implications for Students</em>.</p>
     <div class="cq" style="margin-bottom:0"><b>Interpretasi saya: di mana ruang kosong, merek mana yang over/underserving, dan apa rekomendasi reposisinya?</b><textarea data-note="pm_note" placeholder="Berdasarkan peta…"></textarea></div>
   </div>
 
@@ -954,6 +1074,8 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
 
   <h3>Implikasi bagi strategist</h3>
   <p>Gambar 7-13 merangkum siklus meraih dan mempertahankan keunggulan bersaing: <b>visi dan misi yang jelas → formulasi strategi → implementasi (struktur, alokasi sumber daya, motivasi dan imbalan, menarik pelanggan, mengelola keuangan) → evaluasi dan tindakan korektif</b>. Isu keuangan dan akuntansi dalam implementasi dibahas di Bab 8. Dalam analisis kasus, buku menekankan agar Anda <b>preskriptif, bukan deskriptif</b>: tunjukkan bagaimana rekomendasi Anda dijalankan dan bagaimana ia meningkatkan pertumbuhan dan profitabilitas dibandingkan pesaing.</p>
+  <div class="dgm" data-dgm="cycle" data-ch="7"></div>
+  
 
   <h3>✅ Cek pemahaman</h3>
   <div class="qwrap" data-quiz="u8"></div>
@@ -1041,6 +1163,7 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
 </div>
 <div class="toast" id="toast"></div>
 
+<script src="../assets/sm-diagrams.js"></script>
 <script>
 (function(){
 "use strict";
@@ -1424,7 +1547,7 @@ var GLOSS=[
 ];
 
 /* ================= render: sidebar & plan ================= */
-var NAV=[["grp","Mulai"],["home","Beranda","⌂"],["grp","Dari Rencana ke Tindakan"],["u1"],["u2"],["u3"],["grp","Struktur Organisasi"],["u4"],["u5"],["grp","Isu Fungsional"],["u6"],["u7"],["u8"],["grp","Penerapan & Evaluasi"],["cases","Studi Kasus","📂"],["final","Kuis Akhir","🏁"],["cards","Flashcard","🃏"],["notes","Catatan & Referensi","📝"]];
+var NAV=[["grp","Mulai"],["home","Beranda","⌂"],["konsep","Peta Konsep","🧭"],["grp","Dari Rencana ke Tindakan"],["u1"],["u2"],["u3"],["grp","Struktur Organisasi"],["u4"],["u5"],["grp","Isu Fungsional"],["u6"],["u7"],["u8"],["grp","Penerapan & Evaluasi"],["cases","Studi Kasus","📂"],["final","Kuis Akhir","🏁"],["cards","Flashcard","🃏"],["notes","Catatan & Referensi","📝"]];
 function renderSide(){
   var h="";
   NAV.forEach(function(n){
@@ -1710,6 +1833,7 @@ function locTool(){
 /* ================= Unit 8: perceptual map ================= */
 var PMP={
  book:{x:"Harga rendah → Harga tinggi",y:"Layanan buruk → Layanan sangat baik",me:3,it:[["State Farm",8.5,9],["GEICO",3.5,7.5],["Progressive",5,5.5],["Allstate",6.5,4.5],["Esurance",5.5,4],["The General",2,1.5]]},
+ marriott:{x:"Harga rendah (ekonomi) → Harga tinggi (mewah)",y:"Kepuasan rendah → Kepuasan tinggi",me:6,it:[["JW Marriott",8,8.2],["Aloft",5.4,7.2],["AC Hotels",5.5,6.5],["Marriott Hotels",6.5,5.4],["Westin",7.2,5],["Courtyard",4.6,4.8],["Fairfield Inn",3.2,4],["Residence Inn",6.8,3.6],["Sheraton",5.2,2.4]]},
  kopi:{x:"Harga per gelas rendah → tinggi",y:"Grab-and-go → Pengalaman premium",me:6,it:[["Starbucks",9,9],["Kopi Kenangan",5,4],["Janji Jiwa",4,3.5],["Fore Coffee",6,5.5],["Tomoro Coffee",4.5,4.5],["Point Coffee",3,3],["Kedai Anda",7,4]]},
  univ:{x:"Biaya kuliah rendah → tinggi",y:"Reputasi rendah → tinggi",me:0,it:[["Kampus saya",5,5],["Universitas A",5,5],["Universitas B",5,5],["Universitas C",5,5],["Universitas D",5,5]]},
  mine:{x:"",y:"",me:0,it:[["Merek saya",5,5],["Pesaing 1",5,5],["Pesaing 2",5,5]]}
@@ -1931,6 +2055,7 @@ function route(){
   markNav();$("#side").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");
   window.scrollTo(0,0);
   if(v==="notes")notesPreview();
+  if(window.SMD)SMD.renderAll($('[data-view="'+v+'"]'));
   if(v==="u8"&&pmTool.redraw)pmTool.redraw();
   document.title=(v==="home"?"Bab 7":($('[data-view="'+v+'"] h2')||{}).textContent)+" · Implementasi Strategi";
 }
@@ -1944,6 +2069,7 @@ $$("[data-readchk]").forEach(function(c){
 });
 setupQuiz();renderCases();bindNotes();aimsTool();objTool();sympTool();orgTool();locTool();pmTool();cards();renderSide();updateProgress();
 window.addEventListener("hashchange",route);route();
+$$("[data-kcf]").forEach(function(inp){inp.addEventListener("input",function(){var q=inp.value.trim().toLowerCase();$$(".kc",inp.parentNode).forEach(function(d){var hit=!q||d.textContent.toLowerCase().indexOf(q)>=0;d.hidden=!hit;d.open=!!q&&hit})})});
 
 $("#menuBtn").addEventListener("click",function(){var o=$("#side").classList.toggle("open");this.setAttribute("aria-expanded",o)});
 $("#themeBtn").addEventListener("click",function(){

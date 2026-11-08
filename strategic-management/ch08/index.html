@@ -505,6 +505,66 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
 .vbar.neg .b i{background:var(--bad)}
 .vbar.avg .b i{background:var(--gold-bg)}
 .vbar span:last-child{font-family:var(--mono);text-align:right}
+
+/* ===== diagram & peta konsep ===== */
+.dgm{margin:14px 0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.dgm svg text{user-select:none}
+.dgm [data-k]:focus-visible rect,.dgm [data-k]:focus-visible path{stroke:#FFC72C!important;stroke-width:3!important}
+.dgm-cap{font-size:.76rem;color:var(--muted);margin:8px 0 0}
+.dgm-info{background:var(--sunk);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:.88rem}
+.dgm-info p{margin:4px 0 0}
+.dgm-info .tag{margin-left:6px}
+.dgm-scroll{overflow-x:auto;margin-top:8px}
+.dgm-scroll svg{min-width:520px}
+.dgm-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:620px){.dgm-two{grid-template-columns:minmax(0,1fr)}}
+.dgm-sl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.85rem;font-weight:600;margin-top:8px}
+.dgm-sl input{flex:1;min-width:140px;accent-color:var(--navy)}
+.pol{display:grid;gap:4px}
+.pol-row{display:grid;grid-template-columns:minmax(0,1.1fr) auto minmax(0,1.4fr);gap:10px;align-items:center;margin-left:calc(var(--lv)*18px)}
+@media (max-width:620px){.pol-row{grid-template-columns:minmax(0,1fr);margin-left:0}.pol-arrow{display:none}}
+.pol-obj{background:var(--navy-soft);border:1.5px solid var(--navy);border-radius:10px;padding:8px 12px;font-size:.86rem}
+.pol-obj small{display:block;font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--navy)}
+.pol-arrow{font-size:.72rem;color:var(--muted);font-weight:700;white-space:nowrap}
+.pol-pols{display:grid;gap:4px}
+.pol-pols span{background:var(--gold-soft);border-radius:8px;padding:6px 10px;font-size:.82rem}
+.pol-down{font-size:.72rem;color:var(--muted);font-weight:700;text-align:center;padding:2px 0}
+.cmap{display:grid;gap:10px;margin:12px 0}
+.cmap-core{background:var(--navy);color:var(--navy-ink);border-radius:14px;padding:14px 16px;text-align:center;font-weight:800;font-size:1.02rem}
+.cmap-core small{display:block;font-weight:500;opacity:.85;font-size:.82rem;margin-top:2px}
+.cmap-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.cmap-node{background:var(--surface);border:1.5px solid var(--line);border-top:4px solid var(--navy);border-radius:12px;padding:10px 12px;text-decoration:none;color:inherit;display:block}
+.cmap-node:hover{border-color:var(--navy)}
+.cmap-node b{display:block;font-size:.9rem}
+.cmap-node small{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+.cmap-node .chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.cmap-node .chips span{font-size:.72rem;background:var(--sunk);border-radius:99px;padding:2px 8px}
+.kc-filter{font:inherit;width:100%;padding:9px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);margin:6px 0 10px}
+.kc{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}
+.kc summary{cursor:pointer;padding:11px 14px;font-weight:700;display:flex;gap:10px;align-items:baseline;list-style:none}
+.kc summary::-webkit-details-marker{display:none}
+.kc summary::before{content:"▸";color:var(--muted);transition:transform .2s}
+.kc[open] summary::before{transform:rotate(90deg)}
+.kc summary small{margin-left:auto;font-family:var(--mono);font-size:.7rem;color:var(--muted);font-weight:500;white-space:nowrap}
+.kc .kb{padding:0 14px 12px 32px;font-size:.9rem}
+.kc .kb p{margin:0 0 6px}
+.kc .kb .why{color:var(--muted)}
+/* rasio */
+.rtab td,.rtab th{font-size:.82rem;vertical-align:top}
+.rtab td:nth-child(2){font-family:var(--mono);font-size:.78rem;white-space:nowrap}
+.rtab tr[hidden]{display:none}
+.rcat{display:inline-block;font-size:.66rem;font-weight:800;color:#fff;border-radius:5px;padding:1px 6px;margin-right:4px;vertical-align:1px}
+.rres td input{font:inherit;font-family:var(--mono);font-size:.8rem;width:70px;padding:3px 5px;border-radius:6px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);text-align:right}
+.rres td.up{color:var(--good)} .rres td.down{color:var(--bad)}
+.rres td.flag{font-family:var(--f);font-size:.75rem;white-space:normal;min-width:150px;text-align:left}
+.dup{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:stretch;margin-top:10px}
+@media (max-width:620px){.dup{grid-template-columns:minmax(0,1fr)}}
+.dup div{background:var(--sunk);border-radius:10px;padding:10px 12px;font-size:.84rem}
+.dup b{display:block;font-family:var(--mono);font-size:1.15rem}
+.dup-res{margin-top:10px;background:var(--navy);color:var(--navy-ink);border-radius:10px;padding:12px 14px;font-weight:700;text-align:center}
+.dup-res b{font-family:var(--mono);font-size:1.3rem}
+.ftab input.ri{font:inherit;font-family:var(--mono);font-size:.8rem;width:110px;padding:4px 6px;border-radius:6px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);text-align:right}
+#raScale{font:inherit;padding:4px 8px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
 </style>
 </head>
 <body>
@@ -537,7 +597,8 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
       <li>Menentukan struktur modal yang tepat dengan analisis EPS/EBIT untuk membandingkan pendanaan utang dan saham (LO 8.1).</li>
       <li>Menyusun laporan keuangan proyeksi yang menunjukkan dampak rekomendasi beserta biayanya (LO 8.2).</li>
       <li>Menghitung nilai perusahaan atau divisi dengan empat metode valuasi (LO 8.3).</li>
-      <li>Membahas rasio keuangan, IPO, kas, dan penerbitan obligasi sebagai keputusan strategis (LO 8.4).</li>
+      <li>Membahas IPO, kas, dan penerbitan obligasi sebagai keputusan strategis (LO 8.4).</li>
+      <li>Menghitung, membaca, dan menerapkan rasio keuangan penting (likuiditas, leverage, aktivitas, profitabilitas, pertumbuhan) untuk menilai kelayakan strategi (LO 8.4, Bab 4).</li>
     </ol>
   </div>
 
@@ -550,7 +611,7 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
   </div>
   <p class="hint">Kemajuan dan angka yang Anda masukkan tersimpan otomatis di peramban ini (bukan di server). Menu <b>Catatan &amp; Referensi</b> memungkinkan Anda menyalin atau mengunduh semuanya.</p>
 
-  <h3>Rencana belajar (± 5 jam)</h3>
+  <h3>Rencana belajar (± 6 jam)</h3>
   <div class="tw"><table class="plan">
     <thead><tr><th>#</th><th>Unit</th><th>Halaman buku</th><th>Status</th></tr></thead>
     <tbody id="planBody"></tbody>
@@ -565,7 +626,55 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
     <div class="cq"><b>Rekomendasi strategi saya dan perkiraan biayanya</b><textarea data-note="warm_rec" placeholder="Contoh: membangun 2 pabrik baru di Jawa Tengah, perkiraan biaya Rp2 triliun…"></textarea></div>
     <div class="cq"><b>Bila harus didanai hari ini, saya cenderung memilih utang atau saham? Mengapa?</b><textarea data-note="warm_fin" placeholder="Saya cenderung… karena…"></textarea></div>
   </div>
-  <div class="pager"><span></span><a class="btn" href="#u1">Mulai Unit 1 →</a></div>
+  <div class="pager"><a class="btn ghost" href="#konsep">🧭 Lihat peta konsep</a><a class="btn" href="#u1">Mulai Unit 1 →</a></div>
+</section>
+
+
+<!-- ================= KONSEP INTI ================= -->
+<section class="view" data-view="konsep">
+  <div class="eyebrow">Peta Konsep</div>
+  <h2>Konsep Inti Bab 8</h2>
+  <p class="lead">Gunakan halaman ini sebagai peta sebelum masuk ke unit, dan sebagai ringkasan untuk mengulang. Diagram digambar ulang dan diadaptasi dari buku; rujukan gambar dan halaman tercantum di setiap diagram.</p>
+
+  <h3>Di mana Bab 8 dalam proses manajemen strategis?</h3>
+  <div class="dgm" data-dgm="model" data-ch="8"></div>
+
+  <h3>Peta konsep bab</h3>
+  <div class="cmap">
+    <div class="cmap-core">Apakah rekomendasi layak secara finansial?<small>Danai dengan struktur modal yang tepat, buktikan dampaknya dengan proyeksi, ketahui nilainya, dan pantau rasionya</small></div>
+    <div class="cmap-grid">
+      <a class="cmap-node" href="#u1"><small>Unit 1</small><b>Keuangan sebagai syarat implementasi</b><div class="chips"><span>10 keputusan keuangan</span><span>5 aktivitas inti</span></div></a>
+      <a class="cmap-node" href="#u2"><small>Unit 2 · LO 8.1</small><b>Struktur modal & EPS/EBIT</b><div class="chips"><span>utang vs saham</span><span>EPS</span><span>titik impas EBIT</span></div></a>
+      <a class="cmap-node" href="#u3"><small>Unit 3 · LO 8.1</small><b>Keterbatasan EPS/EBIT</b><div class="chips"><span>7 pertimbangan</span><span>dilusi</span><span>leverage</span><span>timing</span></div></a>
+      <a class="cmap-node" href="#u4"><small>Unit 4 · LO 8.2</small><b>Laporan keuangan proyeksi</b><div class="chips"><span>7 langkah</span><span>% penjualan</span><span>RE</span><span>kas = plug</span></div></a>
+      <a class="cmap-node" href="#u5"><small>Unit 5 · LO 8.3</small><b>Valuasi perusahaan</b><div class="chips"><span>4 metode</span><span>premium</span><span>goodwill</span></div></a>
+      <a class="cmap-node" href="#u6"><small>Unit 6 · LO 8.4</small><b>IPO, kas & obligasi</b><div class="chips"><span>go public</span><span>treasury stock</span><span>obligasi</span></div></a>
+      <a class="cmap-node" href="#u7"><small>Unit 7 · Bab 4 & 8</small><b>Rasio keuangan</b><div class="chips"><span>5 kategori</span><span>3 front</span><span>DuPont</span><span>rasio bank</span></div></a>
+    </div>
+  </div>
+
+  <h3>Siklus keunggulan bersaing</h3>
+  <div class="dgm" data-dgm="cycle" data-ch="8"></div>
+
+  <h3>Konsep kunci</h3>
+  <input class="kc-filter" type="search" placeholder="Cari konsep, mis. 'dilusi' atau 'ROE'…" data-kcf aria-label="Cari konsep">
+  <div data-kclist>
+    <details class="kc"><summary>Lima aktivitas keuangan dalam implementasi <small>hlm. 270–271 · Gbr 8-1</small></summary><div class="kb"><p>Menentukan struktur modal, menyusun laporan proyeksi, valuasi perusahaan, menganalisis rasio, serta mengelola IPO, kas, dan obligasi.</p><p class="why"><a href="#u1">Unit 1 →</a></p></div></details>
+    <details class="kc"><summary>Struktur modal <small>hlm. 271–272</small></summary><div class="kb"><p>Proporsi utang terhadap ekuitas. Utang membawa kewajiban bunga tetap tetapi tanpa dilusi; saham tanpa kewajiban tetap tetapi mendilusi kepemilikan dan EPS.</p><p class="why">Coba diagram interaktif struktur modal di <a href="#u2">Unit 2 →</a></p></div></details>
+    <details class="kc"><summary>EPS, EBIT, EBT, EAT <small>hlm. 271–272</small></summary><div class="kb"><p>EPS = laba bersih ÷ saham beredar; EBIT = laba operasi; EBT = EBIT − bunga; EAT = EBT − pajak. EPS dipakai karena mencerminkan tujuan memaksimalkan kekayaan pemegang saham.</p><p class="why"><a href="#u2">Unit 2 →</a></p></div></details>
+    <details class="kc"><summary>Analisis EPS/EBIT <small>hlm. 272–274 · Tbl 8-1, 8-2 · Gbr 8-2</small></summary><div class="kb"><p>Bandingkan EPS dari pendanaan saham, utang, dan kombinasi pada skenario EBIT pesimistis, realistis, dan optimistis; pilih garis tertinggi. Titik impas EBIT memisahkan wilayah unggul saham dan utang.</p><p class="why"><a href="#u2">Unit 2 →</a></p></div></details>
+    <details class="kc"><summary>Tujuh pertimbangan EPS/EBIT <small>hlm. 275 · Tbl 8-3</small></summary><div class="kb"><p>Fleksibilitas, dilusi kepemilikan, timing, situasi leverage, kontinuitas, rentang EBIT, dan dividen. EPS tertinggi dipilih kecuali ada alasan kuat dari pertimbangan ini.</p><p class="why"><a href="#u3">Unit 3 →</a></p></div></details>
+    <details class="kc"><summary>Laporan keuangan proyeksi <small>hlm. 275–284 · Tbl 8-4–8-11</small></summary><div class="kb"><p>Laba rugi dan neraca masa depan yang memperkirakan dampak rekomendasi; bank biasanya meminta proyeksi 3 tahun. Disusun laba rugi dulu, lalu neraca dari bawah ke atas dengan kas sebagai penyeimbang.</p><p class="why"><a href="#u4">Unit 4 →</a></p></div></details>
+    <details class="kc"><summary>Laba ditahan (RE) bukan kas <small>hlm. 278–279</small></summary><div class="kb"><p>RE adalah akumulasi laba bersih dikurangi dividen sejak perusahaan berdiri; bukan uang di bank. RE turun bila rugi atau dividen melebihi laba.</p><p class="why"><a href="#u4">Unit 4 →</a></p></div></details>
+    <details class="kc"><summary>Financial shenanigans <small>hlm. 277 · Ethics Capsule 8</small></summary><div class="kb"><p>Lima cara memanipulasi laporan: pendapatan prematur, pendapatan fiktif, laba sekali-terjadi, menggeser beban, tidak mencatat kewajiban.</p><p class="why">Kasus Garuda 2018. <a href="#u4">Unit 4 →</a></p></div></details>
+    <details class="kc"><summary>Empat metode valuasi <small>hlm. 284–286 · Tbl 8-12</small></summary><div class="kb"><p>Kekayaan bersih (ekuitas − goodwill − tak berwujud), laba bersih × 5, rasio P/E × laba, dan kapitalisasi pasar. Valuasi bukan ilmu pasti; gunakan rata-rata sebagai titik awal.</p><p class="why"><a href="#u5">Unit 5 →</a></p></div></details>
+    <details class="kc"><summary>Premium, discount, dan goodwill <small>hlm. 285–286</small></summary><div class="kb"><p>Premium adalah harga akuisisi di atas kapitalisasi pasar; kelebihan di atas nilai buku aset bersih dicatat sebagai goodwill, yang bisa mengalami penurunan nilai.</p><p class="why">Kasus GoTo–Tokopedia. <a href="#u5">Unit 5 →</a></p></div></details>
+    <details class="kc"><summary>IPO, treasury stock, obligasi <small>hlm. 287–289</small></summary><div class="kb"><p>IPO mahal untuk perusahaan kecil dan mendilusi kendali; buyback menaikkan EPS tetapi memakai kas; obligasi dipakai untuk akuisisi, buyback, refinancing, atau inisiatif strategis.</p><p class="why"><a href="#u6">Unit 6 →</a></p></div></details>
+    <details class="kc"><summary>Lima kategori rasio keuangan <small>Bab 4 hlm. 139 · Tbl 4-9</small></summary><div class="kb"><p>Likuiditas (posisi kas), leverage (posisi utang), aktivitas (efisiensi operasi), profitabilitas (kinerja), pertumbuhan (memenuhi harapan pemegang saham).</p><p class="why"><a href="#u7">Unit 7 →</a></p></div></details>
+    <details class="kc"><summary>Tiga front analisis rasio <small>Bab 4 hlm. 136–137 · Gbr 4-2</small></summary><div class="kb"><p>Bandingkan dari waktu ke waktu, terhadap rata-rata industri, dan terhadap pesaing utama. Rasio proyeksi menguji kelayakan rekomendasi.</p><p class="why"><a href="#u7">Unit 7 →</a></p></div></details>
+    <details class="kc"><summary>Analisis DuPont <small>tambahan</small></summary><div class="kb"><p>ROE = margin laba bersih × perputaran total aset × pengganda ekuitas. Membedakan ROE dari margin, efisiensi, atau leverage.</p><p class="why"><a href="#u7">Unit 7 →</a></p></div></details>
+  </div>
+  <div class="pager"><a class="btn ghost" href="#home">← Beranda</a><a class="btn" href="#u1">Unit 1 →</a></div>
 </section>
 
 <!-- ================= UNIT 1 ================= -->
@@ -587,6 +696,7 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
   <p>Strategi hanya bisa diimplementasikan dengan berhasil bila organisasi <b>mengelola keuangannya secara efektif</b>. Buku memakai analogi quarterback: strategi terbaik yang disusun di <em>huddle</em> tidak otomatis menjadi touchdown; semua pemain harus menjalankannya. Di Bab 7 kita membahas orangnya; di bab ini kita membahas uangnya.</p>
   <p>Jamie Dimon (JPMorgan Chase) menekankan dua hal: <b>melibatkan banyak orang dari berbagai fungsi</b> dalam keputusan (keuangan, SIM, akuntansi, pemasaran), dan <b>skala ekonomi</b>. Menurutnya, tumbuh demi tumbuh adalah strategi yang keliru; sumber daya sebaiknya diarahkan ke area yang membangun skala ekonomi.</p>
 
+  <div class="dgm" data-dgm="model" data-ch="8"></div>
   <h3>Keputusan keuangan dalam implementasi</h3>
   <p>Buku mencontohkan sepuluh keputusan: menghimpun modal (utang jangka pendek/panjang, obligasi, divestasi, saham preferen atau biasa), sewa atau beli aset tetap, rasio pembayaran dividen, metode persediaan (LIFO, FIFO, nilai pasar), memperpanjang piutang atau tidak, diskon pembayaran cepat, jumlah kas yang disimpan, membeli saham treasuri atau tidak, menerima tawaran merger atau tidak, dan berapa harga yang diminta untuk divisi yang didivestasi.</p>
   <p>Dari situ, buku memusatkan bab ini pada <b>lima aktivitas inti</b>:</p>
@@ -632,6 +742,8 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
       <tr><td>Saham diotorisasi</td><td>Jumlah total saham yang boleh diterbitkan, biasanya jauh lebih besar dari saham beredar</td></tr>
     </tbody>
   </table></div>
+  <h4>Struktur modal: geser porsi utang</h4>
+  <div class="dgm" data-dgm="capstruct"></div>
   <p>Secara teori, perusahaan sebaiknya memakai cukup utang untuk mendanai proyek yang hasilnya melebihi biaya utang. Namun di periode laba rendah, utang berlebihan membahayakan imbal hasil pemegang saham dan kelangsungan perusahaan, karena <b>kewajiban bunga tetap harus dibayar</b>. Penerbitan saham juga punya kekhawatiran: <b>dilusi kepemilikan, risiko pengambilalihan naik, dampak pada harga saham, kewajiban dividen untuk saham tambahan, dan EPS lebih rendah</b>.</p>
   <p>Buku menyebut EPS sebagai "barangkali ukuran keberhasilan perusahaan terbaik", karena mencerminkan tujuan memaksimalkan kekayaan pemegang saham. <b>Analisis EPS/EBIT</b> membandingkan EPS dari pendanaan utang, saham, dan kombinasi pada berbagai skenario EBIT (pesimistis, realistis, optimistis).</p>
 
@@ -720,6 +832,8 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
   <h3>Tujuh langkah (susun urutannya)</h3>
   <div class="ordw" id="pfsSteps"></div>
   <p class="hint">Klik langkah dalam urutan yang benar.</p>
+  <h4>Alur laporan proyeksi</h4>
+  <div class="dgm" data-dgm="pfsflow"></div>
   <div class="co book"><b class="t">📖 Tiga pesan kunci buku.</b> (1) <b>Jangan memproyeksikan pertumbuhan historis secara buta</b>; pertimbangkan apa yang dulu dilakukan perusahaan untuk mencapainya (laba P&amp;G 2017 melonjak karena divestasi, bukan operasi). (2) <b>RE adalah angka kumulatif</b>, bukan uang di bank; RE turun bila perusahaan rugi atau membayar dividen melebihi laba bersih. (3) <b>Kas adalah angka penyeimbang</b>: bila hasilnya terlalu tinggi atau terlalu rendah, tinjau kembali asumsi utang, persediaan, piutang, atau aset tetap. Lembaga nirlaba memakai langkah yang sama, dengan aset neto menggantikan RE dan tanpa pajak atau dividen.</div>
 
   <div class="card" id="pfsTool">
@@ -758,6 +872,7 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
   </div>
 
   <p>Menilai harga sebuah bisnis penting karena perusahaan mengakuisisi perusahaan lain, membeli divisi, atau mendivestasi sebagian usahanya; buku menyebut sekitar $1,5 triliun merger terjadi di AS setiap tahun. Valuasi juga dipakai untuk pinjaman bank, perhitungan pajak, paket pensiun, perjanjian kemitraan, dan audit. <b>Valuasi bukan ilmu pasti</b>: faktor seperti pelanggan setia, paten, gugatan yang tertunda, atau peringkat kredit buruk tidak sepenuhnya tercermin di laporan keuangan, dan metode yang berbeda menghasilkan angka berbeda.</p>
+  <div class="dgm" data-dgm="valsrc"></div>
   <div class="formula">1. Kekayaan bersih = Ekuitas − (Goodwill + Aset tak berwujud)</div>
   <div class="formula">2. Laba bersih = Laba bersih × 5</div>
   <div class="formula">3. Rasio P/E = (Harga saham ÷ EPS) × Laba bersih</div>
@@ -801,6 +916,7 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
   </div>
 
   <h3>Rasio keuangan proyeksi</h3>
+  <p class="hint">Konsep, rumus, kalkulator, dan aplikasi rasio dibahas tuntas di <a href="#u7">Unit 7</a>.</p>
   <p>Rasio keuangan (dibahas di Bab 4) dibandingkan dengan tiga cara: <b>perubahan dari waktu ke waktu, terhadap rata-rata industri, dan terhadap pesaing utama</b>. Rasio dari laporan aktual menunjukkan kekuatan dan kelemahan; rasio dari laporan <b>proyeksi</b> menunjukkan masalah atau keberhasilan yang kemungkinan muncul bila rekomendasi dijalankan. Bila rasio lancar proyeksi melonjak atau anjlok jauh dari rata-rata industri, kas harus dikelola. Rasio proyeksi P&amp;G di buku pun baru masuk akal setelah beberapa kali penyesuaian.</p>
 
   <h3>IPO: go public</h3>
@@ -814,10 +930,95 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
 
   <h3>Implikasi bagi strategist dan mahasiswa</h3>
   <p>Gambar 8-3: untuk meraih dan mempertahankan keunggulan, perusahaan harus mengelola keuangannya lebih efisien daripada pesaing dengan alat seperti analisis EPS/EBIT, laporan proyeksi, dan valuasi. Dalam presentasi kasus, buku menekankan: <b>jangan menghindari analisis keuangan</b>. Audiens harus diyakinkan bahwa rekomendasi Anda layak secara finansial dan sepadan dengan biayanya. Tim yang menang kompetisi kasus biasanya mampu menunjukkan hal ini.</p>
+  <div class="dgm" data-dgm="cycle" data-ch="8"></div>
+  
 
   <h3>✅ Cek pemahaman</h3>
   <div class="qwrap" data-quiz="u6"></div>
-  <div class="pager"><a class="btn ghost" href="#u5">← Unit 5</a><a class="btn" href="#cases">Studi Kasus →</a></div>
+  <div class="pager"><a class="btn ghost" href="#u5">← Unit 5</a><a class="btn" href="#u7">Unit 7 →</a></div>
+</section>
+
+
+<!-- ================= UNIT 7: RASIO ================= -->
+<section class="view" data-view="u7" data-unit="7">
+  <div class="eyebrow">Unit 7 <span class="tag">LO 8.4 · Bab 4</span><span class="tag">± 60 menit</span></div>
+  <h2>Rasio Keuangan Penting: Konsep dan Aplikasi</h2>
+  <div class="read" data-read="7">
+    <div class="hd">📖 Bacaan wajib <span class="pg">Bab 4 · hlm. 136–140 · Tabel 4-9 · Gambar 4-2 &nbsp;+&nbsp; Bab 8 · hlm. 286–287 · Tabel 8-14, 8-15</span></div>
+    <p style="margin:0 0 4px">Subbab <em>Financial Ratios</em> di Bab 4 dan rasio proyeksi P&amp;G di Bab 8. Cari jawaban:</p>
+    <ul>
+      <li>Apa lima kategori rasio keuangan, dan pertanyaan apa yang dijawab masing-masing?</li>
+      <li>Pada tiga front apa rasio sebaiknya dianalisis?</li>
+      <li>Apa keterbatasan analisis rasio, dan mengapa rasio dianggap kurang <em>actionable</em> sebagai faktor internal?</li>
+    </ul>
+    <label class="chk"><input type="checkbox" data-readchk="7"> Saya sudah membaca bagian tersebut</label>
+  </div>
+
+  <h3>Mengapa rasio?</h3>
+  <p>Menurut buku, analisis rasio keuangan adalah <b>metode yang paling banyak dipakai</b> untuk menentukan kekuatan dan kelemahan organisasi di bidang investasi, pendanaan, dan dividen. Karena fungsi bisnis saling terkait, rasio bisa memberi sinyal masalah di mana saja dalam rantai nilai, dari pemasok, produksi, hingga distribusi. Rasio dihitung dari laporan laba rugi dan neraca, dan menghitungnya <b>seperti mengambil foto</b>: hasilnya hanya mencerminkan satu titik waktu.</p>
+  <p>Di Bab 8, rasio dipakai dua kali: rasio <b>aktual</b> (dari laporan historis) untuk mengidentifikasi kekuatan dan kelemahan, dan rasio <b>proyeksi</b> (dari laporan proyeksi Unit 4) untuk menguji apakah rekomendasi Anda masuk akal. Rasio proyeksi P&amp;G di buku baru wajar setelah beberapa kali penyesuaian asumsi.</p>
+
+  <h3>Lima kategori</h3>
+  <div class="dgm" data-dgm="ratiowheel"></div>
+
+  <div class="tw"><table class="rtab" id="ratioTbl">
+    <thead><tr><th>Rasio</th><th>Rumus</th><th>Yang diukur (Tabel 4-9)</th><th>Cara membaca &amp; aplikasi</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+
+  <h3>Tiga front analisis</h3>
+  <div class="tw"><table class="tbl-sm">
+    <thead><tr><th>Front</th><th>Pertanyaan</th><th>Contoh</th></tr></thead>
+    <tbody>
+      <tr><td>1. Waktu (tren)</td><td>Bagaimana rasio berubah dari tahun ke tahun?</td><td>Hitung perubahan persentase; hati-hati bila angka dasarnya kecil.</td></tr>
+      <tr><td>2. Industri</td><td>Bagaimana dibandingkan rata-rata industri?</td><td>Perputaran persediaan toko grosir jauh lebih tinggi daripada dealer mobil.</td></tr>
+      <tr><td>3. Pesaing utama</td><td>Bagaimana dibandingkan pesaing terdekat?</td><td>Margin naik dan di atas industri, tetapi turun relatif terhadap pemimpin pasar: tetap perlu waspada.</td></tr>
+    </tbody>
+  </table></div>
+  <h4>Contoh tren: rasio aktual dan proyeksi P&amp;G</h4>
+  <div class="dgm" data-dgm="trend"></div>
+
+  <div class="card" id="ratioTool">
+    <h4>🧮 Kalkulator rasio keuangan: dua tahun + rata-rata industri</h4>
+    <div class="seg" id="raPreset">
+      <button data-p="idn" aria-pressed="false">🇮🇩 PT Rasa Nusantara Tbk (fiktif)</button>
+      <button data-p="mine" aria-pressed="false">Data saya</button>
+    </div>
+    <p class="unit-note" style="margin-top:8px">Nilai uang dalam <b>miliar</b> (atau juta, pilih di bawah); saham dalam juta lembar; harga dan dividen per saham dalam satuan mata uang per lembar. Angka preset fiktif dan konsisten dengan simulator di Unit 4.</p>
+    <label class="dgm-sl" style="margin:0 0 8px">Satuan nilai uang: <select id="raScale"><option value="1000">miliar</option><option value="1">juta</option></select></label>
+    <div class="tw" style="margin:0"><table class="ftab narrow" id="raIn"></table></div>
+    <h4 style="margin-top:14px">Hasil</h4>
+    <div class="tw" style="margin:0"><table class="ftab rres" id="raOut"></table></div>
+    <div class="res" id="raRes"></div>
+  </div>
+
+  <h3>Membedah ROE: analisis DuPont</h3>
+  <p>ROE yang tinggi bisa berasal dari tiga sumber yang sangat berbeda risikonya: <b>margin</b> (setiap rupiah penjualan menghasilkan laba besar), <b>efisiensi aset</b> (aset diputar cepat), atau <b>leverage</b> (aset didanai banyak utang). Analisis DuPont tidak dibahas di David &amp; David, tetapi melengkapi Tabel 4-9 dengan menghubungkan rasio profitabilitas, aktivitas, dan leverage.</p>
+  <div class="formula">ROE = (Laba bersih ÷ Penjualan) × (Penjualan ÷ Total aset) × (Total aset ÷ Ekuitas)</div>
+  <div class="card" id="dupTool">
+    <h4>🧮 Simulator DuPont</h4>
+    <div class="calc-in">
+      <label class="wide">Margin laba bersih (%)<span class="rng"><input type="range" min="1" max="30" step="0.5" id="dpM"><output></output></span></label>
+      <label class="wide">Perputaran total aset (x)<span class="rng"><input type="range" min="0.05" max="3" step="0.05" id="dpT"><output></output></span></label>
+      <label class="wide">Pengganda ekuitas (aset ÷ ekuitas)<span class="rng"><input type="range" min="1" max="12" step="0.1" id="dpL"><output></output></span></label>
+    </div>
+    <div class="row"><button class="btn sm ghost" id="dpFromCalc">Ambil dari kalkulator rasio</button><button class="btn sm ghost" data-dp="bank">Profil bank</button><button class="btn sm ghost" data-dp="retail">Profil ritel</button><button class="btn sm ghost" data-dp="lux">Profil merek premium</button></div>
+    <div class="dup" id="dpBoxes"></div>
+    <div class="dup-res" id="dpRes"></div>
+    <div class="res" id="dpNote"></div>
+  </div>
+
+  <h3>Aplikasi di konteks Indonesia</h3>
+  <div class="co idn"><b class="t">🇮🇩 Rasio khas perbankan (relevan untuk Studi Kasus 5, BRI).</b> Bank dinilai dengan rasio yang berbeda dari perusahaan manufaktur: <b>KPMM/CAR</b> (kecukupan modal terhadap aset tertimbang menurut risiko), <b>NPL</b> (porsi kredit bermasalah), <b>LDR</b> (kredit terhadap dana pihak ketiga), <b>BOPO</b> (beban operasional terhadap pendapatan operasional; makin rendah makin efisien), dan <b>NIM</b> (marjin bunga bersih). Rujukan regulasi yang umum dipakai: KPMM minimum 8% (lebih tinggi sesuai profil risiko) dan NPL neto maksimal 5%. Karena itu, keputusan BRI menambah modal lewat rights issue lebih tepat dibaca dari sisi KPMM daripada rasio utang/ekuitas biasa.</div>
+  <div class="co idn"><b class="t">🇮🇩 Organisasi nirlaba dan PTN-BH.</b> Buku menyebut organisasi nirlaba tidak memakai ROI atau EPS, tetapi memantau rasio khusus; contohnya universitas memantau jumlah mahasiswa per dosen. Untuk PTN-BH, rasio yang relevan antara lain rasio dosen terhadap mahasiswa, biaya per mahasiswa, porsi pendapatan di luar UKT, dan rasio likuiditas untuk keberlanjutan keuangan. Prinsip tiga front tetap berlaku: bandingkan dengan tahun lalu, rata-rata PTN sejenis, dan pesaing terdekat.</div>
+  <div class="co book"><b class="t">📖 Keterbatasan analisis rasio (hlm. 137–140).</b> (1) Perlakuan akuntansi berbeda antarperusahaan (penyusutan, persediaan, R&amp;D, pensiun, merger, pajak). (2) Faktor musiman. (3) Sama dengan rata-rata industri tidak menjamin perusahaan dikelola baik, dan menyimpang tidak selalu buruk: perputaran persediaan tinggi bisa berarti efisien, atau justru kekurangan stok. (4) Rasio kurang <em>actionable</em> sebagai faktor internal di matriks IFE karena tidak menunjukkan akun atau divisi penyebabnya; gunakan uji AQCD (actionable, quantitative, comparative, divisional). (5) Angka tidak mengungkap sumber masalah, yang bisa berasal dari pemasaran, SDM, atau kesalahan akuntansi; baca laporan tahunan.</div>
+
+  <div class="card cls" data-widget="ratioCat"><h4>🧩 Latihan: rasio ini masuk kategori apa?</h4></div>
+  <div class="card cls" data-widget="ratioDiag"><h4>🧩 Latihan: rasio mana yang Anda periksa pertama kali?</h4></div>
+
+  <h3>✅ Cek pemahaman</h3>
+  <div class="qwrap" data-quiz="u7"></div>
+  <div class="pager"><a class="btn ghost" href="#u6">← Unit 6</a><a class="btn" href="#cases">Studi Kasus →</a></div>
 </section>
 
 <!-- ================= CASES ================= -->
@@ -827,7 +1028,7 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
   <p class="lead">Dua kasus dari buku dan tiga kasus Indonesia. Alur setiap pertanyaan: <b>tulis jawaban → minta umpan balik aplikasi → nilai diri dengan checklist → buka arah jawaban</b>.</p>
   <div class="co book"><b class="t">ℹ️ Tentang umpan balik otomatis.</b> Aplikasi memeriksa apakah konsep kunci dan penalaran ("karena", "sehingga") muncul dalam jawaban Anda. Aplikasi <b>tidak</b> bisa menilai apakah perhitungan atau argumen Anda benar. Skor 0–4 ini hanya umpan balik belajar, <b>bukan nilai</b>.</div>
   <div id="caseList"></div>
-  <div class="pager"><a class="btn ghost" href="#u6">← Unit 6</a><a class="btn" href="#final">Kuis Akhir →</a></div>
+  <div class="pager"><a class="btn ghost" href="#u7">← Unit 7</a><a class="btn" href="#final">Kuis Akhir →</a></div>
 </section>
 
 <!-- ================= FINAL ================= -->
@@ -871,6 +1072,7 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
     <li>Laporan proyeksi disusun laba rugi dulu, RE dipindahkan ke neraca, neraca dari bawah ke atas, dan kas sebagai penyeimbang. Jangan memproyeksikan tren historis secara buta, dan sertakan catatan asumsi.</li>
     <li>Empat metode valuasi menghasilkan angka berbeda; premium akuisisi dan goodwill perlu disikapi hati-hati.</li>
     <li>Rasio proyeksi menguji kelayakan rekomendasi; IPO dan obligasi adalah keputusan strategis dengan biaya dan risiko masing-masing.</li>
+    <li>Rasio keuangan terbagi lima kategori (likuiditas, leverage, aktivitas, profitabilitas, pertumbuhan) dan dianalisis pada tiga front: tren, industri, pesaing. Rasio menunjukkan gejala, bukan penyebab; DuPont membantu membedah sumber ROE.</li>
   </ul>
   <div class="co book"><b class="t">➡️ Bab 9: Evaluasi Strategi dan Tata Kelola.</b> Pertanyaan pemantik: setelah strategi dijalankan dan didanai, bagaimana Anda tahu strategi itu berhasil, dan siapa yang mengawasinya?</div>
 
@@ -897,11 +1099,12 @@ ol.ref li{margin:.4em 0;font-size:.9rem}
 </div>
 <div class="toast" id="toast"></div>
 
+<script src="../assets/sm-diagrams.js"></script>
 <script>
 (function(){
 "use strict";
 /* ---------------- storage (safe) ---------------- */
-var KEY="stratman-ch08-v1", S={read:{},q:{},done:{},cls:{},notes:{},final:null,known:{},cs:{},eps:null,pfs:null,val:null,ord:{}};
+var KEY="stratman-ch08-v1", S={read:{},q:{},done:{},cls:{},notes:{},final:null,known:{},cs:{},eps:null,pfs:null,val:null,ord:{},ra:null,dp:null};
 try{var raw=localStorage.getItem(KEY); if(raw){var o=JSON.parse(raw); for(var k in o) S[k]=o[k];}}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} updateProgress();}
 try{var th=localStorage.getItem("stratman-theme"); if(th) document.documentElement.setAttribute("data-theme",th);}catch(e){}
@@ -920,7 +1123,8 @@ var UNITS=[
  {id:"u3",t:"Keterbatasan EPS/EBIT",pg:"hlm. 275"},
  {id:"u4",t:"Laporan Keuangan Proyeksi",pg:"hlm. 275–284"},
  {id:"u5",t:"Valuasi Perusahaan",pg:"hlm. 284–286"},
- {id:"u6",t:"Rasio, IPO, Kas & Obligasi",pg:"hlm. 286–290"}
+ {id:"u6",t:"Rasio, IPO, Kas & Obligasi",pg:"hlm. 286–290"},
+ {id:"u7",t:"Rasio Keuangan Penting",pg:"Bab 4 hlm. 136–140; Bab 8 hlm. 287"}
 ];
 
 /* ---------------- unit quizzes ---------------- */
@@ -954,6 +1158,11 @@ u6:[
  {k:"c",q:"Membeli kembali saham sendiri (treasury stock) cenderung…",o:["Menurunkan EPS","Menaikkan EPS karena saham beredar berkurang","Menambah utang otomatis","Menambah saham diotorisasi"],a:1,e:"Penyebut EPS mengecil."},
  {k:"c",q:"Rasio keuangan proyeksi berguna terutama untuk…",o:["Menggantikan audit","Mengungkap masalah atau keberhasilan yang mungkin muncul bila rekomendasi dijalankan","Menghitung pajak","Menentukan harga IPO"],a:1,e:"Dibandingkan dengan masa lalu, industri, dan pesaing."},
  {k:"r",pg:"hlm. 287",q:"Menurut buku, IPO tidak disarankan bagi perusahaan dengan penjualan di bawah…",o:["$1 juta","$10 juta","$100 juta","$1 miliar"],a:1,e:"Biaya awal bisa terlalu besar dibanding arus kas yang dihasilkan."}
+],
+u7:[
+ {k:"c",q:"Rasio cepat (quick ratio) lebih ketat daripada rasio lancar karena…",o:["Memasukkan utang jangka panjang","Mengeluarkan persediaan dari aset lancar","Memakai laba bersih","Memakai harga saham"],a:1,e:"Persediaan bisa sulit dicairkan dengan cepat."},
+ {k:"c",q:"Perusahaan dengan ROE 24% tetapi ROA hanya 6% kemungkinan besar…",o:["Sangat efisien memutar aset","Membiayai asetnya dengan banyak utang (leverage tinggi)","Tidak memiliki utang","Memiliki margin kotor rendah"],a:1,e:"Pengganda ekuitas = ROE ÷ ROA = 4 kali."},
+ {k:"r",pg:"Tabel 8-14, hlm. 287",q:"Menurut Tabel 8-14, ROE aktual P&G pada 30 Juni 2017 adalah…",o:["18%","27%","13%","50%"],a:1,e:"ROE 2016 sebesar 18%; ROA 2017 13%; margin kotor 50%."}
 ]};
 
 /* ---------------- classify widgets ---------------- */
@@ -982,6 +1191,24 @@ shen:{o:["Pendapatan prematur","Pendapatan fiktif","Laba sekali-terjadi","Mengge
  ["Laba melonjak karena penjualan gedung kantor, lalu disajikan seolah kinerja operasi membaik.","Laba sekali-terjadi","Keuntungan yang tidak berulang."],
  ["Biaya pemasaran tahun ini ditangguhkan dan dicatat sebagai beban tahun depan.","Menggeser beban","Laba tahun ini tampak lebih tinggi."],
  ["Jaminan atas utang anak usaha tidak diungkapkan di laporan keuangan.","Tidak mencatat kewajiban","Kewajiban tersembunyi."]
+]},
+ratioCat:{o:["Likuiditas","Leverage","Aktivitas","Profitabilitas","Pertumbuhan"],it:[
+ ["(Aset lancar − Persediaan) ÷ Kewajiban lancar","Likuiditas","Rasio cepat."],
+ ["EBIT ÷ Beban bunga","Leverage","Times interest earned."],
+ ["HPP ÷ Persediaan","Aktivitas","Perputaran persediaan."],
+ ["Laba bersih ÷ Ekuitas","Profitabilitas","ROE."],
+ ["Kenaikan persentase dividen per saham","Pertumbuhan","Pertumbuhan DPS."],
+ ["Piutang ÷ (Penjualan kredit ÷ 365)","Aktivitas","Periode penagihan rata-rata (hari)."],
+ ["Total utang ÷ Total aset","Leverage","Porsi dana dari kreditur."],
+ ["Harga saham ÷ EPS","Profitabilitas","Rasio P/E; Tabel 4-9 memasukkannya ke profitabilitas."]
+]},
+ratioDiag:{o:["Rasio lancar","Times interest earned","Perputaran persediaan","Periode penagihan","ROE","Pertumbuhan EPS"],it:[
+ ["Pemasok khawatir perusahaan tidak mampu membayar tagihan bulan depan.","Rasio lancar","Kemampuan memenuhi kewajiban jangka pendek."],
+ ["Bank ingin tahu apakah laba operasi cukup untuk menutup bunga pinjaman baru.","Times interest earned","EBIT dibanding beban bunga."],
+ ["Gudang penuh barang yang lambat terjual.","Perputaran persediaan","HPP dibanding persediaan."],
+ ["Pelanggan korporat membayar makin lama.","Periode penagihan","Hari rata-rata menagih piutang."],
+ ["Investor membandingkan laba yang dihasilkan dari setiap rupiah modal mereka.","ROE","Laba bersih dibanding ekuitas."],
+ ["Pemegang saham bertanya apakah perusahaan tumbuh sesuai harapan mereka.","Pertumbuhan EPS","Kategori pertumbuhan menjawab pertanyaan ini."]
 ]},
 bond:{o:["Akuisisi","Buyback saham","Refinancing","Inisiatif strategis"],it:[
  ["Anheuser-Busch InBev menerbitkan obligasi $46 miliar untuk membeli SABMiller.","Akuisisi","Contoh di buku."],
@@ -1037,7 +1264,7 @@ var CASES=[
 ];
 
 /* ---------------- self-test bank ---------------- */
-var LO_NAMES={1:"Keuangan & implementasi",2:"EPS/EBIT",3:"Keterbatasan EPS/EBIT",4:"Laporan proyeksi",5:"Valuasi",6:"Rasio, IPO, obligasi"};
+var LO_NAMES={1:"Keuangan & implementasi",2:"EPS/EBIT",3:"Keterbatasan EPS/EBIT",4:"Laporan proyeksi",5:"Valuasi",6:"IPO, kas, obligasi",7:"Rasio keuangan"};
 var FINAL=[
  [1,"Lima aktivitas keuangan dan akuntansi inti dalam implementasi strategi menurut buku adalah…",["Struktur modal, laporan proyeksi, valuasi, rasio keuangan, serta IPO/kas/obligasi","Audit, pajak, penggajian, pengadaan, perbendaharaan","Penganggaran, akuntansi biaya, audit internal, pajak, investasi","SWOT, IE, BCG, QSPM, SPACE"],0,"Dibahas berurutan dalam bab ini."],
  [1,"Menurut Jamie Dimon, keputusan bisnis umumnya lebih baik bila…",["Diambil cepat oleh CEO","Didahului analisis rinci dan melibatkan banyak orang dari berbagai fungsi","Diserahkan kepada konsultan","Didasarkan intuisi"],1,"Dimon menekankan kolaborasi lintas fungsi."],
@@ -1073,7 +1300,14 @@ var FINAL=[
  [6,"Dibandingkan harga saham, harga obligasi korporasi…",["Lebih sensitif terhadap kejutan operasional","Kurang sensitif terhadap kejutan operasional harian atau kuartalan","Tidak pernah berubah","Selalu lebih murah"],1,"Sehingga lebih bisa diprediksi untuk perencanaan pendanaan."],
  [6,"Kekhawatiran buku tentang penerbitan obligasi adalah bila dananya dipakai untuk…",["Mendanai strategi baru","Membeli kembali saham dan membayar dividen","Refinancing","Akuisisi strategis"],1,"Menambah utang tanpa menambah kapasitas."],
  [6,"Harga IPO GoTo pada April 2022 adalah…",["Rp100","Rp338","Rp1.000","Rp3.400"],1,"Rp3.400 adalah harga rights issue BRI."],
- [6,"Pesan buku bagi mahasiswa dalam presentasi kasus adalah…",["Lewati analisis keuangan bila waktu terbatas","Tunjukkan bahwa rekomendasi layak secara finansial dengan EPS/EBIT, laporan proyeksi, dan valuasi","Cukup tampilkan SWOT","Fokus pada pemasaran saja"],1,"Tim pemenang kompetisi kasus biasanya mampu melakukannya."]
+ [6,"Pesan buku bagi mahasiswa dalam presentasi kasus adalah…",["Lewati analisis keuangan bila waktu terbatas","Tunjukkan bahwa rekomendasi layak secara finansial dengan EPS/EBIT, laporan proyeksi, dan valuasi","Cukup tampilkan SWOT","Fokus pada pemasaran saja"],1,"Tim pemenang kompetisi kasus biasanya mampu melakukannya."],
+ [7,"Analisis rasio keuangan menurut buku sebaiknya dilakukan pada tiga front, yaitu…",["Tren waktu, rata-rata industri, dan pesaing utama","Kas, laba, dan dividen","Neraca, laba rugi, arus kas","Pemasok, pelanggan, karyawan"],0,"Bab 4, hlm. 136–137."],
+ [7,"Perputaran persediaan yang sangat tinggi menurut buku dapat berarti…",["Pasti manajemen persediaan efisien","Bisa efisien, tetapi bisa juga kekurangan persediaan","Penjualan menurun","Persediaan berlebih"],1,"Contoh keterbatasan analisis rasio."],
+ [7,"Mengapa rasio keuangan disebut kurang 'actionable' sebagai faktor internal di matriks IFE?",["Karena sulit dihitung","Karena berbasis kinerja perusahaan secara keseluruhan dan tidak menunjukkan akun atau divisi penyebabnya","Karena tidak diaudit","Karena hanya untuk perusahaan publik"],1,"Gunakan uji AQCD."],
+ [7,"Times interest earned dihitung dengan…",["Laba bersih ÷ bunga","EBIT ÷ beban bunga","Utang ÷ ekuitas","Bunga ÷ penjualan"],1,"Mengukur seberapa jauh laba bisa turun sebelum gagal bayar bunga."],
+ [7,"Menurut buku, organisasi nirlaba seperti universitas memantau rasio khusus, misalnya…",["EPS","Jumlah mahasiswa per dosen","P/E","Dividen per saham"],1,"Rasio tetap relevan bagi nirlaba, tetapi jenisnya berbeda."],
+ [7,"Dalam analisis DuPont, ROE adalah hasil kali margin laba bersih, perputaran total aset, dan…",["Rasio lancar","Pengganda ekuitas (total aset ÷ ekuitas)","Rasio P/E","Pertumbuhan penjualan"],1,"Komponen ketiga mencerminkan leverage."],
+ [7,"Bagi bank, rasio yang paling tepat untuk menilai kecukupan modal setelah rights issue adalah…",["Perputaran persediaan","KPMM/CAR","Margin laba kotor","Periode penagihan"],1,"Rasio khas perbankan."]
 ];
 
 /* ---------------- rubrik ---------------- */
@@ -1194,11 +1428,21 @@ var GLOSS=[
  ["Premium / discount","Selisih harga akuisisi di atas / di bawah kapitalisasi pasar"],
  ["Treasury stock","Saham yang dibeli kembali perusahaan; mengurangi saham beredar"],
  ["IPO","Initial public offering: penawaran saham perdana ke publik"],
- ["Corporate bond","Surat utang yang dananya berasal dari investor, dicatat sebagai utang jangka panjang"]
+ ["Corporate bond","Surat utang yang dananya berasal dari investor, dicatat sebagai utang jangka panjang"],
+ ["Current ratio","Aset lancar ÷ kewajiban lancar; kemampuan membayar kewajiban jangka pendek"],
+ ["Quick ratio","(Aset lancar − persediaan) ÷ kewajiban lancar"],
+ ["Debt-to-equity ratio","Total utang ÷ ekuitas; dana kreditur dibanding pemilik"],
+ ["Times interest earned","EBIT ÷ beban bunga"],
+ ["Inventory turnover","HPP ÷ persediaan"],
+ ["Average collection period","Piutang ÷ (penjualan kredit ÷ 365); hari rata-rata menagih"],
+ ["ROA","Laba bersih ÷ total aset"],
+ ["ROE","Laba bersih ÷ ekuitas"],
+ ["Analisis DuPont","ROE = margin laba bersih × perputaran aset × pengganda ekuitas"],
+ ["KPMM/CAR dan NPL","Rasio bank: kecukupan modal terhadap aset berisiko; porsi kredit bermasalah"]
 ];
 
 /* ================= render: sidebar & plan ================= */
-var NAV=[["grp","Mulai"],["home","Beranda","⌂"],["grp","Pendanaan Strategi"],["u1"],["u2"],["u3"],["grp","Proyeksi & Valuasi"],["u4"],["u5"],["u6"],["grp","Penerapan & Evaluasi"],["cases","Studi Kasus","📂"],["final","Kuis Akhir","🏁"],["cards","Flashcard","🃏"],["notes","Catatan & Referensi","📝"]];
+var NAV=[["grp","Mulai"],["home","Beranda","⌂"],["konsep","Peta Konsep","🧭"],["grp","Pendanaan Strategi"],["u1"],["u2"],["u3"],["grp","Proyeksi, Valuasi & Rasio"],["u4"],["u5"],["u6"],["u7"],["grp","Penerapan & Evaluasi"],["cases","Studi Kasus","📂"],["final","Kuis Akhir","🏁"],["cards","Flashcard","🃏"],["notes","Catatan & Referensi","📝"]];
 function renderSide(){
   var h="";
   NAV.forEach(function(n){
@@ -1450,11 +1694,115 @@ function valTool(){
   inputs();draw();
 }
 
+
+/* ================= Unit 7: rasio keuangan ================= */
+var RCOL={liq:"var(--navy)",lev:"var(--bad)",act:"var(--gold)",pro:"var(--good)",gro:"var(--muted)"},RCN={liq:"Likuiditas",lev:"Leverage",act:"Aktivitas",pro:"Profitabilitas",gro:"Pertumbuhan"};
+/* id, kategori, nama, rumus, yang diukur, cara membaca, arah (1 makin tinggi makin baik, -1 sebaliknya, 0 konteks), satuan, fungsi hitung */
+var RATIOS=[
+ ["cr","liq","Rasio lancar (current ratio)","Aset lancar ÷ Kewajiban lancar","Kemampuan memenuhi kewajiban jangka pendek","Di bawah 1 berarti kewajiban lancar melebihi aset lancar. Terlalu tinggi bisa menandakan kas menganggur; buku menyarankan mengelola kas bila rasio proyeksi melonjak.",0,"x",function(d){return d.ca/d.cl}],
+ ["qr","liq","Rasio cepat (quick ratio)","(Aset lancar − Persediaan) ÷ Kewajiban lancar","Kemampuan memenuhi kewajiban jangka pendek tanpa menjual persediaan","Lebih ketat dari rasio lancar; penting bagi bisnis dengan persediaan yang lambat terjual.",0,"x",function(d){return (d.ca-d.inv)/d.cl}],
+ ["dta","lev","Utang terhadap total aset","Total utang ÷ Total aset","Porsi dana yang disediakan kreditur","Makin tinggi, makin besar risiko keuangan dan kewajiban tetap.",-1,"x",function(d){return d.td/d.ta}],
+ ["de","lev","Utang terhadap ekuitas","Total utang ÷ Ekuitas","Dana dari kreditur dibanding dari pemilik","Dipakai dalam pertimbangan 'situasi leverage' (Tabel 8-3): bila jauh di atas industri, saham bisa lebih menarik.",-1,"x",function(d){return d.td/d.eq}],
+ ["lde","lev","Utang jangka panjang terhadap ekuitas","Utang jangka panjang ÷ Ekuitas","Keseimbangan utang dan ekuitas dalam struktur modal jangka panjang","Langsung mencerminkan keputusan struktur modal di Unit 2.",-1,"x",function(d){return d.ltd/d.eq}],
+ ["tie","lev","Times interest earned","EBIT ÷ Beban bunga","Seberapa jauh laba dapat turun sebelum tidak mampu membayar bunga","Bank dan pemegang obligasi memperhatikan rasio ini; P&G sekitar 22–30 kali.",1,"x",function(d){return d.ebit/d.int}],
+ ["it","act","Perputaran persediaan","HPP ÷ Persediaan","Apakah persediaan berlebih atau lambat terjual dibanding industri","Tinggi bisa berarti efisien, atau kekurangan stok. Toko grosir jauh lebih tinggi daripada dealer mobil.",1,"x",function(d){return d.cogs/d.inv}],
+ ["fat","act","Perputaran aset tetap","Penjualan ÷ Aset tetap","Produktivitas penjualan dan pemanfaatan pabrik/peralatan","Turun tajam setelah ekspansi kapasitas besar adalah wajar sementara, tetapi harus pulih.",1,"x",function(d){return d.sales/d.fa}],
+ ["tat","act","Perputaran total aset","Penjualan ÷ Total aset","Apakah volume bisnis memadai untuk besarnya investasi aset","Komponen kedua dalam analisis DuPont.",1,"x",function(d){return d.sales/d.ta}],
+ ["art","act","Perputaran piutang","Penjualan ÷ Piutang usaha","Seberapa cepat penjualan kredit ditagih (kali per tahun)","Tidak bermakna bagi bisnis yang hanya menerima tunai.",1,"x",function(d){return d.sales/d.ar}],
+ ["acp","act","Periode penagihan rata-rata","Piutang ÷ (Penjualan kredit ÷ 365)","Rata-rata hari untuk menagih penjualan kredit","Kalkulator mengasumsikan seluruh penjualan kredit. Makin panjang, makin banyak kas tertahan di pelanggan.",-1,"hari",function(d){return d.ar/(d.sales/365)}],
+ ["gpm","pro","Margin laba kotor","Laba kotor ÷ Penjualan","Margin yang tersedia untuk menutup beban operasi dan menghasilkan laba","Mencerminkan kekuatan harga dan efisiensi produksi; P&G sekitar 50%.",1,"%",function(d){return (d.sales-d.cogs)/d.sales*100}],
+ ["opm","pro","Margin laba operasi","EBIT ÷ Penjualan","Profitabilitas tanpa memperhitungkan pajak dan bunga","Membandingkan kinerja operasi antarperusahaan dengan struktur modal berbeda.",1,"%",function(d){return d.ebit/d.sales*100}],
+ ["npm","pro","Margin laba bersih","Laba bersih ÷ Penjualan","Laba setelah pajak per rupiah penjualan","Komponen pertama dalam analisis DuPont.",1,"%",function(d){return d.ni/d.sales*100}],
+ ["roa","pro","ROA (return on total assets)","Laba bersih ÷ Total aset","Laba setelah pajak per rupiah aset; disebut juga ROI","Membandingkan efisiensi penggunaan seluruh aset.",1,"%",function(d){return d.ni/d.ta*100}],
+ ["roe","pro","ROE (return on equity)","Laba bersih ÷ Ekuitas","Laba setelah pajak per rupiah investasi pemegang saham","ROE tinggi dengan ROA rendah menandakan leverage tinggi; bedah dengan DuPont.",1,"%",function(d){return d.ni/d.eq*100}],
+ ["eps","pro","EPS","Laba bersih ÷ Saham beredar","Laba yang tersedia bagi pemegang saham biasa per lembar","Dasar analisis EPS/EBIT di Unit 2.",1,"/lbr",function(d){return d.ni*d.k/d.sh}],
+ ["pe","pro","Rasio P/E","Harga saham ÷ EPS","Daya tarik perusahaan di pasar modal","Tinggi berarti investor membayar mahal untuk setiap rupiah laba, biasanya karena ekspektasi pertumbuhan. Dipakai di metode valuasi 3.",0,"x",function(d){return d.px/(d.ni*d.k/d.sh)}],
+ ["sg","gro","Pertumbuhan penjualan","(Penjualan t − t−1) ÷ t−1","Laju pertumbuhan penjualan","Bandingkan dengan pertumbuhan pasar untuk melihat apakah pangsa naik.",1,"%",null],
+ ["ng","gro","Pertumbuhan laba bersih","(Laba t − t−1) ÷ t−1","Laju pertumbuhan laba","Laba tumbuh lebih lambat dari penjualan berarti margin tertekan.",1,"%",null],
+ ["eg","gro","Pertumbuhan EPS","(EPS t − t−1) ÷ t−1","Laju pertumbuhan EPS","Bisa naik karena buyback, bukan hanya karena laba naik.",1,"%",null],
+ ["dg","gro","Pertumbuhan dividen per saham","(DPS t − t−1) ÷ t−1","Laju pertumbuhan dividen","Kebijakan dividen harus seimbang dengan kebutuhan dana implementasi.",1,"%",null]
+];
+function ratioTable(){
+  var tb=$("#ratioTbl tbody");
+  tb.innerHTML=RATIOS.map(function(r){return '<tr data-cat="'+r[1]+'"><td><span class="rcat" style="background:'+RCOL[r[1]]+'">'+RCN[r[1]]+'</span><br><b>'+esc(r[2])+'</b></td><td>'+esc(r[3])+'</td><td>'+esc(r[4])+'</td><td>'+esc(r[5])+'</td></tr>'}).join("");
+  document.addEventListener("smd:ratiocat",function(e){var c=e.detail;$$("#ratioTbl tbody tr").forEach(function(tr){tr.hidden=!!c&&tr.dataset.cat!==c});$$("#raOut tbody tr").forEach(function(tr){tr.hidden=!!c&&tr.dataset.cat&&tr.dataset.cat!==c})});
+}
+var RAF=[["sales","Penjualan"],["cogs","HPP"],["ebit","EBIT (laba operasi)"],["int","Beban bunga"],["ni","Laba bersih"],["ca","Aset lancar"],["inv","Persediaan"],["ar","Piutang usaha"],["fa","Aset tetap"],["ta","Total aset"],["cl","Kewajiban lancar"],["ltd","Utang jangka panjang"],["td","Total utang (kewajiban)"],["eq","Ekuitas"],["sh","Saham beredar (juta lembar)"],["px","Harga saham per lembar"],["dps","Dividen per saham"]];
+var RAP={
+ idn:{y0:{sales:"9.000",cogs:"5.300",ebit:"1.450",int:"140",ni:"1.030",ca:"3.000",inv:"950",ar:"750",fa:"5.600",ta:"9.200",cl:"2.000",ltd:"2.900",td:"4.900",eq:"4.300",sh:"8.000",px:"1.300",dps:"35"},
+      y1:{sales:"10.000",cogs:"6.000",ebit:"1.500",int:"150",ni:"1.053",ca:"3.300",inv:"1.100",ar:"900",fa:"6.000",ta:"10.000",cl:"2.200",ltd:"3.000",td:"5.200",eq:"4.800",sh:"8.000",px:"1.200",dps:"37,5"},
+      ind:{cr:"1,6",qr:"1,1",dta:"0,45",de:"0,9",lde:"0,5",tie:"8",it:"6",fat:"1,8",tat:"1,0",art:"10",acp:"36",gpm:"38",opm:"14",npm:"9",roa:"9",roe:"17",eps:"",pe:"12",sg:"8",ng:"8",eg:"8",dg:"5"}},
+ mine:{y0:{},y1:{},ind:{}}
+};
+var RALAST=null;
+function ratioTool(){
+  S.ra=S.ra||{cur:"idn",sets:{},scale:"1000"};
+  function cur(){if(!S.ra.sets[S.ra.cur])S.ra.sets[S.ra.cur]=JSON.parse(JSON.stringify(RAP[S.ra.cur]));return S.ra.sets[S.ra.cur]}
+  function inputs(){
+    var v=cur();$("#raScale").value=S.ra.scale||"1000";
+    $("#raIn").innerHTML='<thead><tr><th>Pos laporan keuangan</th><th>Tahun lalu</th><th>Tahun ini</th></tr></thead><tbody>'+RAF.map(function(f){return '<tr><td>'+f[1]+'</td><td><input class="ri" type="text" inputmode="decimal" data-ry="y0" data-rf="'+f[0]+'" value="'+esc(v.y0[f[0]]||"")+'"></td><td><input class="ri" type="text" inputmode="decimal" data-ry="y1" data-rf="'+f[0]+'" value="'+esc(v.y1[f[0]]||"")+'"></td></tr>'}).join("")+'</tbody>';
+    $$("#raIn input").forEach(function(e){e.addEventListener("input",function(){cur()[e.dataset.ry][e.dataset.rf]=e.value;save();clearTimeout(e._h);e._h=setTimeout(draw,250)})});
+    $$("#raPreset button").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.p===S.ra.cur))});
+  }
+  function data(y){var o={k:+(S.ra.scale||1000)};RAF.forEach(function(f){o[f[0]]=pnum(y[f[0]])});return o}
+  function draw(){
+    var v=cur(),d0=data(v.y0),d1=data(v.y1),out=[],good=0,bad=0,notes=[];
+    function val(r,d){if(!r[8])return NaN;var x=r[8](d);return isFinite(x)?x:NaN}
+    function gr(a,b){return isFinite(a)&&isFinite(b)&&a!==0?(b-a)/Math.abs(a)*100:NaN}
+    var eps0=d0.ni*d0.k/d0.sh,eps1=d1.ni*d1.k/d1.sh,G={sg:gr(d0.sales,d1.sales),ng:gr(d0.ni,d1.ni),eg:gr(eps0,eps1),dg:gr(d0.dps,d1.dps)};
+    var h='<thead><tr><th>Rasio</th><th>Tahun lalu</th><th>Tahun ini</th><th>Δ</th><th>Industri</th><th>Sinyal (tahun ini vs industri)</th></tr></thead><tbody>';
+    RATIOS.forEach(function(r){
+      var a=val(r,d0),b=r[1]==="gro"?G[r[0]]:val(r,d1),dec=r[7]==="%"||r[7]==="hari"?1:2,ind=pnum(v.ind[r[0]]);
+      var ch=r[1]==="gro"?NaN:gr(a,b),cls=isFinite(ch)?((r[6]>=0?ch>=0:ch<=0)?"up":"down"):"";
+      var sig="";
+      if(isFinite(ind)&&isFinite(b)){var above=b>=ind;
+        if(r[6]===1){sig=above?"✓ di atas industri":"✗ di bawah industri";above?good++:bad++}
+        else if(r[6]===-1){sig=above?"✗ lebih tinggi dari industri (risiko/kas tertahan)":"✓ lebih rendah dari industri";above?bad++:good++}
+        else{sig=above?(b>ind*1.5?"△ jauh di atas industri: periksa kas menganggur / ekspektasi berlebih":"△ di atas industri"):(b<ind*0.67?"△ jauh di bawah industri: periksa likuiditas / valuasi":"△ di bawah industri")}}
+      out.push([r,a,b]);
+      h+='<tr data-cat="'+r[1]+'"><td><span class="rcat" style="background:'+RCOL[r[1]]+'">'+r[1].toUpperCase()+'</span> '+esc(r[2].replace(/ \(.*\)/,""))+'</td><td>'+(r[1]==="gro"?"–":num(a,dec)+(r[7]==="%"&&isFinite(a)?"%":""))+'</td><td class="'+(b<0?"neg":"")+'">'+num(b,dec)+(r[7]==="%"?"%":"")+'</td><td class="'+cls+'">'+(isFinite(ch)?(ch>=0?"+":"")+num(ch,1)+"%":"–")+'</td><td><input type="text" inputmode="decimal" data-ri="'+r[0]+'" value="'+esc(v.ind[r[0]]||"")+'" aria-label="Rata-rata industri '+esc(r[2])+'"></td><td class="flag">'+sig+'</td></tr>';
+    });
+    $("#raOut").innerHTML=h+'</tbody>';
+    $$("#raOut [data-ri]").forEach(function(e){e.addEventListener("change",function(){cur().ind[e.dataset.ri]=e.value;save();draw()})});
+    var c=document.querySelector('.dgm[data-dgm="ratiowheel"]');if(c&&c._sel)$$("#raOut tbody tr").forEach(function(tr){tr.hidden=tr.dataset.cat!==c._sel});
+    var R={};out.forEach(function(o){R[o[0][0]]=o[2]});
+    if(isFinite(R.roe)&&isFinite(R.roa)&&R.roa>0&&R.roe/R.roa>2.5)notes.push("ROE ("+num(R.roe,1)+"%) lebih dari 2,5 kali ROA ("+num(R.roa,1)+"%): sebagian besar ROE ditopang leverage.");
+    if(isFinite(G.ng)&&isFinite(G.sg)&&G.ng<G.sg-3)notes.push("Laba bersih tumbuh "+num(G.ng,1)+"%, lebih lambat dari penjualan ("+num(G.sg,1)+"%): margin tertekan. Cari penyebabnya di HPP, beban, atau bunga.");
+    if(isFinite(R.cr)&&R.cr<1)notes.push("Rasio lancar di bawah 1: perhatikan likuiditas.");
+    if(isFinite(R.tie)&&R.tie<3)notes.push("Times interest earned di bawah 3 kali: ruang untuk utang baru terbatas.");
+    $("#raRes").innerHTML=(good+bad?'<b>'+good+' sinyal positif, '+bad+' sinyal negatif</b> dibandingkan rata-rata industri yang Anda masukkan. ':'Masukkan rata-rata industri untuk melihat sinyal. ')+notes.join(" ")+' <span class="hint">Ingat keterbatasan rasio: angka menunjukkan gejala, bukan penyebab.</span>';
+    RALAST={R:R,G:G,d1:d1};
+  }
+  $$("#raPreset button").forEach(function(b){b.addEventListener("click",function(){S.ra.cur=b.dataset.p;save();inputs();draw()})});
+  $("#raScale").addEventListener("change",function(){S.ra.scale=this.value;save();draw()});
+  inputs();draw();
+}
+function dupTool(){
+  S.dp=S.dp||{m:10.5,t:1,l:2.1};
+  var P={bank:{m:25,t:0.08,l:9},retail:{m:2.5,t:2.5,l:2.5},lux:{m:18,t:0.7,l:1.6}};
+  $("#dpT").min="0.05";
+  function set(o){S.dp=o;$("#dpM").value=o.m;$("#dpT").value=o.t;$("#dpL").value=o.l;save();upd()}
+  function upd(){
+    var m=+$("#dpM").value,t=+$("#dpT").value,l=+$("#dpL").value;S.dp={m:m,t:t,l:l};
+    $("#dpM").nextElementSibling.textContent=num(m,1)+"%";$("#dpT").nextElementSibling.textContent=num(t,2)+"x";$("#dpL").nextElementSibling.textContent=num(l,1)+"x";
+    var roa=m*t,roe=roa*l;
+    $("#dpBoxes").innerHTML='<div>Margin laba bersih<b>'+num(m,1)+'%</b>profitabilitas</div><div>× Perputaran aset<b>'+num(t,2)+'x</b>aktivitas</div><div>× Pengganda ekuitas<b>'+num(l,1)+'x</b>leverage</div>';
+    $("#dpRes").innerHTML='ROA = '+num(roa,1)+'% &nbsp;→&nbsp; ROE = <b>'+num(roe,1)+'%</b>';
+    var src=[["margin",m/10],["efisiensi aset",t/1],["leverage",l/2.5]].sort(function(a,b){return b[1]-a[1]})[0][0];
+    $("#dpNote").innerHTML="Sumber ROE yang paling menonjol: <b>"+src+"</b>. "+(l>=6?"Pengganda ekuitas tinggi lazim pada bank (sebagian besar aset didanai simpanan), tetapi pada perusahaan non-keuangan berarti risiko keuangan besar.":src==="margin"?"ROE dari margin tinggi biasanya mencerminkan merek atau diferensiasi yang kuat.":src==="efisiensi aset"?"ROE dari perputaran aset tinggi khas strategi biaya rendah dan volume tinggi (ritel, grosir).":"Sebagian ROE berasal dari utang; cek times interest earned dan rasio utang.");
+  }
+  ["dpM","dpT","dpL"].forEach(function(id){$("#"+id).addEventListener("input",function(){upd();clearTimeout(this._h);this._h=setTimeout(save,300)})});
+  $$("[data-dp]").forEach(function(b){b.addEventListener("click",function(){set(P[b.dataset.dp])})});
+  $("#dpFromCalc").addEventListener("click",function(){if(!RALAST){toast("Isi kalkulator rasio dulu");return}var d=RALAST.d1;var m=d.ni/d.sales*100,t=d.sales/d.ta,l=d.ta/d.eq;if(![m,t,l].every(isFinite)){toast("Data kalkulator belum lengkap");return}set({m:Math.round(m*2)/2,t:Math.round(t*20)/20,l:Math.round(l*10)/10});toast("Diambil dari kalkulator (dibulatkan)")});
+  set(S.dp);
+}
+
 /* ================= notes ================= */
 function notesText(){
   var L=["MANAJEMEN STRATEGI — MAGISTER MANAJEMEN ITS","Bab 8: Implementing Strategies: Finance and Accounting Issues","",(S.notes.identity||"Nama — NRP"),"","== PEMANASAN ==","Rekomendasi & biaya:",S.notes.warm_rec||"-","","Utang atau saham:",S.notes.warm_fin||"-",""];
   if(EPSLAST){var c=EPSLAST.c,P=EPSLAST.P;L.push("== ANALISIS EPS/EBIT: "+P.n+" ==");c.R.forEach(function(s){L.push(s.n+": EPS "+s.rows.map(function(x){return num(x.eps,P.d)}).join(" / "))});L.push("Titik impas EBIT saham vs utang: "+num(c.be,0)+" "+P.mu,"")}
   if(pfsTool.last){var t=pfsTool.last;L.push("== LAPORAN PROYEKSI (Rp miliar) ==","Pendapatan "+num(t.B.rev,0)+"; laba bersih "+num(t.B.ni,0)+"; RE "+num(t.re1,0)+"; kas (plug) "+num(t.b1.cash,0),"Rasio lancar "+num(t.R0.cr,2)+" → "+num(t.R1.cr,2)+"; D/E "+num(t.R0.de,2)+" → "+num(t.R1.de,2)+"; ROE "+num(t.R0.roe,1)+"% → "+num(t.R1.roe,1)+"%","")}
+  if(RALAST){var RR=RALAST.R;L.push("== RASIO KEUANGAN (tahun ini) ==",["cr","de","tie","it","npm","roa","roe"].map(function(k){var r=RATIOS.filter(function(x){return x[0]===k})[0];return r[2].replace(/ \(.*\)/,"")+": "+num(RR[k],r[7]==="%"?1:2)+(r[7]==="%"?"%":"")}).join("; "),"")}
   if(valTool.last){var q=valTool.last;L.push("== VALUASI: "+q.P.n+" ("+q.P.mu+") ==");q.M.forEach(function(m){L.push(m[0]+": "+(isFinite(m[1])?num(m[1],0):"tidak valid"))});L.push("Rata-rata: "+num(q.avg,0),"")}
   CASES.forEach(function(c){L.push("== "+c.t.toUpperCase()+" ==");c.qs.forEach(function(q,i){L.push((i+1)+". "+q[0]);L.push(S.notes[c.id+"_"+i]||"-");if(S.cs&&S.cs[c.id+"_"+i])L.push("[Umpan balik aplikasi: "+grade(c.id+"_"+i).lv+"/4]");L.push("")})});
   var d=0;UNITS.forEach(function(u){if(S.done[u.id])d++});
@@ -1540,7 +1888,7 @@ var quizEl=null, run=null;
 function setupQuiz(){
   quizEl=$("#finalBox");
   var best=S.final?S.final.best:null;
-  quizEl.innerHTML='<div class="qz-setup"><p>Soal diambil dari keenam unit Bab 8 dan kasus Indonesia. Anda mendapat umpan balik setelah setiap jawaban, dan rincian per unit di akhir. Bab dianggap tuntas bila skor ≥ 80%.</p>'+
+  quizEl.innerHTML='<div class="qz-setup"><p>Soal diambil dari ketujuh unit Bab 8 dan kasus Indonesia. Anda mendapat umpan balik setelah setiap jawaban, dan rincian per unit di akhir. Bab dianggap tuntas bila skor ≥ 80%.</p>'+
    '<div><p class="qz-lbl">Panjang</p><div class="seg" id="qzLen"><button data-n="10" aria-pressed="true">Cepat · 10 soal</button><button data-n="20" aria-pressed="false">Standar · 20</button><button data-n="'+FINAL.length+'" aria-pressed="false">Lengkap · semua '+FINAL.length+'</button></div></div>'+
    '<div><p class="qz-lbl">Fokus</p><div class="seg" id="qzLo"><button data-lo="0" aria-pressed="true">Semua unit</button>'+Object.keys(LO_NAMES).map(function(k){return '<button data-lo="'+k+'" aria-pressed="false" title="'+LO_NAMES[k]+'">Unit '+k+'</button>'}).join("")+'</div></div>'+
    '<div class="row"><button class="btn" id="qzStart">Mulai self-test</button>'+(best!=null?'<span class="muted" style="font-family:var(--mono);font-size:.8rem">Skor terbaik di perangkat ini: '+best+'%</span>':'')+'</div></div>';
@@ -1612,6 +1960,7 @@ function route(){
   markNav();$("#side").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");
   window.scrollTo(0,0);
   if(v==="notes")notesPreview();
+  if(window.SMD)SMD.renderAll($('[data-view="'+v+'"]'));
   if(v==="u2"&&epsTool.redraw)epsTool.redraw();
   document.title=(v==="home"?"Bab 8":($('[data-view="'+v+'"] h2')||{}).textContent)+" · Implementasi Strategi: Keuangan";
 }
@@ -1623,8 +1972,9 @@ $$("[data-readchk]").forEach(function(c){
   var n=+c.dataset.readchk;c.checked=!!S.read[n];
   c.addEventListener("change",function(){S.read[n]=c.checked;save();var b=$('[data-quiz="u'+n+'"]');lockState(b,"u"+n);renderSide();if(c.checked)toast("Soal cek pemahaman terbuka ↓")});
 });
-setupQuiz();renderCases();bindNotes();ordWidget("epsSteps");ordWidget("pfsSteps");epsTool();pfsTool();valTool();cards();renderSide();updateProgress();
+setupQuiz();renderCases();bindNotes();ordWidget("epsSteps");ordWidget("pfsSteps");epsTool();pfsTool();valTool();ratioTable();ratioTool();dupTool();cards();renderSide();updateProgress();
 window.addEventListener("hashchange",route);route();
+$$("[data-kcf]").forEach(function(inp){inp.addEventListener("input",function(){var q=inp.value.trim().toLowerCase();$$(".kc",inp.parentNode).forEach(function(d){var hit=!q||d.textContent.toLowerCase().indexOf(q)>=0;d.hidden=!hit;d.open=!!q&&hit})})});
 
 $("#menuBtn").addEventListener("click",function(){var o=$("#side").classList.toggle("open");this.setAttribute("aria-expanded",o)});
 $("#themeBtn").addEventListener("click",function(){
